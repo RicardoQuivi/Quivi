@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Backoffice",
+    "Projects": [
+      {
+        "Path": "Quivi.Backoffice.Api\\Quivi.Backoffice.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Quivi.Hangfire\\Quivi.Hangfire.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

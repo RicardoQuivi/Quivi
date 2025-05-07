@@ -1,0 +1,6 @@
+@Quivi.Hangfire_HostAddress = http://localhost:5065
+
+GET {{Quivi.Hangfire_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

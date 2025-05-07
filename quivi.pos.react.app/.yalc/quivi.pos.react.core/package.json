@@ -1,0 +1,27 @@
+{
+  "name": "quivi.pos.react.core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "vite",
+    "yalc:publish": "npm run build && yalc publish",
+    "yalc:push": "npm run build && yalc push"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "yalcSig": "816527c65ab592fac0f680f2e4cc88c5"
+}

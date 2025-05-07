@@ -1,0 +1,23 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "quivi.backoffice.api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "serviceActions": {
+        "quivi.backoffice.api": "StartDebugging",
+        "quivi.oauth2": "StartDebugging",
+        "quivi.migrator": "StartWithoutDebugging",
+        "quivi.hangfire": "StartDebugging",
+        "quivi.signalr": "StartDebugging",
+        "quivi.backoffice.react.webapp": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "sqlserver": "StartWithoutDebugging",
+        "quivi.pos.api": "StartDebugging",
+        "quivi.pos.react.app": "StartWithoutDebugging"
+      }
+    }
+  }
+}

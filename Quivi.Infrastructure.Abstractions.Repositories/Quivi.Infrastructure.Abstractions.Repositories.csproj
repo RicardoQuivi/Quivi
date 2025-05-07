@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quivi.Domain.Entities\Quivi.Domain.Entities.csproj" />
+    <ProjectReference Include="..\Quivi.Domain.Repositories.EntityFramework\Quivi.Domain.Repositories.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>

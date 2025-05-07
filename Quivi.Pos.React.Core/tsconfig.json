@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "declaration": true,
+        "declarationDir": "dist/types",
+        "outDir": "dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "jsx": "react-jsx",
+        "skipLibCheck": true,
+
+        "baseUrl": ".",
+        "paths": {
+          "ui": ["src"]
+        }
+    },
+    "include": ["src"]
+}

@@ -1,0 +1,141 @@
+services:
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=yourStrong(!)Password
+        volumes:
+            - sqlserver_data:/var/opt/mssql
+        ports:
+            - "1433:1433"
+        networks:
+            - quivi_network
+
+    rabbitmq:
+        image: rabbitmq:4.0.2
+        environment:
+            - RABBITMQ_DEFAULT_USER=user
+            - RABBITMQ_DEFAULT_PASS=password
+        ports:
+            - "5672:5672"
+        networks:
+            - quivi_network
+
+    quivi.migrator:
+        image: ${DOCKER_REGISTRY-}quivimigrator
+        build:
+            context: .
+            dockerfile: Quivi.Migrator/Dockerfile
+        networks:
+            - quivi_network
+        depends_on:
+            - sqlserver
+
+    quivi.oauth2:
+        image: ${DOCKER_REGISTRY-}quivioauth2
+        build:
+            context: .
+            dockerfile: Quivi.OAuth2/Dockerfile
+        networks:
+            - quivi_network
+        depends_on:
+            - sqlserver
+            - quivi.migrator
+        ports:
+            - "180:8080"
+            - "1443:8081"
+
+    quivi.backoffice.api:
+        image: ${DOCKER_REGISTRY-}quivibackofficeapi
+        build:
+            context: .
+            dockerfile: Quivi.Backoffice.Api/Dockerfile
+        networks:
+            - quivi_network
+        depends_on:
+            - sqlserver
+            - quivi.migrator
+        environment:
+            - JwtSettings__Audiences__0=backoffice
+        ports:
+            - "1080:8080"
+            - "10443:8081"
+
+    quivi.hangfire:
+        image: ${DOCKER_REGISTRY-}quivihangfire
+        build:
+            context: .
+            dockerfile: Quivi.Hangfire/Dockerfile
+        networks:
+            - quivi_network
+        depends_on:
+            - sqlserver
+            - quivi.migrator
+        ports:
+            - "2080:8080"
+            - "20443:8081"
+
+    quivi.signalr:
+        image: ${DOCKER_REGISTRY-}signalr
+        build:
+            context: .
+            dockerfile: Quivi.SignalR/Dockerfile
+        networks:
+            - quivi_network
+        environment:
+            - JwtSettings__Audiences__0=backoffice
+            - JwtSettings__Audiences__1=pos
+        ports:
+            - "4080:8080"
+            - "40443:8081"
+
+    quivi.pos.api:
+        image: ${DOCKER_REGISTRY-}quiviposapi
+        build:
+            context: .
+            dockerfile: Quivi.Pos.Api/Dockerfile
+        networks:
+            - quivi_network
+        environment:
+            - JwtSettings__Audiences__0=pos
+        ports:
+            - "6080:8080"
+            - "60443:8081"
+
+    quivi.backoffice.react.webapp:
+        image: ${DOCKER_REGISTRY-}quivibackofficereactwebapp
+        build:
+            context: ./quivi.backoffice.react.webapp
+            dockerfile: Dockerfile
+        volumes:
+            - ./quivi.backoffice.react.webapp:/app
+            - /app/node_modules
+        ports:
+            - "3010:3010"
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        networks:
+            - quivi_network
+        working_dir: /app
+
+    quivi.pos.react.app:
+        image: ${DOCKER_REGISTRY-}quiviposreactapp
+        build:
+            context: ./quivi.pos.react.app
+            dockerfile: Dockerfile
+        volumes:
+            - ./quivi.pos.react.app:/app
+            - /app/node_modules
+        ports:
+            - "3011:3011"
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        networks:
+            - quivi_network
+        working_dir: /app
+networks:
+    quivi_network:
+        driver: bridge
+
+volumes:
+    sqlserver_data:

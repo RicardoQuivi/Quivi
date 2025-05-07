@@ -1,0 +1,391 @@
+{
+    "quivi": {
+        "product": {
+            "description": "Um PoS moderno e revolucionário para impulsionar o seu negócio"
+        }
+    },
+    "common": {
+        "errors": {
+            "required": "Este campo é obrigatório",
+            "minLength": "Este campo tem de ter pelo menos {{min}} caractéres",
+            "notAnEmail": "O valor introduzido não é um email"
+        },
+        "apiErrors": {
+            "InvalidEmail": "O email é inválido",
+            "InvalidPassword": "A password é inválida.\nTamanho mínimo: {{requiredLength}} caractéres",
+            "InvalidCredentials": "As credenciais introduzidas são inválidas",
+            "Duplicate": "Já existe um registo com este valor"
+        },
+        "or": "Ou",
+        "email": "Email",
+        "emailPlaceholder": "Introduza o seu email",
+        "password": "Password",
+        "passwordPlaceholder": "Introduza a sua password",
+        "confirmPassword": "Confirmar password",
+        "confirmPasswordPlaceholder": "Repita a sua password",
+        "confirmPasswordMismatch": "As passwords não coincidem",
+        "confirm": "Confirmar",
+        "close": "Fechar",
+        "operations": {
+            "new": "Adicionar {{name}}",
+            "create": "Criar {{name}}",
+            "edit": "Editar {{name}}",
+            "delete": "Eliminar {{name}}",
+            "deleteDescription": "Tem a certeza que deseja eliminar o registo <b>{{name}}</b> de <b>{{entity}}</b>?",
+            "deleteManyDescription": "Tem a certeza que deseja eliminar os <b>{{count}}</b> registos de <b>{{entity}}</b>?",
+            "success": {
+                "new": "O registo foi criado com sucesso!",
+                "edit": "O registo foi alterado com sucesso!",
+                "delete": "O registo foi eliminado com sucesso!"
+            },
+            "failure": {
+                "form": "Alguns dos campos estão incorretos.",
+                "generic": "Algo não previsto aconteceu. Por favor tente novamente."
+            }
+        },
+        "entities": {
+            "merchant": "Comerciante",
+            "merchants": "Comerciantes",
+
+            "channelProfile": "Perfil de canal",
+            "channelProfiles": "Perfis de canal",
+
+            "posIntegration": "Integração do PoS",
+            "posIntegrations": "Integrações do PoS",
+
+            "channel": "Canal",
+            "channels": "Canais",
+
+            "menuCategory": "Categoria",
+            "menuCategories": "Categorias",
+
+            "menuItem": "Item",
+            "menuItems": "Items",
+
+            "local": "Local",
+            "locals": "Locais",
+
+            "employee": "Funcionário",
+            "employees": "Funcionários",
+
+            "modifierGroup": "Grupo de modificadores",
+            "modifierGroups": "Grupos de modificadores",
+
+            "customChargeMethod": "Método de pagamento",
+            "customChargeMethods": "Métodos de pagamento"
+        },
+        "vatNumber": "NIF",
+        "postalCode": "Código Postal",
+        "iban": "IBAN",
+        "logo": "Logo",
+        "browseFile": "Procurar ficheiro",
+        "browseImage": "Procurar imagem",
+        "dragAndDropFiles": "Arreste os seus ficheiros para aqui. Os ficheiros permitidos são: {{files}}",
+        "dropFilesHere": "Largue os Ficheiros Aqui",
+        "dropImageHere": "Largue a Imagem Aqui",
+        "required": "Obrigatório",
+        "optional": "Opcional",
+        "name": "Nome",
+        "noDataAvailable": "Sem nenhum dado disponível",
+        "active": "Ativo",
+        "inactive": "Inativo",
+        "channelModes": {
+            "tpa": {
+                "name": "TPA",
+                "description": "Para experiência similar a um terminal de pagamento<br/> Ex: <b>TPA</b> ou <b>venda ambulante</b>"
+            },
+            "onSite": {
+                "name": "No local",
+                "description": "Para consumos prolongados no tempo<br/>Ex: <b>Mesas de restaurante</b> ou <b>cartões de discotecas</b>"
+            },
+            "kiosk": {
+                "name": "Quiosque",
+                "description": "Para pedidos isolados presenciais<br/>Ex: <b>Quiosque</b>"
+            },
+            "online": {
+                "name": "Online",
+                "description": "Para pedidos isolados à distância<br/>Ex: <b>Loja online</b> ou <b>Take-Away</b> ou <b>Delivery</b>"
+            },
+            "custom": {
+                "name": "Personalizado",
+                "description": "Para situações e caracteristicas específicas"
+            },
+            "features": {
+                "visibleOnPos": "Visível no PoS",
+                "allowsFreePayments": "Pagamentos livres",
+                "freePaymentsAsTipOnly": "Considerar como gorjeta",
+                "sessions": "Sessões",
+                "sessionChannelPayments": "Pagamento via código QR",
+                "postPaidOrdering": "Pedidos em pós pagamento",
+                "autoApproval": "Aprovação automática",
+                "autoComplete": "Conclusão automática ao aprovar",
+                "prePaidOrdering": "Pedidos em pré pagamento",
+                "emailRequired": "Email obrigatório via código QR",
+                "orderScheduling": "Agendamento de pedidos",
+                "orderTracking": "Seguimento do estado do pedido",
+                "physicalKiosk": "Quisoque físico e partilhado"
+            },
+            "default": {
+                "name": "Modo pré-definido"
+            }
+        },
+        "select": "Selecionar",
+        "selected": "Selecionado",
+        "mode": "Modo",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "previous": "Anterior",
+        "next": "Seguinte",
+        "paginationDescription": "A mostrar de <b>{{start}}</b> a <b>{{end}}</b> de <b>{{total}}</b> registos",
+        "from": "Desde",
+        "to": "Até",
+        "identifier": "Identificador",
+        "selection": {
+            "all": "Todos os registos selecionados",
+            "someItems": "{{total}} registos selecionados",
+            "selectAll": "Para selecionar os registos todos, incluindo de outras páginas, clique aqui"
+        },
+        "submit": "Submeter",
+        "accept": "Aceitar",
+        "toast": {
+            "success": "Sucesso!",
+            "error": "Erro!",
+            "info": "Informação",
+            "warning": "Aviso!"
+        },
+        "image": "Imagem",
+        "guestApp": {
+            "settings": "Definições para visitantes",
+            "settingsDescription": "Configurar como será mostrado a visitantes via código QR"
+        },
+        "price": "Preço",
+        "description": "Descrição",
+        "noLocation": "Sem local",
+        "priceTypes": {
+            "Unit": "Unidade",
+            "KG": "Quilo",
+            "Dose": "Dose"
+        },
+        "vatRate": "IVA",
+        "vatRateIncluded": "{{value}} IVA incluído",
+        "noOptions": "Sem opções",
+        "startTypingToSearch": "Escreva para pesquisar",
+        "inactivityPeriod": "Periodo de inatividade",
+        "employeeRestrictions": {
+            "RemoveItems": "Remover itens",
+            "ApplyDiscounts": "Aplicar descontos",
+            "OnlyOwnTransactions": "Transações efetuados por ele",
+            "OnlyTransactionsOfLast24Hours": "Transações das ultimas 24 horas",
+            "TransferingItems": "Transferir itens",
+            "SessionsAccess": "Ver sessões",
+            "Refunds": "Devoluções"
+        },
+        "employeeRestrictionsDescriptions": {
+            "RemoveItems": "Se o funcionário pode remover itens",
+            "ApplyDiscounts": "Se o funcionário pode aplicar descontos",
+            "OnlyOwnTransactions": "Se o funcionário tem acesso a transações de outros funcionários",
+            "OnlyTransactionsOfLast24Hours": "Se o funcionário tem acesso a ilimitado no tempo",
+            "TransferingItems": "Se o funcionário pode transferir consumos",
+            "SessionsAccess": "Se o funcionário pode ver sessões",
+            "Refunds": "Se o funcionário pode efetuar devoluções"
+        }
+    },
+    "imageEditor": {
+        "edit": "Editar",
+        "upload": "Carregar nova imagem",
+        "undo": "Reverter",
+        "delete": "Eliminar",
+        "zoom": "Zoom"
+    },
+    "sidebar": {
+        "home": "Início",
+        "administration": {
+            "": "Administração",
+            "integrations": "Integrações",
+            "paymentMethods": "Métodos de Pagamento",
+            "transactions": "Transações"
+        },
+        "businessProfile": {
+            "": "Perfil de Negócio",
+            "basicInfo": "Informação Básica",
+            "menuManagement": "Gestão de Menus",
+            "channelProfiles": "Perfis de Canal",
+            "channels": "Canais"
+        },
+        "transactions": "Transações",
+        "payouts": "Liquidações",
+        "invoicing": "Faturação",
+        "reports": {
+            "": "Relatórios",
+            "dailySales": "Vendas diárias"
+        },
+        "settings": {
+            "": "Definições",
+            "locals": "Locais",
+            "employees": "Funcionários",
+            "chargeMethods": "Métodos de pagamento",
+            "printers": "Impressoras"
+        }
+    },
+    "appHeader": {
+        "pos": {
+            "open": "Abrir PoS",
+            "openMessage": "Abrir PoS numa nova aba",
+            "openDescription": "Está prestes a abrir o PoS numa nova aba. Deseja <b>terminar</b> a sessão? <br/> Manter a sessão do portal aberta permite que os funcionários acedam a este portal e tenham potencial acesso a dados sensíveis.",
+            "goAndLogout": "Terminar sessão do portal",
+            "goAndKeepSession": "Manter sessão do portal"
+        }
+    },
+    "pages": {
+        "signUp": {
+            "title": "Registar",
+            "backToSignIn": "Voltar ao login",
+            "signUp": "Registar",
+            "signUpDescription": "Crie uma conta para iniciar a revolução PoS",
+            "with": "Registar com {{provider}}",
+            "alreadyHaveAnAccount": "Já tem uma conta?",
+            "signIn": "Entrar",
+            "verifyYourInbox": "Verifique o seu e-mail",
+            "signUpCompletedDescription": "Um email de confirmação foi enviado para o seu email. Siga as instruções para completar o registo.",
+            "resendConfirmation": "Enviar novo email de confirmação"
+        },
+        "signUpConfirm": {
+            "title": "Confirmar Email",
+            "backToSignIn": "Voltar ao login",
+            "confirmingYourEmail": "A confirmar o seu email",
+            "confirmingYourEmailDescription": "Aguarde por favor enquanto estamos a confirmar o seu email. Após conclusão poderá iniciar sessão e aceder ao Quivi.",
+            "tokenExpired": "Expirado",
+            "tokenExpiredDescription": "O seu email não pode ser confirmado uma vez que o link já expirou. Foi enviado um novo email. Por favor verifique a sua caixa de entrada para um novo email.",
+            "resendConfirmation": "Enviar novo email de confirmação",
+            "emailConfirmed": "Email Confirmado",
+            "emailConfirmedDescription": "O seu email foi confirmado com sucesso! Pode agora iniciar sessão.",
+            "signIn": "Aceder"
+        },
+        "signIn": {
+            "title": "Entrar",
+            "signIn": "Entrar",
+            "signInDescription": "Bem-vindo à Quivi! Introduza as suas credenciais para aceder.",
+            "with": "Entrar com {{provider}}",
+            "forgotPassword": "Esqueceu-se da password?",
+            "dontHaveAnAccount": "Não tem uma conta?",
+            "signUp": "Registar"
+        },
+        "forgotPassword": {
+            "title": "Esqueci-me da password",
+            "backToSignIn": "Voltar ao login",
+            "forgotPassword": "Esqueceu-se da password?",
+            "forgotPasswordDescription": "Introduza o email da sua conta abaixo. Iremos enviar um email com instruções de como recuperar a sua password.",
+            "sendEmail": "Enviar email",
+            "rememberedYourPassword": "Lembrou-se da sua password?",
+            "signIn": "Entrar",
+            "emailSent": "Email Enviado!",
+            "emailSentDescription": "Foi enviado um email, com instruções de como recuperar a sua password. Verifique a sua caixa de entrada para os próximos passos.",
+            "resend": "Enviar novo email"
+        },
+        "recoverPassword": {
+            "title": "Recuperar Password",
+            "backToSignIn": "Voltar ao login",
+            "setNewPassword": "Definir nova password",
+            "changePassword": "Alterar password",
+            "passwordChanged": "Password alterada",
+            "passwordChangedDescription": "A sua password foi alterada com sucesso! Pode agora aceder usando a sua nova password.",
+            "signIn": "Entrar",
+            "codeExpired": "A ligação do email expirou."
+        },
+        "dashboard": {
+            "title": "Dashboard"
+        },
+        "onboarding": {
+            "title": "Onboarding",
+            "description": "Para utilizar o Quivi, é necessário configurar algumas coisas. Abaixo encontra-se uma lista que terá de completar para utilizar o nosso PoS.",
+
+            "createMerchant": {
+                "": "Informação comercial",
+                "description": "É necessário introduzir informação do seu comércio"
+            },
+
+            "termsAndConditions": {
+                "": "Ativar comerciante",
+                "description": "Antes de puder usar o Quivi, é necessário ler e aceitar os nossos termos e condições."
+            },
+
+            "createChannelProfile": {
+                "": "Criar perfil de canais",
+                "description": "Crie um perfil para os canais de venda. Um perfil contem informações de como o canal irá operar, como com que POS irá integrar entre outras configurações. Pode ser associado posteriormente a vários canais."
+            },
+
+            "createChannel": {
+                "": "Criar canais",
+                "description": "Crie um ou mais canais de venda. Um canal de venda representa um sítio físico ou virtual onde poderá efetuar vendas. Num restaurante, por exemplo, um canal serão mesas. Já num Hotel um canal poderá ser um Quarto. Poderá representar também uma loja online, um quiosque, etc."
+            }
+        },
+        "setUpNewMerchant": {
+            "title": "Iniciar novo comerciante",
+
+            "fiscalInfo": "Informação Fiscal",
+            "socialName": "Designação social",
+
+            "comercialInfo": "Informação Comercial",
+            "brand": "Marca ou Nome",
+
+            "bankingInfo": "Informação Bancária",
+            "ibanProof": "Comprovativo bancário"
+        },
+        "channelProfiles": {
+            "title": "Perfis de canais",
+            "minimumPrePaidOrderAmount": "Montante mínimo para pedidos pré-pagos",
+            "preparationTimer": "Temporizador de envio automático para preparação",
+            "integration": "Integração"
+        },
+        "channels": {
+            "title": "Canais",
+            "defineCreateInterval": "Definir intervalo para gerar",
+            "defineCreateIntervalDescription": "O intervalo pode conter valores alfanuméricos desde que o valor inicial e o valor final estejam no mesmo formato.<br/>Por exemplo: de '1 até 10' ou de 'A1 até 'A10'.",
+            "generate": "Gerar",
+            "editMultipleWarning": "As alterações serão aplicadas a todos os canais previamente selecionados."
+        },
+        "termsAndConditions": {
+            "title": "Termos e condições"
+        },
+        "merchantProfileInfo": {
+            "title": "Informação Básica"
+        },
+        "menuManagement": {
+            "title": "Gestão de menus",
+            "all": "Todas",
+            "noCategory": "Sem Categoria",
+            "itemsAndCategories": "Gerir itens e categorias",
+            "modifiers": "Gerir grupos de modificadores"
+        },
+        "menuCategories": {
+            "title": "Categorias"
+        },
+        "menuItems": {
+            "title": "Item",
+            "locationDescription": "Defina o local onde o item será enviado e impresso quando enviado para preparação. Caso o item não tenha um local definido terá de definir um local a cada pedido de preparação.",
+            "availabilityPeriods": "Periodos de disponibilidade",
+            "availabilityPeriodsDescription": "Defina periodos ao longo da semana onde o item está disponível"
+        },
+        "locals": {
+            "title": "Locais"
+        },
+        "employees": {
+            "title": "Funcionários",
+            "restrictions": "Restrições",
+            "restrictionsDescription": "Defina que ações e que informação o funcionário terá acesso.",
+            "resetPin": "Repor Pin",
+            "resetPinDescription": "Tem a certeza que deseja repor o pin do funcionário <b>{{name}}</b>?"
+        },
+        "modifierGroups": {
+            "title": "Grupos de modificadores",
+            "minSelection": "Seleção mínima",
+            "maxSelection": "Seleção máxima"
+        },
+        "customChargeMethods": {
+            "title": "Métodos de pagamento"
+        },
+        "printers": {
+            "title": "Impressoras"
+        }
+    }
+}

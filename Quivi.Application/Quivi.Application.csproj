@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quivi.Domain.Repositories.EntityFramework\Quivi.Domain.Repositories.EntityFramework.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions.Pos\Quivi.Infrastructure.Abstractions.Pos.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions\Quivi.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Events.RabbitMQ\Quivi.Infrastructure.Events.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Images.SixLabors.ImageSharp\Quivi.Infrastructure.Images.SixLabors.ImageSharp.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Jobs.Hangfire\Quivi.Infrastructure.Jobs.Hangfire.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Mailing.Mailtrap\Quivi.Infrastructure.Mailing.Mailtrap.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Pos.Facturalusa\Quivi.Infrastructure.Pos.Facturalusa.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure\Quivi.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Quivi.Domain.Entities.Notifications;
+using Quivi.Domain.Repositories.EntityFramework;
+using Quivi.Infrastructure.Abstractions.Repositories;
+using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+
+namespace Quivi.Infrastructure.Repositories
+{
+    public class SqlPrinterNotificationsContactRepository : ARepository<PrinterNotificationsContact, GetPrinterNotificationsContactsCriteria>, IPrinterNotificationsContactsRepository
+    {
+        public SqlPrinterNotificationsContactRepository(QuiviContext context) : base(context)
+        {
+        }
+
+        public override IOrderedQueryable<PrinterNotificationsContact> GetFilteredQueryable(GetPrinterNotificationsContactsCriteria criteria)
+        {
+            IQueryable<PrinterNotificationsContact> query = Set;
+
+            if (criteria.IncludeNotificationsContact)
+                query = query.Include(q => q.BaseNotificationsContact);
+
+            if (criteria.Ids != null)
+                query = query.Where(q => criteria.Ids.Contains(q.NotificationsContactId));
+
+            if (criteria.MerchantIds != null)
+                query = query.Where(q => criteria.MerchantIds.Contains(q.BaseNotificationsContact!.MerchantId));
+
+            return query.OrderBy(q => q.CreatedDate);
+        }
+    }
+}

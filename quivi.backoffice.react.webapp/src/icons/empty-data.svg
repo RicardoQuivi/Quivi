@@ -1,0 +1,13 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="currentColor"/>
+  
+  <!-- Chart frame -->
+  <rect x="60" y="60" width="280" height="140" rx="8" ry="8" stroke-width="2"/>
+  
+  <!-- Empty bars -->
+  <line x1="90" y1="180" x2="90" y2="150" stroke-width="6" />
+  <line x1="140" y1="180" x2="140" y2="160" stroke-width="6" />
+  <line x1="190" y1="180" x2="190" y2="180" stroke-width="6" />
+  <line x1="240" y1="180" x2="240" y2="140" stroke-width="6" />
+  <line x1="290" y1="180" x2="290" y2="170" stroke-width="6" />
+</svg>

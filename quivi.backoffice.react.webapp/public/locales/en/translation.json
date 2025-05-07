@@ -1,0 +1,391 @@
+{
+    "quivi": {
+        "product": {
+            "description": "A modern and revolutionary PoS for ramping up your business"
+        }
+    },
+    "common": {
+        "errors": {
+            "required": "This field is required",
+            "minLength": "Minimum lenght for this field is {{min}}",
+            "notAnEmail": "Provided value isn't an email"
+        },
+        "apiErrors": {
+            "InvalidEmail": "Email is invalid",
+            "InvalidPassword": "The password is invalid.\nMinimum Lenght: {{requiredLength}} characters",
+            "InvalidCredentials": "The provided credentials are invalid",
+            "Duplicate": "A entry with this value already exists"
+        },
+        "or": "Or",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Repeat password",
+        "confirmPasswordMismatch": "Passwords do not match",
+        "confirm": "Confirm",
+        "close": "Close",
+        "operations": {
+            "new": "New {{name}}",
+            "create": "Create {{name}}",
+            "edit": "Edit {{name}}",
+            "delete": "Delete {{name}}",
+            "deleteDescription": "Are you sure you want to delete entry <b>{{name}}</b> of <b>{{entity}}</b>?",
+            "deleteManyDescription": "Are you sure you want to delete <b>{{count}}</b> entries of <b>{{entity}}</b>?",
+            "success": {
+                "new": "The entry was created successfully!",
+                "edit": "The entry was edited successfully!",
+                "delete": "The entry was deleted successfully!"
+            },
+            "failure": {
+                "form": "Some form fields are incorrect. No changes were made.",
+                "generic": "An unexpected error occurred. Please try again"
+            }
+        },
+        "entities": {
+            "merchant": "Merchant",
+            "merchants": "Merchants",
+
+            "channelProfile": "Channel profile",
+            "channelProfiles": "Channel profiles",
+
+            "posIntegration": "PoS integration",
+            "posIntegrations": "PoS integrations",
+
+            "channel": "Channel",
+            "channels": "Channels",
+
+            "menuCategory": "Menu category",
+            "menuCategories": "Menu categories",
+
+            "menuItem": "Item",
+            "menuItems": "Items",
+
+            "local": "Local",
+            "locals": "Locals",
+
+            "employee": "Employee",
+            "employees": "Employees",
+
+            "modifierGroup": "Modifier Group",
+            "modifierGroups": "Modifier Groups",
+
+            "customChargeMethod": "Payment method",
+            "customChargeMethods": "Payment methods"
+        },
+        "vatNumber": "VAT Number",
+        "postalCode": "Postal code",
+        "iban": "IBAN",
+        "logo": "Logo",
+        "browseFile": "Browse file",
+        "browseImage": "Browse image",
+        "dragAndDropFiles": "Drag and drop your files here. The allowed files are: {{files}}",
+        "dropFilesHere": "Drop Files Here",
+        "dropImageHere": "Drop Image Here",
+        "required": "Required",
+        "optional": "Optional",
+        "name": "Name",
+        "noDataAvailable": "No data available",
+        "active": "Active",
+        "inactive": "Inactive",
+        "channelModes": {
+            "tpa": {
+                "name": "TPA",
+                "description": "For experience similar to a terminal payment operated by a user<br/>Ex: <b>TPA</b> or <b>street vending</b>"
+            },
+            "onSite": {
+                "name": "On site",
+                "description": "For consumptions extended through time<br/>Ex: <b>Restaurant table</b> or <b>disco cards</b>"
+            },
+            "kiosk": {
+                "name": "Kiosk",
+                "description": "For in-person ordering<br/>Ex: <b>Kiosk</b>"
+            },
+            "online": {
+                "name": "Online",
+                "description": "For ordering at a distance<br/>Ex: <b>Online store</b> or <b>Take-Away</b> or <b>Delivery</b>"
+            },
+            "custom": {
+                "name": "Custom",
+                "description": "For specific cases or solutions"
+            },
+            "features": {
+                "visibleOnPos": "Visível no PoS",
+                "allowsFreePayments": "Free payments",
+                "freePaymentsAsTipOnly": "Consider it as tip",
+                "sessions": "Sessions",
+                "sessionChannelPayments": "Payments via QR Code",
+                "postPaidOrdering": "Post paid ordering",
+                "autoApproval": "Auto approval",
+                "autoComplete": "Complete when approved",
+                "prePaidOrdering": "Pre paid ordering",
+                "emailRequired": "Email required via QR code",
+                "orderScheduling": "Scheduling",
+                "orderTracking": "Order tracking",
+                "physicalKiosk": "Physical and shared kiosk"
+            },
+            "default": {
+                "name": "Modo pré-definido"
+            }
+        },
+        "select": "Select",
+        "selected": "Selected",
+        "mode": "Mode",
+        "edit": "Edit",
+        "delete": "Delete",
+        "previous": "Previous",
+        "next": "Next",
+        "paginationDescription": "Showing {{start}} to {{end}} of {{total}} entries",
+        "from": "From",
+        "to": "To",
+        "identifier": "Identifier",
+        "selection": {
+            "all": "All entries selected",
+            "someItems": "{{total}} entries selected",
+            "selectAll": "To select all entries, other pages included, click here"
+        },
+        "submit": "Submit",
+        "accept": "Accept",
+        "toast": {
+            "success": "Success!",
+            "error": "Error!",
+            "info": "Information",
+            "warning": "Warning!"
+        },
+        "image": "Image",
+        "guestApp": {
+            "settings": "Settings for Guests",
+            "settingsDescription": "Configure how it will be displayed for QR code guests"
+        },
+        "price": "Price",
+        "description": "Description",
+        "noLocation": "No location",
+        "priceTypes": {
+            "Unit": "Unit",
+            "KG": "Kilogram",
+            "Dose": "Dose"
+        },
+        "vatRate": "VAT",
+        "vatRateIncluded": "{{value}} VAT included",
+        "noOptions": "No options left",
+        "startTypingToSearch": "Start typing to search",
+        "inactivityPeriod": "Inactivity period",
+        "employeeRestrictions": {
+            "RemoveItems": "Remove items",
+            "ApplyDiscounts": "Apply discounts",
+            "OnlyOwnTransactions": "Only own transactions",
+            "OnlyTransactionsOfLast24Hours": "Transaction of last 24 hours",
+            "TransferingItems": "Transfering items",
+            "SessionsAccess": "Sessions access",
+            "Refunds": "Refunds"
+        },
+        "employeeRestrictionsDescriptions": {
+            "RemoveItems": "If employee can remove items from sessions",
+            "ApplyDiscounts": "If employee can apply discounts",
+            "OnlyOwnTransactions": "If employee can access transactions of other employees",
+            "OnlyTransactionsOfLast24Hours": "If the employee has unlimited access over time",
+            "TransferingItems": "If employee can transfer items",
+            "SessionsAccess": "If employee can access sessions",
+            "Refunds": "If employee can perform refunds"
+        }
+    },
+    "imageEditor": {
+        "edit": "Edit",
+        "upload": "Upload new image",
+        "undo": "Undo",
+        "delete": "Delete",
+        "zoom": "Zoom"
+    },
+    "sidebar": {
+        "home": "Home",
+        "administration": {
+            "": "Administration",
+            "integrations": "Integrations",
+            "paymentMethods": "Payment Methods",
+            "transactions": "Transactions"
+        },
+        "businessProfile": {
+            "": "Business Profile",
+            "basicInfo": "Basic Information",
+            "menuManagement": "Menu Management",
+            "channelProfiles": "Channel Profiles",
+            "channels": "Channels"
+        },
+        "transactions": "Transactions",
+        "payouts": "Payouts",
+        "invoicing": "Invoicing",
+        "reports": {
+            "": "Reports",
+            "dailySales": "Daily Sales"
+        },
+        "settings": {
+            "": "Settings",
+            "locals": "Locals",
+            "employees": "Employees",
+            "chargeMethods": "Charge methods",
+            "printers": "Printers"
+        }
+    },
+    "appHeader": {
+        "pos": {
+            "open": "Open PoS",
+            "openMessage": "Open PoS in new Tab",
+            "openDescription": "You are about to open PoS in a new tab. Would you like to <b>close</b> session? <br/> Keeping an open session allows employees access to this portal and potentially access sensitive data.",
+            "goAndLogout": "End portal session",
+            "goAndKeepSession": "Keep portal session"
+        }
+    },
+    "pages": {
+        "signUp": {
+            "title": "Sign Up",
+            "backToSignIn": "Back to login",
+            "signUp": "Sign Up",
+            "signUpDescription": "Create an account to start PoS revolution",
+            "with": "Sign up with {{provider}}",
+            "alreadyHaveAnAccount": "Already have an account?",
+            "signIn": "Sign in",
+            "verifyYourInbox": "Verify your inbox",
+            "signUpCompletedDescription": "A confirmation email was sent to your email address. Click the email link to complete signing up.",
+            "resendConfirmation": "Send another confirmation email"
+        },
+        "signUpConfirm": {
+            "title": "Email confirmation",
+            "backToSignIn": "Back to login",
+            "confirmingYourEmail": "Confirming your email",
+            "confirmingYourEmailDescription": "Please stand by while we confirm your email address. After confirmation, you will be able to sign in and access Quivi.",
+            "tokenExpired": "Expired",
+            "tokenExpiredDescription": "Your email could not be confirmed since the link already expired. We sent you another fresh link. Please check your inbox for another link.",
+            "resendConfirmation": "Send another confirmation email",
+            "emailConfirmed": "Email Confirmed",
+            "emailConfirmedDescription": "Your email was confirmed successfully! You can now sign in.",
+            "signIn": "Sign In"
+        },
+        "signIn": {
+            "title": "Sign In",
+            "signIn": "Sign In",
+            "signInDescription": "Welcome to Quivi! Enter your credentials to sign in.",
+            "with": "Sign up with {{provider}}",
+            "forgotPassword": "Forgot Password?",
+            "dontHaveAnAccount": "Don't have an account?",
+            "signUp": "Sign up"
+        },
+        "forgotPassword": {
+            "title": "Forgot my password",
+            "backToSignIn": "Back to login",
+            "forgotPassword": "Forgot Your Password?",
+            "forgotPasswordDescription": "Enter the email address linked to your account. An email will be sent with instructions to retrieve your password",
+            "sendEmail": "Send email",
+            "rememberedYourPassword": "Remembered your password?",
+            "signIn": "Sign In",
+            "emailSent": "Email sent!",
+            "emailSentDescription": "An email containing instructions on how to reset your password was sent. Please check your inbox for the next steps.",
+            "resend": "Send another email"
+        },
+        "recoverPassword": {
+            "title": "Recover Password",
+            "backToSignIn": "Back to sign in",
+            "setNewPassword": "Set new password",
+            "changePassword": "Change password",
+            "passwordChanged": "Password changed",
+            "passwordChangedDescription": "Your password was changed successfully! You can now sign in using you new password.",
+            "signIn": "Sign in",
+            "codeExpired": "The email link expired."
+        },
+        "dashboard": {
+            "title": "Dashboard"
+        },
+        "onboarding": {
+            "title": "Onboarding",
+            "description": "Some steps are still required before using Quivi. Bellow you will find a list of things you need to complete to unlock Quivi.",
+
+            "createMerchant": {
+                "": "Comercial Information",
+                "description": "Information regarding your business is required"
+            },
+
+            "termsAndConditions": {
+                "": "Activate merchant",
+                "description": "Before starting to use Quivi, activate it by reading and accepting our terms and conditions."
+            },
+
+            "createChannelProfile": {
+                "": "Create a Channel Profile",
+                "description": "Create a profile for your sales channels. This profile can be assigned to channels and will determine how they will operate. It contains several configurations like on which POS it will comunicate with."
+            },
+
+            "createChannel": {
+                "": "Create channels",
+                "description": "Add one or more sales channels. A channel represents a virtual or physical location on which you can operate sales. On a restaurant, for instance, tables are channels. On an hotel a room is a channel. It can also be an online store, a kiosk, etc."
+            }
+        },
+        "setUpNewMerchant": {
+            "title": "Set up new merchant",
+
+            "fiscalInfo": "Fiscal Information",
+            "socialName": "Social name",
+
+            "comercialInfo": "Comercial Information",
+            "brand": "Brand or Name",
+
+            "bankingInfo": "Banking Information",
+            "ibanProof": "IBAN Proof"
+        },
+        "channelProfiles": {
+            "title": "Channel Profiles",
+            "minimumPrePaidOrderAmount": "Minimum amount for pre-paid orders",
+            "preparationTimer": "Automatic dispatch timer for preparation",
+            "integration": "Integration"
+        },
+        "channels": {
+            "title": "Channels",
+            "defineCreateInterval": "Set range to create channels",
+            "defineCreateIntervalDescription": "The range can have alfanumeric values but the start value and end value must have the same format.<br/>Example: 1 to 10 or A1 to A10.",
+            "generate": "Generate",
+            "editMultipleWarning": "Changed will be applied to all previously selected channels"
+        },
+        "termsAndConditions": {
+            "title": "Terms and conditions"
+        },
+        "merchantProfileInfo": {
+            "title": "Basic info"
+        },
+        "menuManagement": {
+            "title": "Menu management",
+            "all": "All",
+            "noCategory": "No Category",
+            "itemsAndCategories": "Manage items and categories",
+            "modifiers": "Manage modifier groups"
+        },
+        "menuCategories": {
+            "title": "Menu categories"
+        },
+        "menuItems": {
+            "title": "Item",
+            "locationDescription": "Set the location where this item will be printed and sent for preparation. In case the item doesn't have a location, you will need to set it at each preparation request.",
+            "availabilityPeriods": "Availability Periods",
+            "availabilityPeriodsDescription": "Define time periods throughout the week when the item is available"
+        },
+        "locals": {
+            "title": "Locals"
+        },
+        "employees": {
+            "title": "Employees",
+            "restrictions": "Restrictions",
+            "restrictionsDescription": "Set which actions and what information the employee will have access to.",
+            "resetPin": "Reset Pin",
+            "resetPinDescription": "Are you sure you want to reset pin of employee <b>{{name}}</b>?"
+        },
+        "modifierGroups": {
+            "title": "Modifier Groups",
+            "minSelection": "Minimum selection",
+            "maxSelection": "Maximum selection"
+        },
+        "customChargeMethods": {
+            "title": "Charge methods"
+        },
+        "printers": {
+            "title": "Printers"
+        }
+    }
+}

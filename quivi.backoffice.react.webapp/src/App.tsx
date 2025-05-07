@@ -1,0 +1,131 @@
+import { Routes, Route, Navigate, Outlet, BrowserRouter } from "react-router";
+import { ScrollToTop } from "./components/common/ScrollToTop";
+import { SignInPage } from "./pages/Auth/SignInPage";
+import { SignUpPage } from "./pages/Auth/SignUpPage";
+import { ConfirmEmailPage } from "./pages/Auth/ConfirmEmailPage";
+import { ForgotPasswordPage } from "./pages/Auth/ForgotPasswordPage";
+import { RecoverPasswordPage } from "./pages/Auth/RecoverPasswordPage";
+import { SidebarProvider, useSidebar } from "./context/SidebarContext";
+import AppSidebar from "./layout/AppSidebar";
+import Backdrop from "./layout/Backdrop";
+import { AppHeader } from "./layout/AppHeader";
+import { DashboardPage } from "./pages/Dashboard/DashboardPage";
+import { useAuth } from "./context/AuthContext";
+import { ChannelProfilesPage } from "./pages/BusinessProfile/ChannelProfiles/ChannelProfilesPage";
+import { ChannelProfileFormPage } from "./pages/BusinessProfile/ChannelProfiles/ChannelProfileFormPage";
+import { ChannelsPage } from "./pages/BusinessProfile/Channels/ChannelsPage";
+import { SetUpNewMerchantPage } from "./pages/BusinessProfile/Merchant/SetUpNewMerchantPage";
+import { TermsAndConditionsPage } from "./pages/BusinessProfile/Merchant/TermsAndConditionsPage";
+import { MerchantProfileInfo } from "./pages/BusinessProfile/Merchant/MerchantProfileInfo";
+import { MenuManagementPage } from "./pages/BusinessProfile/Menus/MenuManagement";
+import { MenuCategoryFormPage } from "./pages/BusinessProfile/Menus/MenuCategories/MenuCategoriesFormPage";
+import { MenuItemFormPage } from "./pages/BusinessProfile/Menus/MenuItems/MenuItemFormPage";
+import { LocalsPage } from "./pages/Settings/Locals/LocalsPage";
+import { LocalFormPage } from "./pages/Settings/Locals/LocalFormPage";
+import { EmployeesPage } from "./pages/Settings/Employees/EmployeesPage";
+import { EmployeeFormPage } from "./pages/Settings/Employees/EmployeeFormPage";
+import { ModifierGroupFormPage } from "./pages/BusinessProfile/Menus/ModifierGroups/ModifierGroupFormPage";
+import { CustomChargeMethodsPage } from "./pages/Settings/CustomChargeMethods/CustomChargeMethodsPage";
+import { CustomChargeMethodFormPage } from "./pages/Settings/CustomChargeMethods/CustomChargeMethodFormPage";
+import { PrinterPage } from "./pages/Settings/Printers/PrintersPage";
+
+export const App = () => {
+    return <>
+        <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/signup/confirmEmail/" element={<ConfirmEmailPage />} />
+                
+                <Route path="/signin" element={<SignInPage />} />
+
+                <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
+                <Route path="/forgotPassword/reset" element={<RecoverPasswordPage />} />
+
+                <Route element={<AuthLayoutRoute />}>
+                    <Route path="/" element={<DashboardPage />} />
+
+                    {/* Merchant */}
+                    <Route path="/businessProfile/merchant/setup" element={<SetUpNewMerchantPage />} />
+                    <Route path="/businessProfile/merchant" element={<MerchantProfileInfo />} />
+
+                    {/* Channel Profile */}
+                    <Route path="/businessProfile/channels/profiles" element={<ChannelProfilesPage />} />
+                    <Route path="/businessProfile/channels/profiles/add" element={<ChannelProfileFormPage />} />
+                    <Route path="/businessProfile/channels/profiles/:id/edit" element={<ChannelProfileFormPage />} />
+
+                    {/* Channel */}
+                    <Route path="/businessProfile/channels" element={<ChannelsPage />} />
+
+                    {/* Menu Management */}
+                    <Route path="/businessProfile/menumanagement" element={<MenuManagementPage categories="All" />} />
+                    <Route path="/businessProfile/menumanagement/categories/none" element={<MenuManagementPage categories="None" />} />
+                    <Route path="/businessProfile/menumanagement/categories/:categoryId" element={<MenuManagementPage />} />
+                    <Route path="/businessProfile/menumanagement/categories/add" element={<MenuCategoryFormPage />} />
+                    <Route path="/businessProfile/menumanagement/categories/:id/edit" element={<MenuCategoryFormPage />} />
+                    <Route path="/businessProfile/menumanagement/items/add" element={<MenuItemFormPage />} />
+                    <Route path="/businessProfile/menumanagement/items/:id/edit" element={<MenuItemFormPage />} />
+                    <Route path="/businessProfile/menumanagement/modifiers/add" element={<ModifierGroupFormPage />} />
+                    <Route path="/businessProfile/menumanagement/modifiers/:id/edit" element={<ModifierGroupFormPage />} />
+
+                    {/* Locals */}
+                    <Route path="/settings/locals" element={<LocalsPage />} />
+                    <Route path="/settings/locals/add" element={<LocalFormPage />} />
+                    <Route path="/settings/locals/:id/edit" element={<LocalFormPage />} />
+
+                    {/* Custom Charge Methods */}
+                    <Route path="/settings/chargemethods" element={<CustomChargeMethodsPage />} />
+                    <Route path="/settings/chargemethods/add" element={<CustomChargeMethodFormPage />} />
+                    <Route path="/settings/chargemethods/:id/edit" element={<CustomChargeMethodFormPage />} />
+
+                    {/* Employees */}
+                    <Route path="/settings/employees" element={<EmployeesPage />} />
+                    <Route path="/settings/employees/add" element={<EmployeeFormPage />} />
+                    <Route path="/settings/employees/:id/edit" element={<EmployeeFormPage />} />
+
+                    {/* Printers */}
+                    <Route path="/settings/printers" element={<PrinterPage />} />
+
+                    {/* Terms And Conditions */}
+                    <Route path="/termsAndConditions" element={<TermsAndConditionsPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    </>
+}
+
+const LayoutContent = () => {
+    const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  
+    return (
+    <div className="min-h-screen xl:flex">
+        <AppSidebar />
+        <Backdrop />
+
+        <div
+            className={`flex-1 transition-all duration-300 ease-in-out ${
+            isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
+            } ${isMobileOpen ? "ml-0" : ""}`}
+        >
+            <AppHeader />
+            <div className="p-4 mx-auto md:p-6">
+                <Outlet />
+            </div>
+        </div>
+    </div>
+    );
+}
+
+const AuthLayoutRoute = () => {
+    const auth = useAuth();
+
+    if(auth.isAuth == false) {
+        return <Navigate to="/signin" />
+    }
+    
+    return (
+    <SidebarProvider>
+        <LayoutContent />
+    </SidebarProvider>
+    )
+}

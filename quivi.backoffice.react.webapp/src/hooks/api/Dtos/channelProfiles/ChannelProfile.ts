@@ -1,0 +1,26 @@
+export interface ChannelProfile {
+    readonly id: string;
+    readonly name: string;
+    readonly features: ChannelFeatures;
+    readonly minimumPrePaidOrderAmount: number;
+    readonly sendToPreparationTimer?: string;
+    readonly posIntegrationId: string;
+}
+
+export enum ChannelFeatures {
+    None = 0,
+    AllowsSessions = 1 << 0,
+    AllowsOrderAndPay = 1 << 1,
+    AllowsPayAtTheTable = 1 << 2,
+    RequiresEmailForOrderAndPay = 1 << 3,
+    AllowsPostPaymentOrdering = 1 << 4,
+    OrderAndPayWithTracking = 1 << 5,
+    OrderScheduling = 1 << 6,
+    PhysicalKiosk = 1 << 7,
+    PostPaidOrderingAutoApproval = 1 << 8,
+    PrePaidOrderingAutoApproval = 1 << 9,
+    PostPaidOrderingAutoComplete = 1 << 10,
+    PrePaidOrderingAutoComplete = 1 << 11,
+    AllowsFreePayments = 1 << 12,
+    FreePaymentsAsTipOnly = 1 << 13,
+}
