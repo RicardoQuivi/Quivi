@@ -1,0 +1,142 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ACR_NAME: quiviregistry
+  RESOURCE_GROUP: quivi-resourcegroup
+  LOCATION: westeurope
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
+      ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
+      Mailtrap__FromAddress: ${{ secrets.MAILTRAP__FROMADDRESS }}
+      Mailtrap__FromName: ${{ secrets.MAILTRAP__FROMNAME }}
+      Mailtrap__Host: ${{ secrets.MAILTRAP__HOST }}
+      Mailtrap__Port: ${{ secrets.MAILTRAP__PORT }}
+      Mailtrap__Username: ${{ secrets.MAILTRAP__USERNAME }}
+      Mailtrap__Password: ${{ secrets.MAILTRAP__PASSWORD }}
+      RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
+      RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
+      RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
+      IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
+      AppHosts__OAuth: ${{ secrets.APPHOSTS__OAUTH }}
+      AppHosts__Backoffice: ${{ secrets.APPHOSTS__BACKOFFICE }}
+      AppHosts__BackofficeApi: ${{ secrets.APPHOSTS__BACKOFFICEAPI }}
+      AppHosts__GuestApp: ${{ secrets.APPHOSTS__GUESTAPP }}
+      JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
+      JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
+      JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
+      JwtSettings__ExpireTimeSpan: ${{ secrets.JWTSETTINGS__EXPIRETIMESPAN }}
+      JwtSettings__RefreshTokenExpireTimeSpan: ${{ secrets.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
+      JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
+      JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
+      DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
+      FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
+      Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
+      Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
+      Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Create .github.env file
+        run: |
+          echo "ConnectionStrings__Quivi=$ConnectionStrings__Quivi" >> $GITHUB_WORKSPACE/.github.env
+          echo "ConnectionStrings__OAuth=$ConnectionStrings__OAuth" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "Mailtrap__FromAddress=$Mailtrap__FromAddress" >> $GITHUB_WORKSPACE/.github.env
+          echo "Mailtrap__FromName=$Mailtrap__FromName" >> $GITHUB_WORKSPACE/.github.env
+          echo "Mailtrap__Host=$Mailtrap__Host" >> $GITHUB_WORKSPACE/.github.env
+          echo "Mailtrap__Port=$Mailtrap__Port" >> $GITHUB_WORKSPACE/.github.env
+          echo "Mailtrap__Username=$Mailtrap__Username" >> $GITHUB_WORKSPACE/.github.env
+          echo "Mailtrap__Password=$Mailtrap__Password" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "RabbitMq__Hosts__0=$RabbitMq__Hosts__0" >> $GITHUB_WORKSPACE/.github.env
+          echo "RabbitMq__Username=$RabbitMq__Username" >> $GITHUB_WORKSPACE/.github.env
+          echo "RabbitMq__Password=$RabbitMq__Password" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "IdConverter__Salt=$IdConverter__Salt" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "AppHosts__OAuth=$AppHosts__OAuth" >> $GITHUB_WORKSPACE/.github.env
+          echo "AppHosts__Backoffice=$AppHosts__Backoffice" >> $GITHUB_WORKSPACE/.github.env
+          echo "AppHosts__BackofficeApi=$AppHosts__BackofficeApi" >> $GITHUB_WORKSPACE/.github.env
+          echo "AppHosts__GuestApp=$AppHosts__GuestApp" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "JwtSettings__Issuer=$JwtSettings__Issuer" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__Audiences__0=$JwtSettings__Audiences__0" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__Secret=$JwtSettings__Secret" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__ExpireTimeSpan=$JwtSettings__ExpireTimeSpan" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__RefreshTokenExpireTimeSpan=$JwtSettings__RefreshTokenExpireTimeSpan" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__Certificate__Base64=$JwtSettings__Certificate__Base64" >> $GITHUB_WORKSPACE/.github.env
+          echo "JwtSettings__Certificate__Password=$JwtSettings__Certificate__Password" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "DefaultSettings__DefaultMerchantLogo=$DefaultSettings__DefaultMerchantLogo" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "FileSystemStorage__Path=$FileSystemStorage__Path" >> $GITHUB_WORKSPACE/.github.env
+
+          echo "Facturalusa__Host=$Facturalusa__Host" >> $GITHUB_WORKSPACE/.github.env
+          echo "Facturalusa__AccessToken=$Facturalusa__AccessToken" >> $GITHUB_WORKSPACE/.github.env
+          echo "Facturalusa__CommunicateSeries=$Facturalusa__CommunicateSeries" >> $GITHUB_WORKSPACE/.github.env
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Build and Push Images
+        run: |
+          ACR=${{ env.ACR_NAME }}.azurecr.io
+          
+          # --- MIGRATOR ---
+          echo "🔧 Building quivi.migrator..."
+          docker build -t $ACR/quivi.migrator:latest -f Quivi.Migrator/Dockerfile .
+          docker push $ACR/quivi.migrator:latest
+
+          # --- OAuth2 ---
+          echo "🔧 Building quivi.oauth2..."
+          docker build -t $ACR/quivi.oauth2:latest -f Quivi.OAuth2/Dockerfile .
+          docker push $ACR/quivi.oauth2:latest
+
+          # --- Backoffice API ---
+          echo "🔧 Building quivi.backoffice.api..."
+          docker build -t $ACR/quivi.backoffice.api:latest -f Quivi.Backoffice.Api/Dockerfile .
+          docker push $ACR/quivi.backoffice.api:latest
+
+          # --- Hangfire ---
+          echo "🔧 Building quivi.hangfire..."
+          docker build -t $ACR/quivi.hangfire:latest -f Quivi.Hangfire/Dockerfile .
+          docker push $ACR/quivi.hangfire:latest
+
+          # --- SignalR ---
+          echo "🔧 Building quivi.signalr..."
+          docker build -t $ACR/quivi.signalr:latest -f Quivi.SignalR/Dockerfile .
+          docker push $ACR/quivi.signalr:latest
+
+          # --- PoS API ---
+          echo "🔧 Building quivi.pos.api..."
+          docker build -t $ACR/quivi.pos.api:latest -f Quivi.Pos.Api/Dockerfile .
+          docker push $ACR/quivi.pos.api:latest
+
+          # --- Backoffice App ---
+          echo "🔧 Building quivi.backoffice.react.webapp..."
+          docker build -t $ACR/quivi.backoffice.react.webapp:latest -f quivi.backoffice.react.webapp/Dockerfile .
+          docker push $ACR/quivi.backoffice.react.webapp:latest
+
+          # --- PoS App ---
+          echo "🔧 Building quivi.pos.react.app..."
+          docker build -t $ACR/quivi.pos.react.app:latest -f quivi.pos.react.app/Dockerfile .
+          docker push $ACR/quivi.pos.react.app:latest
+
+      - name: Run Migrator container (once)
+        run: |
+          docker run --env-file $GITHUB_WORKSPACE/.github.env --rm quiviregistry.azurecr.io/quivi.migrator
