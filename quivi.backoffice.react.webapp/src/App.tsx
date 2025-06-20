@@ -28,6 +28,7 @@ import { ModifierGroupFormPage } from "./pages/BusinessProfile/Menus/ModifierGro
 import { CustomChargeMethodsPage } from "./pages/Settings/CustomChargeMethods/CustomChargeMethodsPage";
 import { CustomChargeMethodFormPage } from "./pages/Settings/CustomChargeMethods/CustomChargeMethodFormPage";
 import { PrinterPage } from "./pages/Settings/Printers/PrintersPage";
+import { PrinterWorkerFormPage } from "./pages/Settings/Printers/PrinterWorkers/PrinterWorkerFormPage";
 
 export const App = () => {
     return <>
@@ -85,6 +86,9 @@ export const App = () => {
 
                     {/* Printers */}
                     <Route path="/settings/printers" element={<PrinterPage />} />
+                    <Route path="/settings/printers/workers/:workerId" element={<PrinterPage />} />
+                    <Route path="/settings/printers/workers/add" element={<PrinterWorkerFormPage />} />
+                    <Route path="/settings/printers/workers/:id/edit" element={<PrinterWorkerFormPage />} />
 
                     {/* Terms And Conditions */}
                     <Route path="/termsAndConditions" element={<TermsAndConditionsPage />} />

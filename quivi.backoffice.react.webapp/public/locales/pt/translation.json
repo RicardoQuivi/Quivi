@@ -72,7 +72,10 @@
             "modifierGroups": "Grupos de modificadores",
 
             "customChargeMethod": "Método de pagamento",
-            "customChargeMethods": "Métodos de pagamento"
+            "customChargeMethods": "Métodos de pagamento",
+
+            "printerWorker": "Serviço de impressão",
+            "printerWorkers": "Serviços de impressão"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -385,7 +388,8 @@
             "title": "Métodos de pagamento"
         },
         "printers": {
-            "title": "Impressoras"
+            "title": "Impressoras",
+            "all": "Todos"
         }
     }
 }

@@ -72,7 +72,10 @@
             "modifierGroups": "Modifier Groups",
 
             "customChargeMethod": "Payment method",
-            "customChargeMethods": "Payment methods"
+            "customChargeMethods": "Payment methods",
+
+            "printerWorker": "Printer service",
+            "printerWorkers": "Printer services"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -385,7 +388,8 @@
             "title": "Charge methods"
         },
         "printers": {
-            "title": "Printers"
+            "title": "Printers",
+            "all": "All"
         }
     }
 }

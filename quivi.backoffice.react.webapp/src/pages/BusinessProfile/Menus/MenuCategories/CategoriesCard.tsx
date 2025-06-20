@@ -116,13 +116,19 @@ export const CategoriesCard = (props: CategoriesCardProps) => {
                                 </div>
                                 <div
                                     className={`flex items-center justify-center text-gray-500 transition-colors border border-gray-200 rounded-lg max-w-10 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white`}
-                                    onClick={() => navigate(`/businessProfile/menumanagement/categories/${c.id}/edit`)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/businessProfile/menumanagement/categories/${c.id}/edit`);
+                                    }}
                                 >
                                     <PencilIcon className="size-5 m-1" />
                                 </div>
                                 <div
                                     className={`flex items-center justify-center text-gray-500 transition-colors border border-gray-200 rounded-lg max-w-10 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white`}
-                                    onClick={() => setMenuCategoryToDelete(c)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setMenuCategoryToDelete(c);
+                                    }}
                                 >
                                     <TrashBinIcon className="size-5 m-1" />
                                 </div>

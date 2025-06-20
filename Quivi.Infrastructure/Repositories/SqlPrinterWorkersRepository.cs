@@ -21,6 +21,12 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.MerchantId));
 
+            if (criteria.Identifiers != null)
+                query = query.Where(q => criteria.Identifiers.Contains(q.Identifier));
+
+            if (criteria.IsDeleted.HasValue)
+                query = query.Where(q => q.DeletedDate.HasValue == criteria.IsDeleted.HasValue);
+
             return query.OrderBy(q => q.CreatedDate);
         }
     }

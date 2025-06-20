@@ -6,7 +6,7 @@ import { CreateMenuCategoryRequest } from "./Dtos/menuCategories/CreateMenuCateg
 import { CreateMenuCategoryResponse } from "./Dtos/menuCategories/CreateMenuCategoryResponse";
 import { PatchMenuCategoryRequest } from "./Dtos/menuCategories/PatchMenuCategoryRequest";
 import { PatchMenuCategoryResponse } from "./Dtos/menuCategories/PatchMenuCategoryResponse";
-import { DeleteMenuCategoryRequest } from "./Dtos/menuCategories/DeleteMenuCategoryResquest";
+import { DeleteMenuCategoryRequest } from "./Dtos/menuCategories/DeleteMenuCategoryRequest";
 import { DeleteMenuCategoryResponse } from "./Dtos/menuCategories/DeleteMenuCategoryResponse";
 import { SortMenuCategoriesResponse } from "./Dtos/menuCategories/SortMenuCategoriesResponse";
 import { SortMenuCategoriesRequest } from "./Dtos/menuCategories/SortMenuCategoriesRequest";
