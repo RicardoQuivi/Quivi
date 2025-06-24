@@ -103,10 +103,7 @@ services:
             - "60443:8081"
 
     quivi.backoffice.react.webapp:
-        image: ${DOCKER_REGISTRY-}quivibackofficereactwebapp
-        build:
-            context: ./quivi.backoffice.react.webapp
-            dockerfile: Dockerfile
+        image: node:23.11.0-alpine
         volumes:
             - ./quivi.backoffice.react.webapp:/app
             - /app/node_modules
@@ -117,12 +114,10 @@ services:
         networks:
             - quivi_network
         working_dir: /app
+        command: sh -c "npm install && npm run dev -- --host"
 
     quivi.pos.react.app:
-        image: ${DOCKER_REGISTRY-}quiviposreactapp
-        build:
-            context: ./quivi.pos.react.app
-            dockerfile: Dockerfile
+        image: node:23.11.0-alpine
         volumes:
             - ./quivi.pos.react.app:/app
             - /app/node_modules
@@ -133,6 +128,8 @@ services:
         networks:
             - quivi_network
         working_dir: /app
+        command: sh -c "npm install && npm run dev -- --host"
+
 networks:
     quivi_network:
         driver: bridge

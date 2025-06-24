@@ -9,12 +9,12 @@ env:
   ACR_NAME: quiviregistry
   RESOURCE_GROUP: quivi-resourcegroup
   LOCATION: westeurope
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: Sandbox
-
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -59,18 +59,30 @@ jobs:
 
       - name: Build quivi.backoffice.react.webapp
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest -f quivi.backoffice.react.webapp/Dockerfile quivi.backoffice.react.webapp
+          docker build \
+          --build-arg OAUTH_URL=${{ vars.APPHOSTS__OAUTH }} \
+          --build-arg API_URL=${{ vars.APPHOSTS__BACKOFFICEAPI }} \
+          --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
+          --build-arg POS_URL=${{ vars.APPHOSTS__POS }} \
+          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest -f quivi.backoffice.react.webapp/Dockerfile quivi.backoffice.react.webapp
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest
 
       - name: Build quivi.pos.react.app
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
+          docker build \
+          --build-arg OAUTH_URL=${{ vars.APPHOSTS__OAUTH }} \
+          --build-arg API_URL=${{ vars.APPHOSTS__POSAPI }} \
+          --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
+          --build-arg BACKOFFICE_URL=${{ vars.APPHOSTS__BACKOFFICE }} \
+          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest
           
       - name: Trigger Deploy Workflow
         run: |
-          curl -X POST \
+          curl -L \
+            -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{ github.repository }}/dispatches \
-            -d '{"event_type":"deploy_after_build"}'
+            -d '{"event_type":"deploy_after_build","client_payload":{"unit":false,"integration":true}}'

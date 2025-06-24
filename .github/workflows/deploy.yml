@@ -27,10 +27,11 @@ jobs:
       RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
       RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
       IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
-      AppHosts__OAuth: ${{ secrets.APPHOSTS__OAUTH }}
-      AppHosts__Backoffice: ${{ secrets.APPHOSTS__BACKOFFICE }}
-      AppHosts__BackofficeApi: ${{ secrets.APPHOSTS__BACKOFFICEAPI }}
-      AppHosts__GuestApp: ${{ secrets.APPHOSTS__GUESTAPP }}
+      AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
+      AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
+      AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
+      AppHosts__GuestApp: ${{ vars.APPHOSTS__GUESTAPP }}
+      AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
       JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
       JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
       JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
@@ -70,6 +71,7 @@ jobs:
           echo "AppHosts__Backoffice=$AppHosts__Backoffice" >> $GITHUB_WORKSPACE/.github.env
           echo "AppHosts__BackofficeApi=$AppHosts__BackofficeApi" >> $GITHUB_WORKSPACE/.github.env
           echo "AppHosts__GuestApp=$AppHosts__GuestApp" >> $GITHUB_WORKSPACE/.github.env
+          echo "AppHosts__Pos=$AppHosts__Pos" >> $GITHUB_WORKSPACE/.github.env
 
           echo "JwtSettings__Issuer=$JwtSettings__Issuer" >> $GITHUB_WORKSPACE/.github.env
           echo "JwtSettings__Audiences__0=$JwtSettings__Audiences__0" >> $GITHUB_WORKSPACE/.github.env
@@ -124,7 +126,10 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:latest
           containerAppName: sbx-oauth
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          environmentVariables: |
+            ${{ steps.load-env.outputs.env_vars }},
+            Cors__AllowedOrigins__0=${{ env.AppHosts__Backoffice }},
+            Cors__AllowedOrigins__1=${{ env.AppHosts__Pos }}
           targetPort: 8080
 
       - name: Deploy Quivi.Backoffice.Api
@@ -138,7 +143,10 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:latest
           containerAppName: sbx-backoffice-api
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          environmentVariables: |
+            ${{ steps.load-env.outputs.env_vars }},
+            Cors__AllowedOrigins__0=${{ env.AppHosts__Backoffice }},
+            JwtSettings__Audiences__0=backoffice
           targetPort: 8080
 
       - name: Deploy Quivi.Hangfire
@@ -166,7 +174,12 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:latest
           containerAppName: sbx-events
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          environmentVariables: |
+            ${{ steps.load-env.outputs.env_vars }},
+            Cors__AllowedOrigins__0=${{ env.AppHosts__Backoffice }},
+            Cors__AllowedOrigins__1=${{ env.AppHosts__Pos }},
+            JwtSettings__Audiences__0=backoffice,
+            JwtSettings__Audiences__1=pos
           targetPort: 8080
 
       - name: Deploy Quivi.Pos.Api
@@ -180,8 +193,12 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:latest
           containerAppName: sbx-pos-api
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          environmentVariables: |
+            ${{ steps.load-env.outputs.env_vars }},
+            Cors__AllowedOrigins__0=${{ env.AppHosts__Pos }},
+            JwtSettings__Audiences__0=pos
           targetPort: 8080
+          runtimeStack: 'dotnetcore:8.0'
 
       - name: Deploy quivi.backoffice.react.webapp
         uses: azure/container-apps-deploy-action@v2
@@ -192,7 +209,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest
-          containerAppName: sbx-pos
+          containerAppName: sbx-backoffice
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3010
@@ -206,7 +223,17 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest
-          containerAppName: sbx-backoffice
+          containerAppName: sbx-pos
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3011
+
+      - name: Disable Azure platform CORS for all container apps
+        run: |
+          APPS=("sbx-oauth" "sbx-backoffice-api" "sbx-background" "sbx-events" "sbx-pos-api" "sbx-backoffice" "sbx-pos")
+          for APP in "${APPS[@]}"; do
+            az containerapp ingress cors update \
+              --name "$APP" \
+              --resource-group ${{ env.RESOURCE_GROUP }}
+              --allowed-origin *
+          done
