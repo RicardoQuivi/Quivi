@@ -15,7 +15,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build:
+  quivi-migrator:
     runs-on: ubuntu-latest
     environment: Sandbox
     steps:
@@ -35,30 +35,119 @@ jobs:
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:$IMAGE_TAG -f Quivi.Migrator/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:$IMAGE_TAG
 
+  quivi-oauth:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
       - name: Build Quivi.OAuth2
         run: |
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:$IMAGE_TAG -f Quivi.OAuth2/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:$IMAGE_TAG
+
+  quivi-backoffice-api:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
 
       - name: Build Quivi.Backoffice.Api
         run: |
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:$IMAGE_TAG -f Quivi.Backoffice.Api/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:$IMAGE_TAG
 
+  quivi-hangfire:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
       - name: Build Quivi.Hangfire
         run: |
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:$IMAGE_TAG -f Quivi.Hangfire/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:$IMAGE_TAG
+
+  quivi-signalr:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
 
       - name: Build Quivi.SignalR
         run: |
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:$IMAGE_TAG -f Quivi.SignalR/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:$IMAGE_TAG
 
+  quivi-pos-api:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
       - name: Build Quivi.Pos.Api
         run: |
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG -f Quivi.Pos.Api/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG
+
+  quivi-backoffice-app:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
 
       - name: Build quivi.backoffice.react.webapp
         run: |
@@ -70,6 +159,21 @@ jobs:
           -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:$IMAGE_TAG -f quivi.backoffice.react.webapp/Dockerfile quivi.backoffice.react.webapp
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:$IMAGE_TAG
 
+  quivi-pos-app:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
       - name: Build quivi.pos.react.app
         run: |
           docker build \
@@ -79,6 +183,22 @@ jobs:
           --build-arg BACKOFFICE_URL=${{ vars.APPHOSTS__BACKOFFICE }} \
           -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG
+
+  create-tag:
+    needs:
+      - quivi-migrator
+      - quivi-oauth
+      - quivi-backoffice-api
+      - quivi-hangfire
+      - quivi-signalr
+      - quivi-pos-api
+      - quivi-backoffice-app
+      - quivi-pos-app
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
 
       - name: Tag commit
         run: |
