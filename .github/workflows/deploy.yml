@@ -13,97 +13,78 @@ env:
   LOCATION: westeurope
   IMAGE_TAG: ${{ github.sha }}
 
+  ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
+  ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
+  Mailtrap__FromAddress: ${{ secrets.MAILTRAP__FROMADDRESS }}
+  Mailtrap__FromName: ${{ secrets.MAILTRAP__FROMNAME }}
+  Mailtrap__Host: ${{ secrets.MAILTRAP__HOST }}
+  Mailtrap__Port: ${{ secrets.MAILTRAP__PORT }}
+  Mailtrap__Username: ${{ secrets.MAILTRAP__USERNAME }}
+  Mailtrap__Password: ${{ secrets.MAILTRAP__PASSWORD }}
+  RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
+  RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
+  RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
+  IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
+  AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
+  AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
+  AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
+  AppHosts__GuestApp: ${{ vars.APPHOSTS__GUESTAPP }}
+  AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
+  JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
+  JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
+  JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
+  JwtSettings__ExpireTimeSpan: ${{ secrets.JWTSETTINGS__EXPIRETIMESPAN }}
+  JwtSettings__RefreshTokenExpireTimeSpan: ${{ secrets.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
+  JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
+  JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
+  DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
+  FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
+  Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
+  Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
+  Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
+
 jobs:
-  deploy:
+  quivi-migrator:
     runs-on: ubuntu-latest
     environment: Sandbox
-    env:
-      ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
-      ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
-      Mailtrap__FromAddress: ${{ secrets.MAILTRAP__FROMADDRESS }}
-      Mailtrap__FromName: ${{ secrets.MAILTRAP__FROMNAME }}
-      Mailtrap__Host: ${{ secrets.MAILTRAP__HOST }}
-      Mailtrap__Port: ${{ secrets.MAILTRAP__PORT }}
-      Mailtrap__Username: ${{ secrets.MAILTRAP__USERNAME }}
-      Mailtrap__Password: ${{ secrets.MAILTRAP__PASSWORD }}
-      RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
-      RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
-      RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
-      IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
-      AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
-      AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
-      AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
-      AppHosts__GuestApp: ${{ vars.APPHOSTS__GUESTAPP }}
-      AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
-      JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
-      JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
-      JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
-      JwtSettings__ExpireTimeSpan: ${{ secrets.JWTSETTINGS__EXPIRETIMESPAN }}
-      JwtSettings__RefreshTokenExpireTimeSpan: ${{ secrets.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
-      JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
-      JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
-      DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
-      FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
-      Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
-      Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
-      Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
-
     steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@main
-
-      - name: Create .github.env file
-        run: |
-          echo "ConnectionStrings__Quivi=$ConnectionStrings__Quivi" >> $GITHUB_WORKSPACE/.github.env
-          echo "ConnectionStrings__OAuth=$ConnectionStrings__OAuth" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "Mailtrap__FromAddress=$Mailtrap__FromAddress" >> $GITHUB_WORKSPACE/.github.env
-          echo "Mailtrap__FromName=$Mailtrap__FromName" >> $GITHUB_WORKSPACE/.github.env
-          echo "Mailtrap__Host=$Mailtrap__Host" >> $GITHUB_WORKSPACE/.github.env
-          echo "Mailtrap__Port=$Mailtrap__Port" >> $GITHUB_WORKSPACE/.github.env
-          echo "Mailtrap__Username=$Mailtrap__Username" >> $GITHUB_WORKSPACE/.github.env
-          echo "Mailtrap__Password=$Mailtrap__Password" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "RabbitMq__Hosts__0=$RabbitMq__Hosts__0" >> $GITHUB_WORKSPACE/.github.env
-          echo "RabbitMq__Username=$RabbitMq__Username" >> $GITHUB_WORKSPACE/.github.env
-          echo "RabbitMq__Password=$RabbitMq__Password" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "IdConverter__Salt=$IdConverter__Salt" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "AppHosts__OAuth=$AppHosts__OAuth" >> $GITHUB_WORKSPACE/.github.env
-          echo "AppHosts__Backoffice=$AppHosts__Backoffice" >> $GITHUB_WORKSPACE/.github.env
-          echo "AppHosts__BackofficeApi=$AppHosts__BackofficeApi" >> $GITHUB_WORKSPACE/.github.env
-          echo "AppHosts__GuestApp=$AppHosts__GuestApp" >> $GITHUB_WORKSPACE/.github.env
-          echo "AppHosts__Pos=$AppHosts__Pos" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "JwtSettings__Issuer=$JwtSettings__Issuer" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__Audiences__0=$JwtSettings__Audiences__0" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__Secret=$JwtSettings__Secret" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__ExpireTimeSpan=$JwtSettings__ExpireTimeSpan" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__RefreshTokenExpireTimeSpan=$JwtSettings__RefreshTokenExpireTimeSpan" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__Certificate__Base64=$JwtSettings__Certificate__Base64" >> $GITHUB_WORKSPACE/.github.env
-          echo "JwtSettings__Certificate__Password=$JwtSettings__Certificate__Password" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "DefaultSettings__DefaultMerchantLogo=$DefaultSettings__DefaultMerchantLogo" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "FileSystemStorage__Path=$FileSystemStorage__Path" >> $GITHUB_WORKSPACE/.github.env
-
-          echo "Facturalusa__Host=$Facturalusa__Host" >> $GITHUB_WORKSPACE/.github.env
-          echo "Facturalusa__AccessToken=$Facturalusa__AccessToken" >> $GITHUB_WORKSPACE/.github.env
-          echo "Facturalusa__CommunicateSeries=$Facturalusa__CommunicateSeries" >> $GITHUB_WORKSPACE/.github.env
-
       - name: Log in to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
 
+      - name: Create Environment file
+        run: |
+          printenv | grep '__' > github.env
+        
+      - name: Run Quivi.Migrator
+        run: |
+          docker run --env-file github.env --rm ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:${{ env.IMAGE_TAG }}
+
+  quivi-oauth:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
+      Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
       - name: Log in to ACR
         run: az acr login --name $ACR_NAME
 
       - name: Load .env to single line separated variable
         id: load-env
         run: |
-          env_vars=$(while IFS= read -r line; do
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
             # Skip empty lines and comments
             [[ -z "$line" || "$line" == \#* ]] && continue
             key="${line%%=*}"
@@ -111,12 +92,8 @@ jobs:
             # Escape inner quotes in value
             value_escaped="${value//\"/\\\"}"
             printf '%s="%s" ' "$key" "$value_escaped"
-          done < "$GITHUB_WORKSPACE/.github.env" | sed 's/ *$//')
+          done | sed 's/ *$//')
           echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
-
-      - name: Run Quivi.Migrator
-        run: |
-          docker run --env-file $GITHUB_WORKSPACE/.github.env --rm ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:${{ env.IMAGE_TAG }}
 
       - name: Deploy Quivi.OAuth2
         uses: azure/container-apps-deploy-action@v2
@@ -129,8 +106,39 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:${{ env.IMAGE_TAG }}
           containerAppName: sbx-oauth
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }} Cors__AllowedOrigins__0="${{ env.AppHosts__Backoffice }}" Cors__AllowedOrigins__1="${{ env.AppHosts__Pos }}"
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
+
+  quivi-backoffice-api:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
+      JwtSettings__Audiences__0: backoffice
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
 
       - name: Deploy Quivi.Backoffice.Api
         uses: azure/container-apps-deploy-action@v2
@@ -143,8 +151,36 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:${{ env.IMAGE_TAG }}
           containerAppName: sbx-backoffice-api
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }} Cors__AllowedOrigins__0="${{ env.AppHosts__Backoffice }}" JwtSettings__Audiences__0=backoffice
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
+
+  quivi-hangfire:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
 
       - name: Deploy Quivi.Hangfire
         uses: azure/container-apps-deploy-action@v2
@@ -160,6 +196,39 @@ jobs:
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
 
+  quivi-signalr:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
+      Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
+      JwtSettings__Audiences__0: backoffice
+      JwtSettings__Audiences__1: pos
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Quivi.SignalR
         uses: azure/container-apps-deploy-action@v2
         with:
@@ -171,8 +240,39 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:${{ env.IMAGE_TAG }}
           containerAppName: sbx-events
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }} Cors__AllowedOrigins__0="${{ env.AppHosts__Backoffice }}" Cors__AllowedOrigins__1="${{ env.AppHosts__Pos }}" JwtSettings__Audiences__0=backoffice JwtSettings__Audiences__1=pos
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
+
+  quivi-pos-api:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__POS }}
+      JwtSettings__Audiences__0: pos
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
 
       - name: Deploy Quivi.Pos.Api
         uses: azure/container-apps-deploy-action@v2
@@ -185,9 +285,37 @@ jobs:
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:${{ env.IMAGE_TAG }}
           containerAppName: sbx-pos-api
           ingress: external
-          environmentVariables: ${{ steps.load-env.outputs.env_vars }} Cors__AllowedOrigins__0="${{ env.AppHosts__Pos }}" JwtSettings__Audiences__0=pos
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
           runtimeStack: 'dotnetcore:8.0'
+
+  quivi-backoffice-app:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
 
       - name: Deploy quivi.backoffice.react.webapp
         uses: azure/container-apps-deploy-action@v2
@@ -203,6 +331,34 @@ jobs:
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3010
 
+  quivi-pos-app:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
+
       - name: Deploy quivi.pos.react.app
         uses: azure/container-apps-deploy-action@v2
         with:
@@ -216,6 +372,23 @@ jobs:
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3011
+
+  disable-container-cors:
+    needs:
+      - quivi-migrator
+      - quivi-oauth
+      - quivi-backoffice-api
+      - quivi-hangfire
+      - quivi-signalr
+      - quivi-pos-api
+      - quivi-backoffice-app
+      - quivi-pos-app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Disable Azure platform CORS for all container apps
         run: |
