@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 env:
   ACR_NAME: quiviregistry
   RESOURCE_GROUP: quivi-resourcegroup
@@ -29,33 +32,33 @@ jobs:
 
       - name: Build Quivi.Migrator
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:latest -f Quivi.Migrator/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:$IMAGE_TAG -f Quivi.Migrator/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:$IMAGE_TAG
 
       - name: Build Quivi.OAuth2
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:latest -f Quivi.OAuth2/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:$IMAGE_TAG -f Quivi.OAuth2/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:$IMAGE_TAG
 
       - name: Build Quivi.Backoffice.Api
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:latest -f Quivi.Backoffice.Api/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:$IMAGE_TAG -f Quivi.Backoffice.Api/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:$IMAGE_TAG
 
       - name: Build Quivi.Hangfire
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:latest -f Quivi.Hangfire/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:$IMAGE_TAG -f Quivi.Hangfire/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:$IMAGE_TAG
 
       - name: Build Quivi.SignalR
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:latest -f Quivi.SignalR/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:$IMAGE_TAG -f Quivi.SignalR/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:$IMAGE_TAG
 
       - name: Build Quivi.Pos.Api
         run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:latest -f Quivi.Pos.Api/Dockerfile .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:latest
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG -f Quivi.Pos.Api/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG
 
       - name: Build quivi.backoffice.react.webapp
         run: |
@@ -64,8 +67,8 @@ jobs:
           --build-arg API_URL=${{ vars.APPHOSTS__BACKOFFICEAPI }} \
           --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
           --build-arg POS_URL=${{ vars.APPHOSTS__POS }} \
-          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest -f quivi.backoffice.react.webapp/Dockerfile quivi.backoffice.react.webapp
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:latest
+          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:$IMAGE_TAG -f quivi.backoffice.react.webapp/Dockerfile quivi.backoffice.react.webapp
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:$IMAGE_TAG
 
       - name: Build quivi.pos.react.app
         run: |
@@ -74,15 +77,34 @@ jobs:
           --build-arg API_URL=${{ vars.APPHOSTS__POSAPI }} \
           --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
           --build-arg BACKOFFICE_URL=${{ vars.APPHOSTS__BACKOFFICE }} \
-          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:latest
-          
-      - name: Trigger Deploy Workflow
+          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG
+
+      - name: Tag commit
         run: |
-          curl -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository }}/dispatches \
-            -d '{"event_type":"deploy_after_build","client_payload":{"unit":false,"integration":true}}'
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          # Fetch tags from remote
+          git fetch --tags
+
+          DATE=$(date +'%Y%m%d')
+
+          # Find existing tags matching today’s date, extract the number suffix, sort and get the max
+          LAST_NUMBER=$(git tag -l "build-$DATE.*" | sed -E "s/build-$DATE\.([0-9]{3})/\1/" | sort -nr | head -n1)
+
+          if [ -z "$LAST_NUMBER" ]; then
+            NEXT_NUMBER=1
+          else
+            NEXT_NUMBER=$((10#$LAST_NUMBER + 1))
+          fi
+
+          # Pad number with leading zeros to 3 digits
+          NEXT_NUMBER_PADDED=$(printf "%03d" $NEXT_NUMBER)
+
+          TAG_NAME="v-$DATE.$NEXT_NUMBER_PADDED-${GITHUB_SHA::7}"
+
+          echo "Tag to create: $TAG_NAME"
+
+          git tag "$TAG_NAME"
+          git push origin "$TAG_NAME"
