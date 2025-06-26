@@ -40,7 +40,10 @@ env:
   JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
   JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
   DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
+  Storage__Provider: ${{ secrets.STORAGE__PROVIDER }}
   FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
+  AzureBlobStorage__ConnectionString: ${{ secrets.AZUREBLOBSTORAGE__CONNECTIONSTRING }}
+  AzureBlobStorage__VirtualDirectory: ${{ secrets.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
   Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
   Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
   Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}

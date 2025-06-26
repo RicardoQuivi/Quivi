@@ -27,7 +27,7 @@
         /// <summary>
         /// Returns a file that was previously stored on the server
         /// </summary>
-        Task<Stream> GetFileAsync(string fileNameAndExtention);
+        Task<Stream> GetFileAsync(string file);
 
         Task<IEnumerable<string>> GetFileUrls(params string[] folderHierarchy);
     }

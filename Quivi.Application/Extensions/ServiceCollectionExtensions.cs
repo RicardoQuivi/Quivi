@@ -40,6 +40,7 @@ using Quivi.Infrastructure.Pos.Facturalusa.Configurations;
 using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
 using Quivi.Infrastructure.Storage;
+using Quivi.Infrastructure.Storage.Azure;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -164,9 +165,25 @@ namespace Quivi.Application.Extensions
 
             //Register All IFileStorage
             serviceCollection.RegisterSingleton<FileSystemStorage>();
+            serviceCollection.RegisterSingleton((p) =>
+            {
+                var config = configuration.GetSection("AzureBlobStorage").Get<AzureBlobStorageSettings>()!;
+                return new AzureBlobStorage
+                {
+                    ConnectionString = config.ConnectionString,
+                    VirtualDirectory = config.VirtualDirectory,
+                };
+            });
 
             //Register Default Storage
-            serviceCollection.RegisterSingleton<IFileStorage>(p => p.GetService<FileSystemStorage>()!);
+            serviceCollection.RegisterSingleton<IFileStorage>(p =>
+            {
+                var settings = configuration.GetSection("Storage").Get<StorageSettings>();
+                if (settings?.Provider?.Equals("Azure", StringComparison.OrdinalIgnoreCase) == true)
+                    return p.GetService<AzureBlobStorage>()!;
+
+                return p.GetService<FileSystemStorage>()!;
+            });
 
             //Register Collection
             serviceCollection.RegisterSingleton<IEnumerable<IFileStorage>>(p => [

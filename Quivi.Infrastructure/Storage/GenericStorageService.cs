@@ -18,7 +18,8 @@ namespace Quivi.Infrastructure.Storage
             this.imageProcessor = imageProcessor;
         }
 
-        public Task<Stream> GetFileAsync(string fileNameAndExtention) => fileStorages.First(s => s.IsMine(fileNameAndExtention) == true).GetFileAsync(fileNameAndExtention);
+        public Task<Stream> GetFileAsync(string file) => fileStorages.First(s => s.IsMine(file) == true).GetFileAsync(file);
+        
         public async Task<Stream> GetFile(string name, params string[] folderHierarchy)
         {
             try

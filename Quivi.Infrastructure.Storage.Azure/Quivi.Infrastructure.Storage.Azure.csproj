@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.24.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions\Quivi.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure\Quivi.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

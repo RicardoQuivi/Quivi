@@ -50,11 +50,11 @@ namespace Quivi.Infrastructure.Storage
             return Task.FromResult(host.CombineUrl(url));
         }
 
-        public Task<Stream> GetFileAsync(string fileNameAndExtention)
+        public Task<Stream> GetFileAsync(string file)
         {
-            if (IsMine(fileNameAndExtention) == false)
-                throw new ArgumentException($"{fileNameAndExtention} is not a valid path");
-            var fullPath = Path.Combine(storageDirectory.Value, fileNameAndExtention);
+            if (IsMine(file) == false)
+                throw new ArgumentException($"{file} is not a valid path");
+            var fullPath = Path.Combine(storageDirectory.Value, file);
             if (File.Exists(fullPath))
                 return Task.FromResult(File.OpenRead(fullPath) as Stream);
 
