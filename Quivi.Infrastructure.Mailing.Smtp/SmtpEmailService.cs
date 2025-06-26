@@ -5,26 +5,26 @@ namespace Quivi.Infrastructure.Mailing.Smtp
 {
     public class SmtpEmailService : Abstractions.Services.Mailing.IEmailService
     {
-        private readonly ISmtpSettings settings;
-
-        public SmtpEmailService(ISmtpSettings settings)
-        {
-            this.settings = settings;
-        }
+        public required string FromAddress { get; init; }
+        public required string FromName { get; init; }
+        public required string Host { get; init; }
+        public required int Port { get; init; }
+        public required string Username { get; init; }
+        public required string Password { get; init; }
 
         public Task SendAsync(Abstractions.Services.Mailing.MailMessage message) => SendAsync(message, Enumerable.Empty<Abstractions.Services.Mailing.MailAttachment>());
 
         public Task SendAsync(Abstractions.Services.Mailing.MailMessage message, IEnumerable<Abstractions.Services.Mailing.MailAttachment> attachments)
         {
-            var smtpClient = new SmtpClient(settings.Host, settings.Port)
+            var smtpClient = new SmtpClient(this.Host, this.Port)
             {
-                Credentials = new NetworkCredential(settings.Username, settings.Password),
+                Credentials = new NetworkCredential(this.Username, this.Password),
                 EnableSsl = true,
             };
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(settings.FromAddress, settings.FromName),
+                From = new MailAddress(this.FromAddress, this.FromName),
                 Subject = message.Subject,
                 Body = message.Body,
                 IsBodyHtml = true,

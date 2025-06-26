@@ -31,6 +31,7 @@ using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
+using Quivi.Infrastructure.Mailing.SendGrid;
 using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
 using Quivi.Infrastructure.Pos.Facturalusa;
@@ -83,8 +84,33 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterMappersHandlers();
 
             serviceCollection.RegisterSingleton<IDefaultSettings>((p) => configuration.GetSection("DefaultSettings").Get<DefaultSettings>()!);
-            serviceCollection.RegisterSingleton<ISmtpSettings>((p) => configuration.GetSection("Smtp").Get<SmtpSettings>()!);
-            serviceCollection.RegisterScoped<IEmailService, SmtpEmailService>();
+            serviceCollection.RegisterSingleton((p) => configuration.GetSection("Smtp").Get<SmtpSettings>()!);
+            serviceCollection.RegisterSingleton((p) => configuration.GetSection("SendGrid").Get<SendGridSettings>()!);
+            serviceCollection.RegisterScoped<IEmailService>(p =>
+            {
+                var settings = configuration.GetSection("Mailing").Get<MailingSettings>()!;
+                if(settings.Provider.Equals("SendGrid", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sendgridSettings = p.GetService<SendGridSettings>()!;
+                    return new SendGridEmailService
+                    {
+                        ApiKey = sendgridSettings.ApiKey,
+                        FromAddress = settings.FromAddress,
+                        FromName = settings.FromName,
+                    };
+                }
+
+                var smtpSettings = p.GetService<SmtpSettings>()!;
+                return new SmtpEmailService
+                {
+                    FromAddress = settings.FromAddress,
+                    FromName = settings.FromName,
+                    Host = smtpSettings.Host,
+                    Port = smtpSettings.Port,
+                    Username = smtpSettings.Username,
+                    Password = smtpSettings.Password,
+                };
+            });
             serviceCollection.RegisterSingleton<IHasher, Hasher>();
             serviceCollection.RegisterSingleton<IIdConverter>((p) =>
             {

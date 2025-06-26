@@ -15,8 +15,10 @@ env:
 
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
   ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
-  Smtp__FromAddress: ${{ secrets.SMTP__FROMADDRESS }}
-  Smtp__FromName: ${{ secrets.SMTP__FROMNAME }}
+  Mailing__Provider: ${{ vars.MAILING__PROVIDER }}
+  Mailing__FromAddress: ${{ vars.MAILING__FROMADDRESS }}
+  Mailing__FromName: ${{ vars.MAILING__FROMNAME }}
+  SendGrid__ApiKey: ${{ secrets.SENDGRID_APIKEY }}
   Smtp__Host: ${{ secrets.SMTP__HOST }}
   Smtp__Port: ${{ secrets.SMTP__PORT }}
   Smtp__Username: ${{ secrets.SMTP__USERNAME }}
