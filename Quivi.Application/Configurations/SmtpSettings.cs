@@ -1,8 +1,8 @@
-﻿using Quivi.Infrastructure.Mailing.Mailtrap;
+﻿using Quivi.Infrastructure.Mailing.Smtp;
 
 namespace Quivi.Application.Configurations
 {
-    public class MailtrapSettings : IMailtrapSettings
+    public class SmtpSettings : ISmtpSettings
     {
         public required string FromAddress { get; init; }
         public required string FromName { get; init; }

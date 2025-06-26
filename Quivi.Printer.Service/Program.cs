@@ -1,7 +1,6 @@
 using MassTransit;
 using Quivi.Printer.Service.Configurations;
 using Quivi.Printer.Service.Consumers;
-using System.Net.NetworkInformation;
 
 namespace Quivi.Printer.Service
 {
@@ -13,7 +12,7 @@ namespace Quivi.Printer.Service
 
             var config = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>()!;
 
-            string id = GetMacAddress();
+            string id = DeviceIdManager.GetOrCreateDeviceId();
             builder.Services.AddMassTransit(configurator =>
             {
                 configurator.AddConsumer<PrintMessageConsumer>();
@@ -41,15 +40,6 @@ namespace Quivi.Printer.Service
 
             var host = builder.Build();
             host.Run();
-        }
-
-        public static string GetMacAddress()
-        {
-            return NetworkInterface.GetAllNetworkInterfaces()
-                                    .Where(nic => nic.OperationalStatus == OperationalStatus.Up &&
-                                                  nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                                    .Select(nic => nic.GetPhysicalAddress().ToString())
-                                    .FirstOrDefault() ?? "UNKNOWN";
         }
     }
 }

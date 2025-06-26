@@ -59,8 +59,8 @@ export const PrinterWorkerForm = (props: Props) => {
                 <TextField
                     label={t("common.identifier")}
                     type="text"
-                    value={state.name}
-                    onChange={(e) => setState(s => ({ ...s, name: e }))}
+                    value={state.identifier}
+                    onChange={(e) => setState(s => ({ ...s, identifier: e }))}
                     errorMessage={form.touchedErrors.get("identifier")?.message}
                 />
                 <TextField

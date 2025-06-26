@@ -1,6 +1,6 @@
-﻿namespace Quivi.Infrastructure.Mailing.Mailtrap
+﻿namespace Quivi.Infrastructure.Mailing.Smtp
 {
-    public interface IMailtrapSettings
+    public interface ISmtpSettings
     {
         string FromAddress { get; }
         string FromName { get; }

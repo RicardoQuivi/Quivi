@@ -15,12 +15,12 @@ env:
 
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
   ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
-  Mailtrap__FromAddress: ${{ secrets.MAILTRAP__FROMADDRESS }}
-  Mailtrap__FromName: ${{ secrets.MAILTRAP__FROMNAME }}
-  Mailtrap__Host: ${{ secrets.MAILTRAP__HOST }}
-  Mailtrap__Port: ${{ secrets.MAILTRAP__PORT }}
-  Mailtrap__Username: ${{ secrets.MAILTRAP__USERNAME }}
-  Mailtrap__Password: ${{ secrets.MAILTRAP__PASSWORD }}
+  Smtp__FromAddress: ${{ secrets.SMTP__FROMADDRESS }}
+  Smtp__FromName: ${{ secrets.SMTP__FROMNAME }}
+  Smtp__Host: ${{ secrets.SMTP__HOST }}
+  Smtp__Port: ${{ secrets.SMTP__PORT }}
+  Smtp__Username: ${{ secrets.SMTP__USERNAME }}
+  Smtp__Password: ${{ secrets.SMTP__PASSWORD }}
   RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
   RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
   RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}

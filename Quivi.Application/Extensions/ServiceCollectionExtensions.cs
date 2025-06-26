@@ -31,7 +31,7 @@ using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
-using Quivi.Infrastructure.Mailing.Mailtrap;
+using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
 using Quivi.Infrastructure.Pos.Facturalusa;
 using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
@@ -83,8 +83,8 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterMappersHandlers();
 
             serviceCollection.RegisterSingleton<IDefaultSettings>((p) => configuration.GetSection("DefaultSettings").Get<DefaultSettings>()!);
-            serviceCollection.RegisterSingleton<IMailtrapSettings>((p) => configuration.GetSection("Mailtrap").Get<MailtrapSettings>()!);
-            serviceCollection.RegisterScoped<IEmailService, MailtrapEmailService>();
+            serviceCollection.RegisterSingleton<ISmtpSettings>((p) => configuration.GetSection("Smtp").Get<SmtpSettings>()!);
+            serviceCollection.RegisterScoped<IEmailService, SmtpEmailService>();
             serviceCollection.RegisterSingleton<IHasher, Hasher>();
             serviceCollection.RegisterSingleton<IIdConverter>((p) =>
             {
