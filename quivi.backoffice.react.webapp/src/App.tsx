@@ -29,6 +29,7 @@ import { CustomChargeMethodsPage } from "./pages/Settings/CustomChargeMethods/Cu
 import { CustomChargeMethodFormPage } from "./pages/Settings/CustomChargeMethods/CustomChargeMethodFormPage";
 import { PrinterPage } from "./pages/Settings/Printers/PrintersPage";
 import { PrinterWorkerFormPage } from "./pages/Settings/Printers/PrinterWorkers/PrinterWorkerFormPage";
+import { PrinterFormPage } from "./pages/Settings/Printers/Printers/PrinterFormPage";
 
 export const App = () => {
     return <>
@@ -85,10 +86,12 @@ export const App = () => {
                     <Route path="/settings/employees/:id/edit" element={<EmployeeFormPage />} />
 
                     {/* Printers */}
-                    <Route path="/settings/printers" element={<PrinterPage />} />
-                    <Route path="/settings/printers/workers/:workerId" element={<PrinterPage />} />
-                    <Route path="/settings/printers/workers/add" element={<PrinterWorkerFormPage />} />
-                    <Route path="/settings/printers/workers/:id/edit" element={<PrinterWorkerFormPage />} />
+                    <Route path="/settings/printersmanagement" element={<PrinterPage />} />
+                    <Route path="/settings/printersmanagement/workers/:workerId" element={<PrinterPage />} />
+                    <Route path="/settings/printersmanagement/workers/add" element={<PrinterWorkerFormPage />} />
+                    <Route path="/settings/printersmanagement/workers/:id/edit" element={<PrinterWorkerFormPage />} />
+                    <Route path="/settings/printersmanagement/printers/add" element={<PrinterFormPage />} />
+                    <Route path="/settings/printersmanagement/printers/:id/edit" element={<PrinterFormPage />} />
 
                     {/* Terms And Conditions */}
                     <Route path="/termsAndConditions" element={<TermsAndConditionsPage />} />

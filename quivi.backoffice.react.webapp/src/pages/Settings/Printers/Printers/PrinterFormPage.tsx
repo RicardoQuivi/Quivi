@@ -1,50 +1,59 @@
 import { useTranslation } from "react-i18next";
-import ComponentCard from "../../../../components/common/ComponentCard"
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { useMemo } from "react";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
-import { useMemo } from "react";
-import { PrinterWorkerForm, PrinterWorkerFormState } from "./PrinterWorkerForm";
+import ComponentCard from "../../../../components/common/ComponentCard";
+import { PrinterForm, PrinterFormState } from "./PrinterForm";
 import { useToast } from "../../../../layout/ToastProvider";
-import { usePrinterWorkerMutator } from "../../../../hooks/mutators/usePrinterWorkerMutator";
-import { usePrinterWorkersQuery } from "../../../../hooks/queries/implementations/usePrinterWorkersQuery";
+import { usePrinterMutator } from "../../../../hooks/mutators/usePrinterMutator";
+import { usePrintersQuery } from "../../../../hooks/queries/implementations/usePrintersQuery";
 
-export const PrinterWorkerFormPage = () => {
+export const PrinterFormPage = () => {
     const { id } = useParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const toast = useToast();
-    const mutator = usePrinterWorkerMutator();
+    const mutator = usePrinterMutator();
+    const { search } = useLocation();
+    const params = new URLSearchParams(search);
 
     const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
-        name: t("common.entities.printerWorker")
+        name: t("common.entities.printer")
     });
 
-    const workersQuery = usePrinterWorkersQuery(id == undefined ? undefined : {
+    const itemsQuery = usePrintersQuery(id == undefined ? undefined : {
         ids: [ id ],
         page: 0,
     })
 
-    const worker = useMemo(() => {
+    const item = useMemo(() => {
         if(id == undefined) {
             return undefined;
         }
-        if(workersQuery.data.length == 0) {
+        if(itemsQuery.data.length == 0) {
             return undefined;
         }
-        return workersQuery.data[0];
-    }, [id, workersQuery.data])
+        return itemsQuery.data[0];
+    }, [id, itemsQuery.data])
 
-    const submit = async (state: PrinterWorkerFormState) => {
-        if(worker == undefined) {
+    const submit = async (state: PrinterFormState) => {
+        if(item == undefined) {
             await mutator.create({
-                identifier: state.identifier,
                 name: state.name,
+                address: state.address,
+                printerWorkerId: state.printerWorkerId,
+                locationId: state.locationId,
+                notifications: state.notifications,
             })
             toast.success(t("common.operations.success.new"));
         } else {
-            await mutator.patch(worker, {
+            await mutator.patch(item, {
                 name: state.name,
+                address: state.address,
+                printerWorkerId: state.printerWorkerId,
+                locationId: state.locationId,
+                notifications: state.notifications,
             })
             toast.success(t("common.operations.success.edit"));
         }
@@ -68,10 +77,11 @@ export const PrinterWorkerFormPage = () => {
         />
 
         <ComponentCard title={title}>
-            <PrinterWorkerForm
-                model={worker}
+            <PrinterForm
+                model={item}
                 onSubmit={submit}
                 submitText={title}
+                printerWorkerId={params.get("printerWorkerId") ?? undefined}
             />
         </ComponentCard>
     </>

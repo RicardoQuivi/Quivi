@@ -10,6 +10,7 @@ export enum Entity {
     ModifierGroups,
     CustomChargeMethods,
     PrinterWorkers,
+    Printers,
 }
 
 export const getEntityType = (entity: Entity): string => {
@@ -25,5 +26,6 @@ export const getEntityType = (entity: Entity): string => {
         case Entity.ModifierGroups: return "ModifierGroups";
         case Entity.CustomChargeMethods: return "CustomChargeMethods";
         case Entity.PrinterWorkers: return "PrinterWorkers";
+        case Entity.Printers: return "Printers";
     }
 }

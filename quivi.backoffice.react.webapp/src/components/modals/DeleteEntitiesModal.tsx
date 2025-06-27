@@ -33,6 +33,7 @@ export const DeleteEntitiesModal = <T,>(props: Props<T>) => {
             case Entity.ModifierGroups: return t("common.entities.modifierGroups");
             case Entity.CustomChargeMethods: return t("common.entities.customChargeMethods");
             case Entity.PrinterWorkers: return t("common.entities.printerWorkers");
+            case Entity.Printers: return t("common.entities.printers");
         }
     }
 

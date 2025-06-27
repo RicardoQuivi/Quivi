@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import PageMeta from "../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../components/common/ComponentCard";
-import { LocalForm, EmployeeFormState } from "./EmployeeForm";
+import { EmployeeForm, EmployeeFormState } from "./EmployeeForm";
 import { useEmployeeMutator } from "../../../hooks/mutators/useEmployeeMutator";
 import { useEmployeesQuery } from "../../../hooks/queries/implementations/useEmployeesQuery";
 
@@ -71,7 +71,7 @@ export const EmployeeFormPage = () => {
         />
 
         <ComponentCard title={title}>
-            <LocalForm
+            <EmployeeForm
                 model={employee}
                 onSubmit={submit}
                 submitText={title}

@@ -33,7 +33,7 @@ export const PrinterWorkersCard = (props: PrinterWorkersCardProps) => {
                 size="md"
                 variant="primary"
                 startIcon={<PlusIcon />}
-                onClick={() => navigate("/settings/printers/workers/add")}
+                onClick={() => navigate("/settings/printersmanagement/workers/add")}
                 className="mt-4 w-full"
             >
                 {
@@ -87,10 +87,15 @@ export const PrinterWorkersCard = (props: PrinterWorkersCardProps) => {
                             :
                             printerWorkersQuery.data.map(item => 
                                 <button
-                                    className={`w-full inline-flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 ease-in-out sm:p-3 text-brand-500 dark:bg-brand-400/20 dark:text-brand-400 bg-brand-50`}
+                                    key={item.id}
+                                    className={`inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ease-in-out sm:p-3 ${
+                                        props.printerWorkerId === item.id
+                                        ? "text-brand-500 dark:bg-brand-400/20 dark:text-brand-400 bg-brand-50"
+                                        : "bg-transparent text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                    }`}
                                     onClick={() => props.onPrinterWorkerChanged(item.id)}
                                 >
-                                    <div className="grid grid-cols-[auto_1fr_auto_auto] gap-2 w-full">
+                                    <div className="grid grid-cols-[1fr_auto_auto] gap-2 w-full">
                                         <div className="text-start flex items-center">
                                             {item.name}
                                         </div>
@@ -98,7 +103,7 @@ export const PrinterWorkersCard = (props: PrinterWorkersCardProps) => {
                                             className={`flex items-center justify-center text-gray-500 transition-colors border border-gray-200 rounded-lg max-w-10 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                navigate(`/settings/printers/workers/${item.id}/edit`)
+                                                navigate(`/settings/printersmanagement/workers/${item.id}/edit`)
                                             }}
                                         >
                                             <PencilIcon className="size-5 m-1" />

@@ -84,7 +84,7 @@ interface Props {
     readonly onSubmit: (state: EmployeeFormState) => Promise<any>;
     readonly submitText: string;
 }
-export const LocalForm = (props: Props) => {
+export const EmployeeForm = (props: Props) => {
     const { t } = useTranslation();
     const toast = useToast();
     const [state, setState] = useState(() => ({

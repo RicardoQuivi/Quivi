@@ -15,6 +15,11 @@ export const usePrinterWorkersApi = (token?: string) => {
     const state = useMemo(() => ({
         get: (request: GetPrinterWorkersRequest) => {
             const queryParams = new URLSearchParams();
+            queryParams.set("page", request.page.toString());
+            if(request.pageSize != undefined) {
+                queryParams.set("pageSize", request.pageSize.toString());
+            }
+            
             request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
             let url = `${import.meta.env.VITE_API_URL}api/printerworkers?${queryParams}`;

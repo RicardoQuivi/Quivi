@@ -75,7 +75,10 @@
             "customChargeMethods": "Payment methods",
 
             "printerWorker": "Printer service",
-            "printerWorkers": "Printer services"
+            "printerWorkers": "Printer services",
+
+            "printer": "Printer",
+            "printers": "Printers"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -191,6 +194,39 @@
             "TransferingItems": "If employee can transfer items",
             "SessionsAccess": "If employee can access sessions",
             "Refunds": "If employee can perform refunds"
+        },
+        "hardwareAddress": "Address",
+        "notificationTypes": {
+            "FailedCharge": "App payment failed",
+            "ExpiredCharge": "App payment expired",
+            "PosOffline": "PoS offline",
+            "PosSyncFailure": "Synchronization with PoS failure",
+            "PosPaymentSyncFailure": "Payment synchronization with PoS failure",
+            "CompletedCharge": "Payment via App received",
+            "NewOrder": "New app Order",
+            "NewReview": "New review",
+            "NewConsumerBill": "Consumer bill",
+            "NewConsumerInvoice": "Invoice",
+            "NewPreparationRequest": "Preparation request",
+            "ChargeSynced": "Payment synchronized",
+            "OpenCashDrawer": "Open cash drawer",
+            "EndOfDayClosing": "End of day closing"
+        },
+        "notificationTypeDescriptions": {
+            "FailedCharge": "Printed when a client fails an app payment",
+            "ExpiredCharge": "Printed when a client starts payment via app but it expires",
+            "PosOffline": "Printed when connection to the PoS is offilne",
+            "PosSyncFailure": "Printed when syncing failure with PoS occurs",
+            "PosPaymentSyncFailure": "Printed when a payment synchronization with PoS fails",
+            "CompletedCharge": "Printed when an app payment was received",
+            "NewOrder": "Printed when a client performs and order via app",
+            "NewReview": "Printed when a client leaves a review via app",
+            "NewConsumerBill": "Printed when requesting a consumer bill",
+            "NewConsumerInvoice": "Printed when requesting an invoice",
+            "NewPreparationRequest": "Printed when a requesting the preparation of items",
+            "ChargeSynced": "Printed when a paymend with PoS was synced",
+            "OpenCashDrawer": "Opens the cash drawer",
+            "EndOfDayClosing": "Printed when requesting an end of day closing"
         }
     },
     "imageEditor": {
@@ -389,7 +425,11 @@
         },
         "printers": {
             "title": "Printers",
-            "all": "All"
+            "all": "All",
+            "notifications": "Printing documents",
+            "notificationsDescription": "Configure the documents the printer will handle.",
+            "locationDescription": "Configure the location of this printer. This printer will only print requests or items assigned to the selected location.",
+            "printerWorkerDescription": "Configure the printer service responsible to communicate with the printer. The printer service needs to either be connected via USB to the printer or connected to the same network as the printer."
         }
     }
 }

@@ -26,22 +26,17 @@
         /// <summary>
         /// PoS is Offline.
         /// </summary>
-        PoSOffline = 1 << 3,
+        PosOffline = 1 << 3,
 
         /// <summary>
         /// PoS synchronization failure.
         /// </summary>
-        PoSSyncFailure = 1 << 4,
+        PosSyncFailure = 1 << 4,
 
         /// <summary>
         /// PoS payment synchronization failure.
         /// </summary>
-        PoSPaymentSyncFailure = 1 << 5,
-
-        /// <summary>
-        /// PoS payment synchronization failed but is retrying.
-        /// </summary>
-        PoSPaymentSyncRetrying = 1 << 6,
+        PosPaymentSyncFailure = 1 << 5,
 
         /// <summary>
         /// Payment arrived.
@@ -71,7 +66,7 @@
         /// <summary>
         /// New order sent to kitchen
         /// </summary>
-        NewKitchenRequest = 1 << 12,
+        NewPreparationRequest = 1 << 12,
 
         /// <summary>
         /// Charge synced with POS

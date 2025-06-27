@@ -131,7 +131,7 @@ const items: NavItem[] = [
             },
             { 
                 name: "sidebar.settings.printers",
-                path: "/settings/printers",
+                path: "/settings/printersmanagement",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
         ],

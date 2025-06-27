@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import PageMeta from "../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import { PrinterWorkersCard } from "./PrinterWorkers/PrinterWorkersCard";
+import { PrintersCard } from "./Printers/PrintersCard";
 
 export const PrinterPage = () => {
     const { t } = useTranslation();
@@ -11,10 +12,10 @@ export const PrinterPage = () => {
    
     const changeWorker = (c: string | undefined) => {
         if(c == undefined) {
-            navigate(`/settings/printers`);
+            navigate(`/settings/printersmanagement`);
             return;
         }
-        navigate(`/settings/printers/worker/${c}/`)
+        navigate(`/settings/printersmanagement/workers/${c}/`)
     }
 
     return <>
@@ -36,9 +37,9 @@ export const PrinterPage = () => {
             </div>
 
             <div className="col-span-12 lg:col-span-8 h-full">
-                {/* <MenuItemsCard
-                    categoryId={selectedCategory}
-                /> */}
+                <PrintersCard
+                    printerWorkerId={workerId}
+                />
             </div>
         </div>
     </>

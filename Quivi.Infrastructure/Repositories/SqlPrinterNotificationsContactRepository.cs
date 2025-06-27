@@ -25,6 +25,12 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.BaseNotificationsContact!.MerchantId));
 
+            if (criteria.PrinterWorkerIds != null)
+                query = query.Where(q => criteria.PrinterWorkerIds.Contains(q.PrinterWorkerId));
+
+            if(criteria.IsDeleted.HasValue)
+                query = query.Where(q => q.DeletedDate.HasValue == criteria.IsDeleted.Value);
+
             return query.OrderBy(q => q.CreatedDate);
         }
     }

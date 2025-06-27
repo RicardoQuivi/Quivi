@@ -31,8 +31,9 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
             case Entity.Locals: return t("common.entities.local");
             case Entity.Employees: return t("common.entities.employee");
             case Entity.ModifierGroups: return t("common.entities.modifierGroup");
-            case Entity.CustomChargeMethods: return t("common.entities.customChargeMethods");
-            case Entity.PrinterWorkers: return t("common.entities.printerWorkers");
+            case Entity.CustomChargeMethods: return t("common.entities.customChargeMethod");
+            case Entity.PrinterWorkers: return t("common.entities.printerWorker");
+            case Entity.Printers: return t("common.entities.printer");
         }
     }
 

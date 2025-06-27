@@ -75,7 +75,10 @@
             "customChargeMethods": "Métodos de pagamento",
 
             "printerWorker": "Serviço de impressão",
-            "printerWorkers": "Serviços de impressão"
+            "printerWorkers": "Serviços de impressão",
+
+            "printer": "Impressora",
+            "printers": "Impressoras"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -191,6 +194,39 @@
             "TransferingItems": "Se o funcionário pode transferir consumos",
             "SessionsAccess": "Se o funcionário pode ver sessões",
             "Refunds": "Se o funcionário pode efetuar devoluções"
+        },
+        "hardwareAddress": "Endereço",
+        "notificationTypes": {
+            "FailedCharge": "Pagamento via app falhado",
+            "ExpiredCharge": "Pagamento via app expirado",
+            "PosOffline": "PoS desligado",
+            "PosSyncFailure": "Sincronismo com PoS falhado",
+            "PosPaymentSyncFailure": "Sincronismo de pagamento com Pos falhado",
+            "CompletedCharge": "Pagamento recebido via app",
+            "NewOrder": "Novo pedido via app",
+            "NewReview": "Nova avaliação",
+            "NewConsumerBill": "Consulta de mesa",
+            "NewConsumerInvoice": "Fatura",
+            "NewPreparationRequest": "Pedido de preparação",
+            "ChargeSynced": "Pagamento sincronizado",
+            "OpenCashDrawer": "Abertura de gaveta",
+            "EndOfDayClosing": "Fecho de caixa"
+        },
+        "notificationTypeDescriptions": {
+            "FailedCharge": "Impresso quando o cliente falha o pagamento via app",
+            "ExpiredCharge": "Impresso quando o cliente inicia mas não conclui o pagamento via app",
+            "PosOffline": "Impresso quando a ligação ao PoS se encontra desligada",
+            "PosSyncFailure": "Impresso quando há falhas na sincronização com o PoS",
+            "PosPaymentSyncFailure": "Impresso quando a sincronização de um pagamento com o PoS falha",
+            "CompletedCharge": "Impresso quando um pagamento via app é efetuado",
+            "NewOrder": "Impresso quando um cliente efetua um novo pedido via app",
+            "NewReview": "Impresso quando um cliente deixa uma avaliação via app",
+            "NewConsumerBill": "Impresso quando uma consulta de mesa é solicitada",
+            "NewConsumerInvoice": "Impresso quando uma fatura é solicitada",
+            "NewPreparationRequest": "Impresso quando é feito um pedido para preparar itens",
+            "ChargeSynced": "Impresso quando um pagamento é sincronizado com o PoS",
+            "OpenCashDrawer": "Abre a gaveta",
+            "EndOfDayClosing": "Impresso quando um fecho de dia é solicitado"
         }
     },
     "imageEditor": {
@@ -389,7 +425,11 @@
         },
         "printers": {
             "title": "Impressoras",
-            "all": "Todos"
+            "all": "Todos",
+            "notifications": "Documentos",
+            "notificationsDescription": "Configure os documentos que a impressora irá processar para impressão.",
+            "locationDescription": "Configure o local da impressora. A impressora apenas irá imprimir itens ou talões associados ao local designado.",
+            "printerWorkerDescription": "Configure o serviço de impressão responsável por comunicar com a impressora. O serviço de impressão terá de estar ligado à impressora via USB ou ligado à mesma rede que esta impressora."
         }
     }
 }

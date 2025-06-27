@@ -68,7 +68,8 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 MerchantId = User.SubMerchantId(idConverter)!.Value,
                 Name = request.Name,
-
+                InactivityLogoutTimeout = request.InactivityLogoutTimeout,
+                Restrictions = mapper.Map<IEnumerable<Dtos.EmployeeRestriction>, EmployeeRestrictions>(request.Restrictions),
                 OnInvalidName = () => validator.AddError(m => m.Name, ValidationError.InvalidValue),
                 OnNameAlreadyExists = () => validator.AddError(m => m.Name, ValidationError.Duplicate),
             });
