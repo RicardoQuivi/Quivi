@@ -33,6 +33,8 @@ namespace Quivi.Infrastructure.Repositories
         public IPreparationGroupItemsRepository PreparationGroupItems => new SqlPreparationGroupItemsRepository(quiviContext);
         public IPrinterNotificationsContactsRepository PrinterNotificationsContacts => new SqlPrinterNotificationsContactRepository(quiviContext);
         public IPrinterWorkersRepository PrinterWorkers => new SqlPrinterWorkersRepository(quiviContext);
+        public IPrinterNotificationMessagesRepository PrinterNotificationMessages => new SqlPrinterNotificationMessagesRepository(quiviContext);
+        public IPrinterMessageTargetsRepository PrinterMessageTargets => new SqlPrinterMessageTargetsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

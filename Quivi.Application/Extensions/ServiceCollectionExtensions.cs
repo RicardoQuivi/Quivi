@@ -20,6 +20,7 @@ using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Images;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Pos;
+using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Services;
@@ -34,6 +35,7 @@ using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
 using Quivi.Infrastructure.Mailing.SendGrid;
 using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
+using Quivi.Infrastructure.Pos.ESCPOS_NET;
 using Quivi.Infrastructure.Pos.Facturalusa;
 using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using Quivi.Infrastructure.Pos.Facturalusa.Configurations;
@@ -41,6 +43,7 @@ using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
 using Quivi.Infrastructure.Storage;
 using Quivi.Infrastructure.Storage.Azure;
+using Quivi.Printer.MassTransit.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -142,6 +145,10 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterPosSyncStrategies();
             serviceCollection.RegisterFacturalusa(configuration);
 
+            serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
+            serviceCollection.RegisterSingleton((p) => configuration.GetSection("PrinterConnector").Get<PrinterConnectorSettings>()!);
+            serviceCollection.ConfigurePrinterConnector<PrinterConnectorSettings>();
+
             return serviceCollection;
         }
 
@@ -187,6 +194,7 @@ namespace Quivi.Application.Extensions
 
             //Register Collection
             serviceCollection.RegisterSingleton<IEnumerable<IFileStorage>>(p => [
+                p.GetService<AzureBlobStorage>()!,
                 p.GetService<FileSystemStorage>()!,
             ]);
 

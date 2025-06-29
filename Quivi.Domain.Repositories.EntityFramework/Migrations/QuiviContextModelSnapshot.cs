@@ -1089,6 +1089,70 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.ToTable("NotificationsContacts");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterMessageTarget", b =>
+                {
+                    b.Property<int>("PrinterNotificationsContactId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PrinterNotificationMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FinishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("PrinterNotificationsContactId", "PrinterNotificationMessageId");
+
+                    b.HasIndex("PrinterNotificationMessageId");
+
+                    b.ToTable("PrinterMessageTarget");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("MessageType")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MerchantId");
+
+                    b.ToTable("PrinterNotificationMessage");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationsContact", b =>
                 {
                     b.Property<int>("NotificationsContactId")
@@ -3338,6 +3402,36 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("Merchant");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterMessageTarget", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Notifications.PrinterNotificationMessage", "PrinterNotificationMessage")
+                        .WithMany("PrinterMessageTargets")
+                        .HasForeignKey("PrinterNotificationMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Quivi.Domain.Entities.Notifications.PrinterNotificationsContact", "PrinterNotificationsContact")
+                        .WithMany("PrinterMessageTargets")
+                        .HasForeignKey("PrinterNotificationsContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PrinterNotificationMessage");
+
+                    b.Navigation("PrinterNotificationsContact");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationMessage", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Merchants.Merchant", "Merchant")
+                        .WithMany()
+                        .HasForeignKey("MerchantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Merchant");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationsContact", b =>
                 {
                     b.HasOne("Quivi.Domain.Entities.Pos.Location", "Location")
@@ -4189,6 +4283,16 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("PrinterContact");
 
                     b.Navigation("PushContact");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationMessage", b =>
+                {
+                    b.Navigation("PrinterMessageTargets");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PrinterNotificationsContact", b =>
+                {
+                    b.Navigation("PrinterMessageTargets");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Notifications.PushNotificationDevice", b =>

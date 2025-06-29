@@ -36,6 +36,8 @@ namespace Quivi.Infrastructure.Repositories
         public IPreparationGroupItemsRepository PreparationGroupItems => unitOfWork.PreparationGroupItems;
         public IPrinterNotificationsContactsRepository PrinterNotificationsContacts => unitOfWork.PrinterNotificationsContacts;
         public IPrinterWorkersRepository PrinterWorkers => unitOfWork.PrinterWorkers;
+        public IPrinterNotificationMessagesRepository PrinterNotificationMessages => unitOfWork.PrinterNotificationMessages;
+        public IPrinterMessageTargetsRepository PrinterMessageTargets => unitOfWork.PrinterMessageTargets;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

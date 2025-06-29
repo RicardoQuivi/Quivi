@@ -429,7 +429,10 @@
             "notifications": "Printing documents",
             "notificationsDescription": "Configure the documents the printer will handle.",
             "locationDescription": "Configure the location of this printer. This printer will only print requests or items assigned to the selected location.",
-            "printerWorkerDescription": "Configure the printer service responsible to communicate with the printer. The printer service needs to either be connected via USB to the printer or connected to the same network as the printer."
+            "printerWorkerDescription": "Configure the printer service responsible to communicate with the printer. The printer service needs to either be connected via USB to the printer or connected to the same network as the printer.",
+            "printerInfo": "Info and testing",
+            "pingPrinter": "Ping printer",
+            "printTest": "Ping test page"
         }
     }
 }

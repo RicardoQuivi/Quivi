@@ -25,14 +25,7 @@ namespace Quivi.Printer.Service.Consumers
             {
                 await StatusUpdate(printerMessage.MerchantId, printerMessage.Id, target.Id, PrintStatus.Started);
 
-                if (printerMessage.ContentType != MessageContentType.EscPos)
-                {
-                    await StatusUpdate(printerMessage.MerchantId, printerMessage.Id, target.Id, PrintStatus.Failed, $"Content Type {printerMessage.ContentType} not supported");
-                    return;
-                }
-
                 var data = Convert.FromBase64String(printerMessage.Content);
-
                 var address = target.Address?.Trim().ToLower();
                 if (string.IsNullOrEmpty(address))
                 {

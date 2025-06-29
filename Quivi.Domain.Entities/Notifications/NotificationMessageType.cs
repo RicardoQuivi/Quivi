@@ -41,46 +41,46 @@
         /// <summary>
         /// Payment arrived.
         /// </summary>
-        CompletedCharge = 1 << 7,
+        CompletedCharge = 1 << 6,
 
         /// <summary>
         /// Order arrived.
         /// </summary>
-        NewOrder = 1 << 8,
+        NewOrder = 1 << 7,
 
         /// <summary>
         /// Consumer sent a review
         /// </summary>
-        NewReview = 1 << 9,
+        NewReview = 1 << 8,
 
         /// <summary>
         /// Consumer bill
         /// </summary>
-        NewConsumerBill = 1 << 10,
+        NewConsumerBill = 1 << 9,
 
         /// <summary>
         /// Consumer invoice generated
         /// </summary>
-        NewConsumerInvoice = 1 << 11,
+        NewConsumerInvoice = 1 << 10,
 
         /// <summary>
         /// New order sent to kitchen
         /// </summary>
-        NewPreparationRequest = 1 << 12,
+        NewPreparationRequest = 1 << 11,
 
         /// <summary>
         /// Charge synced with POS
         /// </summary>
-        ChargeSynced = 1 << 13,
+        ChargeSynced = 1 << 12,
 
         /// <summary>
         /// Trigger Open Cash Drawer
         /// </summary>
-        OpenCashDrawer = 1 << 14,
+        OpenCashDrawer = 1 << 13,
 
         /// <summary>
         /// Trigger an End of Day Closing
         /// </summary>
-        EndOfDayClosing = 1 << 15,
+        EndOfDayClosing = 1 << 14,
     }
 }

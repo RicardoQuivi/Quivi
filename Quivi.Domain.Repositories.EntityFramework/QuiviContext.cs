@@ -588,33 +588,30 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasDeletedIndex();
             });
 
-            //modelBuilder.Entity<PrinterNotificationMessage>(entity =>
-            //{
-            //    entity.HasKey(m => m.PrinterNotificationMessageId);
-            //    entity.HasMany(m => m.PrinterNotificationsContacts)
-            //                                  .WithMany()
-            //                                  .Map(x =>
-            //                                  {
-            //                                      x.MapLeftKey("PrinterNotificationMessageId");
-            //                                      x.MapRightKey("PrinterNotificationsContactId");
-            //                                      x.ToTable("PrinterNotificationMessageContact");
-            //                                  });
-            //});
+            modelBuilder.Entity<PrinterNotificationMessage>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+                entity.HasOne(m => m.Merchant)
+                        .WithMany()
+                        .HasForeignKey(m => m.MerchantId);
 
-            //modelBuilder.Entity<PrinterNotificationAudit>(entity =>
-            //{
-            //    entity.HasKey(m => m.PrinterNotificationAuditId);
+                entity.HasMany(m => m.PrinterMessageTargets)
+                        .WithOne(m => m.PrinterNotificationMessage)
+                        .HasForeignKey(m => m.PrinterNotificationMessageId);
+            });
 
-            //    entity.HasRequired(m => m.PrinterNotificationMessage)
-            //                                .WithMany(m => m.PrinterNotificationAudits)
-            //                                .HasForeignKey(m => m.PrinterNotificationMessageId)
-            //                                .WillCascadeOnDelete(false);
+            modelBuilder.Entity<PrinterMessageTarget>(entity =>
+            {
+                entity.HasKey(m => new { m.PrinterNotificationsContactId, m.PrinterNotificationMessageId });
 
-            //    entity.HasRequired(m => m.PrinterNotificationsContact)
-            //                                .WithMany()
-            //                                .HasForeignKey(m => m.PrinterNotificationsContactId)
-            //                                .WillCascadeOnDelete(false);
-            //});
+                entity.HasOne(m => m.PrinterNotificationMessage)
+                        .WithMany(m => m.PrinterMessageTargets)
+                        .HasForeignKey(m => m.PrinterNotificationMessageId);
+
+                entity.HasOne(m => m.PrinterNotificationsContact)
+                        .WithMany(m => m.PrinterMessageTargets)
+                        .HasForeignKey(m => m.PrinterNotificationsContactId);
+            });
 
             modelBuilder.Entity<EmployeeNotificationsContact>(entity =>
             {
@@ -631,13 +628,6 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasDeletedIndex();
             });
-
-            //modelBuilder.Entity<ApplicationUserClaim>(model =>
-            //{
-            //    model.Property(m => m.ClaimType).HasMaxLength(128);
-            //    model.HasIndex(m => new { m.UserId, m.ClaimType })
-            //    .IsUnique();
-            //});
 
             modelBuilder.Entity<PosNotificationInboxMessage>(entity =>
             {

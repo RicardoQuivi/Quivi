@@ -22,6 +22,8 @@
         IPreparationGroupItemsRepository PreparationGroupItems { get; }
         IPrinterNotificationsContactsRepository PrinterNotificationsContacts { get; }
         IPrinterWorkersRepository PrinterWorkers { get; }
+        IPrinterNotificationMessagesRepository PrinterNotificationMessages { get; }
+        IPrinterMessageTargetsRepository PrinterMessageTargets { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

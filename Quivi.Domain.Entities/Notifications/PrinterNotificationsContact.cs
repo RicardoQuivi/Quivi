@@ -22,6 +22,8 @@ namespace Quivi.Domain.Entities.Notifications
 
         public int? LocationId { get; set; }
         public Location? Location { get; set; }
+
+        public ICollection<PrinterMessageTarget>? PrinterMessageTargets { get; set; }
         #endregion
     }
 }

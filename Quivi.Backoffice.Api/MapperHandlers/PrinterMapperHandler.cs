@@ -1,5 +1,4 @@
-﻿using Quivi.Backoffice.Api.Dtos;
-using Quivi.Domain.Entities.Notifications;
+﻿using Quivi.Domain.Entities.Notifications;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
 
@@ -16,9 +15,9 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             this.mapper = mapper;
         }
 
-        public Printer Map(PrinterNotificationsContact model)
+        public Dtos.Printer Map(PrinterNotificationsContact model)
         {
-            return new Printer
+            return new Dtos.Printer
             {
                 Id = idConverter.ToPublicId(model.Id),
                 Name = model.Name,

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Quivi.Printer.Contracts\Quivi.Printer.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
