@@ -446,6 +446,7 @@
             "pingPrinter": "Ping printer",
             "printTest": "Ping test page",
             "textMessage": "Printing test via Quivi's backoffice",
+            "type": "Message type",
 
             "messages": {
                 "createdAt": "Created",
