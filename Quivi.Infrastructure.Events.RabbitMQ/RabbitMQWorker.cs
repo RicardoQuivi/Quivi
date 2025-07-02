@@ -134,7 +134,7 @@ namespace Quivi.Infrastructure.Events.RabbitMQ
                 if (data == null)
                     throw new Exception("This should never happen. No null message can be published!");
 
-                using (var scope = _serviceProvider.CreateScope())
+                await using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     List<IEventHandler<T>> processors = new List<IEventHandler<T>>();
                     var enumerableProcessors = scope.ServiceProvider.GetServices<IEventHandler<T>>();

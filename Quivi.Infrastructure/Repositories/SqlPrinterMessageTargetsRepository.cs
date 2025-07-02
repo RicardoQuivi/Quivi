@@ -22,6 +22,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludePrinterNotificationsContactPrinterWorker)
                 query = query.Include(q => q.PrinterNotificationsContact).ThenInclude(q => q.PrinterWorker);
 
+            if (criteria.MerchantIds != null)
+                query = query.Where(q => criteria.MerchantIds.Contains(q.PrinterNotificationMessage!.MerchantId));
+
             if (criteria.PrinterNotificationMessageIds != null)
                 query = query.Where(q => criteria.PrinterNotificationMessageIds.Contains(q.PrinterNotificationMessageId));
 
@@ -31,7 +34,7 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.DeletedTargets != null)
                 query = query.Where(q => q.PrinterNotificationsContact!.DeletedDate.HasValue ==  criteria.DeletedTargets.Value);
 
-            return query.OrderBy(q => q.CreatedDate);
+            return query.OrderByDescending(q => q.ModifiedDate);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Quivi.Migrator
 
             var host = builder.Build();
 
-            using (var scope = host.Services.CreateScope())
+            await using (var scope = host.Services.CreateAsyncScope())
             {
                 var services = scope.ServiceProvider;
 
@@ -59,7 +59,7 @@ namespace Quivi.Migrator
 
         async static Task SeedOAuthAsync(IServiceProvider serviceProvider)
         {
-            using var scope = serviceProvider.CreateScope();
+            await using var scope = serviceProvider.CreateAsyncScope();
             var appManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
             var backofficeApp = await appManager.FindByClientIdAsync("backoffice");

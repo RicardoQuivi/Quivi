@@ -13,12 +13,12 @@ namespace Quivi.Printer.Service
             var config = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>()!;
 
             string id = DeviceIdManager.GetOrCreateDeviceId();
-            builder.Services.AddMassTransit(configurator =>
+            builder.Services.AddSingleton<PrintMessageConsumer>();
+            builder.Services.AddSingleton<IBusControl>((p) =>
             {
-                configurator.AddConsumer<PrintMessageConsumer>();
-                configurator.UsingRabbitMq((context, cfg) =>
+                return Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    cfg.Host(config.Host, config.Port, config.VirtualHost, h =>
+                    cfg.Host(config.Host, (ushort)config.Port, "/", h =>
                     {
                         h.Username(config.Username);
                         h.Password(config.Password);
@@ -26,10 +26,14 @@ namespace Quivi.Printer.Service
 
                     cfg.ReceiveEndpoint($"printers.{id}", e =>
                     {
-                        e.ConfigureConsumer<PrintMessageConsumer>(context);
+                        e.Consumer(() => p.GetService<PrintMessageConsumer>());
                     });
                 });
             });
+            builder.Services.AddSingleton<IBus>(p => p.GetService<IBusControl>()!);
+            builder.Services.AddSingleton<ISendEndpointProvider>(p => p.GetService<IBusControl>()!);
+            builder.Services.AddSingleton<IPublishEndpoint>(p => p.GetService<IBusControl>()!);
+
 
             builder.Services.Configure<HostOptions>(opts =>
             {
@@ -37,6 +41,7 @@ namespace Quivi.Printer.Service
             });
 
             builder.Services.AddWindowsService();
+            builder.Services.AddHostedService<MessageService>();
 
             var host = builder.Build();
             host.Run();

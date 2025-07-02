@@ -78,7 +78,10 @@
             "printerWorkers": "Printer services",
 
             "printer": "Printer",
-            "printers": "Printers"
+            "printers": "Printers",
+
+            "printerMessage": "Printing",
+            "printerMessages": "Printings"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -197,6 +200,7 @@
         },
         "hardwareAddress": "Address",
         "notificationTypes": {
+            "Test": "Test",
             "FailedCharge": "App payment failed",
             "ExpiredCharge": "App payment expired",
             "PosOffline": "PoS offline",
@@ -227,6 +231,14 @@
             "ChargeSynced": "Printed when a paymend with PoS was synced",
             "OpenCashDrawer": "Opens the cash drawer",
             "EndOfDayClosing": "Printed when requesting an end of day closing"
+        },
+        "printerMessageStatus": {
+            "Unreachable": "Unreachable",
+            "TimedOut": "Timed out",
+            "Failed": "Failed",
+            "Created": "Created",
+            "Processing": "Processing",
+            "Success": "Success"
         }
     },
     "imageEditor": {
@@ -430,9 +442,16 @@
             "notificationsDescription": "Configure the documents the printer will handle.",
             "locationDescription": "Configure the location of this printer. This printer will only print requests or items assigned to the selected location.",
             "printerWorkerDescription": "Configure the printer service responsible to communicate with the printer. The printer service needs to either be connected via USB to the printer or connected to the same network as the printer.",
-            "printerInfo": "Info and testing",
+            "printings": "{{names}'s Printings",
             "pingPrinter": "Ping printer",
-            "printTest": "Ping test page"
+            "printTest": "Ping test page",
+            "textMessage": "Printing test via Quivi's backoffice",
+
+            "messages": {
+                "createdAt": "Created",
+                "status": "Status",
+                "awaitingReception": "Awaiting reception"
+            }
         }
     }
 }

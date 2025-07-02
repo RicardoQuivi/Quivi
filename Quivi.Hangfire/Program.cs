@@ -2,7 +2,9 @@ using Hangfire;
 using Quivi.Application.Extensions;
 using Quivi.Hangfire.Hangfire;
 using Quivi.Hangfire.Printing;
+using Quivi.Hangfire.Settings;
 using Quivi.Infrastructure.Abstractions.Services.Printing;
+using Quivi.Printer.MassTransit.Extensions;
 
 namespace Quivi.Hangfire
 {
@@ -14,7 +16,10 @@ namespace Quivi.Hangfire
 
             builder.Services.RegisterAll(builder.Configuration);
             builder.Services.AddHangfireServer();
-            builder.Services.AddSingleton<IPrintingStatusUpdater, PrintingStatusUpdater>();
+
+            builder.Services.RegisterSingleton((p) => builder.Configuration.GetSection("PrinterConnector").Get<PrinterConnectorSettings>()!);
+            builder.Services.ConfigurePrinterConnector<PrinterConnectorSettings>();
+            builder.Services.AddScoped<IPrintingStatusUpdater, PrintingStatusUpdater>();
 
             var app = builder.Build();
             app.UseMiddleware<AuthenticateMiddleware>();

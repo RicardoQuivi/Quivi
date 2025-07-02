@@ -1,6 +1,6 @@
 ﻿using Quivi.Printer.MassTransit.Configurations;
 
-namespace Quivi.Application.Configurations
+namespace Quivi.Hangfire.Settings
 {
     public class PrinterConnectorSettings : IPrinterRabbitMqSettings
     {

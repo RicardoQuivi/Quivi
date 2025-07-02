@@ -99,6 +99,9 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onEmployeeEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Employees), evt.id),
             onItemsModifierGroupEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.ModifierGroups), evt.id),
             onCustomChargeMethodEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.CustomChargeMethods), evt.id),
+            onPrinterWorkerEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.PrinterWorkers), evt.id),
+            onPrinterEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Printers), evt.id),
+            onPrinterMessageOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.PrinterMessages), `${evt.printerId}-${evt.messageId}`),
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);

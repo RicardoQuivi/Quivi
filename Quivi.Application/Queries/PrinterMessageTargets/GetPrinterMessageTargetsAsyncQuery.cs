@@ -9,6 +9,8 @@ namespace Quivi.Application.Queries.PrinterMessageTargets
 {
     public class GetPrinterMessageTargetsAsyncQuery : APagedAsyncQuery<PrinterMessageTarget>
     {
+        public IEnumerable<int>? MerchantIds { get; init; }
+        public IEnumerable<int>? PrinterNotificationsContactIds { get; init; }
         public IEnumerable<int>? PrinterNotificationMessageIds { get; init; }
         public bool? DeletedTargets { get; init; }
         public bool IncludePrinterNotificationMessage { get; init; }
@@ -28,7 +30,9 @@ namespace Quivi.Application.Queries.PrinterMessageTargets
         {
             return repository.GetAsync(new GetPrinterMessageTargetsCriteria
             {
+                MerchantIds = query.MerchantIds,
                 PrinterNotificationMessageIds = query.PrinterNotificationMessageIds,
+                PrinterNotificationsContactIds = query.PrinterNotificationsContactIds,
                 IncludePrinterNotificationMessage = query.IncludePrinterNotificationMessage,
                 IncludePrinterNotificationsContactPrinterWorker = query.IncludePrinterNotificationsContactPrinterWorker,
                 PageIndex = query.PageIndex,

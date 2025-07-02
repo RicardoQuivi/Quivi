@@ -10,6 +10,9 @@ import { OnMenuItemEvent } from "./Dtos/OnMenuItemEvent";
 import { OnEmployeeEvent } from "./Dtos/OnEmployeeEvent";
 import { OnItemsModifierGroupEvent } from "./Dtos/OnItemsModifierGroupEvent";
 import { OnCustomChargeMethodEvent } from "./Dtos/OnCustomChargeMethodEvent";
+import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
+import { OnPrinterEvent } from "./Dtos/OnPrinterEvent";
+import { OnPrinterMessageEvent } from "./Dtos/OnPrinterMessageEvent";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -23,9 +26,7 @@ export interface ISignalRListener {
     onConnectionChanged(isConnected: boolean): void;
 }
 
-function delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
 export class SignalRClient implements IWebClient {
     private connection: HubConnection;
@@ -42,9 +43,6 @@ export class SignalRClient implements IWebClient {
 
     private userListeners: Set<UserEventListener> = new Set<UserEventListener>();
     private merchantListeners: Set<MerchantEventListener> = new Set<MerchantEventListener>();
-    // private backgroundJobListeners: Set<IBackgroundJobEventListener> = new Set<IBackgroundJobEventListener>();
-    // private employeeListeners: Set<IEmployeeEventListener> = new Set<IEmployeeEventListener>();
-    // private globalListeners: Set<IGlobalEventListener> = new Set<IGlobalEventListener>();
 
     constructor(private signalRHost: string) {
         this.connection = new HubConnectionBuilder().withUrl(`${signalRHost}Backoffice?`).build();
@@ -133,6 +131,15 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnCustomChargeMethodOperation');
         this.connection.on('OnCustomChargeMethodOperation', (evt: OnCustomChargeMethodEvent) => this.merchantListeners.forEach(l => l.onCustomChargeMethodEvent?.(evt)));
+
+        this.connection.off('OnPrinterWorkerOperation');
+        this.connection.on('OnPrinterWorkerOperation', (evt: OnPrinterWorkerEvent) => this.merchantListeners.forEach(l => l.onPrinterWorkerEvent?.(evt)));
+
+        this.connection.off('OnPrinterOperation');
+        this.connection.on('OnPrinterOperation', (evt: OnPrinterEvent) => this.merchantListeners.forEach(l => l.onPrinterEvent?.(evt)));
+
+        this.connection.off('OnPrinterMessageOperation');
+        this.connection.on('OnPrinterMessageOperation', (evt: OnPrinterMessageEvent) => this.merchantListeners.forEach(l => l.onPrinterMessageOperation?.(evt)));
     }
 
     addUserListener(listener: UserEventListener): void {

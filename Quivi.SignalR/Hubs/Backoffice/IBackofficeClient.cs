@@ -15,5 +15,8 @@ namespace Quivi.SignalR.Hubs.Backoffice
         Task OnCustomChargeMethodOperation(OnCustomChargeMethodOperation evt);
         Task OnPosChargeOperation(OnPosChargeOperation evt);
         Task OnPosChargeSyncAttemptOperation(OnPosChargeSyncAttemptOperation evt);
+        Task OnPrinterWorkerOperation(OnPrinterWorkerOperation evt);
+        Task OnPrinterOperation(OnPrinterOperation evt);
+        Task OnPrinterMessageOperation(OnPrinterMessageOperation evt);
     }
 }

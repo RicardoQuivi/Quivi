@@ -78,7 +78,10 @@
             "printerWorkers": "Serviços de impressão",
 
             "printer": "Impressora",
-            "printers": "Impressoras"
+            "printers": "Impressoras",
+
+            "printerMessage": "Impressão",
+            "printerMessages": "Impressões"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -197,6 +200,7 @@
         },
         "hardwareAddress": "Endereço",
         "notificationTypes": {
+            "Test": "Teste",
             "FailedCharge": "Pagamento via app falhado",
             "ExpiredCharge": "Pagamento via app expirado",
             "PosOffline": "PoS desligado",
@@ -227,6 +231,14 @@
             "ChargeSynced": "Impresso quando um pagamento é sincronizado com o PoS",
             "OpenCashDrawer": "Abre a gaveta",
             "EndOfDayClosing": "Impresso quando um fecho de dia é solicitado"
+        },
+        "printerMessageStatus": {
+            "Unreachable": "Inacessível",
+            "TimedOut": "Expirou",
+            "Failed": "Falhou",
+            "Created": "Criado",
+            "Processing": "Em processamento",
+            "Success": "Sucesso"
         }
     },
     "imageEditor": {
@@ -430,9 +442,17 @@
             "notificationsDescription": "Configure os documentos que a impressora irá processar para impressão.",
             "locationDescription": "Configure o local da impressora. A impressora apenas irá imprimir itens ou talões associados ao local designado.",
             "printerWorkerDescription": "Configure o serviço de impressão responsável por comunicar com a impressora. O serviço de impressão terá de estar ligado à impressora via USB ou ligado à mesma rede que esta impressora.",
-            "printerInfo": "Informação e testes",
+            "printings": "Impressões de {{name}}",
             "pingPrinter": "Pingar impressora",
-            "printTest": "Imprimir página de teste"
+            "printTest": "Imprimir página de teste",
+            "textMessage": "Teste de impressão efetuado via Quivi backoffice",
+            "type": "Tipo de mensagem",
+
+            "messages": {
+                "createdAt": "Criado",
+                "status": "Estado",
+                "awaitingReception": "A aguardar receção"
+            }
         }
     }
 }

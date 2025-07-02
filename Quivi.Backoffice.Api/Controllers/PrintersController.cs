@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Quivi.Application.Commands.PrinterNotificationMessages;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Quivi.Application.Attributes;
 using Quivi.Application.Commands.PrinterNotificationsContacts;
 using Quivi.Application.Queries.PrinterNotificationsContacts;
 using Quivi.Backoffice.Api.Requests.Printers;
@@ -9,7 +10,6 @@ using Quivi.Domain.Entities.Notifications;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
-using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Validations;
@@ -18,13 +18,14 @@ namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [RequireSubMerchant]
+    [Authorize]
     public class PrintersController : ControllerBase
     {
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
-        private readonly IEscPosPrinterService escPosPrinterService;
 
         public PrintersController(IQueryProcessor queryProcessor,
                                     ICommandProcessor commandProcessor,
@@ -146,31 +147,6 @@ namespace Quivi.Backoffice.Api.Controllers
             });
 
             return new DeletePrinterResponse();
-        }
-
-        [HttpPost("{id}")]
-        public async Task<TestPrinterResponse> TestPrinter(string id, TestPrinterRequest request)
-        {
-            var document = escPosPrinterService.Get(new TestPrinterParameters
-            {
-                Title = request.Text ?? "Printing Test",
-                Message = "This is a test perfomed via Quivi Backoffice",
-                PingOnly = request.PingOnly,
-            });
-
-            await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
-            {
-                MerchantId = User.SubMerchantId(idConverter)!.Value,
-                PrinterNotificationsContactIds = [idConverter.FromPublicId(id)],
-                Content = document,
-                ContentType = PrinterMessageContentType.EscPos,
-                MessageType = NotificationMessageType.None,
-            });
-
-            return new TestPrinterResponse
-            {
-
-            };
         }
     }
 }

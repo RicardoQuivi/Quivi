@@ -2,6 +2,7 @@
 {
     public record GetPrinterMessageTargetsCriteria : IPagedCriteria
     {
+        public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? PrinterNotificationMessageIds { get; init; }
         public IEnumerable<int>? PrinterNotificationsContactIds { get; init; }
         public bool? DeletedTargets { get; init; }

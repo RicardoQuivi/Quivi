@@ -11,6 +11,7 @@ export enum Entity {
     CustomChargeMethods,
     PrinterWorkers,
     Printers,
+    PrinterMessages,
 }
 
 export const getEntityType = (entity: Entity): string => {
@@ -27,5 +28,6 @@ export const getEntityType = (entity: Entity): string => {
         case Entity.CustomChargeMethods: return "CustomChargeMethods";
         case Entity.PrinterWorkers: return "PrinterWorkers";
         case Entity.Printers: return "Printers";
+        case Entity.PrinterMessages: return "PrinterMessages";
     }
 }

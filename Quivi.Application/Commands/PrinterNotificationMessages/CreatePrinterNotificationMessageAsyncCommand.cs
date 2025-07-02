@@ -4,6 +4,7 @@ using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data;
 using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationMessages;
+using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationTargets;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 
@@ -32,6 +33,7 @@ namespace Quivi.Application.Commands.PrinterNotificationMessages
         {
             this.dateTimeProvider = dateTimeProvider;
             this.repository = repository;
+            this.contactsRepository = contactsRepository;
             this.eventService = eventService;
         }
 
@@ -76,6 +78,16 @@ namespace Quivi.Application.Commands.PrinterNotificationMessages
                 MerchantId = command.MerchantId,
                 Operation = EntityOperation.Create,
             });
+
+            foreach(var target in entity.PrinterMessageTargets)
+                await eventService.Publish(new OnPrinterMessageTargetOperationEvent
+                {
+                    PrinterNotificationMessageId = entity.Id,
+                    PrinterNotificationsContactId = target.PrinterNotificationsContactId,
+                    MerchantId = command.MerchantId,
+                    Operation = EntityOperation.Create,
+                });
+
             return entity;
         }
     }

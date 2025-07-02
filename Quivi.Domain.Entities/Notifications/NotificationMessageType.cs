@@ -9,9 +9,9 @@
         None = 0,
 
         /// <summary>
-        /// Other types of notifications.
+        /// Test.
         /// </summary>
-        Other = 1 << 0,
+        Test = 1 << 0,
 
         /// <summary>
         /// Failed charge notification.

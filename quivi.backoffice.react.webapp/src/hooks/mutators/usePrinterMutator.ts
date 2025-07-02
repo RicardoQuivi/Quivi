@@ -14,6 +14,7 @@ interface PatchMutator {
     readonly locationId?: string | null;
     readonly notifications?: NotificationType[];
 }
+
 export const usePrinterMutator = () => {
     const auth = useAuth();
     const api = usePrintersApi(auth.token);

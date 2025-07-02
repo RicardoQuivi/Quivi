@@ -9,10 +9,11 @@ namespace Quivi.Printer.MassTransit.Extensions
     {
         public static void ConfigurePrinterConnector<T>(this IServiceCollection serviceCollection) where T : IPrinterRabbitMqSettings
         {
-            serviceCollection.AddSingleton<PrinterMessageConnector>();
+            serviceCollection.AddSingleton<MessageService>();
+            serviceCollection.AddScoped<PrinterMessageConnector>();
             serviceCollection.AddScoped<IPrinterMessageConnector>(p => p.GetService<PrinterMessageConnector>()!);
 
-            serviceCollection.AddScoped<IBusControl>((p) =>
+            serviceCollection.AddSingleton<IBusControl>((p) =>
             {
                 var settings = p.GetService<T>()!;
                 return Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -23,16 +24,14 @@ namespace Quivi.Printer.MassTransit.Extensions
                         h.Password(settings.Password);
                     });
 
-                    cfg.ReceiveEndpoint("status", e =>
-                    {
-                        e.Consumer(() => p.GetService<PrinterMessageConnector>());
-                    });
+                    cfg.ReceiveEndpoint("status", e => e.Consumer(() => p.GetService<MessageService>()));
                 });
             });
-            serviceCollection.AddScoped<IBus>(p => p.GetService<IBusControl>()!);
+            serviceCollection.AddSingleton<IBus>(p => p.GetService<IBusControl>()!);
+            serviceCollection.AddSingleton<ISendEndpointProvider>(p => p.GetService<IBusControl>()!);
+            serviceCollection.AddSingleton<IPublishEndpoint>(p => p.GetService<IBusControl>()!);
 
-            serviceCollection.AddScoped<ISendEndpointProvider>(p => p.GetService<IBusControl>()!);
-            serviceCollection.AddScoped<IPublishEndpoint>(p => p.GetService<IBusControl>()!);
+            serviceCollection.AddHostedService(p => p.GetService<MessageService>()!);
         }
     }
 }

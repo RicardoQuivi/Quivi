@@ -26,7 +26,6 @@
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.Facturalusa\Quivi.Infrastructure.Pos.Facturalusa.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Storage.Azure\Quivi.Infrastructure.Storage.Azure.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure\Quivi.Infrastructure.csproj" />
-    <ProjectReference Include="..\Quivi.Printer.MassTransit\Quivi.Printer.MassTransit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

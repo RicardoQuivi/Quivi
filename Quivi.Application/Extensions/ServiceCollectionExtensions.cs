@@ -43,7 +43,6 @@ using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
 using Quivi.Infrastructure.Storage;
 using Quivi.Infrastructure.Storage.Azure;
-using Quivi.Printer.MassTransit.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -146,8 +145,6 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterFacturalusa(configuration);
 
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
-            serviceCollection.RegisterSingleton((p) => configuration.GetSection("PrinterConnector").Get<PrinterConnectorSettings>()!);
-            serviceCollection.ConfigurePrinterConnector<PrinterConnectorSettings>();
 
             return serviceCollection;
         }

@@ -77,17 +77,15 @@ namespace Quivi.Infrastructure.Repositories
             await RunAll();
         }
 
-        public void Dispose()
-        {
-            unitOfWork.Dispose();
-            eventService.Dispose();
-        }
+        public void Dispose() => _ = DisposeAsync();
 
         public async ValueTask DisposeAsync()
         {
             if(isTransaction == false)
                 await RunAll();
-            Dispose();
+
+            unitOfWork.Dispose();
+            eventService.Dispose();
         }
 
         public class CoordinatedTransaction : ITransaction
