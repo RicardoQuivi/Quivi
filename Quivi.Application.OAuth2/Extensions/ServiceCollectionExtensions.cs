@@ -21,46 +21,47 @@ namespace Quivi.Application.OAuth2.Extensions
             });
 
             serviceCollection.AddOpenIddict()
-                    .AddCore(options =>
-                    {
-                        // Configure OpenIddict to use the Entity Framework Core stores and models.
-                        // Note: call ReplaceDefaultEntities() to replace the default entities.
-                        options.UseEntityFrameworkCore()
-                               .UseDbContext<OAuthDbContext>();
-                    })
-                    // Register the OpenIddict server components.
-                    .AddServer(options =>
-                    {
-                        IJwtSettings jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+                                .AddCore(options =>
+                                {
+                                    // Configure OpenIddict to use the Entity Framework Core stores and models.
+                                    // Note: call ReplaceDefaultEntities() to replace the default entities.
+                                    options.UseEntityFrameworkCore()
+                                           .UseDbContext<OAuthDbContext>();
+                                })
+                                // Register the OpenIddict server components.
+                                .AddServer(options =>
+                                {
+                                    IJwtSettings jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 
-                        options.DisableAccessTokenEncryption();
+                                    options.DisableAccessTokenEncryption();
 
-                        options.SetAccessTokenLifetime(jwtSettings.ExpireTimeSpan)
-                                .SetRefreshTokenLifetime(jwtSettings.RefreshTokenExpireTimeSpan);
+                                    options.SetAccessTokenLifetime(jwtSettings.ExpireTimeSpan)
+                                            .SetRefreshTokenLifetime(jwtSettings.RefreshTokenExpireTimeSpan);
 
-                        options.SetTokenEndpointUris("/connect/token");
-                        options.SetIntrospectionEndpointUris("/connect/introspect");
+                                    options.SetTokenEndpointUris("/connect/token");
+                                    options.SetIntrospectionEndpointUris("/connect/introspect");
 
-                        options.AllowCustomFlow(CustomGrantTypes.TokenExchange);
-                        options.AllowCustomFlow(CustomGrantTypes.Employee);
-                        options.AllowClientCredentialsFlow();
-                        options.AllowPasswordFlow();
-                        options.AllowRefreshTokenFlow();
+                                    options.AllowCustomFlow(CustomGrantTypes.TokenExchange);
+                                    options.AllowCustomFlow(CustomGrantTypes.Employee);
+                                    options.AllowClientCredentialsFlow();
+                                    options.AllowPasswordFlow();
+                                    options.AllowRefreshTokenFlow();
 
-                        options.AddEventHandler<HandleTokenRequestContext>(builder =>
-                        {
-                            builder.UseScopedHandler<EmployeeGrantTypeHandler>()
-                                    .SetOrder(900_000);
-                        });
+                                    options.AddEventHandler<HandleTokenRequestContext>(builder =>
+                                    {
+                                        builder.UseScopedHandler<EmployeeGrantTypeHandler>()
+                                                .SetOrder(900_000);
+                                    });
 
-                        var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
-                        var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
-                        options.AddSigningCertificate(cert);
-                        options.AddEncryptionCertificate(cert);
+                                    var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
+                                    var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+                                    options.AddSigningCertificate(cert);
+                                    options.AddEncryptionCertificate(cert);
 
-                        options.UseAspNetCore()
-                               .EnableTokenEndpointPassthrough();
-                    });
+                                    options.UseAspNetCore()
+                                           .EnableTokenEndpointPassthrough()
+                                           .DisableTransportSecurityRequirement();
+                                });
 
             return serviceCollection;
         }
