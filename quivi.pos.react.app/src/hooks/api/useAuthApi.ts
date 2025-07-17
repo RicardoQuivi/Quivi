@@ -41,7 +41,8 @@ export const useAuthApi = () => {
     }
 
     const getUser = async (token: string): Promise<AuthIntrospectResponse> => {
-        return await post<AuthIntrospectResponse>(`${import.meta.env.VITE_AUTH_URL}connect/introspect`, {
+        const url = new URL(`connect/introspect`, import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthIntrospectResponse>(url, {
             client_id: "pos",
             token: token,
         }, (s) => {
@@ -57,8 +58,9 @@ export const useAuthApi = () => {
             grant_type: "refresh_token",
             refresh_token: request.refreshToken,
         }
-        
-        return await post<AuthResponse>(`${import.meta.env.VITE_AUTH_URL}connect/token`, rawRequest, (s) => {
+
+        const url = new URL(`connect/token`, import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthResponse>(url, rawRequest, (s) => {
             if(s == 400) {
                 throw new AuthenticationError();
             }
@@ -73,7 +75,8 @@ export const useAuthApi = () => {
             subject_token_type: "urn:ietf:params:oauth:token-type:access_token",
         }
 
-        return await post<AuthResponse>(`${import.meta.env.VITE_AUTH_URL}connect/token`, rawRequest, (s) => {
+        const url = new URL("connect/token", import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthResponse>(url, rawRequest, (s) => {
             if(s == 400) {
                 throw new AuthenticationError();
             }
@@ -89,7 +92,8 @@ export const useAuthApi = () => {
             password: pincode,
         }
 
-        return await post<AuthResponse>(`${import.meta.env.VITE_AUTH_URL}connect/token`, rawRequest, (s) => {
+        const url = new URL(`connect/token`, import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthResponse>(url, rawRequest, (s) => {
             if(s == 400) {
                 throw new AuthenticationError();
             }

@@ -18,26 +18,29 @@ export const useModifierGroupsApi = (token?: string) => {
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
         request.menuItemIds?.forEach((id, index) => queryParams.set(`menuItemIds[${index}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/modifiergroups?${queryParams}`;
+        const url = new URL(`api/modifiergroups?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetModifierGroupsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateModifierGroupRequest) => {
-        return httpClient.httpPost<CreateModifierGroupResponse>(`${import.meta.env.VITE_API_URL}api/modifiergroups`, request, {
+        const url = new URL(`api/modifiergroups`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateModifierGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchModifierGroupRequest) => {
-        return httpClient.httpPatch<PatchModifierGroupResponse>(`${import.meta.env.VITE_API_URL}api/modifiergroups/${request.id}`, request, {
+        const url = new URL(`api/modifiergroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchModifierGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteItem = (request: DeleteModifierGroupRequest) => {
-        return httpClient.httpDelete<DeleteModifierGroupResponse>(`${import.meta.env.VITE_API_URL}api/modifiergroups/${request.id}`, request, {
+        const url = new URL(`api/modifiergroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteModifierGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

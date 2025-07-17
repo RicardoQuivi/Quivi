@@ -72,7 +72,7 @@ namespace Quivi.Pos.Api.Controllers
                 Email = request.Email,
                 VatNumber = request.VatNumber,
                 Observations = request.Observations,
-                Total = request.Total,
+                Amount = request.Amount,
                 Tip = request.Tip,
                 Items = request.Items?.Select(s => new Application.Pos.Items.SessionItem
                 {

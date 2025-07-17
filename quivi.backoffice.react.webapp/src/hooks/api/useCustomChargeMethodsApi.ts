@@ -20,26 +20,30 @@ export const useCustomChargeMethodsApi = (token?: string) => {
         }
         
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
-        let url = `${import.meta.env.VITE_API_URL}api/customchargemethods?${queryParams}`;
+
+        const url = new URL(`api/customchargemethods?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetCustomChargeMethodsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateCustomChargeMethodRequest) => {
-        return httpClient.httpPost<CreateCustomChargeMethodResponse>(`${import.meta.env.VITE_API_URL}api/customchargemethods`, request, {
+        const url = new URL(`api/customchargemethods`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateCustomChargeMethodResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchCustomChargeMethodRequest) => {
-        return httpClient.httpPatch<PatchCustomChargeMethodResponse>(`${import.meta.env.VITE_API_URL}api/customchargemethods/${request.id}`, request, {
+        const url = new URL(`api/customchargemethods/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchCustomChargeMethodResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteCustomChargeMethod = (request: DeleteCustomChargeMethodRequest) => {
-        return httpClient.httpDelete<DeleteCustomChargeMethodResponse>(`${import.meta.env.VITE_API_URL}api/customchargemethods/${request.id}`, request, {
+        const url = new URL(`api/customchargemethods/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteCustomChargeMethodResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

@@ -7,6 +7,6 @@ namespace Quivi.Infrastructure.Configurations
         public required string OAuth { get; set; }
         public required string Backoffice { get; set; }
         public required string BackofficeApi { get; set; }
-        public required string GuestApp { get; set; }
+        public required string GuestsApp { get; set; }
     }
 }

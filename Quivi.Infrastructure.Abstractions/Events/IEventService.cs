@@ -2,6 +2,6 @@
 {
     public interface IEventService : IDisposable
     {
-        Task Publish<T>(T evt) where T : IEvent;
+        Task Publish(IEvent evt);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Quivi.Domain.Entities.Pos
 {
-    public class OrderSequence
+    public class OrderSequence : IEntity
     {
         public const int SequenceNumberDigits = 4;
         public static readonly int SequenceNumberDivider = (int)Math.Pow(10, SequenceNumberDigits);
@@ -10,9 +10,12 @@
         public long SequenceNumber { get; set; }
         public string PaddedSequenceNumber => $"{SequenceNumber % SequenceNumberDivider}".PadLeft(SequenceNumberDigits, '0');
 
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+
         #region Relationships
         public int OrderId { get; set; }
-        public required Order Order { get; set; }
+        public Order? Order { get; set; }
         #endregion
     }
 }

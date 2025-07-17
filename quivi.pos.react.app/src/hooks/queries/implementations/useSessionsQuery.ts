@@ -54,7 +54,13 @@ export const useSessionsQuery = (request: GetSessionsRequest | undefined) : Quer
             isFirstLoading: innerQueryResult.isFirstLoading,
             isLoading: innerQueryResult.isLoading,
         }
-    }, [JSON.stringify(request), innerQueryResult])
+    }, [
+        JSON.stringify(request),
+
+        innerQueryResult.isFirstLoading,
+        innerQueryResult.isLoading,
+        innerQueryResult.data,
+    ])
 
     return result;
 }

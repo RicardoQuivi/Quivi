@@ -293,7 +293,7 @@ namespace Quivi.OAuth2.Controllers
                 ApplicationUserIds = [userId],
                 Ids = [merchantId],
                 PageSize = 1,
-                Inactive = false,
+                IsDeleted = false,
                 IncludeParentMerchant = true,
             });
 
@@ -311,7 +311,7 @@ namespace Quivi.OAuth2.Controllers
                 ParentIds = parentMerchantId.HasValue ? [parentMerchantId.Value] : null,
                 IsParentMerchant = parentMerchantId.HasValue == false,
                 PageSize = 1,
-                Inactive = false,
+                IsDeleted = false,
             });
 
             return merchantQuery.FirstOrDefault();

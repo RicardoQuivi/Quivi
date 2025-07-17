@@ -27,26 +27,29 @@ export const useMenuItemsApi = (token?: string) => {
             queryParams.set(`hasCategory`, request.hasCategory ? "true" : "false")
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/menuitems?${queryParams}`;
+        const url = new URL(`api/menuitems?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMenuItemsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateMenuItemRequest) => {
-        return httpClient.httpPost<CreateMenuItemResponse>(`${import.meta.env.VITE_API_URL}api/menuitems`, request, {
+        const url = new URL(`api/menuitems`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateMenuItemResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchMenuItemRequest) => {
-        return httpClient.httpPatch<PatchMenuItemResponse>(`${import.meta.env.VITE_API_URL}api/menuitems/${request.id}`, request, {
+        const url = new URL(`api/menuitems/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchMenuItemResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteItem = (request: DeleteMenuItemRequest) => {
-        return httpClient.httpDelete<DeleteMenuItemResponse>(`${import.meta.env.VITE_API_URL}api/menuitems/${request.id}`, request, {
+        const url = new URL(`api/menuitems/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteMenuItemResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

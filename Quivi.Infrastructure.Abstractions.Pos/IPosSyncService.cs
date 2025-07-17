@@ -9,7 +9,7 @@ namespace Quivi.Infrastructure.Abstractions.Pos
 
         #region Order
         Task<string?> ProcessOrders(IEnumerable<int> orderIds, int merchantId, OrderState fromState, bool complete);
-        Task CancelOrder(int orderId, int merchantId, string reason);
+        Task CancelOrder(int orderId, int merchantId, string? reason);
         #endregion
 
         #region Charge

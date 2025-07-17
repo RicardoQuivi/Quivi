@@ -22,6 +22,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.Ids != null)
                 query = query.Where(q => criteria.Ids.Contains(q.Id));
 
+            if (criteria.OrderIds != null)
+                query = query.Where(q => criteria.OrderIds.Contains(q.OrderId));
+
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.Order!.MerchantId));
 

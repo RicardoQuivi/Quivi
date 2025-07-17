@@ -1,0 +1,56 @@
+﻿@use 'functions' as *;
+
+// Colors
+$primary-color: #070707;
+$primary-color-light: #F1F3F1;
+
+$secondary-color: #585858;
+
+$accent-color: #FF3F01;
+$accent-color-medium: #FFEFEA;
+$accent-color-light: #FFF5F2;
+
+$danger-color: #E12726;
+$danger-background: #F5DDDD;
+
+$warning-color: #D69129;
+$warning-background: #FBF4EA;
+
+$success-color: #00B67F;
+$success-background: #E5FAF4;
+
+$light-color: #383d41;
+$light-background: #e2e3e5;
+
+$dark-grey: #9D9F9E;
+$medium-grey: #DDDDDD;
+$light-grey: #F1F1F1;
+$x-light-grey: #fafafa;
+
+$white-color: #ffffff;
+
+$border-color: rgba(0, 0, 0, 0.1);
+
+$placeholder-color: #C0C0C0;
+
+$navbar-background-color: #F8F8F8;
+
+$user-card-gradient: linear-gradient(250.9deg, #4A4A4A 0%, #121212 98.82%);
+
+
+// Fonts
+$font-family: 'Poppins', sans-serif;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+$font-size-display-1: rem(32);
+$font-size-display-2: rem(24);
+$font-size-xlg: rem(20);
+$font-size-lg: rem(18);
+$font-size-md: rem(16);
+$font-size-sm: rem(14);
+$font-size-xsm: rem(12);
+

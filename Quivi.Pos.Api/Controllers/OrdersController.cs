@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Attributes;
 using Quivi.Application.Commands.Orders;
 using Quivi.Application.Queries.Orders;
+using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Extensions;
 using Quivi.Pos.Api.Dtos.Requests.Orders;
 using Quivi.Pos.Api.Dtos.Responses.Orders;
@@ -22,16 +25,22 @@ namespace Quivi.Pos.Api.Controllers
         public readonly ICommandProcessor commandProcessor;
         public readonly IIdConverter idConverter;
         public readonly IMapper mapper;
+        public readonly IPosSyncService posSyncService;
+        public readonly IBackgroundJobHandler backgroundJobHandler;
 
         public OrdersController(IQueryProcessor queryProcessor,
                                     ICommandProcessor commandProcessor,
                                     IIdConverter idConverter,
-                                    IMapper mapper)
+                                    IMapper mapper,
+                                    IPosSyncService posSyncService,
+                                    IBackgroundJobHandler backgroundJobHandler)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.idConverter = idConverter;
             this.mapper = mapper;
+            this.posSyncService = posSyncService;
+            this.backgroundJobHandler = backgroundJobHandler;
         }
 
         [HttpGet]
@@ -44,6 +53,9 @@ namespace Quivi.Pos.Api.Controllers
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 SessionIds = request.SessionIds?.Select(idConverter.FromPublicId),
                 States = request.States,
+                IncludeOrderMenuItems = true,
+                IncludeOrderMenuItemsPosChargeInvoiceItems = true,
+                IncludeOrderSequence = true,
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
             });
@@ -79,7 +91,6 @@ namespace Quivi.Pos.Api.Controllers
             }).ToList();
 
             //TODO: Validate Insertion
-
             var jobId = await commandProcessor.Execute(new AddOrdersAsyncCommand
             {
                 MerchantId = User.SubMerchantId(idConverter)!.Value,
@@ -89,6 +100,43 @@ namespace Quivi.Pos.Api.Controllers
             });
 
             return new CreateOrdersResponse
+            {
+                Data = jobId,
+            };
+        }
+
+        [HttpPost("{id}/next")]
+        public async Task<UpdateOrderResponse> UpdateOrderState(string id, [FromQuery] bool complete = false, [FromQuery] OrderState? state = null)
+        {
+            var orderId = idConverter.FromPublicId(id);
+            var merchantId = User.SubMerchantId(idConverter)!.Value;
+            int[] orderIds = [ orderId ];
+
+            if (state == null)
+            {
+                var orderQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery
+                {
+                    Ids = orderIds,
+                    PageSize = 1,
+                });
+                state = orderQuery.Single().State;
+            }
+
+            var jobId = await posSyncService.ProcessOrders(orderIds, merchantId, state.Value, complete);
+            return new UpdateOrderResponse
+            {
+                Data = jobId,
+            };
+        }
+
+        [HttpPost("{id}/decline")]
+        public UpdateOrderResponse Decline(string id, [FromBody] DeclineOrderRequest request)
+        {
+            var orderId = idConverter.FromPublicId(id);
+            var merchantId = User.SubMerchantId(idConverter)!.Value;
+
+            var jobId = backgroundJobHandler.Enqueue(() => posSyncService.CancelOrder(orderId, merchantId, request.Reason));
+            return new UpdateOrderResponse
             {
                 Data = jobId,
             };

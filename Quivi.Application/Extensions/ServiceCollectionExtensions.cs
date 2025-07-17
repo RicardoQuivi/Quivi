@@ -24,6 +24,7 @@ using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Services;
+using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Abstractions.Services.Mailing;
 using Quivi.Infrastructure.Abstractions.Storage;
 using Quivi.Infrastructure.Configurations;
@@ -41,6 +42,7 @@ using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using Quivi.Infrastructure.Pos.Facturalusa.Configurations;
 using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
+using Quivi.Infrastructure.Services.Charges;
 using Quivi.Infrastructure.Storage;
 using Quivi.Infrastructure.Storage.Azure;
 using System.IdentityModel.Tokens.Jwt;
@@ -76,6 +78,7 @@ namespace Quivi.Application.Extensions
             .AddDefaultTokenProviders();
 
             serviceCollection.RegisterSingleton<IDateTimeProvider, DateTimeProvider>();
+            serviceCollection.RegisterSingleton<IRandomGenerator, RandomGenerator>();
 
             serviceCollection.RegisterScoped<ICommandProcessor, CommandProcessor>();
             serviceCollection.RegisterCommandHandlers();
@@ -144,6 +147,7 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterPosSyncStrategies();
             serviceCollection.RegisterFacturalusa(configuration);
 
+            serviceCollection.RegisterChargeMethods();
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
 
             return serviceCollection;
@@ -328,6 +332,15 @@ namespace Quivi.Application.Extensions
             });
 
             return serviceColection;
+        }
+
+        private static IServiceCollection RegisterChargeMethods(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.RegisterSingleton<CashChargeProcessingStrategy>();
+            serviceCollection.RegisterScoped<IEnumerable<IChargeProcessingStrategy>>(p => [
+                p.GetService<CashChargeProcessingStrategy>()!,
+            ]);
+            return serviceCollection;
         }
 
         #region Registrations

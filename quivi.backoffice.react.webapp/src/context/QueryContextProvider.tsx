@@ -18,15 +18,19 @@ const queryClient = new QueryClient({
 
 
 const containsId = (query: Query, key: string): boolean => {
-    if(query.meta == undefined) {
+    const meta = query.meta;
+    if(meta == undefined) {
         return false;
     }
 
-    const ids = query.meta["ids"] as (Set<string> | undefined);
+    if(query.state.data == null || query.state.data == undefined) {
+        return false;
+    }
+
+    const ids = (query.state.data as any)['__idsIndexer'] as Set<string> | undefined;
     if(ids == undefined) {
         return false;
     }
-    
     return ids.has(key);
 }
 
@@ -47,10 +51,10 @@ const queryMatches = (q: Query, type: EntityType, id?: string): boolean => {
     return q.queryKey.includes(getKey(type));
 }
 
-export const invalidateQuery = (query: QueryClient, type: EntityType, id?: string): Promise<void> => {
+const invalidateQuery = (query: QueryClient, type: EntityType, id?: string): Promise<void> => {
     console.debug(`Event ${type} of Id ${id} received!`)
     return query.invalidateQueries({ 
-        predicate: (q) => queryMatches(q, type, id),
+        predicate: (q) =>  queryMatches(q, type, id),
     });
 }
 
@@ -102,6 +106,7 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onPrinterWorkerEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.PrinterWorkers), evt.id),
             onPrinterEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Printers), evt.id),
             onPrinterMessageOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.PrinterMessages), `${evt.printerId}-${evt.messageId}`),
+            onAcquirerConfigurationOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.AcquirerConfigurations), evt.id),
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);

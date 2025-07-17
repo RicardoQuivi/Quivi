@@ -114,13 +114,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const timeToExpire = expiresAt - Date.now();
-        if(timeToExpire <= 0) {
-            saveTokens({
-                accessToken: undefined,
-                refreshToken: refreshToken,
-            });
-            setState(getState());
-        }
+        // if(timeToExpire <= 0) {
+        //     saveTokens({
+        //         accessToken: undefined,
+        //         refreshToken: refreshToken,
+        //     });
+        //     setState(getState());
+        // }
 
         const delay = timeToExpire - 15000;
         if (delay <= 0) {

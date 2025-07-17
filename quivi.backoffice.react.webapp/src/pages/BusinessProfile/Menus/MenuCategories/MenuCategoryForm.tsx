@@ -104,10 +104,10 @@ export const MenuCategoryForm = (props: Props) => {
 
             <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-1 lg:col-span-1 gap-4">
                 <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-2">
-                    {t("common.guestApp.settings")}
+                    {t("common.guestsApp.settings")}
                 </h4>
                 <p className="mt-0.5 text-xs text-gray-600 sm:text-sm dark:text-white/70 mb-6">
-                    {t("common.guestApp.settingsDescription")}
+                    {t("common.guestsApp.settingsDescription")}
                 </p>
                 <div className="w-full mb-6">
                     <LanguageSelector

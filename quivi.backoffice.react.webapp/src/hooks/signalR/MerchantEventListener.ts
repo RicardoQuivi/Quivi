@@ -1,3 +1,4 @@
+import { OnAcquirerConfigurationEvent } from "./Dtos/OnAcquirerConfigurationEvent";
 import { OnChannelEvent } from "./Dtos/OnChannelEvent";
 import { OnChannelProfileEvent } from "./Dtos/OnChannelProfileEvent";
 import { OnCustomChargeMethodEvent } from "./Dtos/OnCustomChargeMethodEvent";
@@ -22,4 +23,5 @@ export interface MerchantEventListener {
     readonly onPrinterWorkerEvent?: (evt: OnPrinterWorkerEvent) => any;
     readonly onPrinterEvent?: (evt: OnPrinterEvent) => any;
     readonly onPrinterMessageOperation?: (evt: OnPrinterMessageEvent) => any;
+    readonly onAcquirerConfigurationOperation?: (evt: OnAcquirerConfigurationEvent) => any;
 }

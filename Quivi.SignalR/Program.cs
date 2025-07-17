@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Quivi.Application.Extensions;
 using Quivi.SignalR.Hubs.Backoffice;
+using Quivi.SignalR.Hubs.Guests;
 using Quivi.SignalR.Hubs.Pos;
 
 namespace Quivi.SignalR
@@ -48,8 +49,11 @@ namespace Quivi.SignalR
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");
+
             app.MapHub<BackofficeHub>("/backoffice");
             app.MapHub<PosHub>("/pos");
+            app.MapHub<GuestsHub>("/guests");
+
             app.UseAuthorization();
             app.MapControllers();
             app.Run();

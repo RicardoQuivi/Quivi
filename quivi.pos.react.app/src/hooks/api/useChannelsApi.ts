@@ -45,7 +45,7 @@ export const useChannelsApi = (token: string) => {
             queryParams.set("includeDeleted", "true");
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/channels?${queryParams}`;
+        const url = new URL(`api/channels?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetChannelsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

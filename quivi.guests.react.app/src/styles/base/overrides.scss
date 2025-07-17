@@ -1,0 +1,10 @@
+﻿@use '../util' as *;
+
+
+.MuiFormControl-root {
+    width: 100%;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: $accent-color !important;
+}

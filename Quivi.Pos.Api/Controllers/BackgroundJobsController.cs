@@ -31,7 +31,7 @@ namespace Quivi.Pos.Api.Controllers
         {
             IStorageConnection storageConnection = jobStorage.GetConnection();
 
-            List<Dtos.BackgroundJob> jobs = new List<Dtos.BackgroundJob>();
+            List<Dtos.BackgroundJob> jobs = [];
             foreach (var id in request.Ids)
             {
                 var jobData = storageConnection.GetJobData(id);

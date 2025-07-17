@@ -15,7 +15,7 @@ namespace Quivi.Infrastructure.Abstractions.Pos
 
         #region Order
         Task<IEnumerable<IEvent>> ProcessOrders(PosIntegration integration, IEnumerable<int> orderIds, OrderState fromState, bool complete);
-        Task<IEnumerable<IEvent>> CancelOrder(PosIntegration integration, int orderId, string reason);
+        Task<IEnumerable<IEvent>> CancelOrder(PosIntegration integration, int orderId, string? reason);
         #endregion
 
         #region Charge

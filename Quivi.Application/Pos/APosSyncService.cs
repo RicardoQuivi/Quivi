@@ -404,7 +404,7 @@ namespace Quivi.Application.Pos
         [ContextualizeFilter(nameof(CancelOrderContextualizer))]
         [PerIntegrationDistributedLockFilter]
         [ConditionalAutomaticRetry(nameof(ShouldFail), Attempts = 3, DelaysInSeconds = new[] { 10, 20, 40 })]
-        public async Task CancelOrder(int orderId, int merchantId, string reason)
+        public async Task CancelOrder(int orderId, int merchantId, string? reason)
         {
             var integrationsQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
             {

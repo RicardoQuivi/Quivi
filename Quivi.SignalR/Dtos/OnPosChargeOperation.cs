@@ -6,6 +6,7 @@ namespace Quivi.SignalR.Dtos
     {
         public required EntityOperation Operation { get; init; }
         public required string MerchantId { get; init; }
+        public required string ChannelId { get; init; }
         public required string Id { get; init; }
     }
 }

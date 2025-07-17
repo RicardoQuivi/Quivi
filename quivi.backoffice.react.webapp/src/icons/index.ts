@@ -63,6 +63,18 @@ import { ReactComponent as SearchIcon } from "./search.svg?react";
 import { ReactComponent as GearIcon } from "./gear.svg?react";
 import { ReactComponent as KeyIcon } from "./key.svg?react";
 import { ReactComponent as MenuIcon } from "./menu.svg?react";
+import { ReactComponent as SpgSibsIcon } from "./spgsibs.svg?react";
+import { ReactComponent as TicketIcon } from "./ticket.svg?react";
+import { ReactComponent as StripeIcon } from "./stripe.svg?react";
+import { ReactComponent as CheckoutIcon } from "./checkout.svg?react";
+import { ReactComponent as PaybyrdIcon } from "./paybyrd.svg?react";
+import { ReactComponent as QuiviIcon } from "./quivi.svg?react";
+import { ReactComponent as MbWayIcon } from "./mbway.svg?react";
+import { ReactComponent as VisaCreditCardIcon } from "./visa.svg?react";
+import { ReactComponent as CashIcon } from "./cash.svg?react";
+import { ReactComponent as WalletIcon } from "./wallet.svg?react";
+import { ReactComponent as PaymentTerminalIcon } from "./paymentterminal.svg?react";
+import { ReactComponent as TicketRestaurantIcon } from "./ticket-restaurant.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -130,4 +142,16 @@ export {
     GearIcon,
     KeyIcon,
     MenuIcon,
+    SpgSibsIcon,
+    TicketIcon,
+    StripeIcon,
+    CheckoutIcon,
+    PaybyrdIcon,
+    QuiviIcon,
+    MbWayIcon,
+    VisaCreditCardIcon,
+    CashIcon,
+    WalletIcon,
+    PaymentTerminalIcon,
+    TicketRestaurantIcon,
 };

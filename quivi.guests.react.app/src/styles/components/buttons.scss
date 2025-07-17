@@ -1,0 +1,103 @@
+﻿@use '../util' as *;
+
+%regular-button {
+    display: block;
+    padding: rem(12) rem(20);
+    font-size: $font-size-lg;
+    text-align: center;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+a.primary-button, .primary-button {
+    @extend %regular-button;
+    font-weight: $font-weight-semibold;
+    background-color: $primary-color;
+    color: $white-color;
+
+    &--inactive {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+
+a.secondary-button, .secondary-button {
+    @extend %regular-button;
+    font-weight: $font-weight-regular;
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    color: $primary-color;
+
+    &.smaller {
+        font-size: $font-size-md;
+    }
+}
+
+a.secondary-button-v2, .secondary-button-v2 {
+    @extend %regular-button;
+    font-weight: $font-weight-regular;
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    color: $primary-color;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    
+    &.smaller {
+        font-size: $font-size-md;
+    }
+}
+
+a.clear-button, .clear-button {
+    @extend %regular-button;
+    font-weight: $font-weight-regular;
+    background-color: transparent;
+    border: none;
+    color: $primary-color;
+}
+
+a.link, .link {
+    font-weight: $font-weight-regular;
+    color: $accent-color;
+}
+
+input.primary-button {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    opacity: 1;
+
+    &.disabled {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+}
+
+.counter-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: rem(40);
+    width: rem(40);
+    border-radius: rem(40);
+    padding: 8px;
+    background: transparent;
+    border: 1px solid $primary-color;
+    font-size: $font-size-xlg;
+    cursor: pointer;
+
+    &.disabled {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+}
+
+.settings-icon{
+    img {
+        height: 24px;
+        width: 24px;
+    }
+}

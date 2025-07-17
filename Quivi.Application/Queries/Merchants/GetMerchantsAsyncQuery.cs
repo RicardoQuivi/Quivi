@@ -12,8 +12,10 @@ namespace Quivi.Application.Queries.Merchants
         public IEnumerable<int>? Ids { get; set; }
         public IEnumerable<int>? ParentIds { get; set; }
         public IEnumerable<int>? ChildIds { get; set; }
+        public IEnumerable<int>? ChannelIds { get; set; }
+        public bool IncludeFees { get; init; }
         public string? Search { get; init; }
-        public bool? Inactive { get; init; }
+        public bool? IsDeleted { get; init; }
         public bool? IsParentMerchant { get; init; }
 
         public bool IncludeChildMerchants { get; init; }
@@ -36,13 +38,15 @@ namespace Quivi.Application.Queries.Merchants
                 Ids = query.Ids,
                 ParentIds = query.ParentIds,
                 ChildIds = query.ChildIds,
+                ChannelIds = query.ChannelIds,
                 ApplicationUserIds = query.ApplicationUserIds,
                 IsParentMerchant = query.IsParentMerchant,
                 Search = query.Search,
-                Inactive = query.Inactive,
+                IsDeleted = query.IsDeleted,
 
                 IncludeChildMerchants = query.IncludeChildMerchants,
                 IncludeParentMerchant = query.IncludeParentMerchant,
+                IncludeFees = query.IncludeFees,
 
                 PageSize = query.PageSize,
                 PageIndex = query.PageIndex,

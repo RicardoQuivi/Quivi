@@ -99,6 +99,19 @@ services:
             - "4080:8080"
             - "40443:8081"
 
+    quivi.guests.api:
+        image: ${DOCKER_REGISTRY-}quiviguestsapi
+        build:
+            context: .
+            dockerfile: Quivi.Guests.Api/Dockerfile
+        networks:
+            - quivi_network
+        environment:
+            - JwtSettings__Audiences__0=guests
+        ports:
+            - "5080:8080"
+            - "50443:8081"
+
     quivi.pos.api:
         image: ${DOCKER_REGISTRY-}quiviposapi
         build:
@@ -133,6 +146,20 @@ services:
             - /app/node_modules
         ports:
             - "3011:3011"
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        networks:
+            - quivi_network
+        working_dir: /app
+        command: sh -c "npm install && npm run dev -- --host"
+
+    quivi.guests.react.app:
+        image: node:23.11.0-alpine
+        volumes:
+            - ./quivi.guests.react.app:/app
+            - /app/node_modules
+        ports:
+            - "3012:3012"
         environment:
             - CHOKIDAR_USEPOLLING=true
         networks:

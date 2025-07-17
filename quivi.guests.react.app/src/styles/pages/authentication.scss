@@ -1,0 +1,52 @@
+﻿@use '../util' as *;
+
+.authentication {
+    padding-bottom: rem(80);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__header {
+        margin-top: rem(100);
+    }
+
+    &__forgot {
+        color: $accent-color !important;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+    }
+
+    &__footer {
+        margin-top: rem(32);
+    }
+
+    &__register {
+        margin-top: rem(20);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        p, a {
+            text-align: center;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+        }
+
+        a {
+            color: $accent-color;
+        }
+    }
+
+    .external-login {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: rem(16);
+        font-size: $font-size-md;
+
+        svg {
+            margin-right: rem(8);
+        }
+    }
+}

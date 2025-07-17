@@ -26,23 +26,26 @@ export const usePrintersApi = (token?: string) => {
                 queryParams.set("printerWorkerId", request.printerWorkerId);
             }
             
-            let url = `${import.meta.env.VITE_API_URL}api/printers?${queryParams}`;
+            const url = new URL(`api/printers?${queryParams}`, import.meta.env.VITE_API_URL).toString();
             return httpClient.httpGet<GetPrintersResponse>(url, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         create: (request: CreatePrinterRequest) => {
-            return httpClient.httpPost<CreatePrinterResponse>(`${import.meta.env.VITE_API_URL}api/printers`, request, {
+            const url = new URL(`api/printers`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpPost<CreatePrinterResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         patch: (request: PatchPrinterRequest) => {
-            return httpClient.httpPatch<PatchPrinterResponse>(`${import.meta.env.VITE_API_URL}api/printers/${request.id}`, request, {
+            const url = new URL(`api/printers/${request.id}`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpPatch<PatchPrinterResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         delete: (request: DeletePrinterRequest) => {
-            return httpClient.httpDelete<DeletePrinterResponse>(`${import.meta.env.VITE_API_URL}api/printers/${request.id}`, request, {
+            const url = new URL(`api/printers/${request.id}`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpDelete<DeletePrinterResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },

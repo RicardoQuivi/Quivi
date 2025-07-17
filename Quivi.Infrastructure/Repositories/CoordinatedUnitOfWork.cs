@@ -27,6 +27,7 @@ namespace Quivi.Infrastructure.Repositories
         public IEmployeesRepository Employees => unitOfWork.Employees;
         public IItemsModifierGroupsRepository MenuItemModifierGroups => unitOfWork.MenuItemModifierGroups;
         public IOrdersRepository Orders => unitOfWork.Orders;
+        public IOrderSequencesRepository OrderSequences => unitOfWork.OrderSequences;
         public IOrderMenuItemsRepository OrderMenuItems => unitOfWork.OrderMenuItems;
         public ISessionsRepository Sessions => unitOfWork.Sessions;
         public ICustomChargeMethodsRepository CustomChargeMethods => unitOfWork.CustomChargeMethods;
@@ -38,6 +39,12 @@ namespace Quivi.Infrastructure.Repositories
         public IPrinterWorkersRepository PrinterWorkers => unitOfWork.PrinterWorkers;
         public IPrinterNotificationMessagesRepository PrinterNotificationMessages => unitOfWork.PrinterNotificationMessages;
         public IPrinterMessageTargetsRepository PrinterMessageTargets => unitOfWork.PrinterMessageTargets;
+        public IOrderConfigurableFieldsRepository OrderConfigurableFields => unitOfWork.OrderConfigurableFields;
+        public IMerchantAcquirerConfigurationsRepository MerchantAcquirerConfigurations => unitOfWork.MerchantAcquirerConfigurations;
+        public IPeopleRepository People => unitOfWork.People;
+        public IChargesRepository Charges => unitOfWork.Charges;
+        public IJournalsRepository Journals => unitOfWork.Journals;
+        public IReviewsRepository Reviews => unitOfWork.Reviews;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {
@@ -46,7 +53,7 @@ namespace Quivi.Infrastructure.Repositories
             this.publishQueue = new ConcurrentQueue<Func<Task>>();
         }
 
-        public Task Publish<T>(T evt) where T : IEvent
+        public Task Publish(IEvent evt)
         {
             publishQueue.Enqueue(() => eventService.Publish(evt));
             return Task.CompletedTask;

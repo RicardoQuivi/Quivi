@@ -43,7 +43,7 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 Search = request.Search,
                 ApplicationUserIds = User.IsAdmin() ? null : [ User.UserId(idConverter) ],
-                Inactive = User.IsAdmin() ? null : false,
+                IsDeleted = User.IsAdmin() ? null : false,
                 ParentIds = parentMerchantId.HasValue ? [ parentMerchantId.Value ] : null,
                 Ids = string.IsNullOrWhiteSpace(request.Id) ? null : [ idConverter.FromPublicId(request.Id) ],
 
@@ -99,7 +99,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 {
                     Ids = [ idConverter.FromPublicId(id) ],
                     ApplicationUserIds = User.IsAdmin() ? null : [ User.UserId(idConverter) ],
-                    Inactive = false,
+                    IsDeleted = false,
                     PageSize = 1,
                 },
                 UpdateAction = e =>

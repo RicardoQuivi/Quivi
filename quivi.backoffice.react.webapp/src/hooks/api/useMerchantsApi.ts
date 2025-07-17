@@ -25,20 +25,22 @@ export const useMerchantsApi = (token?: string) => {
             queryParams.set("parentid", request.parentId.toString());
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/merchants?${queryParams}`;
+        const url = new URL(`api/merchants?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMerchantsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateMerchantRequest) => {
-        return httpClient.httpPost<CreateMerchantResponse>(`${import.meta.env.VITE_API_URL}api/merchants`, request, {
+        const url = new URL(`api/merchants`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateMerchantResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchMerchantRequest) => {
-        return httpClient.httpPatch<PatchMerchantResponse>(`${import.meta.env.VITE_API_URL}api/merchants/${request.id}`, request, {
+        const url = new URL(`api/merchants/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchMerchantResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

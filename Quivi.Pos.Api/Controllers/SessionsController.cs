@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Attributes;
 using Quivi.Application.Commands.Sessions;
-using Quivi.Application.Extensions.Pos;
-using Quivi.Application.Queries.OrderMenuItems;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;

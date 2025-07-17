@@ -90,19 +90,19 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Charges.Charge", b =>
                 {
-                    b.Property<int>("ChargeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChargeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ChainedChargeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ChargeMethod")
+                    b.Property<int>("ChargeMethod")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ChargePartner")
+                    b.Property<int>("ChargePartner")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -114,7 +114,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("ChargeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ChainedChargeId");
 
@@ -333,20 +333,17 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Financing.Journal", b =>
                 {
-                    b.Property<int>("JournalId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JournalId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ChargeMethod")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("JournalLinkId")
                         .HasColumnType("int");
@@ -360,19 +357,13 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<string>("OrderRef")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("JournalId");
+                    b.HasKey("Id");
 
                     b.HasIndex("JournalLinkId");
 
@@ -381,11 +372,11 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Financing.JournalChange", b =>
                 {
-                    b.Property<int>("JournalHistoryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JournalHistoryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
@@ -411,7 +402,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.HasKey("JournalHistoryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("JournalId");
 
@@ -443,11 +434,11 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Financing.Person", b =>
                 {
-                    b.Property<int>("PersonId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PersonId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -460,6 +451,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
                     b.Property<string>("IdentityNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("MerchantId")
                         .HasColumnType("int");
@@ -474,26 +468,32 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<Guid?>("SessionGuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int?>("SubMerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.Property<string>("Vat")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PersonId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DeletedDate")
                         .HasDatabaseName("IX_T_DeletedDate_NotDeleted")
                         .HasFilter("[DeletedDate] IS NULL");
 
+                    b.HasIndex("IsAnonymous")
+                        .IsUnique()
+                        .HasFilter("[IsAnonymous] = 1");
+
                     b.HasIndex("MerchantId");
 
-                    b.HasIndex("SessionGuid");
-
                     b.HasIndex("SubMerchantId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("People");
                 });
@@ -892,6 +892,65 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.HasIndex("SetUpFeeId");
 
                     b.ToTable("Merchants");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Merchants.MerchantAcquirerConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApiKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ChargeMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChargePartner")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EntityId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ExternallySettled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TerminalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebhookSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChargeMethod");
+
+                    b.HasIndex("ChargePartner");
+
+                    b.HasIndex("DeletedDate")
+                        .HasDatabaseName("IX_T_DeletedDate_NotDeleted")
+                        .HasFilter("[DeletedDate] IS NULL");
+
+                    b.HasIndex("MerchantId");
+
+                    b.ToTable("MerchantAcquirerConfiguration");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Merchants.MerchantFee", b =>
@@ -2004,9 +2063,6 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EatOrderState")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
@@ -2014,6 +2070,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2169,6 +2228,12 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<long>("SequenceNumber")
                         .HasColumnType("bigint");
@@ -3007,7 +3072,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .IsRequired();
 
                     b.HasOne("Quivi.Domain.Entities.Financing.Journal", "Journal")
-                        .WithMany()
+                        .WithMany("DepositCaptureJournals")
                         .HasForeignKey("JournalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3026,7 +3091,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .IsRequired();
 
                     b.HasOne("Quivi.Domain.Entities.Financing.Journal", "Journal")
-                        .WithMany()
+                        .WithMany("DepositJournals")
                         .HasForeignKey("JournalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3056,7 +3121,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .IsRequired();
 
                     b.HasOne("Quivi.Domain.Entities.Financing.Journal", "Journal")
-                        .WithMany()
+                        .WithMany("DepositSurchargeJournals")
                         .HasForeignKey("JournalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3168,6 +3233,10 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.HasOne("Quivi.Domain.Entities.Merchants.Merchant", "SubMerchant")
                         .WithMany("People")
                         .HasForeignKey("SubMerchantId");
+
+                    b.HasOne("Quivi.Domain.Repositories.EntityFramework.Identity.ApplicationUser", null)
+                        .WithOne("Person")
+                        .HasForeignKey("Quivi.Domain.Entities.Financing.Person", "UserId");
 
                     b.Navigation("Merchant");
 
@@ -3318,6 +3387,17 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("ParentMerchant");
 
                     b.Navigation("SetUpFee");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Merchants.MerchantAcquirerConfiguration", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Merchants.Merchant", "Merchant")
+                        .WithMany("AcquirerConfigurations")
+                        .HasForeignKey("MerchantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Merchant");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Merchants.MerchantFee", b =>
@@ -4180,28 +4260,28 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Charges.Deposit", b =>
                 {
-                    b.Navigation("DepositCapture")
-                        .IsRequired();
+                    b.Navigation("DepositCapture");
 
-                    b.Navigation("DepositCaptureJournal")
-                        .IsRequired();
+                    b.Navigation("DepositCaptureJournal");
 
-                    b.Navigation("DepositJournal")
-                        .IsRequired();
+                    b.Navigation("DepositJournal");
 
-                    b.Navigation("DepositRefundJournal")
-                        .IsRequired();
+                    b.Navigation("DepositRefundJournal");
 
-                    b.Navigation("DepositSurchage")
-                        .IsRequired();
+                    b.Navigation("DepositSurchage");
 
-                    b.Navigation("DepositSurchargeJournal")
-                        .IsRequired();
+                    b.Navigation("DepositSurchargeJournal");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Financing.Journal", b =>
                 {
+                    b.Navigation("DepositCaptureJournals");
+
+                    b.Navigation("DepositJournals");
+
                     b.Navigation("DepositRefundJournals");
+
+                    b.Navigation("DepositSurchargeJournals");
 
                     b.Navigation("JournalChanges");
 
@@ -4237,6 +4317,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Merchants.Merchant", b =>
                 {
+                    b.Navigation("AcquirerConfigurations");
+
                     b.Navigation("ApiClients");
 
                     b.Navigation("ChannelProfiles");
@@ -4441,6 +4523,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
             modelBuilder.Entity("Quivi.Domain.Repositories.EntityFramework.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("ApiClients");
+
+                    b.Navigation("Person");
                 });
 #pragma warning restore 612, 618
         }

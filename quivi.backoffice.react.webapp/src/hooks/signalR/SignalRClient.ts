@@ -13,6 +13,7 @@ import { OnCustomChargeMethodEvent } from "./Dtos/OnCustomChargeMethodEvent";
 import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
 import { OnPrinterEvent } from "./Dtos/OnPrinterEvent";
 import { OnPrinterMessageEvent } from "./Dtos/OnPrinterMessageEvent";
+import { OnAcquirerConfigurationEvent } from "./Dtos/OnAcquirerConfigurationEvent";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -140,6 +141,9 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnPrinterMessageOperation');
         this.connection.on('OnPrinterMessageOperation', (evt: OnPrinterMessageEvent) => this.merchantListeners.forEach(l => l.onPrinterMessageOperation?.(evt)));
+
+        this.connection.off('OnAcquirerConfigurationOperation');
+        this.connection.on('OnAcquirerConfigurationOperation', (evt: OnAcquirerConfigurationEvent) => this.merchantListeners.forEach(l => l.onAcquirerConfigurationOperation?.(evt)));
     }
 
     addUserListener(listener: UserEventListener): void {

@@ -12,10 +12,10 @@
 
         #region Relationships
         public int PersonId { get; set; }
-        public required Person Person { get; set; }
+        public Person? Person { get; set; }
 
         public int JournalId { get; set; }
-        public required Journal Journal { get; set; }
+        public Journal? Journal { get; set; }
         #endregion
     }
 }

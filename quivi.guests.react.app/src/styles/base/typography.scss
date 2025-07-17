@@ -1,0 +1,91 @@
+﻿@use '../util' as *;
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+h1 {
+    font-size: $font-size-display-2;
+    color: $primary-color;
+    margin-bottom: rem(12);
+}
+
+h2 {
+    font-size: $font-size-xlg;
+    color: $primary-color;
+    line-height: normal;
+    font-weight: $font-weight-semibold;
+}
+
+h3 {
+    font-size: $font-size-lg;
+}
+
+h4 {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+}
+
+
+p {
+    font-size: $font-size-md;
+    color: $secondary-color;
+    line-height: 150%;
+    margin: 0;
+}
+
+a:link,
+a:visited,
+a:active {
+    text-decoration: none;
+    color: $primary-color;
+    font-weight: $font-weight-semibold;
+    line-height: 150%;
+}
+
+button {
+    font-family: $font-family;
+}
+
+ul {
+    li {
+        list-style: none;
+    }
+}
+
+label {
+    color: $primary-color;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    display: block;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: $placeholder-color;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: $placeholder-color;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: $placeholder-color;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: $placeholder-color;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+    color: $placeholder-color;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: $placeholder-color;
+}

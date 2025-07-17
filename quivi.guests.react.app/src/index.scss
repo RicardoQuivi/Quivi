@@ -1,0 +1,46 @@
+/*
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}*/
+
+@use './styles/util' as *;
+
+
+html {
+    font-size: 100%;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    background: $white-color;
+    min-height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: $font-family;
+    font-weight: 400;
+    color: $secondary-color;
+    background: $white-color;
+    min-height: 100%;
+}
+
+apple-pay-button {
+    --apple-pay-button-width: 100%;
+    --apple-pay-button-height: 45px;
+    --apple-pay-button-border-radius: 3px;
+    --apple-pay-button-padding: 0px 0px;
+    --apple-pay-button-box-sizing: border-box;
+}
+
+#pay-via-apple {
+    width: 100%;
+}

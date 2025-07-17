@@ -3,6 +3,6 @@
     public enum BasicAuthClientType
     {
         Backoffice = 0,
-        GuestApp = 0,
+        GuestsApp = 1,
     }
 }

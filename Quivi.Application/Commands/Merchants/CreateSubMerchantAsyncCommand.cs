@@ -30,14 +30,17 @@ namespace Quivi.Application.Commands.Merchants
         private readonly IMerchantsRepository repo;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
+        private readonly IRandomGenerator randomGenerator;
 
         public CreateSubMerchantAsyncCommandHandler(IMerchantsRepository repository,
                                                     IDateTimeProvider dateTimeProvider,
-                                                    IEventService eventService)
+                                                    IEventService eventService,
+                                                    IRandomGenerator randomGenerator)
         {
             this.repo = repository;
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
+            this.randomGenerator = randomGenerator;
         }
 
         public async Task<Merchant> Handle(CreateSubMerchantAsyncCommand command)
@@ -81,8 +84,8 @@ namespace Quivi.Application.Commands.Merchants
             {
                 new ApiClient
                 {
-                    UserName = RandomString(8),
-                    Password = RandomString(32),
+                    UserName = randomGenerator.String(8),
+                    Password = randomGenerator.String(32),
                     ClientType = BasicAuthClientType.Backoffice,
                     CreatedDate = now,
                     Person = new Person
@@ -95,15 +98,14 @@ namespace Quivi.Application.Commands.Merchants
                 },
                 new ApiClient
                 {
-                    UserName = RandomString(8),
-                    Password = RandomString(32),
-                    ClientType = BasicAuthClientType.GuestApp,
+                    UserName = randomGenerator.String(8),
+                    Password = randomGenerator.String(32),
+                    ClientType = BasicAuthClientType.GuestsApp,
                     CreatedDate = now,
                     Person = new Person
                     {
                         CreatedDate = now,
                         PersonType = PersonType.Channel,
-                        SessionGuid = Guid.NewGuid(),
                         SubMerchant = merchant,
                         MerchantId = merchant.ParentMerchantId,
                     },
@@ -149,13 +151,6 @@ namespace Quivi.Application.Commands.Merchants
             }
 
             return "GMT Standard Time";
-        }
-
-        private static string RandomString(int length)
-        {
-            var random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

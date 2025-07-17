@@ -81,7 +81,10 @@
             "printers": "Impressoras",
 
             "printerMessage": "Impressão",
-            "printerMessages": "Impressões"
+            "printerMessages": "Impressões",
+            
+            "acquirerConfiguration": "Configuração de pagamento",
+            "acquirerConfigurations": "Configurações de pagamento"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -163,7 +166,7 @@
             "warning": "Aviso!"
         },
         "image": "Imagem",
-        "guestApp": {
+        "guestsApp": {
             "settings": "Definições para visitantes",
             "settingsDescription": "Configurar como será mostrado a visitantes via código QR"
         },
@@ -239,7 +242,17 @@
             "Created": "Criado",
             "Processing": "Em processamento",
             "Success": "Sucesso"
-        }
+        },
+        "chargeMethod": {
+            "Custom": "Personalizado",
+            "Wallet": "Carteira",
+            "Cash": "Dinheiro",
+            "TicketRestaurantMobile": "Ticket Restaurante Mobile",
+            "MbWay": "MbWay",
+            "CreditCard": "Cartão de crédito",
+            "PaymentTerminal": "Terminal de pagamento"
+        },
+        "partner": "Parceiro"
     },
     "imageEditor": {
         "edit": "Editar",
@@ -253,7 +266,7 @@
         "administration": {
             "": "Administração",
             "integrations": "Integrações",
-            "paymentMethods": "Métodos de Pagamento",
+            "acquirerConfigurations": "Configurações de pagamento",
             "transactions": "Transações"
         },
         "businessProfile": {
@@ -453,6 +466,9 @@
                 "status": "Estado",
                 "awaitingReception": "A aguardar receção"
             }
+        },
+        "acquirerConfigurations": {
+            "title": "Configuração de pagamentos"
         }
     }
 }

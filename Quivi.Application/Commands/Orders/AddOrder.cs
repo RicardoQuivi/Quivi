@@ -1,6 +1,4 @@
-﻿using Quivi.Application.Pos.Items;
-
-namespace Quivi.Application.Commands.Orders
+﻿namespace Quivi.Application.Commands.Orders
 {
     public class AddOrder
     {

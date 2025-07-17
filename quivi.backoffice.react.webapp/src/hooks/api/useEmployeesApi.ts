@@ -19,32 +19,36 @@ export const useEmployeesApi = (token?: string) => {
         
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/employees?${queryParams}`;
+        const url = new URL(`api/employees?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetEmployeesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateEmployeeRequest) => {
-        return httpClient.httpPost<CreateEmployeeResponse>(`${import.meta.env.VITE_API_URL}api/employees`, request, {
+        const url = new URL(`api/employees`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateEmployeeResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchEmployeeRequest) => {
-        return httpClient.httpPatch<PatchEmployeeResponse>(`${import.meta.env.VITE_API_URL}api/employees/${request.id}`, request, {
+        const url = new URL(`api/employees/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchEmployeeResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteEmployee = (request: DeleteEmployeeRequest) => {
-        return httpClient.httpDelete<DeleteEmployeeResponse>(`${import.meta.env.VITE_API_URL}api/employees/${request.id}`, request, {
+        const url = new URL(`api/employees/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteEmployeeResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const resetPinCode = (request: ResetPinCodeEmployeeRequest) => {
-        return httpClient.httpDelete<ResetPinCodeEmployeeResponse>(`${import.meta.env.VITE_API_URL}api/employees/${request.id}/pincode`, request, {
+        const url = new URL(`api/employees/${request.id}/pincode`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<ResetPinCodeEmployeeResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

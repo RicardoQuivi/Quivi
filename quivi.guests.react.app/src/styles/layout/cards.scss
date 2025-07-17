@@ -1,0 +1,23 @@
+﻿@use '../util' as *;
+
+
+.main-card {
+    flex: 1;
+    background: $white-color;
+    margin-top: -30px;
+    border-radius: rem(24) rem(24) 0 0;
+    bottom: 0;
+}
+
+.menu-card {
+    position: absolute;
+    overflow-y: visible;
+    top: 100px;
+    left: 16px;
+    right: 16px;
+    width: 100%;
+    max-width: 500px;
+    background: $white-color;
+    border-radius: rem(24) rem(24) 0 0;
+    z-index: 1500;
+}

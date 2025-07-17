@@ -9,7 +9,7 @@
 
         #region Relationships
         public int JournalId { get; set; }
-        public required Journal Journal { get; set; }
+        public Journal? Journal { get; set; }
         #endregion
     }
 }

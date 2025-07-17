@@ -16,6 +16,15 @@ namespace Quivi.Infrastructure.Repositories
         {
             IQueryable<Session> query = Set;
 
+            if (criteria.IncludeOrders)
+                query = query.Include(q => q.Orders!);
+
+            if (criteria.IncludePreparationGroups)
+                query = query.Include(q => q.PreparationGroups);
+
+            if (criteria.IncludePreparationGroupsItems)
+                query = query.Include(q => q.PreparationGroups!).ThenInclude(q => q.PreparationGroupItems);
+
             if (criteria.IncludeOrdersMenuItems)
                 query = query.Include(q => q.Orders!).ThenInclude(o => o.OrderMenuItems);
 
@@ -36,6 +45,9 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.ChannelIds != null)
                 query = query.Where(q => criteria.ChannelIds.Contains(q.ChannelId));
+
+            if (criteria.PreparationGroupIds != null)
+                query = query.Where(q => q.PreparationGroups!.Any(pg => criteria.PreparationGroupIds.Contains(pg.Id)));
 
             if (criteria.PosIntegrationIds != null)
                 query = query.Where(q => criteria.PosIntegrationIds.Contains(q.Channel!.ChannelProfile!.PosIntegrationId));

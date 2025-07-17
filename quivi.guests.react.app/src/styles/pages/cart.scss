@@ -1,0 +1,50 @@
+@use '../util' as *;
+
+.cart {
+    &__item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border: solid 1px gray;
+        border-radius: 5px;
+        margin: 20px 0;
+    }
+
+    &__item-photo {
+        height: 100px;
+        width: 100px;
+    }
+
+    &__item-detail {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    &__item-info {
+        margin-left: 10px;
+        text-align: center;
+    }
+
+    &__total-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: $primary-color-light;
+        padding: rem(12) rem(8);
+
+        .title {
+            font-weight: $font-weight-regular;
+        }
+
+        .amount {
+            font-weight: $font-weight-bold;
+            white-space: nowrap;
+        }
+    }
+    
+    &__back-to-menu {
+        margin-top: 30px;
+    }
+}

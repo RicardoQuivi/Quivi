@@ -1,0 +1,541 @@
+﻿{
+  "unexpectedError": "Ocorreu um erro. Tente novamente.",
+  "back": "Voltar",
+  "next": "Avançar",
+  "optional": "Opcional",
+  "loading": "A carregar...",
+  "of": "de",
+  "cancel": "Cancelar",
+  "submit": "Enviar",
+  "readMore": "Ler mais",
+  "readLess": "Ler menos",
+  "modify": "Alterar",
+
+  "form": {
+    "mandatory": "Obrigatório",
+    "requiredField": "Este campo é obrigatório",
+    "email": "E-mail",
+    "emailPlaceholder": "O seu e-mail",
+    "emailValidation": "Insira um email válido.",
+    "invoiceEmail": "Email",
+    "password": "Palavra-passe",
+    "passwordPlaceholder": "A sua palavra-passe",
+    "passwordValidation": "A palavra-passe deve ter no mínimo 6 caracteres.",
+    "currentPassword": "Palavra-passe atual",
+    "newPassword": "Nova palavra-passe",
+    "newPasswordPlaceholder": "A sua nova palavra-passe",
+    "confirmNewPassword": "Confirme a palavra-passe",
+    "samePasswordValidation": "As palavras-passe devem ser iguais.",
+    "name": "Nome",
+    "namePlaceholder": "O seu nome",
+    "vat": "NIF",
+    "vatPlaceholder": "O seu NIF",
+    "vatCharValidation": "O NIF deve ter no máximo 9 caracteres.",
+    "vatValidation": "O NIF inserido não parece ser válido.",
+    "phoneNumberValidation": "O número inserido é inválido.",
+    "phoneNumber": "Telemóvel",
+    "phoneNumberPlaceholder": "O número do seu telemóvel",
+    "phoneNumberDescription": "Indique o nº de telemóvel associado à sua conta {{paymentMethodName}}",
+    "creditCardLabel": "Dados do cartão"
+  },
+
+  "login": {
+    "title": "Entrar",
+    "description": "Veja o seus saldos e transações, realize pagamentos e acumule vantagens!",
+    "forgotPassword": "Esqueci a palavra-passe",
+    "login": "Entrar",
+    "noAccount": "Não tem uma conta?",
+    "createAccount": "Criar conta",
+    "confirmedEmail": "Email confirmado com sucesso! Já pode aceder à sua conta.",
+    "errors": {
+      "notConfirmed": "Este email ainda não foi confirmado.",
+      "lockedOut": "Utilizador encontra-se bloqueado.",
+      "invalidCredentials": "O E-mail e/ou palavra-passe não são válidos.",
+      "unkownError": "Algo errado aconteceu. Por favor, tente novamente."
+    }
+  },
+
+  "register": {
+    "title": "Registar",
+    "description": "Com uma conta Quivi pode guardar os seus dados de faturamento e agilizar pagamentos futuros!",
+    "register": "Registar",
+    "alreadyHasAccount": "Já tem conta?",
+    "login": "Entrar"
+  },
+
+  "resetPassword": {
+    "title": "Nova palavra-passe",
+    "description": "Crie a sua nova palavra-passe.",
+    "confirm": "Confirmar",
+    "successTitle": "Sucesso!",
+    "successDescription": "Palavra-passe criada com sucesso! Já pode aceder à sua conta:",
+    "login": "Entrar"
+  },
+
+  "changePassword": {
+    "title": "Alterar palavra-passe",
+    "save": "Guardar",
+    "changeSuccess": "Palavra-passe alterada com sucesso!"
+  },
+
+  "confirmEmail": {
+    "title": "Quase lá!",
+    "description": "Verifique o seu e-mail e siga os passos para ativar a sua conta."
+  },
+
+  "forgotPassword": {
+    "title": "Recuperar palavra-passe",
+    "description": "Indique o e-mail associado à sua conta para receber o link de alteração da palavra-passe.",
+    "confirm": "Confirmar",
+    "failed": "Ocorreu um erro. Por favor, verifique que o email está correto.",
+    "successTitle": "Quase lá!",
+    "successDescription": "Verifique o seu e-mail e siga as instruções para recuperar o acesso à sua conta."
+  },
+
+  "inactivity": {
+    "header": "Está por aí?",
+    "description": "Devido a inatividade, iremos limpar a sua sessão dentro de <bold>{{seconds}}</bold> segundos. Interaja com a página para voltar ao seu pedido."
+  },
+
+  "editProfile": {
+    "title": "Dados pessoais",
+    "save": "Guardar",
+    "failed": "Não foi possível completar este pedido. Por favor, tente novamente mais tarde.",
+    "success": "Dados alterados com sucesso!"
+  },
+
+  "navbar": {
+    "home": "Início",
+    "pay": "Pagar",
+    "transactions": "Transações",
+    "seeOrder": "Ver pedido",
+    "seeOrders": "<b>{{count}}</b> pedidos"
+  },
+
+  "userHome": {
+    "title": "Início",
+    "soon": "Em breve vai poder ganhar cartões de fidelização e acumular saldo na sua conta!",
+    "noCard1": "Ainda não tem nenhum cartão de fidelização.",
+    "noCard2": "Comece a fazer pagamentos nos restaurantes aceitantes para  acumular saldo na sua carteira digital!",
+    "balance": "Saldo",
+    "paymentsMissingSingular": "Falta {{paymentsLeft}} pagamento",
+    "paymentsMissingPlural": "Faltam {{paymentsLeft}} pagamentos",
+    "toWin": "para ganhar mais {{amount}} €"
+  },
+
+  "home": {
+    "hello": "Olá",
+    "choiceTitle": "O que deseja fazer?",
+    "seeMenu": "Ver o menu",
+    "order": "Fazer pedido",
+    "orderScheduling": "Agendar um pedido",
+    "orderAndPay": "Fazer pedido ou Pagar",
+    "payBill": "Pagar a conta",
+    "seeBill": "Ver conta",
+    "requestFailed1": "Não foi possível completar o pedido.",
+    "requestFailed2": "Por favor, faça a leitura do código QR novamente.",
+    "menuLanguageModalTitle": "Em que idioma deseja ver o menu?",
+    "secure": "100% seguro",
+    "checkout": "Checkout",
+    "inactiveMerchantWarn": "O comerciante desativou esta ligação",
+    "sendPayment": "Enviar pagamento",
+    "sendTip": "Gorjeta"
+  },
+
+  "menu": {
+    "upTo": "até",
+    "option": "opção",
+    "options": "opções",
+    "unavailable": "Indisponível",
+
+    "pdfLoadFailed": "Não foi possível carregar o documento."
+  },
+
+  "scanQrCode": {
+    "title": "Pague a sua conta em menos de 10 segundos!",
+    "step1": "Carregue no botão abaixo para abrir a sua câmera.",
+    "step2": "Aponte a câmera para o código QR.",
+    "step3": "Veja a sua conta e finalize o pagamento.",
+    "openCamera": "Abrir a câmera"
+  },
+
+  "tip": {
+    "title": "Adicione uma gorjeta",
+    "other": "Outro",
+    "tipAmount": "Montante da gorjeta"
+  },
+
+  "pay": {
+    "title": "Pagamento",
+    "invoiceQuestion": "Deseja fatura com Nº contribuinte?",
+    "pay": "Pagar",
+    "notMyBill": "A conta não é minha",
+    "payNow": "Enviar e pagar já",
+    "payLater": "Enviar",
+
+    "notMyBillModal": {
+      "header": "Limpar sessão?",
+      "description": "Deseja continuar e limpar todos os items desta sessão?",
+      "ok": "Limpar"
+    },
+    "loadingItems": {
+      "0": "A pesquisar itens da Mesa...",
+      "1": "A pesquisar itens do Cartão...",
+      "2": "A pesquisar itens do Quarto...",
+      "3": "A pesquisar itens da Sessão...",
+      "4": "A pesquisar itens da Sessão...",
+      "5": "A pesquisar itens da Sessão..."
+    },
+    "discounts": "Descontos",
+    "requiringApproval": "Por aprovar",
+    "onlyRequiringApprovalAmountAvailable": "O montante por pagar é referente a apenas itens pendentes de autorização pelo staff. Poderá pagá-lo assim que for aprovado",
+    "yourSession":"A sua sessão",
+    "sessionTotal": "Total da Sessão",
+    "paidFor": "Já pago",
+    "paymentPending": "Por pagar",
+    "ongoingOrders": "Pedidos em progresso",
+    "payTotalBill": "Pagar a conta total",
+    "splitBill": "Dividir a conta",
+
+    "addConsumption": "Adicionar consumos",
+
+    "sessionHasUpdates": "A sessão foi atualizada! O que estava a tentar pagar deixou de estar disponível ou já foi pago.",
+
+    "emptySessionTitle": "Sessão vazia",
+    "emptySessionDescription": "Ainda não há informação sobre pedidos ou contas nesta sessão.",
+    "surchageFeesMayApply": "Poderão ainda aplicar-se sobretaxas.",
+    "syncError": "Não é possível obter a sua conta. Comunique a um funcionário que deseja pagar a sua conta através da Quivi.",
+
+    "shareBillTitle": "Como vai dividir a conta?",
+    "shareEqual": "Dividir por igual",
+    "chooseItems": "Escolher os itens a pagar",
+    "payCustomAmount": "Pagar valor personalizado",
+
+    "payTotal": "Pagar total",
+    "shareCustomTitle": "Qual o montante a pagar?",
+    "shareItemsTitle": "Selecione o que vai pagar",
+    "itemsTotal": "Total dos itens",
+    "peopleOnTableQuestion": "Por quantas pessoas quer dividir?",
+    "payForPeopleQuestion": "Por quantas pessoas vai pagar?",
+    "divisionTotal": "Total da divisão",
+    "billAmount": "Valor da conta:",
+    "overPayAlert": "O valor inserido é maior que o valor pendente desta Sessão.",
+    "appliedDiscount": "Preço unitário com {{formattedDiscount}}% de desconto",
+    "unitPrice": "Preço unitário"
+  },
+
+  "paymentMethods": {
+    "payTo": "Pagar a",
+    "amount": "Montante",
+    "serviceFee": "Taxa de serviço",
+    "total": "Total",
+    "choosePaymentMethod": "Escolha o método de pagamento",
+    "phoneNumber": "Número de telemóvel",
+    "confirm": "Confirmar",
+    "confirmPaymentQuestion": "Confirma que deseja pagar o valor acima?",
+    "sending": "A enviar o pedido...",
+
+    "tipRecall": "Que tal adicionar uma gorjeta?",
+    "tipRecallDescription": "Mostre o quanto você gostou da experiência!",
+    "noTip": "Não adicionar gorjeta",
+    "continue": "Continuar",
+    "enabledMethodsFailed": "Aconteceu algo errado. Por favor, volte atrás e tente novamente.",
+    "paymentFailed": "Não foi possível concluir o seu pagamento. Por favor, tente novamente.",
+
+    "termsAndConditions": "Termos e Condições",
+    "serviceFeeInfo": "O Quivi cobrará ao Utilizador uma taxa de serviço pela utilização da plataforma com vista à melhoria contínua dos serviços globais, fornecendo um serviço de conveniência e melhorando continuamente a experiência do utilizador, entre outros.",
+    "methods": {
+      "cash": "Numerário",
+      "ticketrestaurantmobile": "Ticket Restaurant Mobile",
+      "mbway": "MB Way",
+      "wallet": "Carteira Quivi",
+      "creditcard": "Cartão de crédito",
+      "paymentterminal": "Via terminal"
+    },
+    "ok": "Ok",
+    "expired": "O pagamento expirou. Por favor tente novamente.",
+    "enterPhoneNumber": "Introduza o seu Nº de telemóvel",
+    "acceptPayment": "Aceite o pagamento",
+    "acceptPaymentDescription": "Para finalizar o pagamento, siga os passos abaixo:",
+    "accessApp": "Aceda à sua app",
+    "acceptNotification": "Aceite a notificação de pedido de pagamento",
+    "didntReceiveNotification": "Não recebeu a notificação?",
+    "resendNotification": "Enviar novamente",
+    "important": "Importante",
+    "importantDescription1": "Para receber pedidos de pagamento, é necessário ter o produto",
+    "importantDescription2": "activo e com saldo. Se não recebeu a notificação, confirme que estas se encontram activas nas definições do seu smartphone.",
+    "accessActivityMbway": "Aceda ao separador Atividade",
+    "acceptPendingPaymentMbway": "Abra o pedido de pagamento",
+    "open": "Abrir",
+    "or": "Ou",
+    "applePayUnavailable": "Apple Pay apenas está disponível no navegador Safari",
+    "warning": "Aviso",
+    "merchantCustomPaymentNotes": "Após o pagamento e antes de sair, solicite por favor a confirmação do mesmo junto de um dos nossos colaboradores.",
+    "yourWallet": "A sua carteira",
+    "currentBalance": "Saldo atual",
+    "balanceAfterPurchase": "Saldo após a compra",
+    "remainingAmountToPay": "Montante restante a pagar",
+    "walletUnavailable": "Pague mais rápido com a carteira Quivi! Registe-se e faça login para a puder usar.",
+    "walletDiscount": "Desconto da carteira",
+    "applyWalletDiscount": "Descontar {{amount}} da carteira",
+    "topupHere": "Carregar Aqui",
+    "paymentTerminal": {
+      "title": "Pagamento via terminal",
+      "description": "Siga as instruções no terminal de pagamento",
+      "sendingPayment": "A comunicar a informação do pagamento ao terminal..."
+    }
+  },
+
+  "acquirer": {
+    "cardNumberPlaceholder": "Número do cartão",
+    "cvvPlaceholder": "CVV",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "AA",
+    "mustSpecifyCardNumber": "Insira um número de cartão válido.",
+    "mustSpecifyCVC": "Insira um CVC válido.",
+    "mustSpecifyExpiryDate": "Insira uma data de validade válida.",
+    "invalidData": "Os detalhes de pagamento não são válidos"
+  },
+
+  "paymentResult": {
+    "reviewTitle": "Avalie a sua experiência",
+    "paymentCompleted": "Pagamento concluído!",
+    "paymentCompletedDescription": "O seu pagamento foi enviado para o comerciante. Existe ainda por pagar o montante {{pendingAmount}}.",
+    "verifyingPayment": "Recebemos o seu pagamento! Aguarde enquanto o comunicamos ao comerciante...",
+    "downloadDocument": "Fazer download da fatura",
+    "win10Euros": "ganha mais 10€",
+    "soonTitle": "Crie uma conta Quivi",
+    "soonDescription": "Com uma conta Quivi, pode guardar os seus dados para finalizar compras mais rapidamente e em breve vai poder acumular saldo em sua carteira digital.",
+    "registerNow": "Registe-se agora!",
+    "seeAccount": "Ver a minha conta",
+    "register": "Registar",
+    "reviewSent": "Avaliação enviada!",
+    "loading": "A carregar...",
+    "errorTitle": "Aconteceu algo errado",
+    "home": "Início",
+    "failedTitle": "O pagamento falhou",
+    "syncFailed": "Não foi no entanto possível comunicá-lo ao comerciante. Solicite a ajuda de um funcionário.",
+    "externalLinksTitle": "Avalie-nos também nas páginas:",
+    "registerTeaser": "Quer pagar ainda mais rápido?",
+    "reviewThanks": "Obrigado por nos ajudar a melhorar o serviço!",
+    "gettingInvoice": "Estamos a obter a fatura do comerciante",
+    "noInvoiceAvailable": "O comerciante não nos disponibilizou a sua fatura",
+    "downloadInvoice": "Descarregar Fatura"
+  },
+
+  "orderAndPayResult" : {
+    "title": "Pedido",
+    "received": "Recebido",
+    "paid": "Pago",
+    "reviewing": "Em revisão",
+    "scheduled": "Agendado",
+    "preparing": "Em preparação",
+    "completed": "Completado",
+    "yourOrder": "O seu pedido",
+    "screenWillBeKeptUpdated": "O ecrã será atualizado automaticamente.",
+    "awaitingPayment": "A aguardar o processamento do pagamento.",
+    "awaitingAcceptance": "O pedido está a ser revisto.",
+    "awaitingScheduleAcceptance": "O pedido está a ser revisto. Uma vez aceite, será agendado para dia {{day}} de {{month}} às {{time}}",
+    "awaitingSchedule": "O pedido será preparado e estará pronto no dia {{day}} de {{month}} às {{time}}",
+    "orderIsProcessing": "O seu pedido está a ser preparado.",
+    "orderCompleted": "O seu pedido está pronto!",
+    "orderCanceled": "Pedido cancelado",
+    "orderCanceledDescription": "O comerciante cancelou o seu pedido.",
+    "orderCanceledAndRefundedDescription": "O comerciante cancelou e reembolsou o seu pedido.",
+    "orderCanceledMessage": "O comerciante deixou a seguinte mensagem:",
+    "closing": "A fechar"
+  },
+
+  "tutorial": {
+    "acceptPayment": "Aceite o pagamento",
+    "acceptPaymentDescription": "Para finalizar o pagamento ao restaurante, siga os passos abaixo:",
+    "accessApp": "Aceda à sua app {{paymentMethodName}}",
+    "acceptNotification": "Aceite a notificação de pedido de pagamento",
+    "paymentExpired": "O tempo para realizar o pagamento acabou."
+  },
+
+  "demo": {
+    "payTo": "Pagar a",
+    "amount": "Montante",
+    "choosePaymentMethod": "Escolha o método de pagamento",
+    "cash": "Numerário",
+    "creditCard": "Cartão de crédito",
+    "phoneNumber": "Número de telemóvel",
+    "confirm": "Confirmar",
+    "confirmPaymentQuestion": "Confirma que deseja pagar o valor acima?",
+    "sending": "A enviar o pedido..."
+  },
+
+  "review": {
+    "title": "Como foi a sua experiência? Deixe a sua opinião:",
+    "textPlaceholder": "Conte-nos sobre a sua experiência.",
+    "optional": "(Opcional)",
+    "send": "Enviar avaliação",
+    "sending": "A enviar...",
+    "reviewErrorMessage": "Não foi possível submeter a avaliação. Por favor tente novamente."
+  },
+
+  "transactions": {
+    "yourWallet": "A sua carteira",
+    "title": "Transações",
+    "soon": "Em breve vai poder acompanhar todos os pagamentos que realizou com Quivi!",
+    "noTransactions": "Ainda não realizou nenhuma transação com Quivi.",
+    "searching": "A pesquisar transações"
+  },
+
+  "settings": {
+    "title": "Configurações",
+    "profile": "Dados pessoais",
+    "passwordChange": "Alterar palavra-passe",
+    "language": "Idioma",
+    "chooseLanguage": "Escolha o idioma",
+    "confirm": "Confirmar"
+  },
+
+  "expandedMenu": {
+    "logout": "Sair",
+    "logoutConfirmation": "Tem a certeza que deseja sair?",
+    "login": "Entrar",
+    "register": "Registar",
+    "account": "A minha conta",
+    "settings": "Configurações"
+  },
+
+  "splashScreen": {
+    "loading": "A carregar..."
+  },
+
+  "errorCodes": {
+    "CH001": "Alguns itens podem já não estar disponíveis para pagamento. Por favor, selecione itens diferentes para pagar.",
+    "CH003": "O montante disponível para pagar mudou recentemente. Por favor, tente novamente com um montante diferente."
+  },
+
+  "qrCodeCategory": {
+    "0": "Mesa",
+    "1": "Cartão",
+    "2": "Quarto",
+    "3": "Gabinete",
+    "4": "",
+    "5": "Palhota"
+  },
+
+  "digitalMenu": {
+    "cartItemAdded": "Novo item no pedido",
+    "unavailable": "Indisponível",
+    "incrementQty": "Incrementar Quantitidade",
+    "decrementQty": "Decrementar Quantitidade",
+    "checkout": "Pedido ({{items}})",
+    "sendOrder": "Enviar pedido ({{items}} items)",
+    "addToTab": "Adicionar ao consumo ({{items}})",
+    "addItem": "Adicionar ao pedido",
+    "updateItem": "Atualizar pedido",
+    "availabilityChangedMsg": "Items removidos do pedido devido a indisponibilidade: {{items}}",
+    "priceChangedMsg": "Alteração de preço nos items: {{items}}",
+    "modifierValidation": {
+      "selectOne": "Uma opção",
+      "selectExactly": "{{number}} Opções",
+      "selectRange": "Entre {{minimum}} e {{maximum}} opções"
+    },
+    "reviewOrder": "Revisão do pedido",
+    "receivedOrderMsg": "Recebemos o seu pedido, o nosso staff já foi notificado. Aguarde por favor pela nossa validação e preparação."
+  },
+
+  "orders": {
+    "title": "Pedidos",
+    "order": "Pedido",
+    "singleItem": "<bold>1</bold> item",
+    "totalItems": "<bold>{{items}}</bold> itens"
+  },
+
+  "cart": {
+    "title": "Pedido",
+    "cartIsEmpty": "O Pedido está vazio.",
+    "cartIsEmptyDesc": "Consulte o menu e faça o seu pedido.",
+    "seeMenu": "Ver o Menu",
+    "totalPrice": "Total",
+    "checkout": "Avançar",
+    "takeawayQuestion": "Para levar?",
+    "yes": "Sim",
+    "no":"Não",
+    "observations": "Observações",
+    "payingLater": "A pagar mais tarde",
+    "payingNow": "A pagar já",
+    "mixedPaymentTitle": "Impossível avançar com o seu pedido",
+    "mixedPaymentDescription": "O seu pedido tem um misto de itens que têm de ser pagos já e itens que serão pagos mais tarde. Remova os itens de uma dessas modalidades de pagamento para continuar.",
+    "confirmSubmissionTitle": "Confirmar envio",
+    "confirmSubmissionDescription": "Este pedido está prestes a ser enviado para preparação. Confirma o envio do pedido para preparação?",
+    "amountNotEligible": "Pedido mínimo de {{amount}} necessário para continuar.",
+    "payLater": {
+      "change": "Alterar",
+      "submit": "Enviar pedido"
+    }
+  },
+
+  "extraCost": {
+    "1": "Taxa de Serviço",
+    "2": "Gorjeta"
+  },
+
+  "validations": {
+    "Required": "Este campo é obrigatório",
+    "InvalidPhoneNumber": "Indique um número de telemóvel no formato 912 345 678.",
+    "StringTooLong": "O valor introduzido é demasiado extenso.",
+    "InvalidValue": "O valor inserido não é válido.",
+    "PaymentFailed": "Não foi possível processar o seu pagamento. Por favor, verifique os seus dados e tente novamente mais tarde."
+  },
+
+  "walletTopUp": {
+    "title": "Qual o montante a carregar?",
+    "balanceAfterOperation": "Valor da carteira após operação:",
+    "wallet": "Carteira Quivi",
+
+    "dialog": {
+      "topUpDescription": "Foram depositados na sua carteira!",
+      "yourBalance": "O seu saldo:"
+    }
+  },
+
+  "mastercardCampaign": {
+    "page1": {
+      "title": "100% Cashback",
+      "description": "No primeiro pagamento com o seu cartão Mastercard®, 100%* do valor é creditado na carteira Quivi.",
+      "button": "Continuar",
+      "disclaimer": "* Pagamentos a partir de {{minEligibleAmount}}. Limite máximo de cashback {{maxCashbackAmount}}. Termos e condições da campanha."
+    },
+    "topup": {
+      "title": "Acabou de acumular",
+      "description": "na sua carteira digital através da campanha Mastercard®. Desfrute do saldo nas suas futuras compras com a Quivi."
+    },
+    "enjoyMastercardCampaign": "Desfrute da campanha Mastercard®",
+    "enterEmailToBeElligible": "Necessário se aderir à campanha Mastercard®",
+    "remainingToBenefit": "Faltam <bold>{{amount}}</bold> para beneficiar da campanha da Mastercard®",
+    "skip": "saltar"
+  },
+
+  "orderScheduling": {
+    "pickUpDate": "Data de levantamento",
+    "confirm": "Confirmar",
+    "chooseNewDate": "Escolher nova data",
+    "itemsUnavailableAtPickUpDate": "Os seguintes produtos no seu pedido não estão disponíveis na data escolhida: <list></list> Ao continuar serão removidos.",
+    "asSoonAsPossible": "Assim que possível",
+    "forLater": "Para mais tarde"
+  },
+
+  "calendar": {
+    "months": {
+      "1": "Janeiro",
+      "2": "Fevereiro",
+      "3": "Março",
+      "4": "Abril",
+      "5": "Maio",
+      "6": "Junho",
+      "7": "Julho",
+      "8": "Agosto",
+      "9": "Setembro",
+      "10": "Outubro",
+      "11": "Novembro",
+      "12": "Dezembro"
+    },
+    "dateFormat": "{{day}} de {{month}} às {{time}}"
+  }
+}

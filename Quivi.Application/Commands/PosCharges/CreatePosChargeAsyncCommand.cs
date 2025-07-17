@@ -22,7 +22,7 @@ namespace Quivi.Application.Commands.PosCharges
         public string? VatNumber { get; init; }
         public string? Email { get; init; }
         public string? Observations { get; init; }
-        public decimal Total { get; init; }
+        public decimal Amount { get; init; }
         public IEnumerable<SessionItem>? Items { get; init; }
         public decimal Tip { get; init; }
         public int? LocationId { get; init; }
@@ -156,7 +156,7 @@ namespace Quivi.Application.Commands.PosCharges
             else
             {
                 var unpaidTotal = sessionItems.Sum(CalculateItemAmount) - paidItems.Sum(CalculateItemAmount);
-                var unmatchedAmount = command.Total - unpaidTotal;
+                var unmatchedAmount = command.Amount - unpaidTotal;
                 if (unmatchedAmount > 0)
                 {
                     var sessionItemCount = sessionItems.Sum(r => r.Quantity);
@@ -180,9 +180,10 @@ namespace Quivi.Application.Commands.PosCharges
             {
                 MerchantId = command.MerchantId,
                 ChannelId = command.ChannelId,
-                Total = command.Total,
-                SurchargeFeeAmount = 0.0m,
+                Total = command.Amount + command.Tip,
+                Payment = command.Amount,
                 Tip = command.Tip,
+                SurchargeFeeAmount = 0.0m,
                 SessionId = session.Id,
                 LocationId = command.LocationId,
                 Email = command.Email,
@@ -219,8 +220,8 @@ namespace Quivi.Application.Commands.PosCharges
         {
             if (command.Items == null)
             {
-                posCharge.Total = command.Total;
-                posCharge.Payment = command.Total;
+                posCharge.Total = command.Amount;
+                posCharge.Payment = command.Amount;
                 return true;
             }
 

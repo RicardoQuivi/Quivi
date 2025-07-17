@@ -7,7 +7,7 @@ export const useLocalsApi = (token: string) => {
     const httpClient = useHttpClient();
 
     const get = async (_: GetLocalsRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/locations`;
+        const url = new URL(`api/locations`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetLocalsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

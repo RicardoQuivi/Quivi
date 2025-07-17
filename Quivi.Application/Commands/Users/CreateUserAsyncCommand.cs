@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Quivi.Domain.Entities.Identity;
-using Quivi.Domain.Entities.Merchants;
+using Quivi.Domain.Entities.Financing;
 using Quivi.Domain.Repositories.EntityFramework.Identity;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
@@ -10,17 +9,25 @@ using Quivi.Infrastructure.Abstractions.Events.Data.Users;
 
 namespace Quivi.Application.Commands.Users
 {
-    public class CreateUserAsyncCommand : ICommand<Task>
+    public class CreateUserAsyncCommand : ICommand<Task<ApplicationUser?>>
     {
+        public class CreatePersonData
+        {
+            public string? PhoneNumber { get; init; }
+            public string? VatNumber { get; init; }
+        }
+
         public required string Email { get; init; }
         public string? Password { get; init; }
+        public CreatePersonData? PersonData { get; init; }
+
 
         public required Action OnInvadidEmail { get; init; }
         public required Action OnEmailAlreadyExists { get; init; }
         public required Action<PasswordOptions> OnInvalidPassword { get; init; }
     }
 
-    public class CreateUserAsyncCommandHandler : ICommandHandler<CreateUserAsyncCommand, Task>
+    public class CreateUserAsyncCommandHandler : ICommandHandler<CreateUserAsyncCommand, Task<ApplicationUser?>>
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IOptions<IdentityOptions> identityOptions;
@@ -38,20 +45,20 @@ namespace Quivi.Application.Commands.Users
             this.eventService = eventService;
         }
 
-        public async Task Handle(CreateUserAsyncCommand command)
+        public async Task<ApplicationUser?> Handle(CreateUserAsyncCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Email))
             {
                 command.OnInvadidEmail();
-                return;
+                return null;
             }
 
             var applicationUser = await CreateUser(command);
             if (applicationUser == null)
-                return;
+                return null;
 
             if (applicationUser.EmailConfirmed)
-                return;
+                return applicationUser;
 
             var code = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
             await eventService.Publish(new OnUserEmailTokenGeneratedEvent
@@ -59,6 +66,7 @@ namespace Quivi.Application.Commands.Users
                 Id = applicationUser.Id,
                 Code = code,
             });
+            return applicationUser;
         }
 
         private async Task<ApplicationUser?> CreateUser(CreateUserAsyncCommand command)
@@ -97,6 +105,12 @@ namespace Quivi.Application.Commands.Users
 
                 CreatedDate = now,
                 ModifiedDate = now,
+
+                Person = command.PersonData == null ? null : new Person
+                {
+                    PhoneNumber = command.PersonData.PhoneNumber,
+                    Vat = command.PersonData.VatNumber,
+                },
             };
 
             var createResult = await userManager.CreateAsync(applicationUser, command.Password);

@@ -30,6 +30,8 @@ import { CustomChargeMethodFormPage } from "./pages/Settings/CustomChargeMethods
 import { PrinterPage } from "./pages/Settings/Printers/PrintersPage";
 import { PrinterWorkerFormPage } from "./pages/Settings/Printers/PrinterWorkers/PrinterWorkerFormPage";
 import { PrinterFormPage } from "./pages/Settings/Printers/Printers/PrinterFormPage";
+import { AcquirerConfigurationsPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationsPage";
+import { AcquirerConfigurationFormPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationFormPage";
 
 export const App = () => {
     return <>
@@ -46,6 +48,11 @@ export const App = () => {
 
                 <Route element={<AuthLayoutRoute />}>
                     <Route path="/" element={<DashboardPage />} />
+
+                    {/* Admin */}
+                    <Route path="/admin/acquirerConfigurations" element={<AcquirerConfigurationsPage />} />
+                    <Route path="/admin/acquirerConfigurations/add" element={<AcquirerConfigurationFormPage />} />
+                    <Route path="/admin/acquirerConfigurations/:id/edit" element={<AcquirerConfigurationFormPage />} />
 
                     {/* Merchant */}
                     <Route path="/businessProfile/merchant/setup" element={<SetUpNewMerchantPage />} />

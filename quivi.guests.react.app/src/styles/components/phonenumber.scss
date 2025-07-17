@@ -1,0 +1,38 @@
+$intl-flag-size-px: 60;
+.intl-tel-input {
+    .flag-container {
+        width: 100% !important;
+
+        .selected-flag {
+            background-color: rgb(244, 244, 244);
+            display: flex !important;
+            justify-content: space-between !important;
+            padding: 0 15px !important;
+            width: fit-content !important;
+
+            .iti-flag {
+                position: absolute;
+            }
+        }
+
+        .country-list {
+            width: 100% !important;
+            overflow-x: clip !important;
+        }
+    }
+
+    input {
+        height: 100%;
+        padding-left: $intl-flag-size-px + 6px !important;
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    input::placeholder {
+        opacity: 0.35;
+        color: #C0C0C0;
+        text-align: center;
+        font-size: large;
+        padding-left: $intl-flag-size-px + 0px;
+    }
+}

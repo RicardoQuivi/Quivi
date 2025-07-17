@@ -1,7 +1,7 @@
-import { QueryClient, QueryKey, QueryMeta, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from "react";
-import { QueryResult } from './QueryResult';
-import { EntityType, getKey } from './QueryKeys';
+import { useMemo } from "react";
+import { getKey, type EntityType } from "./QueryKeys";
+import type { QueryResult } from "./QueryResult";
+import { useQuery, useQueryClient, type QueryClient, type QueryKey, type QueryMeta } from "@tanstack/react-query";
 
 const emptyResponse: unknown[] = [];
 interface IQueryableResult<TEntity, TResponse extends IResponse<TEntity>> extends QueryResult<TEntity[]> {
@@ -82,9 +82,8 @@ export const useQueryable = <TRequest, TEntity, TResponse extends IResponse<TEnt
 
     const getOptimizedQueryKey = (id: string) => [getKey(props.entityType), props.queryName, getKey(props.entityType, id), optimizedKey];
 
-    const getMeta = (refreshOnAnyUpdate?: boolean) => ({
+    const getMeta = (refreshOnAnyUpdate?: boolean): Record<string, any> => ({
         entityType: props.entityType,
-        ids: new Set<string>(),
         refreshOnAnyUpdate: refreshOnAnyUpdate,
     })
 
@@ -93,7 +92,7 @@ export const useQueryable = <TRequest, TEntity, TResponse extends IResponse<TEnt
             return null;
         }
         
-        const idsIndexer = c.meta!["ids"] as Set<string>;
+        const idsIndexer = new Set<string>();
         const isOptimizedResponse = c.queryKey.includes(optimizedKey) == true;
         const ids = props.getIdsFilter?.(props.request);
         if(ids != undefined && isOptimizedResponse == false) {
@@ -149,61 +148,36 @@ export const useQueryable = <TRequest, TEntity, TResponse extends IResponse<TEnt
                 
                 const optimizedResponse = props.getResponseFromEntities([item]);
                 const optimizedQueryKey = getOptimizedQueryKey(id);
-                queryClient.fetchQuery({
+                await queryClient.fetchQuery({
                     queryKey: optimizedQueryKey,
-                    queryFn: c => queryFn(c, async () => optimizedResponse),
+                    queryFn: c1 => queryFn(c1, async () => optimizedResponse),
                     meta: getMeta(false),
                 })
             }
         }
 
-        return response;
+        return {
+            ...response,
+            '__idsIndexer': idsIndexer,
+        };
     }
 
-    const { isLoading, isFetching, data: response, } = useQuery({
+    const { isLoading, isFetching, data: response } = useQuery({
         queryKey: queryKey,
         queryFn: c => queryFn(c, props.query),
         meta: getMeta(props.refreshOnAnyUpdate),
     })
-    
-    const [result, setResult] = useState(() => ({
-        isFirstLoading: response === undefined || props.request == undefined,
-        isLoading: isLoading || isFetching,
-        data: response?.data ?? (emptyResponse as TEntity[]),
-        response: response === null ? undefined : response,
-    }))
-    
-    useEffect(() => setResult(r => {
-        const firstLoading = response === undefined || props.request == undefined;
-        const loading = isLoading || isFetching;
-        const data = response?.data ?? (emptyResponse as TEntity[]);
-        const dataResponse = response === null ? undefined : response;
 
-        let isDifferent = false;
-        if(r.isFirstLoading != firstLoading) {
-            isDifferent = true;
-        }
-        if(r.isLoading != loading) {
-            isDifferent = true;
-        }
-        if(r.data != data) {
-            isDifferent = true;
-        }
-        if(r.response != dataResponse) {
-            isDifferent = true;
-        }
-
-        if(isDifferent == false) {
-            return r;
-        }
+    const result = useMemo(() => {
+        const state = queryClient.getQueryState(queryKey);
 
         return {
-            isFirstLoading: firstLoading,
-            isLoading: loading,
-            data: data,
-            response: dataResponse,
+            isFirstLoading: (state?.dataUpdateCount ?? 0) == 0 || props.request == undefined,
+            isLoading: isLoading || isFetching,
+            data: response?.data ?? (emptyResponse as TEntity[]),
+            response: response == null ? undefined : response,
         }
-    }), [isLoading, isFetching, response, props.entityType, props.request == undefined, props.queryName]);
+    }, [isLoading, isFetching, response, props.entityType, props.request, props.queryName, queryClient]);
 
     return result;
 }

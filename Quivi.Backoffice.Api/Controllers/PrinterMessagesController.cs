@@ -6,6 +6,7 @@ using Quivi.Application.Queries.PrinterMessageTargets;
 using Quivi.Backoffice.Api.Requests.PrinterMessages;
 using Quivi.Backoffice.Api.Responses.PrinterMessages;
 using Quivi.Domain.Entities.Notifications;
+using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
@@ -25,18 +26,21 @@ namespace Quivi.Backoffice.Api.Controllers
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
         private readonly IEscPosPrinterService escPosPrinterService;
+        private readonly IDateTimeProvider dateTimeProvider;
 
         public PrinterMessagesController(IQueryProcessor queryProcessor,
                                     ICommandProcessor commandProcessor,
                                     IMapper mapper,
                                     IIdConverter idConverter,
-                                    IEscPosPrinterService escPosPrinterService)
+                                    IEscPosPrinterService escPosPrinterService,
+                                    IDateTimeProvider dateTimeProvider)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.mapper = mapper;
             this.idConverter = idConverter;
             this.escPosPrinterService = escPosPrinterService;
+            this.dateTimeProvider = dateTimeProvider;
         }
 
         [HttpGet]
@@ -68,6 +72,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 Title = request.Text,
                 Message = "This is a test perfomed via Quivi Backoffice",
                 PingOnly = request.PingOnly,
+                Timestamp = request.Timestamp ?? dateTimeProvider.GetUtcNow(),
             });
 
             var result = await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand

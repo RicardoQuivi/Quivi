@@ -7,9 +7,14 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? ChannelIds { get; init; }
+        public IEnumerable<int>? PreparationGroupIds { get; init; }
         public IEnumerable<int>? PosIntegrationIds { get; init; }
         public IEnumerable<SessionStatus>? Statuses { get; init; }
         public bool LatestSessionsOnly { get; init; }
+
+        public bool IncludePreparationGroups { get; init; }
+        public bool IncludePreparationGroupsItems { get; init; }
+        public bool IncludeOrders { get; init; }
         public bool IncludeOrdersMenuItems { get; init; }
         public bool IncludeOrdersMenuItemsPosChargeInvoiceItems { get; init; }
         public bool IncludeChannel { get; init; }

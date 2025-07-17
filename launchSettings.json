@@ -16,7 +16,9 @@
         "rabbitmq": "StartWithoutDebugging",
         "sqlserver": "StartWithoutDebugging",
         "quivi.pos.api": "StartDebugging",
-        "quivi.pos.react.app": "StartWithoutDebugging"
+        "quivi.pos.react.app": "StartWithoutDebugging",
+        "quivi.guests.api": "StartDebugging",
+        "quivi.guests.react.app": "StartWithoutDebugging"
       }
     }
   }

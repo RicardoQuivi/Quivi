@@ -11,17 +11,17 @@ namespace Quivi.SignalR.Extensions
 
     public static class HubExtensions
     {
-        private class UserGroup<T> : IGroup<T> where T : class
+        private abstract class AGroup<T> : IGroup<T> where T : class
         {
             private readonly IGroupManager groupManager;
             private readonly IHubClients<T> hubClients;
             private readonly string groupName;
 
-            public UserGroup(IGroupManager groupManager, IHubClients<T> hubClients, string userId)
+            public AGroup(IGroupManager groupManager, IHubClients<T> hubClients, string id, string groupPrefix)
             {
                 this.groupManager = groupManager;
                 this.hubClients = hubClients;
-                this.groupName = $"Users/{userId}";
+                this.groupName = $"{groupPrefix}/{id}";
             }
 
             public Task AddAsync(string connectionId) => groupManager.AddToGroupAsync(connectionId, groupName);
@@ -29,22 +29,32 @@ namespace Quivi.SignalR.Extensions
             public T Client => hubClients.Group(groupName);
         }
 
-        private class MerchantGroup<T> : IGroup<T> where T : class
+        private class UserGroup<T> : AGroup<T> where T : class
         {
-            private readonly IGroupManager groupManager;
-            private readonly IHubClients<T> hubClients;
-            private readonly string groupName;
-
-            public MerchantGroup(IGroupManager groupManager, IHubClients<T> hubClients, string merchantId)
+            public UserGroup(IGroupManager groupManager, IHubClients<T> hubClients, string userId) : base(groupManager, hubClients, userId, "Users")
             {
-                this.groupManager = groupManager;
-                this.hubClients = hubClients;
-                this.groupName = $"Merchants/{merchantId}";
             }
+        }
 
-            public Task AddAsync(string connectionId) => groupManager.AddToGroupAsync(connectionId, groupName);
-            public Task RemoveAsync(string connectionId) => groupManager.RemoveFromGroupAsync(connectionId, groupName);
-            public T Client => hubClients.Group(groupName);
+        private class MerchantGroup<T> : AGroup<T> where T : class
+        {
+            public MerchantGroup(IGroupManager groupManager, IHubClients<T> hubClients, string merchantId) : base(groupManager, hubClients, merchantId, "Users")
+            {
+            }
+        }
+
+        private class ChannelGroup<T> : AGroup<T> where T : class
+        {
+            public ChannelGroup(IGroupManager groupManager, IHubClients<T> hubClients, string channelId) : base(groupManager, hubClients, channelId, "Channels")
+            {
+            }
+        }
+
+        private class JobGroup<T> : AGroup<T> where T : class
+        {
+            public JobGroup(IGroupManager groupManager, IHubClients<T> hubClients, string jobId) : base(groupManager, hubClients, jobId, "Jobs")
+            {
+            }
         }
 
         public static async Task WithUserId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
@@ -80,6 +90,42 @@ namespace Quivi.SignalR.Extensions
                 return;
 
             var userGroup = new MerchantGroup<T>(hub.Groups, hub.Clients, id);
+            await func(userGroup);
+        }
+
+        public static async Task WithChannelId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var userGroup = new ChannelGroup<T>(context.Groups, context.Clients, id);
+            await func(userGroup);
+        }
+
+        public static async Task WithChannelId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var userGroup = new ChannelGroup<T>(hub.Groups, hub.Clients, id);
+            await func(userGroup);
+        }
+
+        public static async Task WithJobId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var userGroup = new JobGroup<T>(context.Groups, context.Clients, id);
+            await func(userGroup);
+        }
+
+        public static async Task WithJobId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var userGroup = new JobGroup<T>(hub.Groups, hub.Clients, id);
             await func(userGroup);
         }
     }

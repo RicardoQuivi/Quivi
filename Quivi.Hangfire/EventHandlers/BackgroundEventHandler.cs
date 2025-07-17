@@ -12,10 +12,16 @@ namespace Quivi.Hangfire.EventHandlers
             this.backgroundJobHandler = backgroundJobHandler;
         }
 
-        public Task Process(T message)
+        public async Task Process(T message)
         {
-            backgroundJobHandler.Enqueue(() => Run(message));
-            return Task.CompletedTask;
+            try
+            {
+                await Run(message);
+            }
+            catch
+            {
+                backgroundJobHandler.Enqueue(() => Run(message));
+            }
         }
 
         public abstract Task Run(T message);

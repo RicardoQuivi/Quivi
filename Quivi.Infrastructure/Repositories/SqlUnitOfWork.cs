@@ -24,6 +24,7 @@ namespace Quivi.Infrastructure.Repositories
         public IEmployeesRepository Employees => new SqlEmployeesRepository(quiviContext);
         public IItemsModifierGroupsRepository MenuItemModifierGroups => new SqlItemsModifierGroupsRepository(quiviContext);
         public IOrdersRepository Orders => new SqlOrdersRepository(quiviContext);
+        public IOrderSequencesRepository OrderSequences => new SqlOrderSequencesRepository(quiviContext);
         public IOrderMenuItemsRepository OrderMenuItems => new SqlOrderMenuItemsRepository(quiviContext);
         public ISessionsRepository Sessions => new SqlSessionsRepository(quiviContext);
         public ICustomChargeMethodsRepository CustomChargeMethods => new SqlCustomChargeMethodsRepository(quiviContext);
@@ -35,6 +36,12 @@ namespace Quivi.Infrastructure.Repositories
         public IPrinterWorkersRepository PrinterWorkers => new SqlPrinterWorkersRepository(quiviContext);
         public IPrinterNotificationMessagesRepository PrinterNotificationMessages => new SqlPrinterNotificationMessagesRepository(quiviContext);
         public IPrinterMessageTargetsRepository PrinterMessageTargets => new SqlPrinterMessageTargetsRepository(quiviContext);
+        public IOrderConfigurableFieldsRepository OrderConfigurableFields => new SqlOrderConfigurableFieldsRepository(quiviContext);
+        public IMerchantAcquirerConfigurationsRepository MerchantAcquirerConfigurations => new SqlMerchantAcquirerConfigurationsRepository(quiviContext);
+        public IPeopleRepository People => new SqlPeopleRepository(quiviContext);
+        public IChargesRepository Charges => new SqlChargesRepository(quiviContext);
+        public IJournalsRepository Journals => new SqlJournalsRepository(quiviContext);
+        public IReviewsRepository Reviews => new SqlReviewsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

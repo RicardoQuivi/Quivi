@@ -14,6 +14,7 @@ import ConfirmButton from "../Buttons/ConfirmButton";
 import { CashCoinIcon, NotificationIcon, TakeAwayIcon } from "../../icons";
 import { useMenuItemsQuery } from "../../hooks/queries/implementations/useMenuItemsQuery";
 import { MenuItem } from "../../hooks/api/Dtos/menuitems/MenuItem";
+import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
 
 const fadeIn = keyframes`
   from {
@@ -67,9 +68,8 @@ export const OrderCard = (props: OrderCardProps) => {
         return channelQuery.data[0];
     }, [channelQuery.data])
 
-    const profileQuery = useChannelsQuery(channel == undefined ? undefined :{
+    const profileQuery = useChannelProfilesQuery(channel == undefined ? undefined :{
         ids: [channel.channelProfileId],
-        includeDeleted: true,
         page: 0,
         pageSize: 1,
     });
@@ -279,7 +279,7 @@ export const OrderCard = (props: OrderCardProps) => {
                                     (
                                         configurableField.type == ConfigurableFieldType.Check
                                         ?
-                                        t(`WebDashboard.${["", "0", "false"].includes(f.value.toLowerCase()) ? "No" : "Yes"}`)
+                                        t(`${["", "0", "false"].includes(f.value.toLowerCase()) ? "no" : "yes"}`)
                                         :
                                         f.value
                                     )
@@ -295,26 +295,26 @@ export const OrderCard = (props: OrderCardProps) => {
             <CardActions disableSpacing style={{flex: "0 0 auto"}}>
                 {
                     showNextStateButton(props.order, OrderState.Processing) &&
-                    <ConfirmButton primaryButton onAction={() => props.order != undefined && props.onNextStateClicked?.(props.order)} confirmText={`${t("WebDashboard.Confirm")}?`} style={{width: "100%"}}>
+                    <ConfirmButton primaryButton onAction={() => props.order != undefined && props.onNextStateClicked?.(props.order)} confirmText={`${t("confirm")}?`} style={{width: "100%"}}>
                         {
                             props.order?.state == OrderState.Scheduled
                             ?
                                 t("WebDashboard.SendToInProgress")
                             :
-                                t("WebDashboard.Accept")
+                                t("accept")
                         }
                     </ConfirmButton>
                 }
                 {
                     showNextStateButton(props.order, OrderState.Completed) &&
-                    <ConfirmButton onAction={() => props.order != undefined && props.onCompleteClicked?.(props.order)} confirmText={`${t("WebDashboard.Confirm")}?`} style={{width: "100%"}}>
-                        {t("WebDashboard.Ready")}
+                    <ConfirmButton onAction={() => props.order != undefined && props.onCompleteClicked?.(props.order)} confirmText={`${t("confirm")}?`} style={{width: "100%"}}>
+                        {t("ready")}
                     </ConfirmButton>
                 }
                 {
                     showNextStateButton(props.order, OrderState.Scheduled) &&
-                    <ConfirmButton primaryButton onAction={() => props.order != undefined && props.onNextStateClicked?.(props.order)} confirmText={`${t("WebDashboard.Confirm")}?`} style={{width: "100%"}}>
-                        {t("WebDashboard.Accept")}
+                    <ConfirmButton primaryButton onAction={() => props.order != undefined && props.onNextStateClicked?.(props.order)} confirmText={`${t("confirm")}?`} style={{width: "100%"}}>
+                        {t("accept")}
                     </ConfirmButton>
                 }
             </CardActions>

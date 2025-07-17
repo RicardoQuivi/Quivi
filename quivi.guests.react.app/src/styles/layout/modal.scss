@@ -1,0 +1,69 @@
+﻿@use '../util' as *;
+
+.modal {
+    &__background {
+        position: fixed;
+        min-height: calc(var(--vh, 1vh) * 100);
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(1px);
+        z-index: 3000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+
+        &.open {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+
+    &__content {
+        position: fixed;
+        padding: rem(28) 0 rem(32);
+        bottom: -80px;
+        left: 0;
+        right: 0;
+        background: $white-color;
+        border-radius: rem(12) rem(12) 0 0;
+        z-index: 3500;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+
+        &.open {
+            opacity: 1;
+            visibility: visible;
+            bottom: 0;
+        }
+
+        h3 {
+            text-align: left;
+            font-weight: $font-weight-semibold;
+            color: $primary-color;
+        }
+
+        button:not(:last-child) {
+            margin-bottom: rem(20);
+        }
+    }
+
+    &__header {
+        margin-bottom: rem(32);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .close-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: rem(4);
+        }
+    }
+}

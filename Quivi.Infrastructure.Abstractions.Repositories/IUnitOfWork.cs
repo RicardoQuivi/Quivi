@@ -13,6 +13,7 @@
         IEmployeesRepository Employees { get; }
         IItemsModifierGroupsRepository MenuItemModifierGroups { get; }
         IOrdersRepository Orders { get; }
+        IOrderSequencesRepository OrderSequences { get; }
         IOrderMenuItemsRepository OrderMenuItems { get; }
         ISessionsRepository Sessions { get; }
         ICustomChargeMethodsRepository CustomChargeMethods { get; }
@@ -24,6 +25,12 @@
         IPrinterWorkersRepository PrinterWorkers { get; }
         IPrinterNotificationMessagesRepository PrinterNotificationMessages { get; }
         IPrinterMessageTargetsRepository PrinterMessageTargets { get; }
+        IOrderConfigurableFieldsRepository OrderConfigurableFields { get; }
+        IMerchantAcquirerConfigurationsRepository MerchantAcquirerConfigurations { get; }
+        IPeopleRepository People { get; }
+        IChargesRepository Charges { get; }
+        IJournalsRepository Journals { get; }
+        IReviewsRepository Reviews { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\NotificationsContacts\**" />
+    <EmbeddedResource Remove="Commands\NotificationsContacts\**" />
+    <None Remove="Commands\NotificationsContacts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
@@ -26,10 +32,6 @@
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.Facturalusa\Quivi.Infrastructure.Pos.Facturalusa.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Storage.Azure\Quivi.Infrastructure.Storage.Azure.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure\Quivi.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Commands\NotificationsContacts\" />
   </ItemGroup>
 
 </Project>

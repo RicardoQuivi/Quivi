@@ -26,10 +26,16 @@ namespace Quivi.Infrastructure.Repositories
                 query = query.Include(q => q.Session);
 
             if (criteria.IncludeSessionChannel)
-                query = query.Include(q => q.Session).ThenInclude(q => q.Channel);
+                query = query.Include(q => q.Session!).ThenInclude(q => q.Channel);
+
+            if (criteria.IncludeSessionChannelProfile)
+                query = query.Include(q => q.Session!).ThenInclude(q => q.Channel!).ThenInclude(q => q.ChannelProfile);
 
             if (criteria.IncludeOrders)
                 query = query.Include(q => q.Orders);
+
+            if (criteria.IncludeOrdersSequence)
+                query = query.Include(q => q.Orders!).ThenInclude(q => q.OrderSequence);
 
             if (criteria.IncludeOrderFields)
                 query = query.Include(q => q.Orders!).ThenInclude(o => o.OrderAdditionalInfos!).ThenInclude(a => a.OrderConfigurableField);

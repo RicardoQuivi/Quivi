@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Quivi.Infrastructure.Abstractions.Configurations;
 using Quivi.Infrastructure.Abstractions.Storage;
-using Quivi.Infrastructure.Configurations;
 using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Infrastructure.Storage

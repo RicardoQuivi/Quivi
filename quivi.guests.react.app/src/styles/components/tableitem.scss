@@ -1,0 +1,32 @@
+﻿@use '../util' as *;
+
+.table-item {
+    display: grid;
+    grid-gap: rem(8);
+    grid-template-columns: rem(28) 1fr repeat(2, minmax(rem(32), rem(62)));
+    margin-bottom: rem(8);
+
+    p {
+        font-size: $font-size-sm;
+        line-height: 140%;
+    }
+
+    .unit {
+        opacity: 0.6;
+    }
+
+    .price {
+        text-align: right;
+    }
+}
+
+
+
+.is-paid {
+    pointer-events: none;
+    opacity: 0.3;
+
+    p.fraction {
+        text-decoration: line-through;
+    }
+}

@@ -3,11 +3,10 @@
     public enum ChargePartner
     {
         Quivi = 1,
-        Cash = 2,
-        TicketRestaurant = 3,
-        SibsPaymentGateway = 4,
-        Stripe = 5,
-        Checkout = 6,
-        Paybyrd = 7,
+        TicketRestaurant = 2,
+        SibsPaymentGateway = 3,
+        Stripe = 4,
+        Checkout = 5,
+        Paybyrd = 6,
     }
 }

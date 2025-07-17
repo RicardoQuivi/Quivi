@@ -22,28 +22,28 @@ export const useChannelProfilesApi = (token?: string) => {
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
         request.channelIds?.filter(id => !!id).forEach((id, index) => queryParams.set(`channelIds[${index}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/channelprofiles?${queryParams}`;
+        const url = new URL(`api/channelprofiles?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetChannelProfilesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateChannelProfileRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channelprofiles`;
+        const url = new URL(`api/channelprofiles`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<CreateChannelProfileResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchChannelProfileRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channelprofiles/${request.id}`;
+        const url = new URL(`api/channelprofiles/${request.id}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPatch<PatchChannelProfileResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteChannel = (request: DeleteChannelProfileRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channelprofiles/${request.id}`;
+        const url = new URL(`api/channelprofiles/${request.id}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpDelete<DeleteChannelProfileResponse>(url, {}, {
             "Authorization": `Bearer ${token}`,
         });

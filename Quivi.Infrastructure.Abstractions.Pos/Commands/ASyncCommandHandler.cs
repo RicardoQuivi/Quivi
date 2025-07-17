@@ -6,6 +6,8 @@ namespace Quivi.Infrastructure.Abstractions.Pos.Commands
 {
     public abstract class ASyncCommandHandler<TCommand> : ICommandHandler<TCommand, Task<IEnumerable<IEvent>>> where TCommand : ICommand<Task<IEnumerable<IEvent>>>
     {
+        public const int maxDecimalPlaces = 6;
+
         private readonly Dictionary<Order, List<Func<Order, IEvent>>> orderEvents = new();
         private readonly Dictionary<Session, List<Func<Session, IEvent>>> sessionEvents = new();
 

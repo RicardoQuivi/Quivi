@@ -28,6 +28,15 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MenuItemIds != null)
                 query = query.Where(x => criteria.MenuItemIds.Any(itemId => x.MenuItemCategoryAssociations!.Select(s => s.MenuItemId).Contains(itemId)));
 
+            if (criteria.ChannelIds != null)
+            {
+                var merchantIds = Context.Channels.Where(c => criteria.ChannelIds.Contains(c.Id))
+                                                    .Where(c => c.DeletedDate.HasValue == false)
+                                                    .Select(c => c.MerchantId)
+                                                    .Distinct();
+                query = query.Where(x => merchantIds.Contains(x.MerchantId));
+            }
+
             if (criteria.MerchantIds != null)
                 query = query.Where(x => criteria.MerchantIds.Contains(x.MerchantId));
 

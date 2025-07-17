@@ -1,0 +1,15 @@
+﻿@use '../util' as *;
+
+.body {
+    min-height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    min-height: 100dvh;
+    
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: 100dvh;
+
+    &.loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

@@ -10,7 +10,7 @@
 
         #region Relationships
         public int PosChargeId { get; set; }
-        public required PosCharge PosCharge { get; set; }
+        public PosCharge? PosCharge { get; set; }
         #endregion
     }
 }

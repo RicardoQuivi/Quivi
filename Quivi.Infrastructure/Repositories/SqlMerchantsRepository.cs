@@ -25,6 +25,9 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.IncludeParentMerchant)
                 query = query.Include(q => q.ParentMerchant);
+            
+            if(criteria.IncludeFees)
+                query = query.Include(q => q.Fees);
 
             if (criteria.Ids != null)
                 query = query.Where(x => criteria.Ids.Contains(x.Id));
@@ -35,8 +38,11 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.ChildIds != null)
                 query = query.Where(x => x.ChildMerchants!.Any(c => criteria.ChildIds.Contains(c.Id)));
 
-            if (criteria.Inactive.HasValue)
-                query = query.Where(x => x.DeletedDate.HasValue == criteria.Inactive.Value);
+            if (criteria.ChannelIds != null)
+                query = query.Where(x => x.Channels!.Any(c => criteria.ChannelIds.Contains(c.Id)));
+
+            if (criteria.IsDeleted.HasValue)
+                query = query.Where(x => x.DeletedDate.HasValue == criteria.IsDeleted.Value);
 
             if (criteria.VatNumbers != null)
                 query = query.Where(x => criteria.VatNumbers.Contains(x.VatNumber));

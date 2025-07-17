@@ -28,26 +28,29 @@ export const usePreparationGroupsApi = (token: string) => {
             queryParams.set('IsCommited', request.isCommited ? "true" : "false")
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/preparationGroups?${queryParams}`;
+        const url = new URL(`api/preparationGroups?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetPreparationGroupsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const commit = async (request: CommitPreparationGroupRequest) => {
-        return await httpClient.httpPut<CommitPreparationGroupResponse>(`${import.meta.env.VITE_API_URL}api/preparationGroups/${request.id}`, request, {
+        const url = new URL(`api/preparationGroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return await httpClient.httpPut<CommitPreparationGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = async (request: PatchPreparationGroupRequest): Promise<PatchPreparationGroupResponse> => {
-        return await httpClient.httpPatch<PatchPreparationGroupResponse>(`${import.meta.env.VITE_API_URL}api/preparationGroups/${request.id}`, request, {
+        const url = new URL(`api/preparationGroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return await httpClient.httpPatch<PatchPreparationGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const print = async (request: PrintCommitedPreparationGroupRequest): Promise<PrintCommitedPreparationGroupResponse> => {
-        return await httpClient.httpPost<PatchPreparationGroupResponse>(`${import.meta.env.VITE_API_URL}api/preparationGroups/${request.id}/print`, request, {
+        const url = new URL(`api/preparationGroups/${request.id}/print`, import.meta.env.VITE_API_URL).toString();
+        return await httpClient.httpPost<PatchPreparationGroupResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

@@ -18,32 +18,36 @@ export const useMenuCategoriesApi = (token?: string) => {
         const queryParams = new URLSearchParams();
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/menucategories?${queryParams}`;
+        const url = new URL(`api/menucategories?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMenuCategoriesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateMenuCategoryRequest) => {
-        return httpClient.httpPost<CreateMenuCategoryResponse>(`${import.meta.env.VITE_API_URL}api/menucategories`, request, {
+        const url = new URL(`api/menucategories`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateMenuCategoryResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchMenuCategoryRequest) => {
-        return httpClient.httpPatch<PatchMenuCategoryResponse>(`${import.meta.env.VITE_API_URL}api/menucategories/${request.id}`, request, {
+        const url = new URL(`api/menucategories/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchMenuCategoryResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteCategory = (request: DeleteMenuCategoryRequest) => {
-        return httpClient.httpDelete<DeleteMenuCategoryResponse>(`${import.meta.env.VITE_API_URL}api/menucategories/${request.id}`, request, {
+        const url = new URL(`api/menucategories/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteMenuCategoryResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const sort = (request: SortMenuCategoriesRequest) => {
-        return httpClient.httpPut<SortMenuCategoriesResponse>(`${import.meta.env.VITE_API_URL}api/menucategories/sort`, request, {
+        const url = new URL(`api/menucategories/sort`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPut<SortMenuCategoriesResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

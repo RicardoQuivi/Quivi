@@ -1,0 +1,129 @@
+﻿@use '../util' as *;
+
+input {
+    font-family: inherit;
+    color: $primary-color;
+    width: 100%;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    padding: rem(8);
+    font-size: $font-size-md;
+
+    &.readonly {
+        background: $border-color;
+        color: $dark-grey;
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    placeholder {
+        color: $placeholder-color;
+    }
+
+    &:focus-visible {
+        outline: 1px solid $accent-color;
+    }
+
+}
+
+.form-group {
+    margin-bottom: rem(20);
+
+    label {
+        margin-bottom: rem(8);
+    }
+
+    &.password-field {
+        position: relative;
+
+        .eye-toggle {
+            position: absolute;
+            right: 0;
+            top: 34px;
+            padding: 8px;
+            cursor: pointer;
+
+            svg {
+                height: 20px;
+                width: 20px;
+            }
+        }
+    }
+}
+
+.input--phonenumber {
+    overflow: hidden;
+
+    input {
+        border-left: none;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+
+        &:focus, &:active, &:focus-visible {
+            border: none;
+            outline: none
+        }
+    }
+
+    &.PhoneInput--focus {
+        border: 1px solid $accent-color;
+        border-radius: 4px;
+
+        input {
+            border: none;
+        }
+
+        .PhoneInputCountry {
+            border: none;
+        }
+
+        .PhoneInputCountryIcon--border {
+            box-shadow: none !important;
+        }
+
+        .PhoneInputCountrySelectArrow {
+            color: $primary-color !important;
+        }
+    }
+
+    .PhoneInputCountryIcon--border {
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    .PhoneInputCountryIcon {
+        height: auto;
+        width: rem(24);
+
+        @include breakpoint(laptop) {
+            width: rem(36);
+        }
+    }
+
+    .PhoneInputCountry {
+        margin-right: 0;
+        padding: rem(8) rem(8);
+        background: $primary-color-light;
+        border: 1px solid $border-color;
+        border-right: none;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+
+        @include breakpoint(laptop) {
+            padding: rem(8) rem(16);
+        }
+    }
+
+
+    .PhoneInputCountrySelectArrow {
+        border-right-width: 2px;
+        border-bottom-width: 2px;
+        opacity: 1;
+    }
+}
+
+.required-sign {
+    color: $danger-color;
+}

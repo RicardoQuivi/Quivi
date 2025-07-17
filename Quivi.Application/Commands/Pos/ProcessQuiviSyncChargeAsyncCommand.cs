@@ -33,7 +33,6 @@ namespace Quivi.Application.Commands.Pos
             public required SessionItem SessionItem { get; init; }
         }
 
-        const int maxDecimalPlaces = 6;
 
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
@@ -56,7 +55,7 @@ namespace Quivi.Application.Commands.Pos
 
         protected override async Task Sync(ProcessQuiviSyncChargeAsyncCommand command)
         {
-            var states = await commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
+            await commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
             {
                 Criteria = new GetPosChargeSyncAttemptsCriteria
                 {
@@ -136,22 +135,38 @@ namespace Quivi.Application.Commands.Pos
 
             IEnumerable<(OrderMenuItem PayingItem, decimal Quantity)> payingItems = GetPayingItems(posCharge, session);
             var now = dateTimeProvider.GetUtcNow();
-            posCharge.PosChargeInvoiceItems = payingItems.Select(s => new PosChargeInvoiceItem
+
+            var orderMenuItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).ToDictionary(e => e.Id, e => e);
+            posCharge.PosChargeInvoiceItems = new List<PosChargeInvoiceItem>();
+            foreach(var s in payingItems)
             {
-                PosCharge = posCharge,
-                Quantity = s.Quantity,
-                OrderMenuItemId = s.PayingItem.Id,
-                CreatedDate = now,
-                ModifiedDate = now,
-                ChildrenPosChargeInvoiceItems = s.PayingItem.Modifiers!.Select(e => new PosChargeInvoiceItem
+                var item = new PosChargeInvoiceItem
                 {
                     PosCharge = posCharge,
-                    Quantity = e.Quantity,
-                    OrderMenuItemId = e.Id,
+                    Quantity = s.Quantity,
+                    OrderMenuItemId = s.PayingItem.Id,
                     CreatedDate = now,
                     ModifiedDate = now,
-                }).ToList(),
-            }).ToList();
+                    ChildrenPosChargeInvoiceItems = new List<PosChargeInvoiceItem>(),
+                };
+                foreach(var e in s.PayingItem.Modifiers!)
+                {
+                    var extra = new PosChargeInvoiceItem
+                    {
+                        PosCharge = posCharge,
+                        Quantity = e.Quantity,
+                        OrderMenuItemId = e.Id,
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                    };
+                    item.ChildrenPosChargeInvoiceItems.Add(extra);
+                    posCharge.PosChargeInvoiceItems.Add(extra);
+
+                    orderMenuItems[extra.OrderMenuItemId].PosChargeInvoiceItems!.Add(extra);
+                }
+                posCharge.PosChargeInvoiceItems.Add(item);
+                orderMenuItems[item.OrderMenuItemId].PosChargeInvoiceItems!.Add(item);
+            }
 
             this.AddSessionEvent(session, s => new OnPosChargeSyncedEvent
             {
@@ -261,7 +276,8 @@ namespace Quivi.Application.Commands.Pos
             }).ToList();
 
             //TODO: Move the method ProcessInvoiceJob inside this command
-            backgroundJobHandler.Enqueue(() => command.SyncStrategy.ProcessInvoiceJob(command.PosChargeId, paymentAmount, items));
+            var posChargeId = posCharge.Id;
+            backgroundJobHandler.Enqueue(() => command.SyncStrategy.ProcessInvoiceJob(posChargeId, paymentAmount, items));
         }
     }
 }

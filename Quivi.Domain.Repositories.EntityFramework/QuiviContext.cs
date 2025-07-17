@@ -40,6 +40,10 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .WithOne()
                         .HasForeignKey(c => c.UserId);
 
+                entity.HasOne(m => m.Person)
+                        .WithOne()
+                        .HasForeignKey<Person>(c => c.UserId);
+
                 entity.HasMany(m => m.Merchants)
                         .WithMany();
             });
@@ -181,7 +185,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<Charge>(entity =>
             {
-                entity.HasKey(c => c.ChargeId);
+                entity.HasKey(c => c.Id);
 
                 entity.HasOne(c => c.ChainedCharge)
                     .WithMany()
@@ -189,7 +193,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasOne(c => c.MerchantCustomCharge)
                         .WithOne(c => c.Charge)
-                        .HasForeignKey<Charge>(c => c.ChargeId); //TODO: Check
+                        .HasForeignKey<Charge>(c => c.Id); //TODO: Check
             });
 
             modelBuilder.Entity<DepositCapture>(entity =>
@@ -212,7 +216,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey<DepositSurchargeJournal>(d => d.DepositId); //TODO: Check
 
                 entity.HasOne(m => m.Journal)
-                        .WithMany()
+                        .WithMany(m => m.DepositSurchargeJournals)
                         .HasForeignKey(m => m.JournalId);
             });
 
@@ -232,7 +236,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey<DepositJournal>(d => d.DepositId); //TODO: Check
 
                 entity.HasOne(m => m.Journal)
-                        .WithMany()
+                        .WithMany(m => m.DepositJournals)
                         .HasForeignKey(m => m.JournalId);
             });
 
@@ -244,7 +248,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey<DepositCaptureJournal>(d => d.DepositId); //TODO: Check
 
                 entity.HasOne(m => m.Journal)
-                        .WithMany()
+                        .WithMany(m => m.DepositCaptureJournals)
                         .HasForeignKey(m => m.JournalId);
             });
 
@@ -335,7 +339,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<Journal>(entity =>
             {
-                entity.HasKey(m => m.JournalId);
+                entity.HasKey(m => m.Id);
                 entity.Property(m => m.Type).IsRequired();
                 entity.Property(m => m.State).IsRequired();
                 entity.Property(m => m.CreatedDate).IsRequired();
@@ -345,7 +349,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasOne(b => b.JournalDetails)
                         .WithOne(b => b.Journal)
-                        .HasForeignKey<Journal>(m => m.JournalId); //TODO: Check
+                        .HasForeignKey<Journal>(m => m.Id); //TODO: Check
             });
 
             modelBuilder.Entity<DepositRefundJournal>(entity =>
@@ -363,7 +367,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<JournalChange>(entity =>
             {
-                entity.HasKey(m => m.JournalHistoryId);
+                entity.HasKey(m => m.Id);
                 entity.Property(m => m.Type).IsRequired();
                 entity.Property(m => m.State).IsRequired();
                 entity.Property(m => m.Amount).IsRequired();
@@ -384,6 +388,20 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey<JournalDetails>(m => m.JournalId);
             });
 
+            modelBuilder.Entity<MerchantAcquirerConfiguration>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasOne(m => m.Merchant)
+                        .WithMany(m => m.AcquirerConfigurations)
+                        .HasForeignKey(m => m.MerchantId);
+
+                entity.HasIndex(m => m.ChargeMethod);
+                entity.HasIndex(m => m.ChargePartner);
+
+                entity.HasDeletedIndex();
+            });
+
             modelBuilder.Entity<Merchant>(entity =>
             {
                 entity.HasKey(m => m.Id);
@@ -400,6 +418,10 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey(m => m.MerchantId);
 
                 entity.HasMany(m => m.PosIntegrations)
+                        .WithOne(i => i.Merchant)
+                        .HasForeignKey(i => i.MerchantId);
+
+                entity.HasMany(m => m.AcquirerConfigurations)
                         .WithOne(i => i.Merchant)
                         .HasForeignKey(i => i.MerchantId);
 
@@ -437,22 +459,24 @@ namespace Quivi.Domain.Repositories.EntityFramework
             {
                 entity.HasKey(m => new { m.MerchantId, m.ChargeMethod, m.FeeType });
                 entity.HasOne(m => m.Merchant)
-                        .WithMany(m => m.Fees); //TODO: Not sure if missing something
+                        .WithMany(m => m.Fees);
 
                 entity.HasDeletedIndex();
             });
 
             modelBuilder.Entity<Person>(entity =>
             {
-                entity.HasKey(p => p.PersonId);
+                entity.HasKey(p => p.Id);
                 entity.Property(p => p.PhoneNumber).HasMaxLength(15);
-                entity.HasIndex(p => p.SessionGuid);
                 entity.HasOne(p => p.Merchant)
                         .WithMany()
                         .HasForeignKey(p => p.MerchantId);
                 entity.HasOne(p => p.SubMerchant)
                         .WithMany(m => m.People)
                         .HasForeignKey(p => p.SubMerchantId);
+                entity.HasIndex(p => p.IsAnonymous)
+                        .IsUnique()
+                        .HasFilter("[IsAnonymous] = 1");
 
                 entity.HasDeletedIndex();
             });

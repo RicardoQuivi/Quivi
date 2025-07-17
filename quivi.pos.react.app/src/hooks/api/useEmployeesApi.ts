@@ -29,14 +29,14 @@ export const useEmployeesApi = (token: string | undefined) => {
             queryParams.set("includeDeleted", true.toString());
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/employees?${queryParams}`;
+        const url = new URL(`api/employees?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetEmployeesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const updatePinCode = async (request: UpdateEmployeePinCodeRequest) => {
-        const url = `${import.meta.env.VITE_API_URL}api/employees/${request.id}/pincode`;
+        const url = new URL(`api/employees/${request.id}/pincode`, import.meta.env.VITE_API_URL).toString();
         return await httpClient.httpPut<UpdateEmployeePinCodeResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });

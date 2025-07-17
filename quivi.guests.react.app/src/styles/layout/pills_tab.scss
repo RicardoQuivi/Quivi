@@ -1,0 +1,30 @@
+﻿@use '../util' as *;
+
+.pills-tab {
+    display: flex;
+    align-items: center;
+
+    &__button {
+        font-size: $font-size-md;
+        padding: rem(4) rem(16);
+        color: $primary-color;
+        border: none;
+        border-radius: 50px;
+        background: transparent;
+
+        &:not(:last-of-type) {
+            margin-right: rem(8);
+        }
+
+        &.active {
+            color: $white-color;
+            background: $accent-color;
+            font-weight: $font-weight-semibold;
+        }
+
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    }
+}

@@ -19,7 +19,7 @@ export const useMenuCategoriesApi = (token: string) => {
             queryParams.set("hasItems", request.hasItems == true ? "true" : "false");
         }
         
-        let url = `${import.meta.env.VITE_API_URL}api/menucategories?${queryParams}`;
+        const url = new URL(`api/menucategories?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMenuCategoriesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

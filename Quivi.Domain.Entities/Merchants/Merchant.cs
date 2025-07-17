@@ -53,6 +53,7 @@ namespace Quivi.Domain.Entities.Merchants
         public ICollection<Location>? Locations { get; set; }
         public ICollection<NotificationsContact>? NotificationContacts { get; set; }
         public ICollection<MerchantInvoiceDocument>? InvoiceDocuments { get; set; }
+        public ICollection<MerchantAcquirerConfiguration>? AcquirerConfigurations { get; set; }
         #endregion
 
         #region PoS Merchant Relationships

@@ -1,0 +1,92 @@
+﻿@use '../util' as *;
+
+.bottom_drawer {
+    &__background {
+        position: fixed;
+        min-height: calc(var(--vh, 1vh) * 100);
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(1px);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+
+        &.open {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    &__wrapper {
+        position: fixed;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+        height: auto;
+        background: $white-color;
+        border-radius: rem(12) rem(12) 0 0;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.18);
+        z-index: 1500;
+        transition: all 0.3s ease-in-out;
+
+        h3 {
+            text-align: left;
+            font-weight: $font-weight-semibold;
+            color: $primary-color;
+        }
+    }
+
+    &__teaser {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        p {
+            transition: all 0.3s ease-in-out;
+            font-size: $font-size-sm;
+        }
+
+        .know-more {
+            display: flex;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            padding: rem(12);
+
+            svg {
+                transform: rotate(-180deg);
+                transition: all 0.3s ease-in-out;
+            }
+        }
+
+        &.open {
+            p {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .know-more svg {
+                transform: rotate(0);
+                transform-origin: center;
+            }
+        }
+    }
+
+    &__content {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease-in-out;
+
+        &.open {
+            height: 310px;
+        }
+    }
+
+    &__header {
+        margin-bottom: rem(32);
+    }
+}

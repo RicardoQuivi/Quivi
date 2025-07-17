@@ -1,5 +1,5 @@
 import { Divider, Grid, useMediaQuery, useTheme } from "@mui/material"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { Order } from "../../hooks/api/Dtos/orders/Order";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,10 @@ import { BackgroundJobPromise } from "../../hooks/signalR/promises/BackgroundJob
 import { PaginationFooter } from "../Pagination/PaginationFooter";
 import { useToast } from "../../context/ToastProvider";
 import { OrderCard } from "./OrderCard";
+import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
+import { useWebEvents } from "../../hooks/signalR/useWebEvents";
+import { usePosSession } from "../../context/pos/PosSessionContextProvider";
+import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
 
 interface Props {
     readonly states: OrderState[];
@@ -17,12 +21,11 @@ interface Props {
 }
 export const OrdersQueueCards = (props: Props) => {
     const { t } = useTranslation();
-    //const context = useContext(AppContext);
+    const pos = usePosSession();
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
-    // const posApi = usePoSApi();
-    // const [webClient] = useWebEvents();
-    // const jobsApi = useJobsApi();
+    const webEvents = useWebEvents();
+    const jobsApi = useBackgroundJobsApi(pos.token);
     const toast = useToast();
     
     const [page, setPage] = useState(0);
@@ -33,24 +36,25 @@ export const OrdersQueueCards = (props: Props) => {
         states: props.states,
         sortDirection: SortDirection.Asc,
     });
+    const orderMutator = useOrderMutator();
 
     useEffect(() => setPage(0), [props.states])
     
     const updateOrder = async (o: Order, complete: boolean) => {
-        // try {
-        //     const response = await posApi.orders.UpdateToNextState({
-        //         id: o.id,
-        //         accessToken: context.merchant.token,
-        //         completeOrder: complete,
-        //     });
-        //     await new BackgroundJobPromise(response.jobId, webClient, async (jobId) => {
-        //         const response = await jobsApi.Get([jobId]);
-        //         return response.data[0].state;
-        //     });
-        //     props.onOrderUpdated(o);
-        // } catch {
-        //     toast.error({ title: t('Resources.Error')!, message: t('Resources.UnexpectedErrorHasOccurred') });
-        // }
+        try {
+            const jobId = await orderMutator.process(o, {
+                completeOrder: complete,
+            })
+            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
+                const response = await jobsApi.get({
+                    ids: [jobId],
+                });
+                return response.data[0].state;
+            })
+            props.onOrderUpdated(o);
+        } catch {
+            toast.error(t('unexpectedErrorHasOccurred'));
+        }
     }
 
     return <div style={{display: "flex", flexDirection: "column", height: "100%", overflow: "hidden"}}>
@@ -64,7 +68,7 @@ export const OrdersQueueCards = (props: Props) => {
                             order={s}
                             onNextStateClicked={o => updateOrder(o, false)}
                             onCompleteClicked={o => updateOrder(o, true)}
-                            onCardClicked={(o) => props.onOrderSelected(o)}
+                            onCardClicked={props.onOrderSelected}
                         />
                     </Grid>)
                 :

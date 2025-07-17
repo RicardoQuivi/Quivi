@@ -6,10 +6,10 @@
 
         #region Relationships
         public int OrderId { get; set; }
-        public required Order Order { get; set; }
+        public Order? Order { get; set; }
 
         public int OrderConfigurableFieldId { get; set; }
-        public required OrderConfigurableField OrderConfigurableField { get; set; }
+        public OrderConfigurableField? OrderConfigurableField { get; set; }
         #endregion
     }
 }

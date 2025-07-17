@@ -8,11 +8,13 @@ export const useFileStorageApi = () => {
     const httpClient = useHttpClient();
 
     const uploadFile = async (request: UploadFileRequest) => {
-        return await httpClient.httpPost<UploadFileResponse>(`${import.meta.env.VITE_API_URL}api/Storage`, request);
+        const url = new URL(`api/Storage`, import.meta.env.VITE_API_URL).toString();
+        return await httpClient.httpPost<UploadFileResponse>(url, request);
     };
 
     const uploadImage = async (request: UploadImageRequest) => {
-        return await httpClient.httpPost<UploadFileResponse>(`${import.meta.env.VITE_API_URL}api/Storage/image`, request);
+        const url = new URL(`api/Storage/image`, import.meta.env.VITE_API_URL).toString();
+        return await httpClient.httpPost<UploadFileResponse>(url, request);
     };
 
 

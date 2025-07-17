@@ -21,6 +21,11 @@ import { MenuItem } from "../../hooks/api/Dtos/menuitems/MenuItem";
 import { PickItemQuantityModal } from "./PickItemQuantityModal";
 import { EditItemPriceModel, EditSessionItemModal } from "./EditSessionItemModal";
 import { Items } from "../../helpers/itemsHelpers";
+import { useToast } from "../../context/ToastProvider";
+import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
+import { useWebEvents } from "../../hooks/signalR/useWebEvents";
+import { BackgroundJobPromise } from "../../hooks/signalR/promises/BackgroundJobPromise";
+import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
 
 const StyleBottomNavigationAction = styled(BottomNavigationAction)(({ }) => ({
     transition: "background-color 0.5s ease",
@@ -129,14 +134,29 @@ export const SessionViewer: React.FC<Props> = ({
         page: 0,
     })
 
-    const itemsQuery = useMenuItemsQuery(pos.cartSession.items.length == 0 ? undefined : {
-        ids: pos.cartSession.items.reduce((r, i) => {
-            r.push(i.menuItemId);
-            for(const e of i.extras) {
-                r.push(e.menuItemId);
+    const itemsIds = useMemo(() => {
+        const set = new Set<string>();
+        for(const item of pos.cartSession.items) {
+            set.add(item.menuItemId);
+            for(const e of item.extras) {
+                set.add(e.menuItemId);
             }
-            return r;
-        }, [] as string[]),
+        }
+
+        for(const order of ordersQuery.data) {
+            for(const item of order.items) {
+                set.add(item.menuItemId);
+                for(const e of item.extras) {
+                    set.add(e.menuItemId);
+                }
+            }
+        }
+
+        return Array.from(set.values());
+    }, [pos.cartSession.items, ordersQuery.data])
+
+    const itemsQuery = useMenuItemsQuery(itemsIds.length == 0 ? undefined : {
+        ids: itemsIds,
         page: 0,
     })
     const itemsMap = useMemo(() => {
@@ -223,7 +243,13 @@ export const SessionViewer: React.FC<Props> = ({
                         <List sx={{ bgcolor: 'background.paper'}}>
                             {
                                 itemStatusFilter == false &&
-                                ordersQuery.data.map(item => <OrderItemComponent key={item.id} order={item}/>)
+                                ordersQuery.data.map(item =>
+                                    <OrderItemComponent 
+                                        key={item.id}
+                                        order={item}
+                                        itemsMap={itemsMap}
+                                    />
+                                )
                             }
                             {
                                  pos.cartSession.items.filter(item => itemStatusFilter == undefined || item.isPaid == itemStatusFilter).map((item, index) => (
@@ -494,50 +520,52 @@ const SessionItemComponent = (props : {
 
 const OrderItemComponent = (props : {
     readonly order: Order;
+    readonly itemsMap: Map<string, MenuItem>;
 }) => {
     const { t } = useTranslation();
     const dateHelper = useDateHelper();
     const now = useNow(1000);
-    // const api = usePoSApi();
-    // const jobsApi = useJobsApi();
-    // const context = useContext(AppContext);
-    // const [webClient] = useWebEvents();
-    // const toast = useToast();
+    const pos = usePosSession();
+    const jobsApi = useBackgroundJobsApi(pos.token);
+    const webEvents = useWebEvents();
+    const toast = useToast();
+    const orderMutator = useOrderMutator();
 
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const acceptOrder = async () => {
         setIsLoading(true);
-        // try {
-        //     const response = await api.orders.UpdateToNextState({
-        //         id: props.order.id,
-        //         accessToken: context.merchant.token,
-        //     });
-        //     await new BackgroundJobPromise(response.jobId, webClient, async (jobId) => {
-        //         const response = await jobsApi.Get([jobId]);
-        //         return response.data[0].state;
-        //     });
-        // } catch {
-        //     setIsLoading(false);
-        //     toast.error(t('unexpectedErrorHasOccurred'));
-        // }
+        try {
+            const jobId = await orderMutator.process(props.order, {})
+            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
+                const response = await jobsApi.get({
+                    ids: [jobId],
+                });
+                return response.data[0].state;
+            })
+        } catch {
+            toast.error(t('unexpectedErrorHasOccurred'));
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const declineOrder = async () => {
         setIsLoading(true);
-        // try {
-        //     const response = await api.orders.Decline({
-        //         id: props.order.id,
-        //         accessToken: context.merchant.token,
-        //     })
-        //     await new BackgroundJobPromise(response.jobId, webClient, async (jobId) => {
-        //         const response = await jobsApi.Get([jobId]);
-        //         return response.data[0].state;
-        //     });
-        // } catch {
-        //     toast.error(t('unexpectedErrorHasOccurred'));
-        // }
+        try {
+            const jobId = await orderMutator.decline(props.order, {})
+            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
+                const response = await jobsApi.get({
+                    ids: [jobId],
+                });
+                return response.data[0].state;
+            });
+        } catch {
+            toast.error(t('unexpectedErrorHasOccurred'));
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const secondaryActions = (): React.ReactNode => {
@@ -603,12 +631,23 @@ const OrderItemComponent = (props : {
             action={secondaryActions()}
             onClick={() => setIsOpen(s => !s)}
             title={<b>{t("order")} {props.order.sequenceNumber}</b>} 
-            // subheader={<CurrencySpan value={Items.getItemsTotalPrice(props.order.items)} />}
+            subheader={<CurrencySpan value={Items.getTotalPrice(props.order.items)} />}
         />
-        {/* <Collapse in={isOpen} timeout="auto">
+        <Collapse in={isOpen} timeout="auto">
             <List component="div" disablePadding>
-                { props.order.items.map((item, index) => <SessionItemComponent key={item.id} showBackground={index % 2 == 0} item={item} itemStatusFilter={true} recentlyChanged={false} />) }
+            { 
+                props.order.items.map((item, index) => (
+                    <SessionItemComponent 
+                        key={item.id}
+                        showBackground={index % 2 == 0}
+                        item={item}
+                        itemStatusFilter={true}
+                        recentlyChanged={false}
+                        itemsMap={props.itemsMap}
+                    />
+                )) 
+            }
             </List>
-        </Collapse> */}
+        </Collapse>
     </Card>)
 }

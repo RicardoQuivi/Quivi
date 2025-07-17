@@ -4,11 +4,11 @@ namespace Quivi.Domain.Entities.Charges
 {
     public class Charge : IEntity
     {
-        public int ChargeId { get; set; }
+        public int Id { get; set; }
 
         public ChargeStatus Status { get; set; }
-        public ChargePartner? ChargePartner { get; set; }
-        public ChargeMethod? ChargeMethod { get; set; }
+        public ChargePartner ChargePartner { get; set; }
+        public ChargeMethod ChargeMethod { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
 

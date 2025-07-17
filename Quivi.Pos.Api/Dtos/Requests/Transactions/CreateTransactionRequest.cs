@@ -8,7 +8,7 @@
         public string? Email { get; init; }
         public string? VatNumber { get; init; }
         public string? Observations { get; init; }
-        public decimal Total { get; init; }
+        public decimal Amount { get; init; }
         public decimal Tip { get; init; }
         public IEnumerable<SessionItem>? Items { get; set; }
     }

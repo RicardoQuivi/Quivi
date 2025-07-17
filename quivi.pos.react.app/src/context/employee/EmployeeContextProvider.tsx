@@ -79,7 +79,7 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     const { t } = useTranslation();
     const toast = useToast();
 
-    const [state, setState] = useState(getState());
+    const [state, setState] = useState(getState);
     const [expiresAt, setExpiresAt] = useState<number>();
 
     const loggedEmployeeQuery = useEmployeesQuery(state?.employeeId == undefined ? undefined : {
@@ -108,7 +108,7 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
                 accessToken: response.access_token,
                 refreshToken: response.refresh_token,
             });
-            setState(getState());
+            setState(getState);
         } catch (e) {
             signOut();
             if(e instanceof AuthenticationError) {
@@ -131,11 +131,11 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
                 accessToken: response.access_token,
                 refreshToken: response.refresh_token,
             });
-            setState(getState());
+            setState(getState);
         } catch (e) {
             if(e instanceof AuthenticationError) {
                 saveTokens(undefined);
-                setState(getState());
+                setState(getState);
                 return;
             }
 
@@ -147,7 +147,7 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
 
     const signOut = () => {
         saveTokens(undefined);
-        setState(getState());
+        setState(getState);
     }
     
     useEffect(() => {
@@ -180,13 +180,13 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const timeToExpire = expiresAt - Date.now();
-        if(timeToExpire <= 0) {
-            saveTokens({
-                accessToken: undefined,
-                refreshToken: refreshToken,
-            });
-            setState(getState());
-        }
+        // if(timeToExpire <= 0) {
+        //     saveTokens({
+        //         accessToken: undefined,
+        //         refreshToken: refreshToken,
+        //     });
+        //     setState(getState);
+        // }
 
         const delay = timeToExpire - 15000;
         if (delay <= 0) {

@@ -1,8 +1,8 @@
 interface AvatarProps {
-    src?: string; // URL of the avatar image
-    alt: string; // Alt text for the avatar
-    size?: "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge"; // Avatar size
-    status?: "online" | "offline" | "busy" | "none"; // Status indicator
+    readonly src?: string | React.ReactElement;
+    readonly alt: string;
+    readonly size?: "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge"; // Avatar size
+    readonly status?: "online" | "offline" | "busy" | "none"; // Status indicator
 }
 
 const sizeClasses = {
@@ -46,6 +46,7 @@ const Avatar: React.FC<AvatarProps> = ({
     size = "medium",
     status = "none",
 }) => {
+    const isStringSrc = typeof src === "string";
     const showFallback = !src;
     const backgroundColor = showFallback ? getColorFromString(alt) : undefined;
     const firstLetter = alt.charAt(0).toUpperCase();
@@ -57,18 +58,21 @@ const Avatar: React.FC<AvatarProps> = ({
         >
             {showFallback ? (
                 <span>{firstLetter}</span>
+            ) : isStringSrc ? (
+                <img src={src as string} alt={alt} className="object-cover w-full h-full rounded-full" />
             ) : (
-                <img src={src} alt={alt} className="object-cover w-full h-full rounded-full" />
+                // ReactComponent (like an imported SVG)
+                <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+                    {src}
+                </div>
             )}
 
             {status !== "none" && (
                 <span
-                    className={`absolute bottom-0 right-0 rounded-full border-[1.5px] border-white dark:border-gray-900 ${statusSizeClasses[size]
-                        } ${statusColorClasses[status] || ""}`}
+                    className={`absolute bottom-0 right-0 rounded-full border-[1.5px] border-white dark:border-gray-900 ${statusSizeClasses[size]} ${statusColorClasses[status] || ""}`}
                 />
             )}
         </div>
     );
 };
-
 export default Avatar;

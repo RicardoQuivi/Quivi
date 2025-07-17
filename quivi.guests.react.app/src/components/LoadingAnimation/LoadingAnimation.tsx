@@ -1,0 +1,1 @@
+﻿export const LoadingAnimation = () => <span className="loader" />;

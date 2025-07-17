@@ -3,6 +3,7 @@
     public record GetOrderMenuItemsCriteria : IPagedCriteria
     {
         public IEnumerable<int>? Ids { get; init; }
+        public IEnumerable<int>? OrderIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? SessionIds { get; init; }
 

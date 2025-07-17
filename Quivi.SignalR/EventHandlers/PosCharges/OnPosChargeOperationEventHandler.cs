@@ -4,6 +4,7 @@ using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.SignalR.Extensions;
 using Quivi.SignalR.Hubs.Backoffice;
+using Quivi.SignalR.Hubs.Guests;
 using Quivi.SignalR.Hubs.Pos;
 
 namespace Quivi.SignalR.EventHandlers.PosCharges
@@ -12,14 +13,17 @@ namespace Quivi.SignalR.EventHandlers.PosCharges
     {
         private readonly IHubContext<BackofficeHub, IBackofficeClient> backofficeHub;
         private readonly IHubContext<PosHub, IPosClient> posHub;
+        private readonly IHubContext<GuestsHub, IGuestClient> guestsHub;
         private readonly IIdConverter idConverter;
 
         public OnPosChargeOperationEventHandler(IHubContext<BackofficeHub, IBackofficeClient> backofficeHub,
                                                     IHubContext<PosHub, IPosClient> posHub,
+                                                    IHubContext<GuestsHub, IGuestClient> guestsHub,
                                                     IIdConverter idConverter)
         {
             this.backofficeHub = backofficeHub;
             this.posHub = posHub;
+            this.guestsHub = guestsHub;
             this.idConverter = idConverter;
         }
 
@@ -29,6 +33,7 @@ namespace Quivi.SignalR.EventHandlers.PosCharges
             {
                 Operation = message.Operation,
                 MerchantId = idConverter.ToPublicId(message.MerchantId),
+                ChannelId = idConverter.ToPublicId(message.ChannelId),
                 Id = idConverter.ToPublicId(message.Id),
             };
 
@@ -38,6 +43,11 @@ namespace Quivi.SignalR.EventHandlers.PosCharges
             });
 
             await posHub.WithMerchantId(evt.MerchantId, async g =>
+            {
+                await g.Client.OnPosChargeOperation(evt);
+            });
+
+            await guestsHub.WithChannelId(evt.ChannelId, async g =>
             {
                 await g.Client.OnPosChargeOperation(evt);
             });

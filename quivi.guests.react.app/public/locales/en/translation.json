@@ -1,0 +1,541 @@
+﻿{
+  "unexpectedError": "An unexpected error occured. Please try again.",
+  "back": "Back",
+  "next": "Next",
+  "optional": "Optional",
+  "loading": "Loading...",
+  "of": "of",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "readMore": "Read more",
+  "readLess": "Read less",
+  "modify": "Modify",
+
+  "form": {
+    "mandatory": "Mandatory",
+    "requiredField": "This field is mandatory",
+    "email": "Email",
+    "emailPlaceholder": "Your email",
+    "emailValidation": "Enter a valid email.",
+    "invoiceEmail": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "passwordValidation": "The password must have at leats 6 characters.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Your new password",
+    "confirmNewPassword": "Confirm your password",
+    "samePasswordValidation": "The passwords must match.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "vat": "VAT (EU only)",
+    "vatPlaceholder": "Your VAT",
+    "vatCharValidation": "The VAT number must be a maximum of 9 characters.",
+    "vatValidation": "The VAT number doesn't seem to be valid.",
+    "phoneNumberValidation": "The number entered is invalid.",
+    "phoneNumber": "Phone number",
+    "phoneNumberPlaceholder": "Your mobile number",
+    "phoneNumberDescription": "Enter the phone number for your {{paymentMethodName}} account",
+    "creditCardLabel": "Credit card info"
+  },
+
+  "login": {
+    "title": "Access your account",
+    "description": "See your balances and transactions, make payments and accumulate benefits!",
+    "forgotPassword": "Forgot password",
+    "login": "Log in",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create account",
+    "confirmedEmail": "Email confirmed successfully! You may now access your account.",
+    "errors": {
+      "notConfirmed": "This email was not confirmed yet.",
+      "lockedOut": "User is locked out.",
+      "invalidCredentials": "The email and/or password are not valid.",
+      "unkownError": "Something went wrong. Please try again later."
+    }
+  },
+
+  "register": {
+    "title": "Register",
+    "description": "With a Quivi account you can save your billing details and speed up future payments!",
+    "register": "Register",
+    "alreadyHasAccount": "Already have an account?",
+    "login": "Login"
+  },
+
+  "resetPassword": {
+    "title": "New password",
+    "description": "Create your new password.",
+    "confirm": "Confirm",
+    "successTitle": "Success!",
+    "successDescription": "Password changed successfully! You can now access your account:",
+    "login": "Login"
+  },
+
+  "changePassword": {
+    "title": "Change password",
+    "save": "Save",
+    "changeSuccess": "Password changed successfully!"
+  },
+
+  "confirmEmail": {
+    "title": "Almost there!",
+    "description": "Access your email and follow the steps to activate your account."
+  },
+
+  "forgotPassword": {
+    "title": "Recover password",
+    "description": "Enter the email associated with your account to get the password reset link.",
+    "confirm": "Confirm",
+    "failed": "An error occured. Please check if the email is correct.",
+    "successTitle": "Almost there!",
+    "successDescription": "Access your email and follow the steps to reset yout password."
+  },
+
+  "inactivity": {
+    "header": "Are you there?",
+    "description": "Due to inactivity we will clear your session in <bold>{{seconds}}</bold> seconds. Interact with the page to continue your session."
+  },
+
+  "editProfile": {
+    "title": "Personal information",
+    "save": "Save",
+    "failed": "It was not possible to complete this request. Please try again later.",
+    "success": "Information saved successfully!"
+  },
+
+  "navbar": {
+    "home": "Home",
+    "pay": "Pay",
+    "transactions": "Transactions",
+    "seeOrder": "See order",
+    "seeOrders": "<b>{{count}}</b> orders"
+  },
+
+  "userHome": {
+    "title": "Home",
+    "soon": "Soon you will be able to earn loyalty cards and accumulate balance in your account!",
+    "noCard1": "You don't have a loyalty card yet.",
+    "noCard2": "Start making payments at accepting restaurants to accumulate balance in your digital wallet!",
+    "balance": "Balance",
+    "paymentsMissingSingular": "Only {{paymentsLeft}} payment",
+    "paymentsMissingPlural": "Only {{paymentsLeft}} payments",
+    "toWin": "to win {{amount}} €"
+  },
+
+  "home": {
+    "hello": "Hello",
+    "choiceTitle": "What do you wish to do?",
+    "seeMenu": "See the menu",
+    "order": "Order",
+    "orderScheduling": "Schedule an order",
+    "orderAndPay": "Order or Pay",
+    "payBill": "Pay the bill",
+    "seeBill": "See bill",
+    "requestFailed1": "Could not complete request.",
+    "requestFailed2": "Please scan the QR Code again.",
+    "menuLanguageModalTitle": "In which language do you want the menu?",
+    "secure": "100% secure",
+    "checkout": "Checkout",
+    "inactiveMerchantWarn": "The merchant has disabled this link",
+    "sendPayment": "Send Payment",
+    "sendTip": "Tip"
+  },
+
+  "menu": {
+    "upTo": "up to",
+    "option": "option",
+    "options": "options",
+    "unavailable": "Unavailable",
+
+    "pdfLoadFailed": "Document load failed."
+  },
+
+  "scanQrCode": {
+    "title": "Pay your bill in less than 10 seconds!",
+    "step1": "Click the button to open your camera",
+    "step2": "Point the camera to the QR code",
+    "step3": "Check your bill and finish the payment.",
+    "openCamera": "Open the camera"
+  },
+
+  "tip": {
+    "title": "Add a tip",
+    "other": "Other",
+    "tipAmount": "Tip amount"
+  },
+
+  "pay": {
+    "title": "Payment",
+    "invoiceQuestion": "Do you want the invoice?",
+    "pay": "Pay",
+    "notMyBill": "Not my bill",
+    "payNow": "Submit and pay now",
+    "payLater": "Submit",
+    
+    "notMyBillModal": {
+      "header": "Clear session?",
+      "description": "Do you want to clear all items from the bill and start over?",
+      "ok": "Clear"
+    },
+    "loadingItems": {
+      "0": "Searching for Table items...",
+      "1": "Searching for Card items...",
+      "2": "Searching for Room items...",
+      "3": "Searching for Studio items...",
+      "4": "Searching for Session items...",
+      "5": "Searching for Session items..."
+    },
+    "discounts": "Discounts",
+    "requiringApproval": "Pending Approval",
+    "onlyRequiringApprovalAmountAvailable": "The unpaid amount refers only to items pending staff approval. You will be able to pay it after it has been approved",
+    "yourSession": "Your Session",
+    "sessionTotal": "Session total",
+    "paidFor": "Paid for",
+    "paymentPending": "Payment pending",
+    "ongoingOrders": "Ongoing Orders",
+    "payTotalBill": "Pay the full bill",
+    "splitBill": "Split the bill",
+
+    "addConsumption": "Add consumption",
+
+    "sessionHasUpdates": "Session was updated! The things you were trying to pay are no longer available or were already paid.",
+
+    "emptySessionTitle": "Empty Session",
+    "emptySessionDescription": "There is still no information about orders or bills in this session.",
+    "surchageFeesMayApply": "Surchages may be applicable",
+    "syncError": "It's not possible to obtain your bill. Tell an employee that you want to pay your bill through Quivi.",
+
+    "shareBillTitle": "How will you split the bill?",
+    "shareEqual": "Divide evenly",
+    "chooseItems": "Choose items to pay",
+    "payCustomAmount": "Pay custom amount",
+
+    "payTotal": "Pay total amount",
+    "shareCustomTitle": "How much will you pay?",
+    "shareItemsTitle": "Select what you will pay",
+    "itemsTotal": "Items total",
+    "peopleOnTableQuestion": "For how many people will you divide?",
+    "payForPeopleQuestion": "For how many people will you pay?",
+    "divisionTotal": "Division total",
+    "billAmount": "Bill amount:",
+    "overPayAlert": "The amount entered is greater than the pending amount of this session.",
+    "appliedDiscount": "Unit price including {{formattedDiscount}}% discount",
+    "unitPrice": "Unit price"
+  },
+
+  "paymentMethods": {
+    "payTo": "Pay",
+    "amount": "Amount",
+    "serviceFee": "Service Fee",
+    "total": "Total",
+    "choosePaymentMethod": "Choose the payment method",
+    "phoneNumber": "Phone number",
+    "confirm": "Accept",
+    "confirmPaymentQuestion": "Do you confirm to accept paying the amount above?",
+    "sending": "Sending request...",
+
+    "tipRecall": "How about a tip?",
+    "tipRecallDescription": "Show the restaurant how much you enjoyed the experience!",
+    "noTip": "Continue without tip",
+    "continue": "Continue",
+    "enabledMethodsFailed": "Something went wrong. Please go back and try again.",
+    "paymentFailed": "Something went wrong and the payment was not completed. Please try again.",
+    
+    "termsAndConditions": "Terms and Conditions",
+    "serviceFeeInfo": "Quivi will charge the user a service fee for using the platform in order to continuously improve the overall services, providing a convenience service and continuously improving the user experience, among others.",
+    "methods": {
+      "cash": "Cash",
+      "ticketrestaurantmobile": "Ticket Restaurant Mobile",
+      "mbway": "MB Way",
+      "wallet": "Quivi Wallet",
+      "creditcard": "Credit Card",
+      "paymentterminal": "Via terminal"
+    },
+    "ok": "Ok",
+    "expired": "The payment expired. Please try again.",
+    "enterPhoneNumber": "Enter your phone number",
+    "acceptPayment": "Accept the payment",
+    "acceptPaymentDescription": "To complete the payment, follow the steps below:",
+    "accessApp": "Access your app",
+    "acceptNotification": "Accept payment request notification",
+    "didntReceiveNotification": "Didn't receive the notification?",
+    "resendNotification": "Resend notification",
+    "important": "Important",
+    "importantDescription1": "To receive payment requests, you should have",
+    "importantDescription2": "active and with balance. If you didn't receive the notification, check that you have notifications active in your smartphone.",
+    "accessActivityMbway": "Access Activity tab",
+    "acceptPendingPaymentMbway": "Open pending payment request",
+    "open": "Open",
+    "or": "Or",
+    "applePayUnavailable": "Apple Pay is only available in Safari browser",
+    "warning": "Warning",
+    "merchantCustomPaymentNotes": "After your payment and before leave, please kindly ask our staff for confirmation of the transaction.",
+    "yourWallet": "Your Wallet",
+    "currentBalance": "Current Balance",
+    "balanceAfterPurchase": "Balance after purchase",
+    "remainingAmountToPay": "Remaining amount to pay",
+    "walletUnavailable": "Pay faster with Quivi wallet! Register and login to be able to use it.",
+    "walletDiscount": "Wallet discount",
+    "applyWalletDiscount": "Deduct {{amount}} from wallet",
+    "topupHere":  "Topup Here",
+    "paymentTerminal": {
+      "title": "Payment via terminal",
+      "description": "Follow the instructions on the terminal to complete the payment",
+      "sendingPayment": "Sending payment information to the terminal..."
+    }
+  },
+
+  "acquirer": {
+    "cardNumberPlaceholder": "Card number",
+    "cvvPlaceholder": "CVV",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "YY",
+    "mustSpecifyCardNumber": "You must specify a valid card number.",
+    "mustSpecifyCVC": "You must specify a valid CVC.",
+    "mustSpecifyExpiryDate": "You must specify a valid expiry date.",
+    "invalidData": "The provided payment details are not valid."
+  },
+
+  "paymentResult": {
+    "reviewTitle": "Review your experience",
+    "paymentCompleted": "Payment completed!",
+    "paymentCompletedDescription": "Your payment was successfully sent to merchant. The remainder total of {{pendingAmount}} is left.",
+    "verifyingPayment": "Your payment was received! Please stand-by while we communicate with the merchant...",
+    "downloadDocument": "Download receipt",
+    "win10Euros": "win another 10€",
+    "soonTitle": "Create a Quivi account",
+    "soonDescription": "With a Quivi account, you can save your information to complete purchases faster and soon you will be able to accumulate balance in your digital wallet.",
+    "registerNow": "Register now!",
+    "seeAccount": "See my account",
+    "register": "Register",
+    "reviewSent": "Review sent!",
+    "loading": "Loading...",
+    "errorTitle": "Something went wrong",
+    "home": "Home",
+    "failedTitle": "The payment failed",
+    "syncFailed": "It was not possible to communicate your payment to the merchant, but your payment has been collected. Communicate to an employee to resolve the situation.",
+    "externalLinksTitle": "Review us also at our pages:",
+    "registerTeaser": "Do you want to pay even faster?",
+    "reviewThanks": "Thank you for helping us improve!",
+    "gettingInvoice": "We are retrieving your invoice from the merchant",
+    "noInvoiceAvailable": "The merchant failed to provide us an invoice",
+    "downloadInvoice": "Download Invoice"
+  },
+
+  "orderAndPayResult" : {
+    "title": "Order",
+    "received": "Received",
+    "paid": "Paid",
+    "reviewing": "Reviewing",
+    "scheduled": "Agendada",
+    "preparing": "Preparing",
+    "completed": "Completed",
+    "yourOrder": "Your order",
+    "screenWillBeKeptUpdated": "The screen will be kept updated.",
+    "awaitingPayment": "Awaiting the payment processing.",
+    "awaitingAcceptance": "The order is being reviewed by an employee.",
+    "awaitingScheduleAcceptance": "The order is being reviewed by an employee. Once accepted, will be scheduled for {{month}} {{day}} at {{time}}",
+    "awaitingSchedule": "This order will be prepared and ready {{month}} {{day}} at {{time}}",
+    "orderIsProcessing": "The order is being prepared.",
+    "orderCompleted": "The order is completed!",
+    "orderCanceled": "Order was canceled",
+    "orderCanceledDescription": "The merchant canceled this order.",
+    "orderCanceledAndRefundedDescription": "The merchant canceled and refunded this order.",
+    "orderCanceledMessage": "The merchant left the following message:",
+    "closing": "Closing"
+  },
+
+  "tutorial": {
+    "acceptPayment": "Accept the payment",
+    "acceptPaymentDescription": "To complete the restaurant payment, follow the steps below:",
+    "accessApp": "Access your app {{paymentMethodName}}",
+    "acceptNotification": "Accept payment request notification",
+    "paymentExpired": "The time to complete the payment is over."
+  },
+
+  "demo": {
+    "payTo": "Pay",
+    "amount": "Amount",
+    "choosePaymentMethod": "Choose the payment method",
+    "cash": "Cash",
+    "creditCard": "Credit card",
+    "phoneNumber": "Phone number",
+    "confirm": "Accept",
+    "confirmPaymentQuestion": "Do you confirm accepting to pay the amount above?",
+    "sending": "Sending request..."
+  },
+
+  "review": {
+    "title": "How was your experience? Leave your opinion:",
+    "textPlaceholder": "Tell us about your experience.",
+    "optional": "(Optional)",
+    "send": "Send review",
+    "sending": "Sending...",
+    "reviewErrorMessage": "Something went wrong. Please try again later."
+  },
+
+  "transactions": {
+    "yourWallet": "Your wallet",
+    "title": "Transactions",
+    "soon": "Soon you'll be able to track all the payments you've made with Quivi!",
+    "noTransactions": "You haven't carried out any transactions with Quivi yet.",
+    "searching": "Searching transactions"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "profile": "Account",
+    "passwordChange": "Change password",
+    "language": "Language",
+    "chooseLanguage": "Choose the language",
+    "confirm": "Confirm"
+  },
+
+  "expandedMenu": {
+    "logout": "Log out",
+    "logoutConfirmation": "Are you sure you want to log out?",
+    "login": "Login",
+    "register": "Register",
+    "account": "My account",
+    "settings": "Settings"
+  },
+
+  "splashScreen": {
+    "loading": "Loading..."
+  },
+
+  "errorCodes": {
+    "CH001": "Some items might not be available for payment anymore. Please select different items to pay.",
+    "CH003": "The amount available for payment has changed recently. Please try again with a different amount."
+  },
+
+  "qrCodeCategory": {
+    "0": "Table",
+    "1": "Card",
+    "2": "Room",
+    "3": "Studio",
+    "4": "",
+    "5": "Beach Hut"
+  },
+
+  "digitalMenu": {
+    "cartItemAdded": "New item in Order",
+    "unavailable": "Unavailable",
+    "incrementQty": "Increment Quantity",
+    "decrementQty": "Decrement Quantity",
+    "checkout": "Order ({{items}})",
+    "sendOrder": "Send Order ({{items}} items)",
+    "addToTab": "Add to tab ({{items}} items)",
+    "addItem": "Add to order",
+    "updateItem": "Update order",
+    "availabilityChangedMsg": "The following items were removed from the order because they are no available anymore: {{items}}",
+    "priceChangedMsg": "The price of the following items changed: {{items}}",
+    "modifierValidation": {
+      "selectOne": "One option",
+      "selectExactly": "{{number}} Options",
+      "selectRange": "Between {{minimum}} and {{maximum}} options"
+    },
+    "reviewOrder": "Review order",
+    "receivedOrderMsg": "Order received! Our staff was already notificated. Wait for our validation."
+  },
+
+  "orders": {
+    "title": "Orders",
+    "order": "Order",
+    "singleItem": "<bold>1</bold> item",
+    "totalItems": "<bold>{{items}}</bold> items"
+  },
+
+  "cart": {
+    "title": "Order",
+    "cartIsEmpty": "The order is empty",
+    "cartIsEmptyDesc": "Please check the menu and add create your order.",
+    "seeMenu": "See the Menu",
+    "totalPrice": "Total",
+    "checkout": "Next",
+    "takeawayQuestion": "Takeaway?",
+    "yes": "Yes",
+    "no":"No",
+    "observations": "Observations",
+    "payingLater": "Submit",
+    "payingNow": "Submit and pay now",
+    "mixedPaymentTitle": "Cannot proceed with this order",
+    "mixedPaymentDescription": "Your order has a mix between pre-paid and pay later items. Please remove items of one of those payment methods to continue.",
+    "confirmSubmissionTitle": "Confirm submission",
+    "confirmSubmissionDescription": "This order is about to be sent for preparation. Do you confirm this order?",
+    "amountNotEligible": "Minimum amount of {{amount}} required to continue.",
+    "payLater": {
+      "change": "Change",
+      "submit": "Submit order"
+    }
+  },
+
+  "extraCost": {
+    "1": "Service Fee",
+    "2": "Tip"
+  },
+
+  "validations": {
+    "Required": "This field is required.",
+    "InvalidPhoneNumber": "You must specify a phone number with format 912 345 678.",
+    "StringTooLong": "The provided value is too long.",
+    "InvalidValue": "This provided value is not valid.",
+    "PaymentFailed": "Couldn't process payment, please veryfy your details and try again later."
+  },
+
+  "walletTopUp": {
+    "title": "Amount to Top Up?",
+    "balanceAfterOperation": "Wallet amount after this operation:",
+    "wallet": "Quivi Wallet",
+
+    "dialog": {
+      "topUpDescription": "Was placed in your wallet!",
+      "yourBalance": "Your balance:"
+    }
+  },
+
+  "mastercardCampaign": {
+    "page1": {
+      "title": "100% Cashback",
+      "description": "On your first payment with Mastercard®, 100%* of the amount will credited on your Quivi wallet.",
+      "button": "Continue",
+      "disclaimer": "* Any payment starting from {{minEligibleAmount}}. Maximum cashback limit of {{maxCashbackAmount}}. Campaign terms and conditions."
+    },
+    "topup": {
+      "title": "You just earned",
+      "description": "on your wallet with the Mastercard® campaign. Enjoy it on future purchases with Quivi."
+    },
+    "enjoyMastercardCampaign": "Enjoy Mastercard® campaign",
+    "enterEmailToBeElligible": "Required to be elligible for Mastercard® campaign",
+    "remainingToBenefit": "Only <bold>{{amount}}</bold> left to benefit of Mastercard® chargeback campaign",
+    "skip": "skip"
+  },
+
+  "orderScheduling": {
+    "pickUpDate": "Pick up date",
+    "confirm": "Confirm",
+    "chooseNewDate": "Change pick up date",
+    "itemsUnavailableAtPickUpDate": "The following items on your cart are not available at the pick up date: <list></list> Continuing will remove them from cart.",
+    "asSoonAsPossible": "As soon as possible",
+    "forLater": "For Later"
+  },
+
+  "calendar": {
+    "months": {
+      "1": "Januray",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "october",
+      "11": "November",
+      "12": "December"
+    },
+    "dateFormat": "{{month}} {{day}} at {{time}}"
+  }
+}

@@ -1,0 +1,403 @@
+﻿@use '../util' as *;
+
+.scan__tutorial {
+    margin-bottom: rem(40);
+
+    .step {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+
+        &__number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: rem(12);
+            min-height: rem(32);
+            min-width: rem(32);
+            background: $primary-color;
+            border-radius: 50%;
+
+            span {
+                color: $white-color;
+                font-weight: $font-weight-medium;
+            }
+        }
+
+        p {
+            display: inline;
+        }
+    }
+
+    .step:not(:last-child) {
+        margin-bottom: rem(28);
+    }
+}
+
+.reader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    min-height: calc(var(--vh, 1vh) * 100);
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    z-index: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+
+    &__background {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        backdrop-filter: blur(1px);
+        transition: all 0.3s ease-in-out;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    &.open {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.pay {
+    margin-bottom: rem(60);
+
+    &.gpay-card-info-container {
+        margin-bottom: 0;
+    }
+
+    &__amount {
+        position: relative;
+
+        .MuiInputBase-input {
+            font-family: $font-family;
+        }
+
+        label {
+            margin-bottom: rem(8);
+        }
+
+        input {
+            font-size: $font-size-display-1;
+            text-align: center;
+            padding: rem(12) rem(32);
+        }
+    }
+
+    .method {
+        &--option {
+            height: 5rem;
+
+            button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border: 2px solid $border-color;
+                cursor: pointer;
+                height: 100%;
+                width: 100%;
+                border-radius: 4px;
+
+                &.selected {
+                    background: $primary-color-light;
+                    border: 1px solid $primary-color;
+                }
+
+                svg {
+                    height: 3rem;
+                    width: auto;
+                    z-index: 200;
+                    cursor: pointer;
+                }
+            }
+
+            button[id="creditCard"] svg {
+                height: 100%;
+            }
+        }
+    }
+
+    .method-details {
+        .form-group label[id="phone-number-label"] {
+            margin-bottom: 0;
+
+            & ~ p {
+                margin-bottom: rem(12);
+            }
+        }
+    }
+
+    .input--phonenumber {
+        margin: rem(16) auto;
+        margin-bottom: rem(24);
+        text-align: center;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        overflow: hidden;
+
+        &.PhoneInput--focus {
+            border: 1px solid $primary-color;
+            box-shadow: 0 0 2px $primary-color;
+
+            input {
+                border: none;
+            }
+
+            .PhoneInputCountryIcon--border {
+                box-shadow: none !important;
+            }
+
+            .PhoneInputCountrySelectArrow {
+                color: $primary-color !important;
+            }
+        }
+
+        .PhoneInputCountryIcon--border {
+            box-shadow: none;
+            background-color: transparent;
+        }
+
+        .PhoneInputCountryIcon {
+            height: auto;
+            width: rem(32);
+        }
+
+        .PhoneInputCountry {
+            margin-right: 0;
+            padding: rem(8) rem(16);
+            background: $primary-color-light;
+        }
+
+
+        .PhoneInputCountrySelectArrow {
+            border-right-width: 2px;
+            border-bottom-width: 2px;
+            opacity: 1;
+            width: rem(6);
+            height: rem(6);
+            margin-left: rem(8);
+        }
+
+        input {
+            font-size: $font-size-display-2;
+            text-align: center;
+            border: none;
+
+            &:focus, &:active, &:focus-visible {
+                border: none;
+                outline: none
+            }
+        }
+    }
+
+    &__tip {
+        margin-bottom: rem(8);
+    }
+
+    &__nif, &__email {
+        margin-bottom: rem(24);
+
+        label {
+            margin-bottom: rem(8);
+        }
+    }
+
+    &__other {
+        input {
+            font-size: $font-size-xlg;
+            text-align: center;
+            padding: rem(12) rem(32);
+        }
+    }
+
+    .purchase-summary {
+        margin-bottom: 1rem;
+
+        .merchant-name {
+            color: $primary-color;
+            margin-bottom: 1rem;
+        }
+
+        &__wrapper {
+            background: $primary-color-light;
+            padding: 1rem;
+        }
+
+        &__row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+
+            .purchase-amount, .purchase-info {
+                color: $primary-color;
+                font-size: $font-size-xlg;
+            }
+
+            .purchase-amount {
+                font-weight: $font-weight-bold;
+            }
+
+            img {
+                height: 24px;
+            }
+        }
+
+        &__row:not(:last-of-type) {
+            margin-bottom: 0.75rem;
+        }
+    }
+
+
+    .total-container {
+        padding: rem(20);
+        margin-bottom: rem(32);
+        text-align: center;
+        width: 100%;
+        background: $primary-color-light;
+
+        h2 {
+            font-weight: $font-weight-regular;
+        }
+
+        h1 {
+            margin-bottom: 0;
+        }
+    }
+
+    .people-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: rem(12) 0;
+
+        span {
+            width: rem(32);
+            margin: 0 rem(32);
+            font-size: $font-size-display-1;
+            text-align: center;
+            color: $primary-color;
+        }
+    }
+}
+
+.summary {
+    .table-totals {
+        &--subtotal, &--total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        &--total {
+            padding: rem(12) rem(8);
+            background: $primary-color-light;
+
+            .title {
+                font-weight: $font-weight-regular;
+            }
+
+            .amount {
+                font-weight: $font-weight-bold;
+                white-space: nowrap;
+            }
+        }
+
+        &--subtotal {
+            margin-bottom: rem(8);
+        }
+
+        &--paid {
+            margin-bottom: rem(24);
+        }
+
+        &--subtotal {
+            color: $secondary-color;
+
+            .title, .amount {
+                font-size: $font-size-sm;
+            }
+        }
+    }
+}
+
+.one-liner {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-frame {
+    width: 100%;
+    height: 43px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin: 8px auto;
+}
+
+.card-frame.frame--activated {
+    opacity: 1;
+}
+
+.card-frame.frame--activated.frame--focus {
+    border: solid 1px #070707;
+}
+
+.card-frame.frame--activated.frame--invalid {
+    border: solid 1px #D69129;
+}
+
+.apple-pay-button {
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+}
+
+.apple-pay-button-black {
+    -apple-pay-button-style: black;
+}
+
+.apple-pay-button-white {
+    -apple-pay-button-style: white;
+}
+
+.apple-pay-button-white-with-line {
+    -apple-pay-button-style: white-outline;
+}
+
+.credit-card-input-group {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+    font-size: $font-size-sm;
+    
+    input {
+        font-size: inherit;
+        padding-left: rem(40);
+        background: transparent;
+    }
+
+    img {
+        position: absolute;
+        height: rem(18);
+        width: auto;
+        left: rem(8);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .side {
+        position: absolute;
+        right: rem(12);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+.gpay-button  {
+    margin: 0 !important;
+}

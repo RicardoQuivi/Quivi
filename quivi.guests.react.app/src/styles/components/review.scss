@@ -1,0 +1,67 @@
+﻿@use '../util' as *;
+
+.review {
+    &__header {
+        margin-bottom: rem(24);
+
+        h2 {
+            margin-bottom: rem(12);
+        }
+    }
+
+    &__stars {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__text {
+        textarea {
+            width: 100%;
+            height: rem(120);
+            margin-top: rem(24);
+            font-size: $font-size-md;
+            font-family: $font-family;
+            font-weight: $font-weight-regular;
+            padding: rem(12);
+            border: 1px solid $border-color;
+            border-radius: 4px;
+            transition: all 0.2s ease-in-out;
+
+            &:focus, &:focus-visible {
+                outline: none !important;
+                border: 1px solid $accent-color;
+            }
+        }
+    }
+}
+
+.external-links {
+    &__container {
+        h4 {
+            margin-top: rem(24);
+            color: $primary-color;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-gap: rem(16);
+        grid-template-columns: 1fr 1fr;
+        margin-top: rem(16);
+
+        @include breakpoint(large-phone) {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    &__cell {
+        overflow: hidden;
+        border-radius: 4px;
+        padding: rem(24);
+
+        img {
+            display: block;
+            width: 100%;
+        }
+    }
+}

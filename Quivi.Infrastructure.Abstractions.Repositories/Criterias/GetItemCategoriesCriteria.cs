@@ -1,4 +1,6 @@
-﻿namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
+﻿using Quivi.Infrastructure.Abstractions.Repositories.Data;
+
+namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 {
     public record GetItemCategoriesCriteria : IPagedCriteria
     {
@@ -9,7 +11,7 @@
         public string? Name { get; init; }
         public bool? IsDeleted { get; init; }
         public bool? WithItems { get; init; }
-        public DateTime? AvailableAtUtcDate { get; init; }
+        public Availability? AvailableAt { get; set; }
 
         public bool IncludeMenuItems { get; init; }
         public bool IncludeTranslations { get; init; }

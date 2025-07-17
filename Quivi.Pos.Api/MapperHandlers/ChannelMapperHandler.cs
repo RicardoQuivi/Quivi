@@ -2,6 +2,7 @@
 using Quivi.Infrastructure.Abstractions.Configurations;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Pos.Api.MapperHandlers
 {
@@ -23,7 +24,7 @@ namespace Quivi.Pos.Api.MapperHandlers
             {
                 Id = id,
                 Name = model.Identifier,
-                Url = $"{appHostsSettings.GuestApp}/?id={id}",
+                Url = appHostsSettings.GuestsApp.CombineUrl($"/c/{id}"),
                 ChannelProfileId = idConverter.ToPublicId(model.ChannelProfileId),
             };
         }

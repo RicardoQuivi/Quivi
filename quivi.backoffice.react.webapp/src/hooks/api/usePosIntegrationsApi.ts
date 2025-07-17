@@ -23,7 +23,7 @@ export const usePosIntegrationsApi = (token?: string) => {
             queryParams.set("channelId", request.channelId);
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/posintegrations?${queryParams}`;
+        const url = new URL(`api/posintegrations?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetPosIntegrationsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

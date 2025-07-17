@@ -14,7 +14,7 @@ export const useCustomChargeMethodsApi = (token: string) => {
 
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/customchargemethods?${queryParams}`;
+        const url = new URL(`api/customchargemethods?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetCustomChargeMethodsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

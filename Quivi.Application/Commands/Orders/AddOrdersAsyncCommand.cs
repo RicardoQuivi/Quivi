@@ -1,8 +1,12 @@
 ﻿using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos.Items;
+using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Events;
+using Quivi.Infrastructure.Abstractions.Events.Data;
+using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
@@ -25,20 +29,26 @@ namespace Quivi.Application.Commands.Orders
         private readonly IChannelsRepository channelsRepository;
         private readonly IMenuItemsRepository menuItemsRepository;
         private readonly IOrdersRepository ordersRepository;
+        private readonly IOrderSequencesRepository sequencesRepository;
         private readonly IDateTimeProvider dateTimeProvider;
+        private readonly IEventService eventService;
         private readonly IPosSyncService posSyncService;
 
         public AddOrdersAsyncCommandHandler(IChannelsRepository channelsRepository,
                                             IMenuItemsRepository menuItemsRepository,
                                             IOrdersRepository ordersRepository,
                                             IDateTimeProvider dateTimeProvider,
-                                            IPosSyncService posSyncService)
+                                            IEventService eventService,
+                                            IPosSyncService posSyncService,
+                                            IOrderSequencesRepository orderSequencesRepository)
         {
             this.channelsRepository = channelsRepository;
             this.menuItemsRepository = menuItemsRepository;
             this.ordersRepository = ordersRepository;
             this.dateTimeProvider = dateTimeProvider;
+            this.eventService = eventService;
             this.posSyncService = posSyncService;
+            this.sequencesRepository = orderSequencesRepository;
         }
 
         public async Task<string?> Handle(AddOrdersAsyncCommand command)
@@ -60,6 +70,13 @@ namespace Quivi.Application.Commands.Orders
 
             var now = dateTimeProvider.GetUtcNow();
             var addedOrders = new List<Order>();
+
+            var lastOrderOfMerchantQuery = await sequencesRepository.GetAsync(new GetOrderSequencesCriteria
+            {
+                MerchantIds = [command.MerchantId],
+                PageSize = 1,
+            });
+            var nextSequence = lastOrderOfMerchantQuery.SingleOrDefault()?.SequenceNumber ?? 1;
             foreach (var channel in channelsQuery)
             {
                 bool isTakeAway = channel.ChannelProfile!.Features.HasFlag(ChannelFeature.IsTakeAwayOnly) == true;
@@ -76,14 +93,33 @@ namespace Quivi.Application.Commands.Orders
                     ScheduledTo = null,
                     CreatedDate = now,
                     ModifiedDate = now,
+                    OrderSequence = new OrderSequence
+                    {
+                        SequenceNumber = nextSequence,
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                    },
                 };
+                nextSequence += 1;
                 PopulateOrderItems(menuItemDictionary, itemsPerChannelWithDefaultPrice[channel.Id], order);
                 ordersRepository.Add(order);
                 addedOrders.Add(order);
             }
             await ordersRepository.SaveChangesAsync();
 
-            var orderIds = addedOrders.Select(s => s.Id).ToList();
+            List<int> orderIds = [];
+            foreach (var order in addedOrders)
+            {
+                orderIds.Add(order.Id);
+                await eventService.Publish(new OnOrderOperationEvent
+                {
+                    MerchantId = order.MerchantId,
+                    ChannelId = order.ChannelId,
+                    Id = order.Id,
+                    Operation = EntityOperation.Create,
+                });
+            }
+
             return await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Requested, false);
         }
 

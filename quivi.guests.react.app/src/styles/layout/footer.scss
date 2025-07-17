@@ -1,0 +1,33 @@
+﻿@use '../util' as *;
+
+
+.footer {
+    display: flex;
+    align-items: center;
+    margin-top: rem(48);
+    margin-bottom: rem(24);
+
+    p {
+        color: $primary-color;
+        font-size: $font-size-sm;
+    }
+
+    &--not-table {
+        justify-content: center;
+    }
+
+    &--at-table {
+        justify-content: space-between;
+    }
+
+    &__powered {
+        display: flex;
+        align-items: center;
+
+        svg {
+            height: rem(14);
+            width: auto;
+            margin-top: -2px;
+        }
+    }
+}

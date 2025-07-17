@@ -11,8 +11,12 @@ namespace Quivi.Application.Commands.Sessions
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? ChannelIds { get; init; }
+        public IEnumerable<int>? PreparationGroupIds { get; init; }
         public IEnumerable<SessionStatus>? Statuses { get; init; }
         public bool LatestSessionsOnly { get; init; }
+
+        public bool IncludePreparationGroups { get; init; }
+        public bool IncludeOrders { get; init; }
         public bool IncludeOrdersMenuItems { get; init; }
         public bool IncludeOrdersMenuItemsPosChargeInvoiceItems { get; init; }
         public bool IncludeOrdersMenuItemsModifiers { get; init; }
@@ -36,7 +40,10 @@ namespace Quivi.Application.Commands.Sessions
                 Ids = query.Ids,
                 ChannelIds = query.ChannelIds,
                 Statuses = query.Statuses,
+                PreparationGroupIds = query.PreparationGroupIds,
 
+                IncludePreparationGroups = query.IncludePreparationGroups,
+                IncludeOrders = query.IncludeOrders,
                 IncludeOrdersMenuItems = query.IncludeOrdersMenuItems,
                 IncludeOrdersMenuItemsPosChargeInvoiceItems = query.IncludeOrdersMenuItemsPosChargeInvoiceItems,
                 IncludeChannel = query.IncludeChannel,

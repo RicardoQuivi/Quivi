@@ -44,7 +44,7 @@ namespace Quivi.Application.Commands.Merchants
             var merchantsQuery = await merchantRepo.GetAsync(new GetMerchantsCriteria
             {
                 Ids = command.MerchantIds,
-                Inactive = false,
+                IsDeleted = false,
             });
 
             foreach(var merchant in merchantsQuery)

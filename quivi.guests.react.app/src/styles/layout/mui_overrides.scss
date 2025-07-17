@@ -1,0 +1,17 @@
+@use '../util' as *;
+
+.MuiStepIcon-active {
+    animation: blinker 3s linear infinite;
+}
+
+.MuiStepConnector-completed {
+    .MuiStepConnector-line {
+        border-color: $accent-color !important;
+    }
+}
+
+.MuiStepConnector-active {
+    .MuiStepConnector-line {
+        border-color: $accent-color !important;
+    }
+}

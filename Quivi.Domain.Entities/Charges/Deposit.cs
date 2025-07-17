@@ -12,17 +12,17 @@ namespace Quivi.Domain.Entities.Charges
 
         #region Relationships
         public int ConsumerId { get; set; }
-        public required Person Consumer { get; set; }
+        public Person? Consumer { get; set; }
 
         public int ChargeId { get; set; }
-        public required Charge Charge { get; set; }
+        public Charge? Charge { get; set; }
 
-        public DepositCapture DepositCapture { get; set; }
-        public DepositSurcharge DepositSurchage { get; set; }
-        public DepositCaptureJournal DepositCaptureJournal { get; set; }
-        public DepositSurchargeJournal DepositSurchargeJournal { get; set; }
-        public DepositJournal DepositJournal { get; set; }
-        public DepositRefundJournal DepositRefundJournal { get; set; }
+        public DepositCapture? DepositCapture { get; set; }
+        public DepositSurcharge? DepositSurchage { get; set; }
+        public DepositCaptureJournal? DepositCaptureJournal { get; set; }
+        public DepositSurchargeJournal? DepositSurchargeJournal { get; set; }
+        public DepositJournal? DepositJournal { get; set; }
+        public DepositRefundJournal? DepositRefundJournal { get; set; }
         #endregion
     }
 }

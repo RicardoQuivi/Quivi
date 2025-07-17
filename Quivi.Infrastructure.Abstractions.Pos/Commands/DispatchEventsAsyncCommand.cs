@@ -19,7 +19,7 @@ namespace Quivi.Infrastructure.Abstractions.Pos.Commands
 
         public async Task Handle(DispatchEventsAsyncCommand command)
         {
-            foreach(var evt in command.Events)
+            foreach (var evt in command.Events)
                 await eventService.Publish(evt);
         }
     }

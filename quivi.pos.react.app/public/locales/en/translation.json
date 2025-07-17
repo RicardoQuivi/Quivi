@@ -114,5 +114,9 @@
         "associatedOrders": "Associated orders",
         "sendToPreparation": "Prepare",
         "skipPreparation": "Skip preparation"
-    }
+    },
+    "accept": "Accept",
+    "yes": "Yes",
+    "no": "No",
+    "sendToInProgress": "Prepare"
 }

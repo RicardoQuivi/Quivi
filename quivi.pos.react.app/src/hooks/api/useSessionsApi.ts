@@ -24,7 +24,7 @@ export const useSessionsApi = (token: string) => {
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         request.channelIds?.forEach((id, i) => queryParams.set(`channelIds[${i}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/sessions?${queryParams}`;
+        const url = new URL(`api/sessions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetSessionsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

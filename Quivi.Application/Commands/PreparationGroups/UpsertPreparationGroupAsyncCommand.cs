@@ -34,10 +34,10 @@ namespace Quivi.Application.Commands.PreparationGroups
                                                         IEventService eventService)
         {
             this.unitOfWork = unitOfWork;
-            repository = unitOfWork.PreparationGroups;
-            preparationGroupItemsRepository = unitOfWork.PreparationGroupItems;
-            ordersRepository = unitOfWork.Orders;
-            menuItemsRepository = unitOfWork.MenuItems;
+            this.repository = unitOfWork.PreparationGroups;
+            this.preparationGroupItemsRepository = unitOfWork.PreparationGroupItems;
+            this.ordersRepository = unitOfWork.Orders;
+            this.menuItemsRepository = unitOfWork.MenuItems;
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
         }

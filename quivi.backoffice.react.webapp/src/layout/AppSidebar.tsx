@@ -41,8 +41,8 @@ const items: NavItem[] = [
                 show: (u) => u.isAdmin && u.subMerchantId != undefined,
             },
             { 
-                name: "sidebar.administration.paymentMethods",
-                path: "/admin/paymentMethods",
+                name: "sidebar.administration.acquirerConfigurations",
+                path: "/admin/acquirerConfigurations",
                 show: (u) => u.isAdmin && u.subMerchantId != undefined,
             },
             { 

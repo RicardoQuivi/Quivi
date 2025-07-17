@@ -15,7 +15,7 @@ export const useChannelProfilesApi = (token: string) => {
         queryParams.set("page", request.page.toString());
         request.ids?.filter(id => !!id).forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/channelprofiles?${queryParams}`;
+        const url = new URL(`api/channelprofiles?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetChannelProfilesResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

@@ -22,23 +22,26 @@ export const usePrinterWorkersApi = (token?: string) => {
             
             request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
-            let url = `${import.meta.env.VITE_API_URL}api/printerworkers?${queryParams}`;
+            const url = new URL(`api/printerworkers?${queryParams}`, import.meta.env.VITE_API_URL).toString();
             return httpClient.httpGet<GetPrinterWorkersResponse>(url, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         create: (request: CreatePrinterWorkerRequest) => {
-            return httpClient.httpPost<CreatePrinterWorkerResponse>(`${import.meta.env.VITE_API_URL}api/printerworkers`, request, {
+            const url = new URL(`api/printerworkers`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpPost<CreatePrinterWorkerResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         patch: (request: PatchPrinterWorkerRequest) => {
-            return httpClient.httpPatch<PatchPrinterWorkerResponse>(`${import.meta.env.VITE_API_URL}api/printerworkers/${request.id}`, request, {
+            const url = new URL(`api/printerworkers/${request.id}`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpPatch<PatchPrinterWorkerResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         delete: (request: DeletePrinterWorkerRequest) => {
-            return httpClient.httpDelete<DeletePrinterWorkerResponse>(`${import.meta.env.VITE_API_URL}api/printerworkers/${request.id}`, request, {
+            const url = new URL(`api/printerworkers/${request.id}`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpDelete<DeletePrinterWorkerResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },

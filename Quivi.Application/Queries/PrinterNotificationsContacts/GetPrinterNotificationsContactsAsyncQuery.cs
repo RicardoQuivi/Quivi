@@ -10,6 +10,9 @@ namespace Quivi.Application.Queries.PrinterNotificationsContacts
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? PrinterWorkerIds { get; init; }
+        public IEnumerable<int>? LocationIds { get; set; }
+        public IEnumerable<NotificationMessageType>? MessageTypes { get; init; }
+        public bool? IsDeleted { get; init; }
         public bool IncludeNotificationsContact { get; init; }
     }
 
@@ -29,6 +32,9 @@ namespace Quivi.Application.Queries.PrinterNotificationsContacts
                 MerchantIds = query.MerchantIds,
                 Ids = query.Ids,
                 PrinterWorkerIds = query.PrinterWorkerIds,
+                LocationIds = query.LocationIds,
+                MessageTypes = query.MessageTypes,
+                IsDeleted = query.IsDeleted,
                 IncludeNotificationsContact = query.IncludeNotificationsContact,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

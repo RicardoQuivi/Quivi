@@ -1,0 +1,53 @@
+﻿@use '../util' as *;
+
+.tips {
+    &-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: rem(4);
+        margin-bottom: rem(18);
+    }
+
+
+    &-group {
+        display: flex;
+        flex-direction: column;
+        padding: rem(8);
+        border: 2px solid $border-color;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        height: 100%;
+        background: transparent;
+        cursor: pointer;
+
+        svg {
+            margin-bottom: rem(4);
+        }
+
+        &.selected {
+            border: 2px solid $accent-color;
+            box-shadow: (0px 1px 4px rgba(255, 63, 1, 0.22));
+        }
+    }
+
+    &-fixed {
+        color: $primary-color;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-regular;
+        display: block;
+    }
+
+    &-percentage {
+        color: $primary-color;
+        font-size: $font-size-md;
+        font-weight: $font-weight-semibold;
+        display: block;
+    }
+
+    &-result {
+        color:  $primary-color;
+        font-size: $font-size-sm;
+        margin-top: rem(4);
+    }
+}

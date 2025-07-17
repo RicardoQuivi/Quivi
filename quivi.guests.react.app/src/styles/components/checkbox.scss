@@ -1,0 +1,87 @@
+﻿@use '../util' as *;
+
+.checkbox {
+    &-container {
+        margin-top: rem(32);
+    }
+
+    &-tableitem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: rem(8);
+        padding: rem(8) rem(4);
+
+        label {
+            font-weight: $font-weight-regular;
+            color: $secondary-color;
+        }
+
+        &.checked {
+            background: $accent-color-light;
+        }
+
+        .item-price {
+            min-width: rem(72);
+            text-align: right;
+        }
+    }
+
+    &-group {
+        display: block;
+        position: relative;
+        padding-left: rem(28);
+        cursor: pointer;
+        line-height: 125%;
+
+
+        input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        input:checked ~ .checkmark {
+            border-color: $accent-color;
+            background-color: $accent-color;
+        }
+
+        input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: rem(20);
+            width: rem(20);
+            background-color: $white-color;
+            border: 1px solid $border-color;
+            border-radius: 2px;
+
+            &.circle {
+                border-radius: rem(20);
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                display: none;
+                left: rem(7);
+                top: rem(3);
+                width: rem(5);
+                height: rem(9);
+                border: solid $white-color;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+        }
+
+        &:hover .checkmark {
+            background-color: $x-light-grey;
+        }
+    }
+}

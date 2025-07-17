@@ -13,12 +13,12 @@ namespace Quivi.Infrastructure.Events.RabbitMQ
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects,
         };
-        private Lazy<IModel> _channel;
-        private IModel Channel => _channel.Value;
+        private Lazy<IModel> channel;
+        private IModel Channel => channel.Value;
 
         public RabbitMQEventService(RabbitMQConnection connection)
         {
-            _channel = new Lazy<IModel>(() =>
+            channel = new Lazy<IModel>(() =>
             {
                 var channel = connection.CreateChannel();
                 var properties = channel.CreateBasicProperties();
@@ -34,19 +34,19 @@ namespace Quivi.Infrastructure.Events.RabbitMQ
 
         public void Dispose()
         {
-            if (_channel?.IsValueCreated == true)
+            if (channel?.IsValueCreated == true)
             {
-                if (_channel.Value.IsOpen)
-                    _channel.Value.Close();
-                _channel.Value.Dispose();
+                if (channel.Value.IsOpen)
+                    channel.Value.Close();
+                channel.Value.Dispose();
             }
         }
 
-        public Task Publish<T>(T data) where T : IEvent
+        public Task Publish(IEvent evt)
         {
-            var exchangeName = typeof(T).FullName;
+            var exchangeName = evt.GetType().FullName;
             Channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false);
-            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data, jsonSettings));
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(evt, jsonSettings));
             Channel.BasicPublish(exchange: exchangeName, routingKey: "", basicProperties: null, body: body);
             return Task.CompletedTask;
         }

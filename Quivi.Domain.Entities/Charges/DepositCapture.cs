@@ -9,10 +9,10 @@ namespace Quivi.Domain.Entities.Charges
 
         #region Relationships
         public int DepositId { get; set; }
-        public required Deposit Deposit { get; set; }
+        public Deposit? Deposit { get; set; }
 
         public int PersonId { get; set; }
-        public required Person Person { get; set; }
+        public Person? Person { get; set; }
         #endregion
     }
 }

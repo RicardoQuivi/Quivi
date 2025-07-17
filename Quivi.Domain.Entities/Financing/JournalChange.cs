@@ -2,7 +2,7 @@
 {
     public class JournalChange : IEntity
     {
-        public int JournalHistoryId { get; set; }
+        public int Id { get; set; }
 
         public JournalType Type { get; set; }
         public JournalState State { get; set; }
@@ -13,7 +13,7 @@
 
         #region Relationship
         public int JournalId { get; set; }
-        public required Journal Journal { get; set; }
+        public Journal? Journal { get; set; }
 
         public int? JournalLinkId { get; set; }
         public Journal? JournalLink { get; set; }

@@ -159,10 +159,11 @@ namespace Quivi.Application.Pos
                 OrderIds = orderIds,
                 FromState = fromState,
                 ToFinalState = complete,
+                SyncStrategy = this,
             });
         }
 
-        public virtual Task<IEnumerable<IEvent>> CancelOrder(PosIntegration integration, int orderId, string reason)
+        public virtual Task<IEnumerable<IEvent>> CancelOrder(PosIntegration integration, int orderId, string? reason)
         {
             return CommandProcessor.Execute(new ProcessQuiviOrderCancelationAsyncCommand
             {

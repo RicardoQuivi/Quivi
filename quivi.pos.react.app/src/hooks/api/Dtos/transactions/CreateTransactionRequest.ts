@@ -7,7 +7,7 @@ export interface CreateTransactionRequest {
     readonly email?: string;
     readonly vatNumber?: string;
     readonly observations?: string;
-    readonly total: number;
+    readonly amount: number;
     readonly tip: number;
     readonly items?: SessionItem[];
 }

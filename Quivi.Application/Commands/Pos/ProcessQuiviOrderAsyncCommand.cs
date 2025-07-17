@@ -1,15 +1,20 @@
 ﻿using Quivi.Application.Extensions.Pos;
+using Quivi.Application.Pos;
+using Quivi.Application.Pos.Items;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data;
 using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
+using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Events.Data.Sessions;
+using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.Pos
 {
@@ -24,12 +29,21 @@ namespace Quivi.Application.Commands.Pos
         public required IEnumerable<int> OrderIds { get; set; }
         public OrderState FromState { get; set; }
         public bool ToFinalState { get; set; }
+        public required AQuiviSyncStrategy SyncStrategy { get; init; }
     }
 
     public class ProcessQuiviOrderAsyncCommandHandler : ASyncCommandHandler<ProcessQuiviOrderAsyncCommand>,
                                                             ICommandHandler<ProcessQuiviOrderAsyncCommand, Task<IEnumerable<IEvent>>>,
                                                             ICommandHandler<ProcessQuiviOrderCancelationAsyncCommand, Task<IEnumerable<IEvent>>>
     {
+        private class ExtendedOrderMenuItem
+        {
+            public required OrderMenuItem OrderMenuItem { get; init; }
+            public decimal PaidQuantity { get; init; }
+            public decimal AvailableQuantity => OrderMenuItem.Quantity - PaidQuantity;
+            public required SessionItem SessionItem { get; init; }
+        }
+
         private enum ProcessingType
         {
             Next,
@@ -97,18 +111,24 @@ namespace Quivi.Application.Commands.Pos
 
         private readonly IUnitOfWork unitOfWork;
         private readonly IDateTimeProvider dateTimeProvider;
+        private readonly IBackgroundJobHandler backgroundJobHandler;
 
         private readonly ISessionsRepository sessionsRepo;
+        private readonly IPosChargesRepository posChargesRepo;
         private readonly IOrdersRepository ordersRepo;
         //private readonly IOrderConfigurableFieldsRepository configurableFieldsRepo;
 
         public ProcessQuiviOrderAsyncCommandHandler(IUnitOfWork unitOfWork,
-                                                        IDateTimeProvider dateTimeProvider)
+                                                        IDateTimeProvider dateTimeProvider,
+                                                        IBackgroundJobHandler backgroundJobHandler)
         {
             this.dateTimeProvider = dateTimeProvider;
+            this.backgroundJobHandler = backgroundJobHandler;
+
             this.unitOfWork = unitOfWork;
             this.sessionsRepo = unitOfWork.Sessions;
             this.ordersRepo = unitOfWork.Orders;
+            this.posChargesRepo = unitOfWork.PosCharges;
             //configurableFieldsRepo = unitOfWork.OrderConfigurableFieldRepository;
         }
 
@@ -121,7 +141,7 @@ namespace Quivi.Application.Commands.Pos
         }
 
         protected override async Task Sync(ProcessQuiviOrderAsyncCommand command)
-        {
+        { 
             var orderDatas = await Initialize(command.OrderIds, command.ToFinalState ? ProcessingType.Complete : ProcessingType.Next, command.FromState);
             if (orderDatas.Any() == false)
                 return;
@@ -138,6 +158,7 @@ namespace Quivi.Application.Commands.Pos
                 IncludeChangeLogs = true,
                 IncludeOrderMenuItems = true,
                 IncludeOrderMenuItemsAndMofifiers = true,
+                IncludeOrderMenuItemsPosChargeInvoiceItems = true,
                 IncludeChannelProfile = true,
 
                 PageIndex = 0,
@@ -173,7 +194,7 @@ namespace Quivi.Application.Commands.Pos
                     MerchantId = order.MerchantId,
                     Id = order.Id,
                     ChannelId = order.ChannelId,
-                }
+                },
             ];
         }
 
@@ -184,7 +205,7 @@ namespace Quivi.Application.Commands.Pos
             {
                 new OrderChangeLog
                 {
-                    EatOrderState = orderData.NextState,
+                    State = orderData.NextState,
                     OrderId = order.Id,
                     Notes = reason,
                     CreatedDate = order.ModifiedDate,
@@ -212,7 +233,9 @@ namespace Quivi.Application.Commands.Pos
                 ChannelId = o.ChannelId,
             });
 
-            await ProcessOrderToSession(orderData);
+            await ProcessOrderToSession(command.SyncStrategy, orderData);
+            await unitOfWork.SaveChangesAsync();
+
             if (order.State == OrderState.Rejected)
                 return;
 
@@ -241,80 +264,45 @@ namespace Quivi.Application.Commands.Pos
                     Id = o.Id,
                     MerchantId = o.MerchantId,
                 });
+
+            if(order.Origin == OrderOrigin.GuestsApp && order.State == OrderState.Requested)
+                AddOrderEvent(order, o => new OnOrderPendingApprovalEvent
+                {
+                    ChannelId = o.ChannelId,
+                    Id = o.Id,
+                    MerchantId = o.MerchantId,
+                });
         }
 
-        private async Task ProcessOrderToSession(OrderData orderData)
+        private async Task ProcessOrderToSession(AQuiviSyncStrategy syncStrategy, OrderData orderData)
         {
             var order = orderData.Order;
             if (order.SessionId.HasValue || new[] { OrderState.ScheduledRequested, OrderState.Requested }.Contains(orderData.NextState))
-            {
-                await unitOfWork.SaveChangesAsync();
                 return;
-            }
 
-            if (order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.AllowsSessions))
-            {
-                var items = order.OrderMenuItems!.AsSessionItems();
-                if(items.Any() == false)
-                {
-                    order.State = OrderState.Completed;
-                    await unitOfWork.SaveChangesAsync();
-                    return;
-                }
-                await AssignToSession(order);
-                await unitOfWork.SaveChangesAsync();
-                return;
-            }
-
-            if (order.PayLater)
+            if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.AllowsSessions) == false)
             {
                 order.State = OrderState.Rejected;
                 var orderChange = order.OrderChangeLogs!.Last();
                 orderChange.Notes = "System rejected this order";
-                orderChange.EatOrderState = OrderState.Rejected;
-                await unitOfWork.SaveChangesAsync();
+                orderChange.State = OrderState.Rejected;
                 return;
             }
 
-            //Creates a Completed Session to make sure all orders generates a session
-            order.Session = new Session
+            var items = order.OrderMenuItems!.AsSessionItems();
+            if(items.Any() == false)
             {
-                CreateDate = order.CreatedDate,
-                ChannelId = order.ChannelId,
-                Status = SessionStatus.Closed,
-                StartDate = order.CreatedDate,
-                EndDate = dateTimeProvider.GetUtcNow(),
-                Orders = [order],
-                EmployeeId = order.EmployeeId,
-            };
-            await OnSessionAdded(order.Session);
+                order.State = OrderState.Completed;
+                return;
+            }
 
-            await unitOfWork.SaveChangesAsync();
-            AddOrderEvent(order, o => new OnSessionOperationEvent
-            {
-                Operation = EntityOperation.Create,
-                ChannelId = o.ChannelId,
-                Id = o.SessionId!.Value,
-                MerchantId = o.MerchantId,
-            });
+            await AssignToSession(syncStrategy, order);
         }
 
-        private async Task AssignToSession(Order order)
+        private async Task AssignToSession(AQuiviSyncStrategy syncStrategy, Order order)
         {
-            var sessionsQuery = await sessionsRepo.GetAsync(new GetSessionsCriteria
-            {
-                MerchantIds = [order.MerchantId],
-                ChannelIds = [order.ChannelId],
-                Statuses = [SessionStatus.Ordering],
-
-                IncludeOrdersMenuItems = true,
-                IncludeOrdersMenuItemsPosChargeInvoiceItems = true,
-                PageIndex = 0,
-                PageSize = 1,
-            });
-
-            var session = sessionsQuery.SingleOrDefault();
-            if(session == null)
+            Session? session = await GetOrCreateSession(order);
+            if (session == null)
             {
                 session = new Session
                 {
@@ -332,14 +320,7 @@ namespace Quivi.Application.Commands.Pos
                     Orders = new List<Order>(),
                 };
                 sessionsRepo.Add(session);
-                AddOrderEvent(order, o => new OnSessionOperationEvent
-                {
-                    Operation = EntityOperation.Create,
-                    ChannelId = o.ChannelId,
-                    Id = o.SessionId!.Value,
-                    MerchantId = o.MerchantId,
-                });
-                await OnSessionAdded(session);
+                await OnSessionAdded(order, session);
             }
             else
                 AddSessionEvent(session, s => new OnSessionOperationEvent
@@ -352,9 +333,110 @@ namespace Quivi.Application.Commands.Pos
 
             session.Orders!.Add(order);
             order.Session = session;
+            order.SessionId = session.Id;
 
-            if(HasPendingItems(session) == false)
+            if (order.PayLater == false)
+                await ProcessPrePaidOrder(syncStrategy, order, session);
+
+            if (HasPendingItems(session) == false)
                 session.Status = SessionStatus.Closed;
+        }
+
+        private async Task ProcessPrePaidOrder(AQuiviSyncStrategy syncStrategy, Order order, Session session)
+        {
+            var posChargesQuery = await posChargesRepo.GetAsync(new GetPosChargesCriteria
+            {
+                MerchantIds = [order.MerchantId],
+                ChannelIds = [order.ChannelId],
+                OrderIds = [order.Id],
+                HasSession = false,
+                IsCaptured = true,
+                IncludePosChargeSelectedMenuItems = true,
+                PageSize = 1,
+            });
+            var posCharge = posChargesQuery.Single();
+
+            posCharge.SessionId = session.Id;
+            posCharge.Session = session;
+            AddSessionEvent(session, s => new OnPosChargeOperationEvent
+            {
+                Operation = EntityOperation.Update,
+                ChannelId = posCharge.ChannelId,
+                MerchantId = posCharge.MerchantId,
+                Id = posCharge.Id,
+            });
+
+            //TODO: Most of the code bellow is equal or very simiar to ProcessQuiviSyncChargeAsyncCommandHandler. Maybe a refactor would be a good idea
+            decimal paymentAmount = ProcessPayment(syncStrategy, session, posCharge);
+            posCharge.PosChargeSyncAttempts = new List<PosChargeSyncAttempt>
+            {
+                new PosChargeSyncAttempt
+                {
+                    PosCharge = posCharge,
+                    PosChargeId = posCharge.Id,
+                    SyncedAmount = paymentAmount,
+                    State = SyncAttemptState.Synced,
+                    CreatedDate = dateTimeProvider.GetUtcNow(),
+                    ModifiedDate = dateTimeProvider.GetUtcNow(),
+                },
+            };
+        }
+
+        private decimal ProcessPayment(AQuiviSyncStrategy syncStrategy, Session session, PosCharge posCharge)
+        {
+            var itemsToBePaid = GetAndProcessPayingItems(posCharge, session);
+            decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.Item.FinalPrice * p.Quantity), maxDecimalPlaces);
+
+            if (HasPendingItems(session) == false)
+                session.Status = SessionStatus.Closed;
+
+            ProcessInvoice(syncStrategy, posCharge, paymentAmount, itemsToBePaid);
+            return paymentAmount;
+        }
+
+        private void ProcessInvoice(AQuiviSyncStrategy syncStrategy, PosCharge posCharge, decimal paymentAmount, IEnumerable<(OrderMenuItem, decimal)> itemsToBePaid)
+        {
+            var itemsToBePaidData = itemsToBePaid.Select(i => new
+            {
+                OrderMenuItem = i.Item1,
+                QuantityToBePaid = i.Item2,
+            });
+
+            List<AQuiviSyncStrategy.InvoiceItem> items = itemsToBePaidData.Select(i => new AQuiviSyncStrategy.InvoiceItem
+            {
+                MenuItemId = i.OrderMenuItem.MenuItemId,
+                Name = i.OrderMenuItem.Name,
+                UnitPrice = i.OrderMenuItem.OriginalPrice,
+                VatRate = i.OrderMenuItem.VatRate,
+                Quantity = i.QuantityToBePaid,
+                DiscountPercentage = PriceHelper.CalculateDiscountPercentage(i.OrderMenuItem.OriginalPrice, i.OrderMenuItem.FinalPrice),
+            }).ToList();
+
+            //TODO: Move the method ProcessInvoiceJob inside this command
+            var posChargeId = posCharge.Id;
+            backgroundJobHandler.Enqueue(() => syncStrategy.ProcessInvoiceJob(posChargeId, paymentAmount, items));
+        }
+
+        private async Task<Session?> GetOrCreateSession(Order order)
+        {
+            if (order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.AllowsSessions) == false)
+                return null;
+
+            var sessionsQuery = await sessionsRepo.GetAsync(new GetSessionsCriteria
+            {
+                MerchantIds = [order.MerchantId],
+                ChannelIds = [order.ChannelId],
+                Statuses = [SessionStatus.Ordering],
+
+                IncludeOrdersMenuItems = true,
+                IncludeOrdersMenuItemsPosChargeInvoiceItems = true,
+                IncludeOrdersMenuItemsModifiers = true,
+                PageIndex = 0,
+                PageSize = 1,
+            });
+
+            var session = sessionsQuery.SingleOrDefault();
+            return session;
         }
 
         private bool HasPendingItems(Session session)
@@ -369,8 +451,149 @@ namespace Quivi.Application.Commands.Pos
             return false;
         }
 
-        protected Task OnSessionAdded(Session session)
+        private IEnumerable<(OrderMenuItem Item, decimal Quantity)> GetAndProcessPayingItems(PosCharge posCharge, Session session)
         {
+            if (session.Status == SessionStatus.Unknown)
+                throw new PosPaymentSyncingException(SyncingState.SessionDoesNotExist, $"Charge {posCharge.ChargeId} cannot be sent to PoS since the session {session.Id} is deleted.");
+
+            if (session.Status == SessionStatus.Closed)
+                throw new PosPaymentSyncingException(SyncingState.SessionAlreadyClosed, $"Charge {posCharge.ChargeId} cannot be sent to PoS since the session {session.Id} is already closed.");
+
+            IEnumerable<(OrderMenuItem PayingItem, decimal Quantity)> payingItems = GetPayingItems(posCharge, session);
+            var now = dateTimeProvider.GetUtcNow();
+
+            var orderMenuItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).ToDictionary(e => e.Id, e => e);
+            posCharge.PosChargeInvoiceItems = new List<PosChargeInvoiceItem>();
+            foreach (var payingItem in payingItems)
+            {
+                var item = new PosChargeInvoiceItem
+                {
+                    PosCharge = posCharge,
+                    Quantity = payingItem.Quantity,
+                    OrderMenuItemId = payingItem.PayingItem.Id,
+                    CreatedDate = now,
+                    ModifiedDate = now,
+                    ChildrenPosChargeInvoiceItems = new List<PosChargeInvoiceItem>(),
+                };
+                foreach (var payingExtra in payingItem.PayingItem.Modifiers!)
+                {
+                    var extra = new PosChargeInvoiceItem
+                    {
+                        PosCharge = posCharge,
+                        Quantity = payingExtra.Quantity,
+                        OrderMenuItemId = payingExtra.Id,
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                    };
+                    item.ChildrenPosChargeInvoiceItems.Add(extra);
+                    posCharge.PosChargeInvoiceItems.Add(extra);
+
+                    orderMenuItems[extra.OrderMenuItemId].PosChargeInvoiceItems!.Add(extra);
+                }
+                posCharge.PosChargeInvoiceItems.Add(item);
+                orderMenuItems[item.OrderMenuItemId].PosChargeInvoiceItems!.Add(item);
+            }
+
+            this.AddSessionEvent(session, s => new OnPosChargeSyncedEvent
+            {
+                ChannelId = session.ChannelId,
+                Id = posCharge.Id,
+                MerchantId = posCharge.MerchantId,
+                SessionId = session.Id,
+            });
+            return payingItems;
+        }
+
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItems(PosCharge charge, Session session)
+        {
+            var comparer = new SessionItemComparer();
+            var availableItems = session.Orders!.SelectMany(o => o.OrderMenuItems!.Select(i => new ExtendedOrderMenuItem
+            {
+                OrderMenuItem = i,
+                PaidQuantity = i.PosChargeInvoiceItems?.Sum(ii => ii.Quantity) ?? 0.0m,
+                SessionItem = i.AsSessionItem(),
+            })).Where(e => e.OrderMenuItem.Quantity > e.PaidQuantity).ToList();
+
+            Dictionary<int, ExtendedOrderMenuItem> availableItemsDictionary = new Dictionary<int, ExtendedOrderMenuItem>();
+            IList<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();
+            foreach (var pendingItem in availableItems)
+            {
+                if (pendingItem.SessionItem.GetUnitPrice(maxDecimalPlaces) > 0)
+                {
+                    availableItemsDictionary.Add(pendingItem.OrderMenuItem.Id, pendingItem);
+                    continue;
+                }
+
+                itemsWithNoValue.Add((pendingItem.OrderMenuItem, pendingItem.AvailableQuantity));
+            }
+
+            var items = charge.PosChargeSelectedMenuItems!.Any() == true ? GetPayingItemsFromUsersSelection(availableItemsDictionary, charge) : GetPayingItemsFromFreePayment(availableItemsDictionary, charge);
+            return itemsWithNoValue.Concat(items);
+        }
+
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromUsersSelection(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        {
+            const decimal quantityMargin = 0.000001M;
+
+            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            foreach (var selectedItem in posCharge.PosChargeSelectedMenuItems!)
+            {
+                decimal quantity = selectedItem.Quantity;
+
+                if (availableItems.TryGetValue(selectedItem.OrderMenuItemId, out var orderedItem))
+                {
+                    decimal availableQuantity = orderedItem.AvailableQuantity;
+                    if (availableQuantity == 0)
+                        return GetPayingItemsFromFreePayment(availableItems, posCharge);
+
+                    decimal quantityToTake = quantity - availableQuantity >= 0 ? availableQuantity : quantity;
+
+                    quantity -= quantityToTake;
+                    result.Add((orderedItem.OrderMenuItem, quantityToTake));
+                }
+
+                if (Math.Abs(quantity) > quantityMargin)
+                    return GetPayingItemsFromFreePayment(availableItems, posCharge);
+            }
+            return result;
+        }
+
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromFreePayment(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        {
+            const decimal quantityMargin = 0.000001M;
+
+            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            decimal amountToTakeRemaining = posCharge.Payment;
+            foreach (var item in availableItems.Values)
+            {
+                decimal availableQuantity = item.AvailableQuantity;
+                if (availableQuantity == 0)
+                    continue;
+
+                decimal itemUnitPrice = item.SessionItem.GetUnitPrice(maxDecimalPlaces);
+                decimal quantityToTake = itemUnitPrice * availableQuantity <= amountToTakeRemaining ? availableQuantity : amountToTakeRemaining / itemUnitPrice;
+                decimal amountToTake = quantityToTake * itemUnitPrice;
+
+                amountToTakeRemaining -= amountToTake;
+                result.Add((item.OrderMenuItem, quantityToTake));
+
+                if (Math.Abs(amountToTakeRemaining) <= quantityMargin)
+                    return result;
+            }
+            return result;
+        }
+
+
+        protected Task OnSessionAdded(Order order, Session session)
+        {
+            AddOrderEvent(order, o => new OnSessionOperationEvent
+            {
+                Operation = EntityOperation.Create,
+                ChannelId = o.ChannelId,
+                Id = o.SessionId!.Value,
+                MerchantId = o.MerchantId,
+            });
+
             return Task.CompletedTask;
             //TODO: ConfigurableFields
 

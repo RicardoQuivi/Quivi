@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public OrderState EatOrderState { get; set; }
+        public OrderState State { get; set; }
         public string? Notes { get; set; }
 
         public DateTime CreatedDate { get; set; }

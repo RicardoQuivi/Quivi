@@ -27,7 +27,7 @@ export const useMenuItemsApi = (token: string) => {
             queryParams.set("includeDeleted", "true");
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/menuitems?${queryParams}`;
+        const url = new URL(`api/menuitems?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMenuItemsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });

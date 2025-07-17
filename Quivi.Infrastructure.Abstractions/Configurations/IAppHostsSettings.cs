@@ -5,6 +5,6 @@
         string OAuth { get; }
         string Backoffice { get; }
         string BackofficeApi { get; }
-        string GuestApp { get; }
+        string GuestsApp { get; }
     }
 }

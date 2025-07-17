@@ -17,14 +17,14 @@ export const useTransactionsApi = (token: string) => {
 
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/transactions`;
+        const url = new URL(`api/transactions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetTransactionsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = async (request: CreateTransactionRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/transactions`;
+        const url = new URL(`api/transactions`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<CreateTransactionResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });

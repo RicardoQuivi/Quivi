@@ -20,26 +20,29 @@ export const useLocalsApi = (token?: string) => {
         }
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
-        let url = `${import.meta.env.VITE_API_URL}api/locals?${queryParams}`;
+        const url = new URL(`api/locals?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetLocalsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateLocalRequest) => {
-        return httpClient.httpPost<CreateLocalResponse>(`${import.meta.env.VITE_API_URL}api/locals`, request, {
+        const url = new URL(`api/locals`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPost<CreateLocalResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchLocalRequest) => {
-        return httpClient.httpPatch<PatchLocalResponse>(`${import.meta.env.VITE_API_URL}api/locals/${request.id}`, request, {
+        const url = new URL(`api/locals/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPatch<PatchLocalResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteLocal = (request: DeleteLocalRequest) => {
-        return httpClient.httpDelete<DeleteLocalResponse>(`${import.meta.env.VITE_API_URL}api/locals/${request.id}`, request, {
+        const url = new URL(`api/locals/${request.id}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpDelete<DeleteLocalResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }

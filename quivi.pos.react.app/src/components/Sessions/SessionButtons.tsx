@@ -228,7 +228,7 @@ export const SessionButtons = ({
             email: data.email,
             vatNumber: data.vatNumber,
             observations: data.observations,
-            total: data.amount ?? 0,
+            amount: data.amount ?? 0,
             items: data.amountType == PaymentAmountType.Price ? undefined : data.selectedItems,
             tip: data.tip,
         });

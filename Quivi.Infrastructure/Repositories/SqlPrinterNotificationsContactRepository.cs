@@ -22,13 +22,19 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.Ids != null)
                 query = query.Where(q => criteria.Ids.Contains(q.NotificationsContactId));
 
+            if (criteria.MessageTypes != null)
+                query = query.Where(c => criteria.MessageTypes.Any(m => c.BaseNotificationsContact!.SubscribedNotifications.HasFlag(m)));
+
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.BaseNotificationsContact!.MerchantId));
 
             if (criteria.PrinterWorkerIds != null)
                 query = query.Where(q => criteria.PrinterWorkerIds.Contains(q.PrinterWorkerId));
 
-            if(criteria.IsDeleted.HasValue)
+            if (criteria.LocationIds != null)
+                query = query.Where(q => q.LocationId.HasValue && criteria.LocationIds.Contains(q.LocationId.Value));
+
+            if (criteria.IsDeleted.HasValue)
                 query = query.Where(q => q.DeletedDate.HasValue == criteria.IsDeleted.Value);
 
             return query.OrderBy(q => q.CreatedDate);

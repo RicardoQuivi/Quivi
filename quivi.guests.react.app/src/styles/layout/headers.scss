@@ -1,0 +1,164 @@
+﻿@use '../util' as *;
+
+.page-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem(8) 0 rem(20);
+    border-bottom: 1px solid $border-color;
+
+    &__content {
+        display: flex;
+        align-items: center;
+        padding: rem(8);
+        margin-left: rem(-8);
+
+        h1, h2 {
+            margin-left: rem(8);
+            margin-bottom: 0;
+        }
+    }
+
+    &__logo {
+        width: rem(110);
+        display: flex;
+        align-items: center;
+
+        svg {
+            display: block;
+            height: auto;
+            width: 100%;
+        }
+    }
+}
+
+.nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    &__container {
+        border-bottom: 1px solid $border-color;
+        padding: rem(8) 0 rem(20);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &--expanded {
+            border-bottom: none;
+        }
+    }
+
+    &__close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        height: rem(48);
+        width: rem(48);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg path {
+            stroke: $white-color;
+        }
+    }
+
+    &__logo {
+        width: rem(110);
+        background: transparent;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            height: auto;
+            width: 100%;
+        }
+    }
+
+    &__menu {
+        height: rem(48);
+        width: rem(48);
+        min-width: rem(48);
+        border-radius: rem(48);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+
+        &--auth {
+            background: $accent-color;
+
+            span {
+                color: $white-color;
+                font-size: $font-size-xlg;
+                font-weight: $font-weight-semibold;
+            }
+
+            &.wallet {
+                white-space: nowrap;
+                width: auto;
+                padding: 0 rem(12);
+            }
+        }
+
+        &--live {
+            background: $accent-color;
+            animation: blinker 3s linear infinite;
+
+            span {
+                color: $white-color;
+                font-size: $font-size-lg;
+                font-weight: $font-weight-semibold;
+            }
+        }
+
+        &--not-auth {
+            background: $light-grey;
+        }
+    }
+}
+
+@keyframes blinker {
+    0% {
+        opacity: 1;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0;
+    }
+
+    55% {
+        opacity: 0;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.nav-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-buttons > * {
+    margin-right: 10px;
+}
+
+.nav-buttons:last-child {
+    margin-right: 0px;
+}

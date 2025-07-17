@@ -37,14 +37,14 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.Stock.HasValue)
                 query = query.Where(x => x.Stock == criteria.Stock.Value);
 
+            if (criteria.HiddenFromGuestsApp.HasValue)
+                query = query.Where(q => q.HiddenFromGuestApp == criteria.HiddenFromGuestsApp.Value);
+
             if (criteria.IncludeWeeklyAvailabilities)
                 query = query.Include(x => x.MenuItemWeeklyAvailabilities);
 
             if (criteria.IncludeMenuItemCategoryAssociations)
                 query = query.Include(x => x.MenuItemCategoryAssociations!);
-
-            if (criteria.IncludeCategories)
-                query = query.Include(x => x.MenuItemCategoryAssociations!).ThenInclude(x => x.MenuItem);
 
             if (criteria.IncludeMenuItemModifiers)
                 query = query.Include(x => x.MenuItemModifiers);

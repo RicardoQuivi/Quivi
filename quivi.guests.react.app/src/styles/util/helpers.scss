@@ -1,0 +1,92 @@
+﻿@use 'functions' as *;
+@use 'breakpoints' as *;
+@use 'variables' as *;
+
+.flex {
+    display: flex;
+
+    &-jc-sb {
+        justify-content: space-between;
+    }
+
+    &-jc-c {
+        justify-content: center;
+    }
+
+    &-jc-e {
+        justify-content: flex-end;
+    }
+
+    &-ai-c {
+        align-items: center;
+    }
+
+    &-ai-s {
+        align-items: flex-start;
+    }
+
+    &-ai-e {
+        align-items: flex-end;
+    }
+
+    &-fd-c {
+        flex-direction: column;
+    }
+
+    &-g-1 {
+        flex: 1;
+    }
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.tt-u {
+    text-transform: uppercase !important;
+}
+
+.ta-r {
+    text-align: right !important;
+}
+
+.ta-c {
+    text-align: center !important;
+}
+
+.semi-bold {
+    font-weight: $font-weight-semibold;
+}
+
+.regular {
+    font-weight: $font-weight-regular;
+}
+
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
+}
+
+.small {
+    font-size: $font-size-sm;
+}
+
+.tiny {
+    font-size: $font-size-xsm;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.invisible {
+    height: 0;
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+}

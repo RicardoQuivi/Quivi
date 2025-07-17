@@ -49,7 +49,13 @@ export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | und
             totalPages: totalPages,
             page: request.page,
         }
-    }, [JSON.stringify(request), innerQueryResult])
+    }, [
+        JSON.stringify(request), 
+
+        innerQueryResult.isFirstLoading,
+        innerQueryResult.isLoading,
+        innerQueryResult.data,
+    ])
 
     return result;
 }

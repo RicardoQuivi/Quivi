@@ -112,7 +112,7 @@ namespace Quivi.Infrastructure.Storage.Azure
         {
             var blobClient = await GetBlobClient(name, folderHierarchy);
             await blobClient.UploadAsync(file);
-            return blobClient.Uri.ToString();
+            return blobClient.Uri.AbsoluteUri.ToString();
         }
 
         private async Task<BlobClient> GetBlobClient(string name, params string[] folderHierarchy)

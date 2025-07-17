@@ -20,13 +20,14 @@ export const usePrinterMessagesApi = (token?: string) => {
                 queryParams.set("printerId", request.printerId);
             }
             
-            let url = `${import.meta.env.VITE_API_URL}api/printermessages?${queryParams}`;
+            const url = new URL(`api/printermessages?${queryParams}`, import.meta.env.VITE_API_URL).toString();
             return httpClient.httpGet<GetPrinterMessagesResponse>(url, {
                 "Authorization": `Bearer ${token}`,
             });
         },
         create: (request: CreatePrinterMessageRequest) => {
-            return httpClient.httpPost<CreatePrinterMessageResponse>(`${import.meta.env.VITE_API_URL}api/printermessages`, request, {
+            const url = new URL(`api/printermessages`, import.meta.env.VITE_API_URL).toString();
+            return httpClient.httpPost<CreatePrinterMessageResponse>(url, request, {
                 "Authorization": `Bearer ${token}`,
             });
         },

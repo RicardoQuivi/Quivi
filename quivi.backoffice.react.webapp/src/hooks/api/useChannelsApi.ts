@@ -19,28 +19,28 @@ export const useChannelsApi = (token?: string) => {
             queryParams.set("pageSize", request.pageSize.toString());
         }
 
-        let url = `${import.meta.env.VITE_API_URL}api/channels?${queryParams}`;
+        const url = new URL(`api/channels?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetChannelsResponse>(url, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const create = (request: CreateChannelsRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channels`;
+        const url = new URL(`api/channels`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<CreateChannelsResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const patch = (request: PatchChannelsRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channels`;
+        const url = new URL(`api/channels`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPatch<PatchChannelsResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });
     }
 
     const deleteChannel = (request: DeleteChannelsRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/channels`;
+        const url = new URL(`api/channels`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpDelete<DeleteChannelsResponse>(url, request, {
             "Authorization": `Bearer ${token}`,
         });

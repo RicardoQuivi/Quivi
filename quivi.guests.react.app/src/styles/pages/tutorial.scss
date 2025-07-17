@@ -1,0 +1,105 @@
+﻿@use '../util' as *;
+
+.tutorial {
+    margin-top: rem(40);
+
+    &__header {
+        margin-bottom: rem(32);
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        img {
+            margin-bottom: rem(16);
+            height: rem(80);
+        }
+
+        h2 {
+            margin-bottom: rem(8);
+        }
+
+        p {
+            text-align: center;
+        }
+    }
+
+    &__step {
+        font-size: $font-size-sm;
+        display: flex;
+        align-items: center;
+        margin-top: rem(24);
+
+        &-number {
+            padding: rem(8) rem(12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: rem(32);
+            width: rem(32);
+            font-weight: 700;
+            text-align: center;
+            line-height: 100%;
+            color: $primary-color;
+            background: $light-grey;
+            border-radius: 50%;
+            margin-right: rem(8);
+        }
+    }
+
+
+    &__resend {
+        margin: rem(48) auto;
+
+        p {
+            display: block;
+            text-align: center;
+        }
+
+        .link {
+            font-size: $font-size-xsm;
+            display: block;
+            text-align: center;
+            margin: rem(4) auto;
+            border: none;
+            background: none;
+        }
+    }
+}
+
+.base-timer {
+    position: relative;
+    height: rem(60);
+    width: rem(60);
+    margin: 0 auto;
+
+    &__circle {
+        fill: none;
+        stroke: none;
+    }
+    /* The SVG path that displays the timer's progress */
+    &__path-elapsed {
+        stroke-width: 7px;
+        stroke: $medium-grey;
+    }
+
+    &__label {
+        position: absolute;
+        /* Size should match the parent container */
+        width: rem(60);
+        height: rem(60);
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: rem(18);
+    }
+
+    &__path-remaining {
+        stroke-width: 7px;
+        stroke-linecap: round;
+        transform: rotate(90deg);
+        transform-origin: center;
+        transition: 1s linear all;
+        stroke: $accent-color;
+    }
+}

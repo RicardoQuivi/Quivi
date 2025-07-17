@@ -81,7 +81,10 @@
             "printers": "Printers",
 
             "printerMessage": "Printing",
-            "printerMessages": "Printings"
+            "printerMessages": "Printings",
+            
+            "acquirerConfiguration": "Acquirer configuration",
+            "acquirerConfigurations": "Acquirer configurations"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -163,7 +166,7 @@
             "warning": "Warning!"
         },
         "image": "Image",
-        "guestApp": {
+        "guestsApp": {
             "settings": "Settings for Guests",
             "settingsDescription": "Configure how it will be displayed for QR code guests"
         },
@@ -239,7 +242,17 @@
             "Created": "Created",
             "Processing": "Processing",
             "Success": "Success"
-        }
+        },
+        "chargeMethod": {
+            "Custom": "Custom",
+            "Wallet": "Wallet",
+            "Cash": "Cash",
+            "TicketRestaurantMobile": "Ticket Restaurant Mobile",
+            "MbWay": "MbWay",
+            "CreditCard": "Credit Card",
+            "PaymentTerminal": "Payment Terminal"
+        },
+        "partner": "Partner"
     },
     "imageEditor": {
         "edit": "Edit",
@@ -253,7 +266,7 @@
         "administration": {
             "": "Administration",
             "integrations": "Integrations",
-            "paymentMethods": "Payment Methods",
+            "acquirerConfigurations": "Acquirer configurations",
             "transactions": "Transactions"
         },
         "businessProfile": {
@@ -453,6 +466,9 @@
                 "status": "Status",
                 "awaitingReception": "Awaiting reception"
             }
+        },
+        "acquirerConfigurations": {
+            "title": "Acquirer configurations"
         }
     }
 }

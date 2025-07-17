@@ -74,6 +74,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quivi.Infrastructure.Pos.ES
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quivi.Printer.MassTransit", "Quivi.Printer.MassTransit\Quivi.Printer.MassTransit.csproj", "{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quivi.Guests.Api", "Quivi.Guests.Api\Quivi.Guests.Api.csproj", "{078899B5-E9A5-4196-BCE9-EEB147800B01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -196,6 +198,10 @@ Global
 		{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{078899B5-E9A5-4196-BCE9-EEB147800B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{078899B5-E9A5-4196-BCE9-EEB147800B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{078899B5-E9A5-4196-BCE9-EEB147800B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{078899B5-E9A5-4196-BCE9-EEB147800B01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,6 +232,7 @@ Global
 		{50E11C40-E6BC-4B2F-981E-17F087972C2E} = {F3C5466D-C19F-4127-BD68-94F83A27598E}
 		{63B49DA5-69DC-4746-A1A0-DE247B0C146E} = {F3C5466D-C19F-4127-BD68-94F83A27598E}
 		{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6} = {F3C5466D-C19F-4127-BD68-94F83A27598E}
+		{078899B5-E9A5-4196-BCE9-EEB147800B01} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9686DAD0-297E-4107-BE1F-7EA51F1657A2}

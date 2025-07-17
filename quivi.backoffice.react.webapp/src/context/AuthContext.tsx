@@ -20,9 +20,9 @@ const saveTokens = (token: Tokens | undefined) => {
 
 const getTokens = (): Tokens | undefined => {
     const value = localStorage.getItem(TOKENS);
-    if(value == null) {{
+    if(value == null) {
         return undefined;
-    }}
+    }
     
     const tokens = JSON.parse(value) as Tokens;
     return tokens;
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { t } = useTranslation();
     const toast = useToast();
 
-    const [state, setState] = useState(getState());
+    const [state, setState] = useState<TokenData | undefined>(getState);
     const [expiresAt, setExpiresAt] = useState<number>();
 
     const signIn = async (email: string, password: string) => {
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 accessToken: response.access_token,
                 refreshToken: response.refresh_token,
             });
-            setState(getState());
+            setState(getState);
         } catch (e) {
             if(e instanceof AuthenticationError) {
                 toast.error(t("common.apiErrors.InvalidCredentials"));
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const signOut = () => {
         saveTokens(undefined);
-        setState(getState());
+        setState(getState);
     }
 
     const switchMerchant = (merchantId: string) => {
@@ -106,11 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 accessToken: response.access_token,
                 refreshToken: response.refresh_token,
             });
-            setState(getState());
+            setState(getState);
         } catch (e) {
             if(e instanceof AuthenticationError) {
                 saveTokens(undefined);
-                setState(getState());
+                setState(getState);
                 return;
             }
 
@@ -142,14 +142,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const timeToExpire = expiresAt - Date.now();
-        if(timeToExpire <= 0) {
-            saveTokens({
-                accessToken: undefined,
-                refreshToken: refreshToken,
-            });
-            setState(getState());
-        }
-
         const delay = timeToExpire - 15000;
         if (delay <= 0) {
             refreshJwt(refreshToken, state?.subMerchantId ?? state?.merchantId, true);
@@ -171,7 +163,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             subMerchantId: state?.subMerchantId,
             merchantActivated: state?.isActivated == true,
             isAdmin: state?.isAdmin ?? false,
-        }}>
+        }}
+        >
             {children}
         </AuthContext.Provider>
     );

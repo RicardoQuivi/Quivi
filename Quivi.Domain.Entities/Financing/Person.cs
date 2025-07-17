@@ -5,10 +5,11 @@ namespace Quivi.Domain.Entities.Financing
 {
     public class Person : IDeletableEntity
     {
-        public int PersonId { get; set; }
+        public int Id { get; set; }
 
+        public bool IsAnonymous { get; set; }
+        public int? UserId { get; set; }
         public string? PhoneNumber { get; set; }
-        public Guid? SessionGuid { get; set; } //TODO: Can I delete this?
         public PersonType PersonType { get; set; } = PersonType.Consumer;
         public string? Vat { get; set; }
         public string? IdentityNumber { get; set; }

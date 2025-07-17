@@ -52,7 +52,8 @@ export const useAuthApi = () => {
     }
 
     const jwtAuth = async (request: AuthRequest): Promise<AuthResponse> => {
-        return await post<AuthResponse>(`${import.meta.env.VITE_AUTH_URL}connect/token`, {
+        const url = new URL(`connect/token`, import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthResponse>(url, {
             client_id: "backoffice",
             grant_type: "password",
             username: request.email,
@@ -73,7 +74,8 @@ export const useAuthApi = () => {
         if(request.merchantId != undefined) {
             rawRequest["merchant_id"] = request.merchantId;
         }
-        return await post<AuthResponse>(`${import.meta.env.VITE_AUTH_URL}connect/token`, rawRequest, (s) => {
+        const url = new URL(`connect/token`, import.meta.env.VITE_AUTH_URL).toString();
+        return await post<AuthResponse>(url, rawRequest, (s) => {
             if(s == 400) {
                 throw new AuthenticationError();
             }
