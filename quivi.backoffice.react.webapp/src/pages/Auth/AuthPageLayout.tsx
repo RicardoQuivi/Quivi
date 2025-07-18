@@ -1,8 +1,9 @@
 import React from "react";
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router";
-import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import FloatingThemeToggleButton from "../../components/common/FloatingThemeToggleButton";
 import { useTranslation } from "react-i18next";
+import { FloatingLanguageButton } from "../../components/header/LanguageButton";
 
 interface AuthLayoutProps {
     readonly children: React.ReactNode;
@@ -33,7 +34,10 @@ export default function AuthLayout(props: AuthLayoutProps) {
                 </div>
             </div>
             <div className="fixed z-50 hidden bottom-6 right-6 sm:block">
-                <ThemeTogglerTwo />
+                <div className="flex flex-wrap justify-between gap-2">
+                    <FloatingLanguageButton />
+                    <FloatingThemeToggleButton />
+                </div>
             </div>
         </div>
     </div>

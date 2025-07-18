@@ -56,15 +56,19 @@ export const GoToPosButton: React.FC = () => {
             )}
             size={ModalSize.Medium}
         >
-            <Trans
-                t={t}
-                i18nKey="appHeader.pos.openDescription"
-                shouldUnescape={true}
-                components={{
-                    b: <b/>,
-                    br: <><br/><br/></>,
-                }}
-            />
+            <p
+                className="dark:text-white"
+            >
+                <Trans
+                    t={t}
+                    i18nKey="appHeader.pos.openDescription"
+                    shouldUnescape={true}
+                    components={{
+                        b: <b/>,
+                        br: <><br/><br/></>,
+                    }}
+                />
+            </p>
         </Modal>
     </>
 };

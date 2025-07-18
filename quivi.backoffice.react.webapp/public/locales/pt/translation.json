@@ -24,6 +24,7 @@
         "currencyAmount": "Montante",
         "discount": "Desconto",
         "surcharge": "Sobretaxa",
+        "paymentMethod": "Método de pagamento",
         "notApplicable": "N/A",
         "additionalInfo": "Informação adicional",
         "comment": "Comentário",
@@ -322,7 +323,8 @@
             "openDescription": "Está prestes a abrir o PoS numa nova aba. Deseja <b>terminar</b> a sessão? <br/> Manter a sessão do portal aberta permite que os funcionários acedam a este portal e tenham potencial acesso a dados sensíveis.",
             "goAndLogout": "Terminar sessão do portal",
             "goAndKeepSession": "Manter sessão do portal"
-        }
+        },
+        "changeLanguage": "Alterar idioma"
     },
     "pages": {
         "signUp": {

@@ -4,7 +4,7 @@ import { PublicId } from "../../components/publicids/PublicId";
 import Button from "../../components/ui/button/Button";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
 import { useMemo } from "react";
-import { DownloadIcon, FeesIcon, PrinterIcon } from "../../icons";
+import { DownloadIcon, FeesIcon, PrinterIcon, QuiviIcon } from "../../icons";
 import { Skeleton } from "../../components/ui/skeleton/Skeleton";
 import { DateUtils } from "../../utilities/dateutils";
 import { useMerchantsQuery } from "../../hooks/queries/implementations/useMerchantsQuery";
@@ -14,6 +14,9 @@ import CurrencySpan from "../../components/currency/CurrencySpan";
 import { Tooltip } from "../../components/ui/tooltip/Tooltip";
 import Badge from "../../components/ui/badge/Badge";
 import { useAuth } from "../../context/AuthContext";
+import { useCustomChargeMethodsQuery } from "../../hooks/queries/implementations/useCustomChargeMethodsQuery";
+import { Spinner } from "../../components/spinners/Spinner";
+import Avatar from "../../components/ui/avatar/Avatar";
 
 interface Props {
     readonly id?: string;
@@ -30,6 +33,13 @@ export const TransactionModal = (props: Props) => {
     })
     const transaction = useMemo(() => transactionQuery.data.length == 0 ? undefined : transactionQuery.data[0], [transactionQuery.data]);
 
+    const customChargeMethodQuery = useCustomChargeMethodsQuery(transaction?.customChargeMethodId == undefined ? undefined : {
+        ids: [transaction.customChargeMethodId],
+        page: 0,
+        pageSize: undefined,
+    })
+    const customChargeMethod = useMemo(() => customChargeMethodQuery.data.length == 0 ? undefined : customChargeMethodQuery.data[0], [customChargeMethodQuery.data]);
+    
     const merchantQuery = useMerchantsQuery(transaction == undefined ? undefined : {
         ids: [transaction.merchantId],
         page: 0,
@@ -66,6 +76,19 @@ export const TransactionModal = (props: Props) => {
             discounts: totalOriginal - totalFinal,
         }
     }, [transaction])
+
+    const getIcon = () => {
+        if(transaction?.customChargeMethodId == undefined) {
+            return <Avatar src={<QuiviIcon className="h-full w-auto" />} size="medium" alt="Quivi" />
+        }
+        
+        if(customChargeMethod == undefined) {
+            return <Avatar src={<Spinner className="h-full w-auto" />} size="medium" alt="Loading" />
+        }
+
+        return <Avatar src={customChargeMethod.logoUrl} size="medium" alt={customChargeMethod.name} />
+    }
+
     return (
         <Modal
             isOpen={props.id != undefined}
@@ -76,7 +99,6 @@ export const TransactionModal = (props: Props) => {
                 <PublicId id={props.id} />
             </>}
         >
-        <div>
             <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
                 <Button>
                     <PrinterIcon />
@@ -214,7 +236,7 @@ export const TransactionModal = (props: Props) => {
                         <>
                             <CurrencySpan value={transaction.tip + transaction.payment} />
                             {
-                                auth.isAdmin &&
+                                auth.isAdmin && transaction.surcharge > 0 &&
                                 <Tooltip message={t("common.surcharge")}>
                                     <Badge 
                                         variant="solid"
@@ -322,65 +344,76 @@ export const TransactionModal = (props: Props) => {
                     </div>
                 </div>
 
-                <div className="flex justify-end p-6">
-                    <div className="max-w-65 w-full">
-                        <div className="flex flex-col gap-4">
-                            <p className="flex justify-between font-medium text-black dark:text-white">
-                                <span>
-                                    {t("common.subTotal")}
-                                </span>
-                                <span>
-                                {
-                                    transaction == undefined
-                                    ?
-                                    <Skeleton />
-                                    :
-                                    <CurrencySpan value={total - discounts} />
-                                }
-                                </span>
-                            </p>
-
-                            <p className="flex justify-between font-medium text-black dark:text-white">
-                                <span>
-                                    {t("common.discount")}
-                                </span>
-                                <span>
-                                {
-                                    transaction == undefined
-                                    ?
-                                    <Skeleton />
-                                    :
-                                    <CurrencySpan value={discounts} />
-                                }
-                                </span>
+                <div className="-mx-4 flex flex-wrap p-6">
+                    <div className="w-full px-4 sm:w-1/2 xl:w-6/12">
+                        <div className="mb-10">
+                            <h4 className="mb-4 text-title-sm2 font-medium leading-[30px] text-black dark:text-white md:text-2xl">
+                                {t("common.paymentMethod")}
+                            </h4>
+                            <p className="font-medium dark:text-white">
+                                {getIcon()}
                             </p>
                         </div>
+                    </div>
+                    <div className="w-full px-4 xl:w-6/12">
+                        <div className="mr-10 text-right md:ml-auto">
+                            <div className="ml-auto sm:w-1/2">
+                                <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
+                                    <span>
+                                        {t("common.subTotal")}
+                                    </span>
+                                    <span>
+                                    {
+                                        transaction == undefined
+                                        ?
+                                        <Skeleton />
+                                        :
+                                        <CurrencySpan value={total - discounts} />
+                                    }
+                                    </span>
+                                </p>
+                                <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
+                                    <span> 
+                                        {t("common.discount")}
+                                    </span>
+                                    <span> 
+                                    {
+                                        transaction == undefined
+                                        ?
+                                        <Skeleton />
+                                        :
+                                        <CurrencySpan value={discounts} />
+                                    }
+                                    </span>
+                                </p>
+                                <p className="mb-4 mt-2 flex justify-between border-t border-stroke pt-6 font-medium text-black dark:border-strokedark dark:text-white">
+                                    <span>
+                                        {t("common.total")}
+                                    </span>
+                                    <span> 
+                                    {
+                                        transaction == undefined
+                                        ?
+                                        <Skeleton />
+                                        :
+                                        <CurrencySpan value={total} />
+                                    }
+                                    </span>
+                                </p>
+                            </div>
 
-                        <p className="mt-4 flex justify-between border-t border-stroke pt-5 dark:border-strokedark">
-                            <span className="font-medium text-black dark:text-white">
-                                {t("common.total")}
-                            </span>
-                            <span className="font-bold text-meta-3 dark:text-white">
-                            {
-                                transaction == undefined
-                                ?
-                                <Skeleton />
-                                :
-                                <CurrencySpan value={total} />
-                            }
-                            </span>
-                        </p>
-
-                        <Button
-                            className="float-right mt-4"
-                        >
-                            {t("common.download")}
-                            <DownloadIcon />
-                        </Button>
+                            <div className="mt-10 flex flex-col justify-end gap-4 sm:flex-row">
+                                <Button
+                                    className="float-right mt-4"
+                                >
+                                    {t("common.download")}
+                                    <DownloadIcon />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </Modal>
     )
 }

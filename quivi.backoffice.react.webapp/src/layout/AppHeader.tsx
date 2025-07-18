@@ -5,6 +5,7 @@ import { ThemeToggleButton } from "../components/header/ThemeToggleButton";
 import { CloseIcon, MenuIcon } from "../icons";
 import { GoToPosButton } from "../components/header/GoToPosButton";
 import { UserDropdown } from "../components/header/UserDropdown";
+import { LanguageButton } from "../components/header/LanguageButton";
 
 export const AppHeader: React.FC = () => {
     const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -32,10 +33,7 @@ export const AppHeader: React.FC = () => {
         };
 
         document.addEventListener("keydown", handleKeyDown);
-
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-        };
+        return () => document.removeEventListener("keydown", handleKeyDown);
     }, []);
 
     return (
@@ -129,6 +127,7 @@ export const AppHeader: React.FC = () => {
                 >
                     <div className="flex items-center gap-2 2xsm:gap-3">
                         <GoToPosButton />
+                        <LanguageButton />
                         <ThemeToggleButton />
                     </div>
                     <UserDropdown />

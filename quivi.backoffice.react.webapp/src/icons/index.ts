@@ -80,6 +80,8 @@ import { ReactComponent as StarIcon } from "./star.svg?react";
 import { ReactComponent as CommentIcon } from "./comment.svg?react";
 import { ReactComponent as SyncIcon } from "./sync.svg?react";
 import { ReactComponent as PdfIcon } from "./pdf.svg?react";
+import { ReactComponent as UnitedKingdomFlagIcon } from "./unitedkingdomflag.svg?react";
+import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -164,4 +166,6 @@ export {
     CommentIcon,
     SyncIcon,
     PdfIcon,
+    UnitedKingdomFlagIcon,
+    PortugalFlagIcon,
 };

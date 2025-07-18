@@ -1,6 +1,6 @@
 import { useTheme } from "../../context/ThemeContext";
 
-export default function ThemeTogglerTwo() {
+export default function FloatingThemeToggleButton() {
   const { toggleTheme } = useTheme();
   return (
     <button

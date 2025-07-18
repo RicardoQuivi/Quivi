@@ -266,7 +266,7 @@ export const TransactionsPage = (props: Props) => {
                             },
                             {
                                 key: "date",
-                                render: d => DateUtils.toString(DateUtils.toDate(d.capturedDate)),
+                                render: d => DateUtils.toString(d.capturedDate),
                                 label: t("common.date"),
                             },
                             {

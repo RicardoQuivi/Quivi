@@ -24,6 +24,7 @@
         "currencyAmount": "Amount",
         "discount": "Discount",
         "surcharge": "Surcharge",
+        "paymentMethod": "Payment method",
         "notApplicable": "N/A",
         "additionalInfo": "Additional Info",
         "comment": "Comment",
@@ -319,10 +320,11 @@
         "pos": {
             "open": "Open PoS",
             "openMessage": "Open PoS in new Tab",
-            "openDescription": "You are about to open PoS in a new tab. Would you like to <b>close</b> session? <br/> Keeping an open session allows employees access to this portal and potentially access sensitive data.",
+            "openDescription": "You are about to open PoS in a new tab. Would you like to <b>close</b> session? <br/> Keeping an open session allows employees to access to this portal and potentially access sensitive data.",
             "goAndLogout": "End portal session",
             "goAndKeepSession": "Keep portal session"
-        }
+        },
+        "changeLanguage": "Change language"
     },
     "pages": {
         "signUp": {
