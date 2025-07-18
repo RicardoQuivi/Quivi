@@ -16,6 +16,24 @@
             "InvalidCredentials": "The provided credentials are invalid",
             "Duplicate": "A entry with this value already exists"
         },
+        "id": "Id",
+        "date": "Date",
+        "subTotal": "Subtotal",
+        "total": "Total",
+        "tip": "Tip",
+        "currencyAmount": "Amount",
+        "discount": "Discount",
+        "surcharge": "Surcharge",
+        "notApplicable": "N/A",
+        "additionalInfo": "Additional Info",
+        "comment": "Comment",
+        "syncing": "Syncing",
+        "print": "Print",
+        "client": "Client",
+        "notSpecified": "Not specified",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "download": "Download",
         "or": "Or",
         "email": "Email",
         "emailPlaceholder": "Enter your email",
@@ -84,7 +102,13 @@
             "printerMessages": "Printings",
             
             "acquirerConfiguration": "Acquirer configuration",
-            "acquirerConfigurations": "Acquirer configurations"
+            "acquirerConfigurations": "Acquirer configurations",
+
+            "transaction": "Transaction",
+            "transactions": "Transactions",
+
+            "review": "Review",
+            "reviews": "Reviews"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -469,6 +493,10 @@
         },
         "acquirerConfigurations": {
             "title": "Acquirer configurations"
+        },
+        "transactions": {
+            "title": "Transactions",
+            "syncingError": "Syncing error"
         }
     }
 }

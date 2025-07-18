@@ -7,9 +7,12 @@ import { OnItemCategoryEvent } from "./Dtos/OnItemCategoryEvent";
 import { OnItemsModifierGroupEvent } from "./Dtos/OnItemsModifierGroupEvent";
 import { OnLocalEvent } from "./Dtos/OnLocalEvent";
 import { OnMenuItemEvent } from "./Dtos/OnMenuItemEvent";
+import { OnTransactionOperationEvent } from "./Dtos/OnTransactionOperationEvent";
 import { OnPrinterEvent } from "./Dtos/OnPrinterEvent";
 import { OnPrinterMessageEvent } from "./Dtos/OnPrinterMessageEvent";
 import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
+import { OnReviewOperationEvent } from "./Dtos/OnReviewOperationEvent";
+import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSyncAttemptOperationEvent";
 
 export interface MerchantEventListener {
     readonly onChannelEvent?: (evt: OnChannelEvent) => any;
@@ -24,4 +27,7 @@ export interface MerchantEventListener {
     readonly onPrinterEvent?: (evt: OnPrinterEvent) => any;
     readonly onPrinterMessageOperation?: (evt: OnPrinterMessageEvent) => any;
     readonly onAcquirerConfigurationOperation?: (evt: OnAcquirerConfigurationEvent) => any;
+    readonly onTransactionOperation?: (evt: OnTransactionOperationEvent) => any;
+    readonly onTransactionSyncAttemptOperation?: (evt: OnTransactionSyncAttemptOperationEvent) => any;
+    readonly onReviewOperation?: (evt: OnReviewOperationEvent) => any;
 }

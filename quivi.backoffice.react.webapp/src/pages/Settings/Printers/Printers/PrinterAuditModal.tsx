@@ -148,7 +148,7 @@ export const PrinterAuditModal = (props: Props) => {
 
     return <Modal
         isOpen={props.printer != undefined}
-        size={ModalSize.Default}
+        size={ModalSize.Large}
         onClose={props.onClose}
         title={getTitle()}
         footer={(

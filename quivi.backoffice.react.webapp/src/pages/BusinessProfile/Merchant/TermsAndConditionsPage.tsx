@@ -24,7 +24,7 @@ export const TermsAndConditionsPage = () => {
     }
 
     const merchantsQuery = useMerchantsQuery({
-        id: auth.merchantId,
+        ids: [auth.merchantId],
         page: 0,
         pageSize: 1,
     })

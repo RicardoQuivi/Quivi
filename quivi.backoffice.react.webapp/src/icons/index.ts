@@ -75,6 +75,11 @@ import { ReactComponent as CashIcon } from "./cash.svg?react";
 import { ReactComponent as WalletIcon } from "./wallet.svg?react";
 import { ReactComponent as PaymentTerminalIcon } from "./paymentterminal.svg?react";
 import { ReactComponent as TicketRestaurantIcon } from "./ticket-restaurant.svg?react";
+import { ReactComponent as FeesIcon } from "./fees.svg?react";
+import { ReactComponent as StarIcon } from "./star.svg?react";
+import { ReactComponent as CommentIcon } from "./comment.svg?react";
+import { ReactComponent as SyncIcon } from "./sync.svg?react";
+import { ReactComponent as PdfIcon } from "./pdf.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -154,4 +159,9 @@ export {
     WalletIcon,
     PaymentTerminalIcon,
     TicketRestaurantIcon,
+    FeesIcon,
+    StarIcon,
+    CommentIcon,
+    SyncIcon,
+    PdfIcon,
 };

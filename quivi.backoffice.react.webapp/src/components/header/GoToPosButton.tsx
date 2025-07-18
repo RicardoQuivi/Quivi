@@ -1,6 +1,6 @@
 import { Trans, useTranslation } from "react-i18next";
 import { Placement, Tooltip } from "../ui/tooltip/Tooltip";
-import { Modal } from "../ui/modal";
+import { Modal, ModalSize } from "../ui/modal";
 import { useState } from "react";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
 import {  useAuth } from "../../context/AuthContext";
@@ -43,17 +43,18 @@ export const GoToPosButton: React.FC = () => {
             onClose={() => setIsOpen(false)} 
             title={t("appHeader.pos.open")}
             footer={(
-            <ModalButtonsFooter 
-                primaryButton={{
-                    content: t("appHeader.pos.goAndLogout"),
-                    onClick: () => open(false),
-                }}
-                secondaryButton={{
-                    content: t("appHeader.pos.goAndKeepSession"),
-                    onClick: () => open(true),
-                }}
-            />
-        )}
+                <ModalButtonsFooter 
+                    primaryButton={{
+                        content: t("appHeader.pos.goAndLogout"),
+                        onClick: () => open(false),
+                    }}
+                    secondaryButton={{
+                        content: t("appHeader.pos.goAndKeepSession"),
+                        onClick: () => open(true),
+                    }}
+                />
+            )}
+            size={ModalSize.Medium}
         >
             <Trans
                 t={t}

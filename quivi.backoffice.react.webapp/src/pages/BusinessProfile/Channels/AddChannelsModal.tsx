@@ -159,7 +159,7 @@ export const AddChannelsModal = (props: Props) => {
     return <Modal
         isOpen={props.isOpen}
         onClose={() => props.onClose()}
-        size={ModalSize.Default}
+        size={ModalSize.Medium}
         title={t('common.operations.new', {
             name: t("common.entities.channels"),
         })}

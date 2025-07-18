@@ -23,6 +23,7 @@ namespace Quivi.Application.Commands.Reviews
 
     public class UpsertReviewAsyncCommandHandler : ICommandHandler<UpsertReviewAsyncCommand, Task<Review>>
     {
+        private readonly IPosChargesRepository posChargesRepository;
         private readonly IReviewsRepository repository;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
@@ -73,24 +74,27 @@ namespace Quivi.Application.Commands.Reviews
             }
         }
 
-        public UpsertReviewAsyncCommandHandler(IReviewsRepository repository, IDateTimeProvider dateTimeProvider, IEventService eventService)
+        public UpsertReviewAsyncCommandHandler(IReviewsRepository repository, IDateTimeProvider dateTimeProvider, IEventService eventService, IPosChargesRepository posChargesRepository)
         {
             this.repository = repository;
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
+            this.posChargesRepository = posChargesRepository;
         }
 
         public async Task<Review> Handle(UpsertReviewAsyncCommand command)
         {
-            var entityQuery = await repository.GetAsync(new GetReviewsCriteria
+            var entityQuery = await posChargesRepository.GetAsync(new GetPosChargesCriteria
             {
-                PosChargeIds = [command.PosChargeId],
+                Ids = [command.PosChargeId],
+                IncludeReview = true,
                 PageIndex = 0,
                 PageSize = 1,
             });
 
             var now = this.dateTimeProvider.GetUtcNow();
-            var entity = entityQuery.SingleOrDefault();
+            var posCharge = entityQuery.Single();
+            var entity = posCharge.Review;
 
             var updatableEntity = new UpdatableReview(entity, () =>
             {
@@ -117,6 +121,8 @@ namespace Quivi.Application.Commands.Reviews
             await eventService.Publish(new OnReviewOperationEvent
             {
                 Id = updatableEntity.Model.PosChargeId,
+                MerchantId = posCharge.MerchantId,
+                ChannelId = posCharge.ChannelId,
                 Operation = updatableEntity.IsNew ? EntityOperation.Create : EntityOperation.Update,
             });
             return updatableEntity.Model;

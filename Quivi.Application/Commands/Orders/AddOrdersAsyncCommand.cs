@@ -1,6 +1,5 @@
 ﻿using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos.Items;
-using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;

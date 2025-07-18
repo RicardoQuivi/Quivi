@@ -22,8 +22,10 @@ export const useMerchantsApi = (token?: string) => {
         }
 
         if (!!request.parentId) {
-            queryParams.set("parentid", request.parentId.toString());
+            queryParams.set("parentId", request.parentId.toString());
         }
+
+        request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/merchants?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpGet<GetMerchantsResponse>(url, {

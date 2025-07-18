@@ -36,6 +36,8 @@ export const DeleteEntitiesModal = <T,>(props: Props<T>) => {
             case Entity.Printers: return t("common.entities.printers");
             case Entity.PrinterMessages: return t("common.entities.printerMessages");
             case Entity.AcquirerConfigurations: return t("common.entities.acquirerConfigurations");
+            case Entity.Transactions: return t("common.entities.transactions");
+            case Entity.Reviews: return t("common.entities.reviews");
         }
     }
 
@@ -70,7 +72,7 @@ export const DeleteEntitiesModal = <T,>(props: Props<T>) => {
     return <Modal
         isOpen={props.isOpen}
         onClose={() => props.onClose()}
-        size={ModalSize.Default}
+        size={ModalSize.Medium}
         title={getTitle()}
         footer={(
             <ModalButtonsFooter 

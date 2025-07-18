@@ -100,8 +100,8 @@ export const EditChannelsModal = (props: Props) => {
 
     return <Modal
         isOpen={props.isOpen}
-        onClose={() => props.onClose()}
-        size={ModalSize.Default}
+        onClose={props.onClose}
+        size={ModalSize.Medium}
         title={t('common.operations.edit', {
             name: t(`common.entities.${props.channelIds.length == 1 ? "channel" : "channels"}`),
         })}
@@ -123,7 +123,7 @@ export const EditChannelsModal = (props: Props) => {
                 }}
                 secondaryButton={{
                     content: t("common.close"),
-                    onClick: () => props.onClose(),
+                    onClick: props.onClose,
                 }}
             />
         )}

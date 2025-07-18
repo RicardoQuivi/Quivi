@@ -10,6 +10,7 @@ export enum ModalSize {
     Large,
     ExtraLarge,
     FullScreen,
+    Auto,
 }
 
 const fromSize = (size: ModalSize | undefined): string => {
@@ -19,13 +20,14 @@ const fromSize = (size: ModalSize | undefined): string => {
 
     switch(size)
     {
-        case ModalSize.Default: return "[700px]";
-        case ModalSize.ExtraSmall: return "[700px]";
-        case ModalSize.Small: return "[700px]";
-        case ModalSize.Medium: return "[700px]";
-        case ModalSize.Large: return "[700px]";
-        case ModalSize.ExtraLarge: return "[700px]";
+        case ModalSize.Default: return "max-w-[700px]";
+        case ModalSize.ExtraSmall: return "max-w-[700px]";
+        case ModalSize.Small: return "max-w-[700px]";
+        case ModalSize.Medium: return "max-w-[700px]";
+        case ModalSize.Large: return "max-w-[700px]";
+        case ModalSize.ExtraLarge: return "max-w-[700px]";
         case ModalSize.FullScreen: return "full";
+        case ModalSize.Auto: return "container";
     }
 }
 
@@ -99,7 +101,7 @@ export const Modal = (props: ModalProps) => {
             }
             <div
                 ref={modalRef}
-                className={`${contentClasses} max-w-${size} ${props.className ?? ""}`}
+                className={`${contentClasses} ${size} ${props.className ?? ""}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {

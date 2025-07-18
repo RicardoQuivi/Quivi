@@ -14,6 +14,9 @@ import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
 import { OnPrinterEvent } from "./Dtos/OnPrinterEvent";
 import { OnPrinterMessageEvent } from "./Dtos/OnPrinterMessageEvent";
 import { OnAcquirerConfigurationEvent } from "./Dtos/OnAcquirerConfigurationEvent";
+import { OnReviewOperationEvent } from "./Dtos/OnReviewOperationEvent";
+import { OnTransactionOperationEvent } from "./Dtos/OnTransactionOperationEvent";
+import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSyncAttemptOperationEvent";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -144,6 +147,15 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnAcquirerConfigurationOperation');
         this.connection.on('OnAcquirerConfigurationOperation', (evt: OnAcquirerConfigurationEvent) => this.merchantListeners.forEach(l => l.onAcquirerConfigurationOperation?.(evt)));
+
+        this.connection.off('OnPosChargeOperation');
+        this.connection.on('OnPosChargeOperation', (evt: OnTransactionOperationEvent) => this.merchantListeners.forEach(l => l.onTransactionOperation?.(evt)));
+
+        this.connection.off('OnPosChargeSyncAttemptOperation');
+        this.connection.on('OnPosChargeSyncAttemptOperation', (evt: OnTransactionSyncAttemptOperationEvent) => this.merchantListeners.forEach(l => l.onTransactionSyncAttemptOperation?.(evt)));
+
+        this.connection.off('OnReviewOperation');
+        this.connection.on('OnReviewOperation', (evt: OnReviewOperationEvent) => this.merchantListeners.forEach(l => l.onReviewOperation?.(evt)));
     }
 
     addUserListener(listener: UserEventListener): void {

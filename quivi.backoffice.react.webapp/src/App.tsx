@@ -32,6 +32,7 @@ import { PrinterWorkerFormPage } from "./pages/Settings/Printers/PrinterWorkers/
 import { PrinterFormPage } from "./pages/Settings/Printers/Printers/PrinterFormPage";
 import { AcquirerConfigurationsPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationsPage";
 import { AcquirerConfigurationFormPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationFormPage";
+import { TransactionsPage } from "./pages/Transactions/TransactionsPage";
 
 export const App = () => {
     return <>
@@ -53,6 +54,8 @@ export const App = () => {
                     <Route path="/admin/acquirerConfigurations" element={<AcquirerConfigurationsPage />} />
                     <Route path="/admin/acquirerConfigurations/add" element={<AcquirerConfigurationFormPage />} />
                     <Route path="/admin/acquirerConfigurations/:id/edit" element={<AcquirerConfigurationFormPage />} />
+                    <Route path="/admin/transactions" element={<TransactionsPage isAdmin />} />
+                    <Route path="/admin/transactions/:id" element={<TransactionsPage isAdmin />} />
 
                     {/* Merchant */}
                     <Route path="/businessProfile/merchant/setup" element={<SetUpNewMerchantPage />} />
@@ -76,6 +79,10 @@ export const App = () => {
                     <Route path="/businessProfile/menumanagement/items/:id/edit" element={<MenuItemFormPage />} />
                     <Route path="/businessProfile/menumanagement/modifiers/add" element={<ModifierGroupFormPage />} />
                     <Route path="/businessProfile/menumanagement/modifiers/:id/edit" element={<ModifierGroupFormPage />} />
+
+                    {/* Transactions */}
+                    <Route path="/transactions" element={<TransactionsPage />} />
+                    <Route path="/transactions/:id" element={<TransactionsPage />} />
 
                     {/* Locals */}
                     <Route path="/settings/locals" element={<LocalsPage />} />

@@ -11,6 +11,7 @@ import { useToast } from "../../../context/ToastProvider";
 import { useBackgroundJobsQuery } from "../../queries/implementations/useBackgroundJobsQuery";
 import { JobState } from "../../api/Dtos/backgroundjobs/JobState";
 import { useSessionsQuery } from "../../queries/implementations/useSessionsQuery";
+import BigNumber from "bignumber.js";
 
 interface ItemToSync {
     readonly channelId: string;

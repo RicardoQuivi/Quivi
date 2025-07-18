@@ -93,8 +93,11 @@ namespace Quivi.Application.Commands.Pos
             var itemsToBePaid = GetAndProcessPayingItems(posCharge, session);
             decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.Item.FinalPrice * p.Quantity), maxDecimalPlaces);
 
-            if(HasPendingItems(session) == false)
+            if (HasPendingItems(session) == false)
+            {
                 session.Status = SessionStatus.Closed;
+                session.EndDate = dateTimeProvider.GetUtcNow();
+            }
 
             await posChargesRepository.SaveChangesAsync();
             ProcessInvoice(command, posCharge, paymentAmount, itemsToBePaid);
@@ -181,12 +184,22 @@ namespace Quivi.Application.Commands.Pos
         private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItems(PosCharge charge, Session session)
         {
             var comparer = new SessionItemComparer();
-            var availableItems = session.Orders!.SelectMany(o => o.OrderMenuItems!.Select(i => new ExtendedOrderMenuItem
-            {
-                OrderMenuItem = i,
-                PaidQuantity = i.PosChargeInvoiceItems!.Sum(ii => ii.Quantity),
-                SessionItem = i.AsSessionItem(),
-            })).Where(e => e.OrderMenuItem.Quantity > e.PaidQuantity).ToList();
+            var availableItems = session.Orders!.SelectMany(o => o.OrderMenuItems!)
+                                                .Select(omi => new ExtendedOrderMenuItem
+                                                {
+                                                    OrderMenuItem = omi,
+                                                    PaidQuantity = omi.PosChargeInvoiceItems!.Sum(ii => ii.Quantity),
+                                                    SessionItem = omi.AsSessionItem(),
+                                                })
+                                                .GroupBy(e => e.SessionItem, comparer)
+                                                .Select(g => new
+                                                {
+                                                    TotalPaidQuantity = g.Sum(s => s.PaidQuantity),
+                                                    TotalQuantity = g.Sum(s => s.OrderMenuItem.Quantity),
+                                                    Items = g.AsEnumerable(),
+                                                }).Where(e => e.TotalQuantity > e.TotalPaidQuantity)
+                                                .SelectMany(e => e.Items)
+                                                .ToList();
 
             Dictionary<int, ExtendedOrderMenuItem> availableItemsDictionary = new Dictionary<int, ExtendedOrderMenuItem>();
             IList<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();

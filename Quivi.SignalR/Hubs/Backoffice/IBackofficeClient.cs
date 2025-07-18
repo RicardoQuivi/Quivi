@@ -19,5 +19,6 @@ namespace Quivi.SignalR.Hubs.Backoffice
         Task OnPrinterOperation(OnPrinterOperation evt);
         Task OnPrinterMessageOperation(OnPrinterMessageOperation evt);
         Task OnAcquirerConfigurationOperation(OnAcquirerConfigurationOperation evt);
+        Task OnReviewOperation(OnReviewOperation evt);
     }
 }

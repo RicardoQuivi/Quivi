@@ -39,8 +39,8 @@ export const ResetEmployeePinModal = (props: Props) => {
 
     return <Modal
         isOpen={props.model != undefined}
-        onClose={() => props.onClose()}
-        size={ModalSize.Default}
+        onClose={props.onClose}
+        size={ModalSize.Medium}
         title={t(`pages.employees.resetPin`)}
         footer={(
             <ModalButtonsFooter 
@@ -60,7 +60,7 @@ export const ResetEmployeePinModal = (props: Props) => {
                 }}
                 secondaryButton={{
                     content: t("common.close"),
-                    onClick: () => props.onClose(),
+                    onClick: props.onClose,
                 }}
             />
         )}

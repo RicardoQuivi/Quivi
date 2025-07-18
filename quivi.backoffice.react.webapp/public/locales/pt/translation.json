@@ -16,6 +16,24 @@
             "InvalidCredentials": "As credenciais introduzidas são inválidas",
             "Duplicate": "Já existe um registo com este valor"
         },
+        "id": "Id",
+        "date": "Data",
+        "subTotal": "Subtotal",
+        "total": "Total",
+        "tip": "Gratificação",
+        "currencyAmount": "Montante",
+        "discount": "Desconto",
+        "surcharge": "Sobretaxa",
+        "notApplicable": "N/A",
+        "additionalInfo": "Informação adicional",
+        "comment": "Comentário",
+        "syncing": "A sincronizar",
+        "print": "Imprimir",
+        "client": "Cliente",
+        "notSpecified": "Não especificado",
+        "quantity": "Quantidade",
+        "unitPrice": "Preço unitário",
+        "download": "Download",
         "or": "Ou",
         "email": "Email",
         "emailPlaceholder": "Introduza o seu email",
@@ -84,7 +102,13 @@
             "printerMessages": "Impressões",
             
             "acquirerConfiguration": "Configuração de pagamento",
-            "acquirerConfigurations": "Configurações de pagamento"
+            "acquirerConfigurations": "Configurações de pagamento",
+
+            "transaction": "Transação",
+            "transactions": "Transações",
+
+            "review": "Avaliação",
+            "reviews": "Avaliações"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -469,6 +493,10 @@
         },
         "acquirerConfigurations": {
             "title": "Configuração de pagamentos"
+        },
+        "transactions": {
+            "title": "Transações",
+            "syncingError": "Erro ao sincronizar"
         }
     }
 }

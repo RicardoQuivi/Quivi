@@ -1,5 +1,8 @@
-export const Spinner = () => {
-    return <div className="text-gray-200 animate-spin stroke-brand-500 dark:text-gray-800">
+interface Props {
+  readonly className?: string
+}
+export const Spinner = (props: Props) => {
+    return <div className={`text-gray-200 animate-spin stroke-brand-500 dark:text-gray-800 ${props.className ?? ""}`}>
         <svg
           width="20"
           height="20"

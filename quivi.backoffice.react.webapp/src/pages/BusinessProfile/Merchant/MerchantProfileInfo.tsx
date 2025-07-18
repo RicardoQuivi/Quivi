@@ -32,8 +32,9 @@ export const MerchantProfileInfo = () => {
     const mutator = useMerchantMutator();
     
     const merchantQuery = useMerchantsQuery({
-        id: auth.subMerchantId,
-        page: 1,
+        ids: auth.subMerchantId == undefined ? undefined : [auth.subMerchantId],
+        page: 0,
+        pageSize: 1,
     })
 
     const [state, setState] = useState(getState(merchantQuery.data.length == 0 ? undefined : merchantQuery.data[0]))

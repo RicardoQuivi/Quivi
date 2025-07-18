@@ -10,6 +10,7 @@ interface Props {
     readonly message: string | React.ReactNode;
     readonly children: React.ReactNode;
     readonly placement?: Placement;
+    readonly onOpen?: () => any;
 }
 
 const topClasses = {
@@ -33,7 +34,6 @@ const bottomClasses = {
 }
 
 export const Tooltip = (props: Props) => {
-
     const classes = useMemo(() => {
         if(props.placement == undefined) {
             return topClasses;
@@ -50,7 +50,10 @@ export const Tooltip = (props: Props) => {
     }, [props.placement])
 
     return (
-        <div className="relative inline-block group">
+        <div 
+            className="relative inline-block group"
+            onMouseEnter={props.onOpen}
+        >
             {props.children}
             <div className={`invisible absolute ${classes.container} opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100`}>
                 <div className="relative">
