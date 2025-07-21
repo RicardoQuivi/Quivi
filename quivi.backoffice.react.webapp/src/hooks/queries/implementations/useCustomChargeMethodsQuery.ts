@@ -1,21 +1,21 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMemo } from "react";
 import { useCustomChargeMethodsApi } from "../../api/useCustomChargeMethodsApi";
 import { GetCustomChargeMethodsRequest } from "../../api/Dtos/customchargemethods/GetCustomChargeMethodsRequest";
 import { CustomChargeMethod } from "../../api/Dtos/customchargemethods/CustomChargeMethod";
 
 export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useCustomChargeMethodsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useCustomChargeMethodsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useCustomChargeMethodsQuery",
         entityType: getEntityType(Entity.CustomChargeMethods),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: CustomChargeMethod) => e.id,

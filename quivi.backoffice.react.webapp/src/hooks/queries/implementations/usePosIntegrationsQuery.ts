@@ -1,21 +1,21 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { usePosIntegrationsApi } from "../../api/usePosIntegrationsApi";
 import { GetPosIntegrationsRequest } from "../../api/Dtos/posIntegrations/GetPosIntegrationsRequest";
 import { PosIntegration } from "../../api/Dtos/posIntegrations/PosIntegration";
 
 export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | undefined) => {
-    const auth = useAuth();
-    const api = usePosIntegrationsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = usePosIntegrationsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "usePosIntegrationsQuery",
         entityType: getEntityType(Entity.PosIntegrations),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: PosIntegration) => e.id,

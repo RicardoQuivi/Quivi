@@ -82,6 +82,8 @@ import { ReactComponent as SyncIcon } from "./sync.svg?react";
 import { ReactComponent as PdfIcon } from "./pdf.svg?react";
 import { ReactComponent as UnitedKingdomFlagIcon } from "./unitedkingdomflag.svg?react";
 import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
+import { ReactComponent as ProfileIcon } from "./profile.svg?react";
+import { ReactComponent as SignOutIcon } from "./sign-out.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -168,4 +170,6 @@ export {
     PdfIcon,
     UnitedKingdomFlagIcon,
     PortugalFlagIcon,
+    ProfileIcon,
+    SignOutIcon,
 };

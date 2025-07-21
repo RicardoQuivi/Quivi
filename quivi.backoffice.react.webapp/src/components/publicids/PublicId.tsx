@@ -28,7 +28,7 @@ export const PublicId = (props: Props) => {
     
     return <>
         {
-            auth.isAdmin == false
+            auth.user?.isAdmin != true
             ?
             props.id
             :

@@ -1,20 +1,20 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMenuItemsApi } from "../../api/useMenuItemsApi";
 import { GetMenuItemsRequest } from "../../api/Dtos/menuItems/GetMenuItemsRequest";
 import { MenuItem } from "../../api/Dtos/menuItems/MenuItem";
 
 export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useMenuItemsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useMenuItemsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useMenuItemsQuery",
         entityType: getEntityType(Entity.MenuItems),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: MenuItem) => e.id,

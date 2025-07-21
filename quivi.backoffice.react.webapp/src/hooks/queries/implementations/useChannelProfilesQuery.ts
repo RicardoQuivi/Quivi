@@ -1,21 +1,21 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { GetChannelProfilesRequest } from "../../api/Dtos/channelProfiles/GetChannelProfilesRequest";
 import { ChannelProfile } from "../../api/Dtos/channelProfiles/ChannelProfile";
 import { useChannelProfilesApi } from "../../api/useChannelProfilesApi";
 
 export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | undefined) => {
-    const auth = useAuth();
-    const api = useChannelProfilesApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useChannelProfilesApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useChannelProfilesQuery",
         entityType: getEntityType(Entity.ChannelProfiles),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: ChannelProfile) => e.id,

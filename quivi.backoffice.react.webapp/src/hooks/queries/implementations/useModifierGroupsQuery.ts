@@ -1,21 +1,21 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMemo } from "react";
 import { GetModifierGroupsRequest } from "../../api/Dtos/modifierGroups/GetModifierGroupsRequest";
 import { useModifierGroupsApi } from "../../api/useModifierGroupsApi";
 import { ModifierGroup } from "../../api/Dtos/modifierGroups/ModifierGroup";
 
 export const useModifierGroupsQuery = (request: GetModifierGroupsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useModifierGroupsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useModifierGroupsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useModifierGroupsQuery",
         entityType: getEntityType(Entity.ModifierGroups),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: ModifierGroup) => e.id,

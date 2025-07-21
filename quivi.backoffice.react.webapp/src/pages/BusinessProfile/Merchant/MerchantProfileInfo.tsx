@@ -3,7 +3,7 @@ import PageMeta from "../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../components/common/ComponentCard";
 import { useMerchantsQuery } from "../../../hooks/queries/implementations/useMerchantsQuery";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { ImageInput } from "../../../components/upload/ImageInput";
 import { UploadHandler } from "../../../components/upload/UploadHandler";
@@ -28,11 +28,11 @@ const schema = yup.object({
 export const MerchantProfileInfo = () => {
     const { t } = useTranslation();
     const toast = useToast();
-    const auth = useAuth();
+    const user = useAuthenticatedUser();
     const mutator = useMerchantMutator();
     
     const merchantQuery = useMerchantsQuery({
-        ids: auth.subMerchantId == undefined ? undefined : [auth.subMerchantId],
+        ids: user.subMerchantId == undefined ? undefined : [user.subMerchantId],
         page: 0,
         pageSize: 1,
     })

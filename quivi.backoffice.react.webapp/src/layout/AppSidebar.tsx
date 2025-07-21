@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ChevronDownIcon, GearIcon, GridIcon, HorizontaLDots, ListIcon, UserIcon } from "../icons";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../context/AuthContext";
+import { useAuthenticatedUser } from "../context/AuthContext";
 
 interface User {
     readonly isAdmin: boolean;
@@ -11,6 +11,7 @@ interface User {
     readonly subMerchantId?: string;
     readonly merchantActivated: boolean;
 }
+
 interface NavItem {
     readonly name: string;
     readonly icon: React.ReactNode;
@@ -140,7 +141,7 @@ const items: NavItem[] = [
 
 const AppSidebar = () => {
     const { t } = useTranslation();
-    const auth = useAuth();
+    const user = useAuthenticatedUser();
 
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
     const location = useLocation();
@@ -201,8 +202,8 @@ const AppSidebar = () => {
     const renderMenuItems = (items: NavItem[]) => (
         <ul className="flex flex-col gap-4">
             {
-                items.filter(i => i.show(auth) == true).map((nav, index) => {
-                    const subItems = nav.subItems?.filter(s => s.show(auth));
+                items.filter(i => i.show(user) == true).map((nav, index) => {
+                    const subItems = nav.subItems?.filter(s => s.show(user));
                     return <li key={nav.name}>
                         {
                             subItems 

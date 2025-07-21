@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { Local } from "../api/Dtos/locals/Local";
@@ -10,8 +10,8 @@ interface PatchMutator {
     readonly name?: string;
 }
 export const useLocalMutator = () => {
-    const auth = useAuth();
-    const api = useLocalsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useLocalsApi(user.token);
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.Locals),
@@ -71,7 +71,7 @@ export const useLocalMutator = () => {
             return result.response[0];
         },
         delete:  (e: Local) => deleteMutator.mutate([e], {}),
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

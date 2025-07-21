@@ -324,7 +324,11 @@
             "goAndLogout": "End portal session",
             "goAndKeepSession": "Keep portal session"
         },
-        "changeLanguage": "Change language"
+        "changeLanguage": "Change language",
+        "editProfile": "Edit profile",
+        "accountSettings": "Account settings",
+        "support": "Support",
+        "signOut": "Sign out"
     },
     "pages": {
         "signUp": {

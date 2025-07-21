@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { useChannelProfilesApi } from "../api/useChannelProfilesApi";
@@ -14,8 +14,8 @@ interface PatchMutator {
     readonly posIntegrationId?: string | undefined;
 }
 export const useChannelProfileMutator = () => {
-    const auth = useAuth();
-    const api = useChannelProfilesApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useChannelProfilesApi(user.token);
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.ChannelProfiles),
@@ -77,7 +77,7 @@ export const useChannelProfileMutator = () => {
             return result.response[0];
         },
         delete:  (e: ChannelProfile) => deleteMutator.mutate([e], {}),
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

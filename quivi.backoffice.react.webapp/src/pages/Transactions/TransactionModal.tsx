@@ -13,7 +13,7 @@ import { useChannelProfilesQuery } from "../../hooks/queries/implementations/use
 import CurrencySpan from "../../components/currency/CurrencySpan";
 import { Tooltip } from "../../components/ui/tooltip/Tooltip";
 import Badge from "../../components/ui/badge/Badge";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { useCustomChargeMethodsQuery } from "../../hooks/queries/implementations/useCustomChargeMethodsQuery";
 import { Spinner } from "../../components/spinners/Spinner";
 import Avatar from "../../components/ui/avatar/Avatar";
@@ -24,7 +24,7 @@ interface Props {
 }
 export const TransactionModal = (props: Props) => {
     const { t } = useTranslation();
-    const auth = useAuth();
+    const user = useAuthenticatedUser();
 
     const transactionQuery = useTransactionsQuery(props.id == undefined ? undefined : {
         ids: [props.id],
@@ -236,7 +236,7 @@ export const TransactionModal = (props: Props) => {
                         <>
                             <CurrencySpan value={transaction.tip + transaction.payment} />
                             {
-                                auth.isAdmin && transaction.surcharge > 0 &&
+                                user.isAdmin && transaction.surcharge > 0 &&
                                 <Tooltip message={t("common.surcharge")}>
                                     <Badge 
                                         variant="solid"

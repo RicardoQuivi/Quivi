@@ -4,19 +4,19 @@ import { Merchant } from "../../api/Dtos/merchants/Merchant";
 import { useMerchantsApi } from "../../api/useMerchantsApi"
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 
 export const useMerchantsQuery = (request: GetMerchantsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useMerchantsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useMerchantsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useMerchantsQuery",
         entityType: getEntityType(Entity.Merchants),
-        request: auth.token == undefined || request == undefined ? undefined : {
+        request: request == undefined ? undefined : {
             ...request,
-            authMerchantId: auth.merchantId,
-            authSubMerchantId: auth.subMerchantId,
+            authMerchantId: user.merchantId,
+            authSubMerchantId: user.subMerchantId,
         },
         getId: (e: Merchant) => e.id,
         query: request => api.get(request),

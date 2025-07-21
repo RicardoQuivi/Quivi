@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { useAcquirerConfigurationsApi } from "../api/useAcquirerConfigurationsApi";
@@ -7,8 +7,8 @@ import { UpsertCashAcquirerConfigurationRequest } from "../api/Dtos/acquirerconf
 import { AcquirerConfiguration } from "../api/Dtos/acquirerconfigurations/AcquirerConfiguration";
 
 export const useAcquirerConfigurationMutator = () => {
-    const auth = useAuth();
-    const api = useAcquirerConfigurationsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useAcquirerConfigurationsApi(user.token);
     
     const upsertCash = useMutator({
         entityType: getEntityType(Entity.Locals),
@@ -24,7 +24,7 @@ export const useAcquirerConfigurationMutator = () => {
             const result = await upsertCash.mutate([], request);
             return result.response;
         },
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

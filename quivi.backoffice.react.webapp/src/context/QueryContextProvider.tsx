@@ -90,7 +90,7 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
     }, [webEvents.client])
 
     useEffect(() => {
-        if(auth.subMerchantId == undefined) {
+        if(auth.user?.subMerchantId == undefined) {
             return;
         }
 
@@ -113,7 +113,7 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);
-    }, [webEvents.client, auth.subMerchantId])
+    }, [webEvents.client, auth.user?.subMerchantId])
 
     return (
         <QueryClientProvider client={queryClient}>

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { Language } from "../api/Dtos/Language";
@@ -16,8 +16,8 @@ interface PatchMutator {
     readonly translations?: Record<Language, PatchModifierGroupTranslation> | undefined;
 }
 export const useModifierGroupMutator = () => {
-    const auth = useAuth();
-    const api = useModifierGroupsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useModifierGroupsApi(user.token);
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.ModifierGroups),
@@ -77,7 +77,7 @@ export const useModifierGroupMutator = () => {
             return result.response[0];
         },
         delete:  (e: ModifierGroup) => deleteMutator.mutate([e], {}),
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

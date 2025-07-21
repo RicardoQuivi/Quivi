@@ -1,20 +1,20 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { usePrinterWorkersApi } from "../../api/usePrinterWorkersApi";
 import { GetPrinterWorkersRequest } from "../../api/Dtos/printerWorkers/GetPrinterWorkersRequest";
 import { PrinterWorker } from "../../api/Dtos/printerWorkers/PrinterWorker";
 
 export const usePrinterWorkersQuery = (request: GetPrinterWorkersRequest | undefined) => {
-    const auth = useAuth();
-    const api = usePrinterWorkersApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = usePrinterWorkersApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "usePrinterWorkersQuery",
         entityType: getEntityType(Entity.PrinterWorkers),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: PrinterWorker) => e.id,

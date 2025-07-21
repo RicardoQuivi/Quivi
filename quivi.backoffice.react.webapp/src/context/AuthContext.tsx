@@ -38,16 +38,21 @@ const getState = () => {
     return data;
 }
 
-interface AuthContextType {
-    readonly isAuth: boolean;
+interface UserDetails {
+    readonly email: string;
+    readonly name: string;
+    readonly isAdmin: boolean;
     readonly merchantId: string | undefined;
     readonly subMerchantId: string | undefined;
     readonly merchantActivated: boolean;
+    readonly token: string;
+}
+
+interface AuthContextType {
     readonly signIn: (email: string, password: string) => Promise<void>;
     readonly signOut: () => void;
     readonly switchMerchant: (merchantId: string) => Promise<void>;
-    readonly token: string | undefined;
-    readonly isAdmin: boolean;
+    readonly user: UserDetails | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -154,15 +159,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     return (
         <AuthContext.Provider value={{
-            isAuth: state != undefined,
-            token: state?.accessToken,
             signIn,
             signOut,
             switchMerchant,
-            merchantId: state?.merchantId,
-            subMerchantId: state?.subMerchantId,
-            merchantActivated: state?.isActivated == true,
-            isAdmin: state?.isAdmin ?? false,
+            user: state == undefined ? undefined :  {
+                name: state.email,
+                email: state.email,
+                isAdmin: state.isAdmin,
+                merchantId: state.merchantId,
+                subMerchantId: state.subMerchantId,
+                merchantActivated: state.isActivated == true,
+                token: state.accessToken,
+            }
         }}
         >
             {children}
@@ -176,6 +184,18 @@ export const useAuth = (): AuthContextType => {
         throw new Error('useAuth must be used within a AuthProvider');
     }
     return context;
+};
+
+export const useAuthenticatedUser = (): UserDetails => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuthenticatedUser must be used within a AuthProvider');
+    }
+
+    if(context.user == undefined) {
+        throw new Error('useAuthenticatedUser can only be used when user is authenticated');
+    }
+    return context.user;
 };
 
 interface DecodedToken {

@@ -25,7 +25,7 @@ import { useChannelProfilesQuery } from "../../hooks/queries/implementations/use
 import { ChannelProfile } from "../../hooks/api/Dtos/channelProfiles/ChannelProfile";
 import { DateUtils } from "../../utilities/dateutils";
 import CurrencySpan from "../../components/currency/CurrencySpan";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import Badge from "../../components/ui/badge/Badge";
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { Review } from "../../hooks/api/Dtos/reviews/Review";
@@ -38,7 +38,7 @@ export const TransactionsPage = (props: Props) => {
     const { id } = useParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const auth = useAuth();
+    const user = useAuthenticatedUser();
 
     const [state, setState] = useState({
         page: 0,
@@ -234,7 +234,7 @@ export const TransactionsPage = (props: Props) => {
                                     >
                                         <CurrencySpan value={d.payment + d.tip} />
                                         {
-                                            auth.isAdmin && d.surcharge > 0 &&
+                                            user.isAdmin && d.surcharge > 0 &&
                                             <Tooltip message={t("common.surcharge")}>
                                                 <Badge 
                                                     variant="solid"

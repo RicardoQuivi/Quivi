@@ -140,7 +140,7 @@ const LayoutContent = () => {
 const AuthLayoutRoute = () => {
     const auth = useAuth();
 
-    if(auth.isAuth == false) {
+    if(auth.user == undefined) {
         return <Navigate to="/signin" />
     }
     

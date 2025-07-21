@@ -324,7 +324,11 @@
             "goAndLogout": "Terminar sessão do portal",
             "goAndKeepSession": "Manter sessão do portal"
         },
-        "changeLanguage": "Alterar idioma"
+        "changeLanguage": "Alterar idioma",
+        "editProfile": "Editar perfil",
+        "accountSettings": "Definições de conta",
+        "support": "Suporte",
+        "signOut": "Terminar sessão"
     },
     "pages": {
         "signUp": {

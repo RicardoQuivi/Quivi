@@ -1,21 +1,21 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMemo } from "react";
 import { GetAcquirerConfigurationsRequest } from "../../api/Dtos/acquirerconfigurations/GetAcquirerConfigurationsRequest";
 import { useAcquirerConfigurationsApi } from "../../api/useAcquirerConfigurationsApi";
 import { AcquirerConfiguration } from "../../api/Dtos/acquirerconfigurations/AcquirerConfiguration";
 
 export const useAcquirerConfigurationsQuery = (request: GetAcquirerConfigurationsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useAcquirerConfigurationsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useAcquirerConfigurationsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useAcquirerConfigurationsQuery",
         entityType: getEntityType(Entity.AcquirerConfigurations),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: AcquirerConfiguration) => e.id,

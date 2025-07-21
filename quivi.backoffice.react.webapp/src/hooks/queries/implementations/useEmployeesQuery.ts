@@ -1,21 +1,21 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { GetEmployeesRequest } from "../../api/Dtos/employees/GetEmployeesRequest";
 import { useEmployeesApi } from "../../api/useEmployeesApi";
 import { Employee } from "../../api/Dtos/employees/Employee";
 import { useMemo } from "react";
 
 export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
-    const auth = useAuth();
-    const api = useEmployeesApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useEmployeesApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useEmployeesQuery",
         entityType: getEntityType(Entity.Employees),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: Employee) => e.id,

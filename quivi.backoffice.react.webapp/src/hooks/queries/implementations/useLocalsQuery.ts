@@ -1,21 +1,21 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { GetLocalsRequest } from "../../api/Dtos/locals/GetLocalsRequest";
 import { useLocalsApi } from "../../api/useLocalsApi";
 import { Local } from "../../api/Dtos/locals/Local";
 import { useMemo } from "react";
 
 export const useLocalsQuery = (request: GetLocalsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useLocalsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useLocalsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",
         entityType: getEntityType(Entity.Locals),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: Local) => e.id,

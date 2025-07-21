@@ -5,13 +5,13 @@ import TaskItem, { Task, TaskType } from "./TaskItem";
 import { useChannelsQuery } from "../../../hooks/queries/implementations/useChannelsQuery";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 
 export const Onboarding = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     
-    const auth = useAuth();
+    const user = useAuthenticatedUser();
     const [tasks, setTasks] = useState<Map<string, Task>>(new Map<string, Task>());
     
     const merchantsQuery = useMerchantsQuery({
@@ -44,7 +44,7 @@ export const Onboarding = () => {
 
             result.set("activateMerchant", {
                 id: "activateMerchant",
-                isChecked: auth.merchantActivated == true,
+                isChecked: user.merchantActivated == true,
                 title: t("pages.onboarding.termsAndConditions."),
                 description: t("pages.onboarding.termsAndConditions.description"),
                 type: TaskType.Required,
@@ -79,7 +79,7 @@ export const Onboarding = () => {
         merchantsQuery.totalItems, merchantsQuery.isLoading,
         channelProfilesQuery.totalItems, channelProfilesQuery.isLoading,
         channelsQuery.totalItems, channelsQuery.isLoading,
-        auth.merchantActivated,
+        user.merchantActivated,
     ])
     
     const taskValues = Array.from(tasks.values());

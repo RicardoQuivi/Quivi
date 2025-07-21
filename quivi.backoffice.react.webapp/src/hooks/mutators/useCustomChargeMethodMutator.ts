@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { CustomChargeMethod } from "../api/Dtos/customchargemethods/CustomChargeMethod";
@@ -11,8 +11,8 @@ interface PatchMutator {
     readonly logoUrl?: string | null;
 }
 export const useCustomChargeMethodMutator = () => {
-    const auth = useAuth();
-    const api = useCustomChargeMethodsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useCustomChargeMethodsApi(user.token);
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.CustomChargeMethods),
@@ -72,7 +72,7 @@ export const useCustomChargeMethodMutator = () => {
             return result.response[0];
         },
         delete:  (e: CustomChargeMethod) => deleteMutator.mutate([e], {}),
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

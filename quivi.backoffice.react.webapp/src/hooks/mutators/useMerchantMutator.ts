@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuthenticatedUser } from "../../context/AuthContext";
 import { useMerchantsApi } from "../api/useMerchantsApi";
 import { CreateMerchantRequest } from "../api/Dtos/merchants/CreateMerchantRequest";
 import { Merchant } from "../api/Dtos/merchants/Merchant";
@@ -19,8 +19,8 @@ interface PatchMutator {
     readonly inactive?: boolean;
 }
 export const useMerchantMutator = () => {
-    const auth = useAuth();
-    const api = useMerchantsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useMerchantsApi(user.token);
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.Merchants),
@@ -64,7 +64,7 @@ export const useMerchantMutator = () => {
             const result = await updateMutator.mutate([e], mutator);
             return result.response[0];
         },
-    }), [auth, api]);
+    }), [user, api]);
 
     return result;
 }

@@ -1,21 +1,21 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useChannelsApi } from "../../api/useChannelsApi";
 import { GetChannelsRequest } from "../../api/Dtos/channels/GetChannelsRequest";
 import { Channel } from "../../api/Dtos/channels/Channel";
 
 export const useChannelsQuery = (request: GetChannelsRequest | undefined) => {
-    const auth = useAuth();
-    const api = useChannelsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = useChannelsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useChannelsQuery",
         entityType: getEntityType(Entity.Channels),
-        request: auth.token == undefined || auth.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
-            subMerchantId: auth.subMerchantId,
+            subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,
         getId: (e: Channel) => e.id,

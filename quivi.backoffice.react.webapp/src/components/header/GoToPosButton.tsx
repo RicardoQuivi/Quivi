@@ -3,25 +3,22 @@ import { Placement, Tooltip } from "../ui/tooltip/Tooltip";
 import { Modal, ModalSize } from "../ui/modal";
 import { useState } from "react";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
-import {  useAuth } from "../../context/AuthContext";
+import { useAuth, useAuthenticatedUser } from "../../context/AuthContext";
 
 export const GoToPosButton: React.FC = () => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const auth = useAuth();
+    const user = useAuthenticatedUser();
 
     const open = (keepSession: boolean) => {
-        if(auth.token == undefined) {
-            return;
-        }
-
         try {
             if(keepSession == false) {
                 auth.signOut();
             }
 
             const queryParams = new URLSearchParams();
-            queryParams.set("subjectToken", auth.token);
+            queryParams.set("subjectToken", user.token);
             let url = `${import.meta.env.VITE_POS_APP_URL}signIn?${queryParams}`;
             window.open(url, keepSession ? '_blank' : '_self', 'noopener,noreferrer');
         } finally {

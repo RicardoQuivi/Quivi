@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import PageMeta from "../../../components/common/PageMeta"
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../components/common/ComponentCard";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth, useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMerchantsQuery } from "../../../hooks/queries/implementations/useMerchantsQuery";
 import { useNavigate } from "react-router";
 import { useMemo, useState } from "react";
@@ -14,23 +14,24 @@ import { useMerchantMutator } from "../../../hooks/mutators/useMerchantMutator";
 export const TermsAndConditionsPage = () => {
     const { t } = useTranslation();
     const auth = useAuth();
+    const user = useAuthenticatedUser();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const mutator = useMerchantMutator();
 
-    if(auth.merchantId == undefined) {
+    if(user.merchantId == undefined) {
         navigate("/");
         return;
     }
 
     const merchantsQuery = useMerchantsQuery({
-        ids: [auth.merchantId],
+        ids: [user.merchantId],
         page: 0,
         pageSize: 1,
     })
 
     const subMerchantsQuery = useMerchantsQuery({
-        parentId: auth.merchantId,
+        parentId: user.merchantId,
         page: 0,
     })
     
@@ -51,7 +52,7 @@ export const TermsAndConditionsPage = () => {
             await mutator.patch(merchant, {
                 acceptTermsAndConditions: true,
             });
-            auth.switchMerchant(auth.subMerchantId ?? auth.merchantId ?? merchant.id);
+            auth.switchMerchant(user.subMerchantId ?? user.merchantId ?? merchant.id);
             navigate("/");
         } finally {
             setIsSubmitting(false);
@@ -452,7 +453,7 @@ export const TermsAndConditionsPage = () => {
             </ul>
 
             {
-                auth.merchantActivated == false &&
+                user.merchantActivated == false &&
                 <Button
                     size="md"
                     onClick={save}

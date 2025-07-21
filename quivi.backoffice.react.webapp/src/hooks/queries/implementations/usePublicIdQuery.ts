@@ -1,16 +1,16 @@
 import { useQueryable } from "../useQueryable";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { usePublicIdsApi } from "../../api/usePublicIdsApi";
 import { useMemo } from "react";
 
 export const usePublicIdQuery = (id: string | undefined) => {
-    const auth = useAuth();
-    const api = usePublicIdsApi(auth.token);
+    const user = useAuthenticatedUser();
+    const api = usePublicIdsApi(user.token);
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",
         entityType: "PublicId",
-        request: auth.token == undefined || auth.isAdmin == false || id == undefined ? undefined : {
+        request: user.token == undefined || user.isAdmin == false || id == undefined ? undefined : {
             id: id,
         },
         getId: (e: number) => e.toString(),
