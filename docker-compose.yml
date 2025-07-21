@@ -41,6 +41,15 @@ services:
         depends_on:
             - sqlserver
 
+    quivi.printer.service:
+        image: ${DOCKER_REGISTRY-}quiviprinterservice
+        build:
+            context: .
+            dockerfile: Quivi.Printer.Service/Dockerfile
+        network_mode: "bridge"
+        depends_on:
+            - printer-rabbitmq
+
     quivi.oauth2:
         image: ${DOCKER_REGISTRY-}quivioauth2
         build:
