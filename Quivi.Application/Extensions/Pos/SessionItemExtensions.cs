@@ -221,5 +221,8 @@ namespace Quivi.Application.Extensions.Pos
 
         public static decimal GetUnitPrice(this SessionItem item) => item.Price + item.Extras.Sum(child => child.Price * child.Quantity);
         public static decimal GetUnitPrice(this SessionItem item, int maxDecimalPlaces) => Math.Round(item.GetUnitPrice(), maxDecimalPlaces);
+
+        public static decimal GetUnitPrice<T>(this SessionItem<T> item) => item.Price + item.Extras.Sum(child => child.Price * child.Quantity);
+        public static decimal GetUnitPrice<T>(this SessionItem<T> item, int maxDecimalPlaces) => Math.Round(item.GetUnitPrice(), maxDecimalPlaces);
     }
 }

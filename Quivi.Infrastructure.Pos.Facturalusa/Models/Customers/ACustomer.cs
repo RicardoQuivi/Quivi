@@ -50,10 +50,10 @@ namespace Quivi.Infrastructure.Pos.Facturalusa.Models.Customers
         public static string DefaultAddress = "Desconhecido";
 
         [JsonProperty("type")]
-        public CustomerType? Type { get; set; }
+        public CustomerType Type { get; set; }
 
         [JsonProperty("vat_type")]
-        public VatRateType? VatType { get; set; }
+        public VatRateType VatType { get; set; }
 
         [JsonProperty("language")]
         public Language Language { get; set; }

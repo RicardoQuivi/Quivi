@@ -63,9 +63,10 @@ namespace Quivi.Application.Commands.MenuItems
                     ModifiedDate = now,
                     DeletedDate = null,
                 }).ToList() ?? [],
-                MenuItemCategoryAssociations = command.MenuItemCategoryIds?.Select(s => new MenuItemCategoryAssociation
+                MenuItemCategoryAssociations = command.MenuItemCategoryIds?.Select((s, i) => new MenuItemCategoryAssociation
                 {
                     ItemCategoryId = s,
+                    SortIndex = i,
 
                     CreatedDate = now,
                     ModifiedDate = now,

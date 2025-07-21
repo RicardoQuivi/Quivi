@@ -7,7 +7,7 @@ namespace Quivi.Domain.Entities.Pos
     {
         public int Id { get; set; }
 
-        public required string DocumentId { get; set; }
+        public string? DocumentId { get; set; }
         public string? DocumentReference { get; set; }
         public InvoiceDocumentType DocumentType { get; set; }
         public string? Path { get; set; }
@@ -17,7 +17,7 @@ namespace Quivi.Domain.Entities.Pos
 
         #region Relationships
         public int MerchantId { get; set; }
-        public required Merchant Merchant { get; set; }
+        public Merchant? Merchant { get; set; }
 
         public int? ChargeId { get; set; }
         public Charge? Charge { get; set; }

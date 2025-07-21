@@ -7,6 +7,8 @@
         public IEnumerable<int>? PrinterNotificationsContactIds { get; init; }
         public bool? DeletedTargets { get; init; }
         public bool IncludePrinterNotificationMessage { get; init; }
+        public bool IncludePrinterNotificationsContact { get; init; }
+        public bool IncludePrinterNotificationsContactBaseNotificationsContact { get; init; }
         public bool IncludePrinterNotificationsContactPrinterWorker { get; init; }
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }

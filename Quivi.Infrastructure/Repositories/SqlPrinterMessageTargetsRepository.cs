@@ -16,11 +16,17 @@ namespace Quivi.Infrastructure.Repositories
         {
             IQueryable<PrinterMessageTarget> query = Set;
 
-            if(criteria.IncludePrinterNotificationMessage)
+            if (criteria.IncludePrinterNotificationsContact)
+                query = query.Include(q => q.PrinterNotificationsContact);
+
+            if (criteria.IncludePrinterNotificationsContactBaseNotificationsContact)
+                query = query.Include(q => q.PrinterNotificationsContact!).ThenInclude(q => q.BaseNotificationsContact);
+
+            if (criteria.IncludePrinterNotificationMessage)
                 query = query.Include(q => q.PrinterNotificationMessage);
 
             if (criteria.IncludePrinterNotificationsContactPrinterWorker)
-                query = query.Include(q => q.PrinterNotificationsContact).ThenInclude(q => q.PrinterWorker);
+                query = query.Include(q => q.PrinterNotificationsContact!).ThenInclude(q => q.PrinterWorker);
 
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.PrinterNotificationMessage!.MerchantId));

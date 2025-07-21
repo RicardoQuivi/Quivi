@@ -1,4 +1,6 @@
-﻿using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using Quivi.Infrastructure.Pos.Facturalusa.Models.Currencies;
 using Quivi.Infrastructure.Pos.Facturalusa.Models.Customers;
 using Quivi.Infrastructure.Pos.Facturalusa.Models.Items;
@@ -24,11 +26,17 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-                var httpClient = RestService.CreateHttpClient(baseUrl, new RefitSettings
+                var refitSettings = new RefitSettings
                 {
                     HttpMessageHandlerFactory = () => handler,
-                });
-                return RestService.For<IFacturalusaApi>(httpClient);
+                    ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
+                    {
+                        ContractResolver = new DefaultContractResolver(),
+                        NullValueHandling = NullValueHandling.Ignore,
+                    }),
+                };
+                var httpClient = RestService.CreateHttpClient(baseUrl, refitSettings);
+                return RestService.For<IFacturalusaApi>(httpClient, refitSettings);
             });
         }
 

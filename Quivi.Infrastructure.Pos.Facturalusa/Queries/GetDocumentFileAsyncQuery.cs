@@ -1,6 +1,5 @@
 ﻿using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
-using System.Net;
 
 namespace Quivi.Infrastructure.Pos.Facturalusa.Queries
 {
@@ -31,10 +30,9 @@ namespace Quivi.Infrastructure.Pos.Facturalusa.Queries
                 DocumentFormat = query.DocumentFormat,
             });
 
-            using (var webClient = new WebClient())
-            {
-                return await webClient.DownloadDataTaskAsync(fileUrl);
-            }
+            using var httpClient = new HttpClient();
+            var data = await httpClient.GetByteArrayAsync(fileUrl);
+            return data;
         }
     }
 }

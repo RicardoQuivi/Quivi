@@ -158,7 +158,7 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterSingleton<IFacturalusaSettings>((p) => configuration.GetSection("Facturalusa").Get<FacturalusaSettings>()!);
             serviceCollection.RegisterSingleton<IFacturalusaCacheProvider, FacturalusaCacheProvider>();
             serviceCollection.RegisterSingleton<ICacheProvider, MemoryCacheProvider>();
-            serviceCollection.RegisterSingleton<IInvoiceGatewayFactory, InvoiceGatewayFactory>();
+            serviceCollection.RegisterScoped<IInvoiceGatewayFactory, InvoiceGatewayFactory>();
             serviceCollection.RegisterSingleton<IFacturalusaServiceFactory, FacturalusaServiceFactory>();
             serviceCollection.RegisterSingleton<IFacturalusaCacheProvider, FacturalusaCacheProvider>();
 

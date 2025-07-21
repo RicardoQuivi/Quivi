@@ -14,6 +14,8 @@ namespace Quivi.Application.Queries.PrinterMessageTargets
         public IEnumerable<int>? PrinterNotificationMessageIds { get; init; }
         public bool? DeletedTargets { get; init; }
         public bool IncludePrinterNotificationMessage { get; init; }
+        public bool IncludePrinterNotificationsContact { get; init; }
+        public bool IncludePrinterNotificationsContactBaseNotificationsContact { get; init; }
         public bool IncludePrinterNotificationsContactPrinterWorker { get; init; }
     }
 
@@ -34,6 +36,8 @@ namespace Quivi.Application.Queries.PrinterMessageTargets
                 PrinterNotificationMessageIds = query.PrinterNotificationMessageIds,
                 PrinterNotificationsContactIds = query.PrinterNotificationsContactIds,
                 IncludePrinterNotificationMessage = query.IncludePrinterNotificationMessage,
+                IncludePrinterNotificationsContact = query.IncludePrinterNotificationsContact,
+                IncludePrinterNotificationsContactBaseNotificationsContact = query.IncludePrinterNotificationsContactBaseNotificationsContact,
                 IncludePrinterNotificationsContactPrinterWorker = query.IncludePrinterNotificationsContactPrinterWorker,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

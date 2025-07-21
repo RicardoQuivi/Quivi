@@ -39,7 +39,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa.Commands
         public async Task<ConsumerBill> Handle(CreateConsumerBillReceiptAsyncCommand command)
         {
             var items = await GetItems(command);
-            var itemsCodeIdRelation = items.ToDictionary(x => GetItemKey(x.Key.Reference, x.Key.CorrelationId), x => x.Value.Id);
+            var itemsCodeIdRelation = items.ToDictionary(x => GetItemKey(x.Key.Reference!, x.Key.CorrelationId), x => x.Value.Id);
             var genericItem = new Lazy<ReadonlyItem>(() => items.Select(x => x.Value).First(x => x.IsGenericItem));
 
             var vatRates = await GetVatRates(command);

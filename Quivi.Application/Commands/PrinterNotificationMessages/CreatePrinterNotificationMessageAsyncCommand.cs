@@ -10,16 +10,15 @@ using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 
 namespace Quivi.Application.Commands.PrinterNotificationMessages
 {
-    public class CreatePrinterNotificationMessageAsyncCommand : ICommand<Task<PrinterNotificationMessage>>
+    public class CreatePrinterNotificationMessageAsyncCommand : ICommand<Task<IEnumerable<PrinterNotificationMessage>>>
     {
-        public int MerchantId { get; init; }
+        public required GetPrinterNotificationsContactsCriteria Criteria { get; init; }
+        public required Func<Task<string?>> GetContent { get; init; }
+
         public NotificationMessageType MessageType { get; init; }
-        public PrinterMessageContentType ContentType { get; init; }
-        public required string Content { get; init; }
-        public required IEnumerable<int> PrinterNotificationsContactIds { get; init; }
     }
 
-    public class CreatePrinterNotificationMessageAsyncCommandHandler : ICommandHandler<CreatePrinterNotificationMessageAsyncCommand, Task<PrinterNotificationMessage>>
+    public class CreatePrinterNotificationMessageAsyncCommandHandler : ICommandHandler<CreatePrinterNotificationMessageAsyncCommand, Task<IEnumerable<PrinterNotificationMessage>>>
     {
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IPrinterNotificationsContactsRepository contactsRepository;
@@ -37,58 +36,77 @@ namespace Quivi.Application.Commands.PrinterNotificationMessages
             this.eventService = eventService;
         }
 
-        public async Task<PrinterNotificationMessage> Handle(CreatePrinterNotificationMessageAsyncCommand command)
+        public async Task<IEnumerable<PrinterNotificationMessage>> Handle(CreatePrinterNotificationMessageAsyncCommand command)
         {
-            var contactsQuery = await contactsRepository.GetAsync(new GetPrinterNotificationsContactsCriteria
-            {
-                MerchantIds = [command.MerchantId],
-                Ids = command.PrinterNotificationsContactIds,
-                PageIndex = 0,
-                PageSize = 0,
-            });
-            if (contactsQuery.TotalItems != command.PrinterNotificationsContactIds.Count())
-                throw new UnauthorizedAccessException();
+            var printers = await GetPrinterTargets(command);
+            if (printers.Any() == false)
+                return [];
+
+            var content = await command.GetContent();
+            if (string.IsNullOrWhiteSpace(content))
+                return [];
 
             var now = dateTimeProvider.GetUtcNow();
-            var entity = new PrinterNotificationMessage
+            var printerPerMerchant = printers.GroupBy(p => p.BaseNotificationsContact!.MerchantId);
+
+            List<PrinterNotificationMessage> entities = new List<PrinterNotificationMessage>();
+            foreach (var entry in printerPerMerchant)
             {
-                MessageType = command.MessageType,
-                ContentType = command.ContentType,
-                Content = command.Content,
-                MerchantId = command.MerchantId,
-                PrinterMessageTargets = command.PrinterNotificationsContactIds.Select(cId => new PrinterMessageTarget
+                var entity = new PrinterNotificationMessage
                 {
+                    MessageType = command.MessageType,
+                    ContentType = PrinterMessageContentType.EscPos,
+                    Content = content,
+                    MerchantId = entry.Key,
+                    PrinterMessageTargets = entry.Select(printer => new PrinterMessageTarget
+                    {
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                        RequestedAt = null,
+                        FinishedAt = null,
+                        Status = AuditStatus.Pending,
+                        PrinterNotificationsContactId = printer.Id,
+                    }).ToList(),
                     CreatedDate = now,
                     ModifiedDate = now,
-                    RequestedAt = null,
-                    FinishedAt = null,
-                    Status = AuditStatus.Pending,
-                    PrinterNotificationsContactId = cId,
-                }).ToList(),
-                CreatedDate = now,
-                ModifiedDate = now,
-            };
+                };
 
-            repository.Add(entity);
+                repository.Add(entity);
+                entities.Add(entity);
+            }
+            if(entities.Any() == false)
+                return [];
+
             await repository.SaveChangesAsync();
-
-            await eventService.Publish(new OnPrinterNotificationMessageOperationEvent
+            foreach (var entity in entities)
             {
-                Id = entity.Id,
-                MerchantId = command.MerchantId,
-                Operation = EntityOperation.Create,
-            });
-
-            foreach(var target in entity.PrinterMessageTargets)
-                await eventService.Publish(new OnPrinterMessageTargetOperationEvent
+                await eventService.Publish(new OnPrinterNotificationMessageOperationEvent
                 {
-                    PrinterNotificationMessageId = entity.Id,
-                    PrinterNotificationsContactId = target.PrinterNotificationsContactId,
-                    MerchantId = command.MerchantId,
+                    Id = entity.Id,
+                    MerchantId = entity.MerchantId,
                     Operation = EntityOperation.Create,
                 });
 
-            return entity;
+                foreach (var target in entity.PrinterMessageTargets!)
+                    await eventService.Publish(new OnPrinterMessageTargetOperationEvent
+                    {
+                        PrinterNotificationMessageId = entity.Id,
+                        PrinterNotificationsContactId = target.PrinterNotificationsContactId,
+                        MerchantId = entity.MerchantId,
+                        Operation = EntityOperation.Create,
+                    });
+            }
+            return entities;
+        }
+
+        private async Task<IEnumerable<PrinterNotificationsContact>> GetPrinterTargets(CreatePrinterNotificationMessageAsyncCommand command)
+        {
+            var printersQuery = await contactsRepository.GetAsync(command.Criteria with
+            {
+                IsDeleted = false,
+                IncludeNotificationsContact = true,
+            });
+            return printersQuery;
         }
     }
 }

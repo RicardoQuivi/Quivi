@@ -38,6 +38,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeMerchantCustomCharge)
                 query = query.Include(q => q.Charge!).ThenInclude(q => q.MerchantCustomCharge!);
 
+            if (criteria.IncludeMerchantCustomChargeCustomChargeMethod)
+                query = query.Include(q => q.Charge!).ThenInclude(q => q.MerchantCustomCharge!).ThenInclude(q => q.CustomChargeMethod);
+
             if (criteria.IncludeReview)
                 query = query.Include(q => q.Review);
 

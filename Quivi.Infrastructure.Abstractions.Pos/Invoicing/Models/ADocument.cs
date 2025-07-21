@@ -74,15 +74,15 @@
         }
 
         public CustomerType Type { get; }
-        public required string Code { get; set; }
-        public required string VatNumber { get; set; }
-        public required string Email { get; set; }
-        public required string Name { get; set; }
-        public required string MobileNumber { get; set; }
-        public required string Address { get; set; }
-        public required string PostalCode { get; set; }
-        public required string CityName { get; set; }
-        public required string CountryName { get; set; }
+        public string? Code { get; set; }
+        public string? VatNumber { get; set; }
+        public string? Email { get; set; }
+        public string? Name { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? Address { get; set; }
+        public string? PostalCode { get; set; }
+        public string? CityName { get; set; }
+        public string? CountryName { get; set; }
     }
 
     public enum CustomerType

@@ -42,6 +42,7 @@ namespace Quivi.Infrastructure.Repositories
         public IChargesRepository Charges => new SqlChargesRepository(quiviContext);
         public IJournalsRepository Journals => new SqlJournalsRepository(quiviContext);
         public IReviewsRepository Reviews => new SqlReviewsRepository(quiviContext);
+        public IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments => new SqlMerchantInvoiceDocumentsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

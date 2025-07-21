@@ -30,6 +30,7 @@ namespace Quivi.Application.Queries.PosCharges
         public bool IncludePosChargeInvoiceItemsOrderMenuItems { get; init; }
         public bool IncludePosChargeSyncAttempts { get; init; }
         public bool IncludeMerchantCustomCharge { get; init; }
+        public bool IncludeMerchantCustomChargeCustomChargeMethod { get; init; }
         public bool IncludeMerchant { get; init; }
         public bool IncludeCharge { get; init; }
     }
@@ -70,6 +71,7 @@ namespace Quivi.Application.Queries.PosCharges
                 IncludeMerchant = query.IncludeMerchant,
                 IncludePosChargeSyncAttempts = query.IncludePosChargeSyncAttempts,
                 IncludeMerchantCustomCharge = query.IncludeMerchantCustomCharge,
+                IncludeMerchantCustomChargeCustomChargeMethod = query.IncludeMerchantCustomChargeCustomChargeMethod,
                 IncludeCharge = query.IncludeCharge,
 
                 PageIndex = query.PageIndex,

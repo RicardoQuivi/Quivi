@@ -1,9 +1,11 @@
 ﻿using Hangfire.States;
 using Quivi.Application.Commands.PosChargeSyncAttempts;
 using Quivi.Application.Commands.PreparationGroups;
+using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Application.Commands.Sessions;
 using Quivi.Application.Queries.Orders;
 using Quivi.Application.Queries.PosIntegrations;
+using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
@@ -58,7 +60,7 @@ namespace Quivi.Application.Pos
             return await syncStrategies[integration.IntegrationType].GetInvoice(integration, chargeId);
         }
 
-        public async Task<string> GetEscPosInvoice(int chargeId)
+        public async Task NewEscPosInvoice(int chargeId)
         {
             var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
             {
@@ -68,39 +70,50 @@ namespace Quivi.Application.Pos
                 PageSize = 1,
             });
             var integration = integrationQuery.Single();
-            return await syncStrategies[integration.IntegrationType].GetEscPosInvoice(integration, chargeId);
+
+            await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
+            {
+                MessageType = NotificationMessageType.NewConsumerInvoice,
+                GetContent = () => syncStrategies[integration.IntegrationType].NewEscPosInvoice(integration, chargeId),
+                Criteria = new GetPrinterNotificationsContactsCriteria
+                {
+                    MerchantIds = [integration.MerchantId],
+                    MessageTypes = [NotificationMessageType.NewConsumerInvoice],
+                    IsDeleted = false,
+
+                    PageIndex = 0,
+                    PageSize = null,
+                },
+            });
         }
 
-        //public async Task NewConsumerBillContextualizer(IJobContextualizer contextualizer, int sessionId)
-        //{
-        //    var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
-        //    {
-        //        SessionIds = [sessionId],
-        //    });
-        //    var integration = integrationQuery.Single();
+        public async Task NewConsumerBill(int sessionId, int? locationId)
+        {
+            var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
+            {
+                SessionIds = [sessionId],
+                IncludeMerchant = true,
+                IsDeleted = false,
+                PageSize = 1,
+            });
+            var integration = integrationQuery.Single();
 
-        //    contextualizer.PosIntegrationId = integration.Id;
-        //    contextualizer.MerchantId = integration.MerchantId;
-        //}
+            await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
+            {
+                MessageType = NotificationMessageType.ConsumerBill,
+                GetContent = () => syncStrategies[integration.IntegrationType].NewConsumerBill(integration, sessionId),
+                Criteria = new GetPrinterNotificationsContactsCriteria
+                {
+                    MerchantIds = [integration.MerchantId],
+                    MessageTypes = [NotificationMessageType.ConsumerBill],
+                    LocationIds = locationId.HasValue ? [locationId.Value] : null,
+                    IsDeleted = false,
 
-        //[ContextualizeFilter(nameof(NewConsumerBillContextualizer))]
-        //[PerIntegrationDistributedLockFilter]
-        //public async Task<SessionBill> NewConsumerBill(int sessionId)
-        //{
-        //    var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
-        //    {
-        //        SessionIds = [sessionId],
-        //        IncludeMerchant = true,
-        //        IsDeleted = false,
-        //    });
-        //    var integration = integrationQuery.Single();
-        //    return await syncStrategies[integration.IntegrationType].NewConsumerBill(integration, sessionId);
-        //}
-
-        //public Task<PaymentSyncState> GetSynchronizationState(int chargeId) => queryProcessor.Execute(new GetSyncStateAsyncQuery
-        //{
-        //    ChargeId = chargeId,
-        //});
+                    PageIndex = 0,
+                    PageSize = null,
+                },
+            });
+        }
 
         #region SyncMenu
         public async Task SyncMenuContextualize(IJobContextualizer contextualizer, int posIntegrationId, IEnumerable<int> menuItemIds)

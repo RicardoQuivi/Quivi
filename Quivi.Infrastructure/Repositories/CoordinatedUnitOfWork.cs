@@ -45,6 +45,7 @@ namespace Quivi.Infrastructure.Repositories
         public IChargesRepository Charges => unitOfWork.Charges;
         public IJournalsRepository Journals => unitOfWork.Journals;
         public IReviewsRepository Reviews => unitOfWork.Reviews;
+        public IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments => unitOfWork.MerchantInvoiceDocuments;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

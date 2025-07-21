@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Quivi.Application.Attributes;
 using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Application.Queries.PrinterMessageTargets;
@@ -11,6 +12,7 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Pos.EscPos;
+using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Backoffice.Api.Controllers
@@ -77,16 +79,29 @@ namespace Quivi.Backoffice.Api.Controllers
 
             var result = await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
             {
-                MerchantId = User.SubMerchantId(idConverter)!.Value,
-                PrinterNotificationsContactIds = [idConverter.FromPublicId(request.PrinterId)],
-                Content = document,
-                ContentType = PrinterMessageContentType.EscPos,
                 MessageType = NotificationMessageType.Test,
+                GetContent = () => Task.FromResult<string?>(escPosPrinterService.Get(new TestPrinterParameters
+                {
+                    Title = request.Text,
+                    Message = "This is a test perfomed via Quivi Backoffice",
+                    PingOnly = request.PingOnly,
+                    Timestamp = request.Timestamp ?? dateTimeProvider.GetUtcNow(),
+                })),
+                Criteria = new GetPrinterNotificationsContactsCriteria
+                {
+                    MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                    Ids = [idConverter.FromPublicId(request.PrinterId)],
+
+                    IsDeleted = false,
+
+                    PageIndex = 0,
+                    PageSize = null,
+                },
             });
 
             return new CreatePrinterMessageResponse
             {
-                Data = mapper.Map<Dtos.PrinterMessage>(result.PrinterMessageTargets!.Single()),
+                Data = mapper.Map<Dtos.PrinterMessage>(result.SingleOrDefault()?.PrinterMessageTargets!.SingleOrDefault()),
             };
         }
     }

@@ -162,6 +162,21 @@ namespace Quivi.Infrastructure.Pos.ESCPOS_NET
             }
         }
 
+        public string Get(OpenCashDrawerParameters request)
+        {
+            using (var printer = new CharacterSafeCommandEmitter())
+            {
+                return printer
+                    .StartConcat(
+                        printer.Clear(),
+                        printer.Initialize(),
+                        printer.CashDrawerOpenPin2(),
+                        printer.CashDrawerOpenPin5()
+                    )
+                    .Encode();
+            }
+        }
+
         private IEnumerable<string> FlatenizeModifiers(IEnumerable<BasePreparationRequestItem>? modifiers)
         {
             if (modifiers == null)

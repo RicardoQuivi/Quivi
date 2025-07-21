@@ -61,7 +61,9 @@ export const SessionButtons = ({
     const transactionApi = useTransactionsApi(pos.token);
     const transactionMutator = useTransactionMutator();
 
-    const printersQuery = usePrintersQuery({});
+    const printersQuery = usePrintersQuery({
+        page: 0,
+    });
     const currentChannelQuery = useChannelsQuery({
         ids: [pos.cartSession.channelId],
         page: 0,
@@ -181,12 +183,7 @@ export const SessionButtons = ({
         }
 
         try {
-            // await posApi.sessions.Bill({
-            //     channelId: pos.cartSession.channelId,
-            //     accessToken: context.merchant.token,
-            //     employeeToken: context.user.employeeToken ?? "",
-            //     locationId: localId,
-            // })
+            await pos.printConsumerBill(localId);
             toast.success(t("printingBill"))
         } catch {
             toast.error(t("printingBillError"))
@@ -195,11 +192,7 @@ export const SessionButtons = ({
     
     const onClickOpenCashDrawer = async () => {
         try {
-            // await posApi.tools.OpenCashDrawer({
-            //     accessToken: context.merchant.token,
-            //     employeeToken: context.user.employeeToken ?? "",
-            //     locationId: localId,
-            // })
+            await pos.openCashDrawer(localId);
             toast.success(t("openingCashDrawerMsg"));
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));

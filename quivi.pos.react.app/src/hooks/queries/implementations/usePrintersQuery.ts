@@ -4,8 +4,13 @@ import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 import { GetPrintersRequest } from "../../api/Dtos/printers/GetPrintersRequest";
 import { Printer } from "../../api/Dtos/printers/Printer";
+import { usePrinterApi } from "../../api/usePrinterApi";
+import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 
-export const usePrintersQuery = (request: GetPrintersRequest | undefined) : PagedQueryResult<Printer> => {      
+export const usePrintersQuery = (request: GetPrintersRequest | undefined) : PagedQueryResult<Printer> => {
+    const posContext = useLoggedEmployee();
+    const api = usePrinterApi(posContext.token);
+
     const queryResult = useQueryable({
         queryName: "usePrintersQuery",
         entityType: getEntityType(Entity.Printers),
@@ -13,12 +18,7 @@ export const usePrintersQuery = (request: GetPrintersRequest | undefined) : Page
             ...request,
         },
         getId: (e: Printer) => e.id,
-        query: async () => ({
-            data: [],
-            page: 0,
-            totalPages: 0,
-            totalItems: 0,
-        }),
+        query: r => api.get(r),
 
         refreshOnAnyUpdate: true,
     })

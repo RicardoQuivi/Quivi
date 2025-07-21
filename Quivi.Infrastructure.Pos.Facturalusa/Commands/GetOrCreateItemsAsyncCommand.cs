@@ -35,11 +35,11 @@ namespace Quivi.Infrastructure.Pos.Facturalusa.Commands
         public bool IsGenericItem { get; set; }
         public ItemType Type { get; set; }
 
-        private string _reference = string.Empty;
-        public string Reference
+        private string? _reference;
+        public string? Reference
         {
             get => _reference;
-            set => _reference = value.Trim();
+            set => _reference = value?.Trim();
         }
 
         public required string CorrelationId { get; set; }

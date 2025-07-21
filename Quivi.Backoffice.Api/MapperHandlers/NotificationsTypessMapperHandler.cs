@@ -30,7 +30,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 case NotificationMessageType.CompletedCharge: return Dtos.NotificationType.CompletedCharge;
                 case NotificationMessageType.NewOrder: return Dtos.NotificationType.NewOrder;
                 case NotificationMessageType.NewReview: return Dtos.NotificationType.NewReview;
-                case NotificationMessageType.NewConsumerBill: return Dtos.NotificationType.NewConsumerBill;
+                case NotificationMessageType.ConsumerBill: return Dtos.NotificationType.NewConsumerBill;
                 case NotificationMessageType.NewConsumerInvoice: return Dtos.NotificationType.NewConsumerInvoice;
                 case NotificationMessageType.NewPreparationRequest: return Dtos.NotificationType.NewPreparationRequest;
                 case NotificationMessageType.ChargeSynced: return Dtos.NotificationType.ChargeSynced;
@@ -60,7 +60,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 case Dtos.NotificationType.CompletedCharge: return NotificationMessageType.CompletedCharge;
                 case Dtos.NotificationType.NewOrder: return NotificationMessageType.NewOrder;
                 case Dtos.NotificationType.NewReview: return NotificationMessageType.NewReview;
-                case Dtos.NotificationType.NewConsumerBill: return NotificationMessageType.NewConsumerBill;
+                case Dtos.NotificationType.NewConsumerBill: return NotificationMessageType.ConsumerBill;
                 case Dtos.NotificationType.NewConsumerInvoice: return NotificationMessageType.NewConsumerInvoice;
                 case Dtos.NotificationType.NewPreparationRequest: return NotificationMessageType.NewPreparationRequest;
                 case Dtos.NotificationType.ChargeSynced: return NotificationMessageType.ChargeSynced;

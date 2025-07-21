@@ -1,5 +1,7 @@
 ﻿using Quivi.Application.Commands.Pos;
+using Quivi.Application.Commands.Pos.Invoicing;
 using Quivi.Application.Commands.PosIntegrations;
+using Quivi.Application.Queries.MerchantInvoiceDocuments;
 using Quivi.Application.Queries.PosIntegrations;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Cqrs;
@@ -61,16 +63,22 @@ namespace Quivi.Application.Pos
             return InvoiceGatewayFactory.GetInvoiceGateway(settings);
         }
 
-        public virtual Task<byte[]> GetInvoice(PosIntegration integration, int chargeId)
-        {
-            return Task.FromResult(Array.Empty<byte>());
-        }
-
-        public virtual async Task<string> GetEscPosInvoice(PosIntegration integration, int chargeId)
+        public virtual async Task<byte[]> GetInvoice(PosIntegration integration, int chargeId)
         {
             var settings = ParseSyncSettings(integration);
             var gateway = GetInvoiceGateway(settings);
 
+            string docId = await GetInvoiceReceiptDocumentId(integration.MerchantId, chargeId, gateway);
+            return await gateway.GetInvoiceReceiptFile(docId, DocumentFileFormat.POS);
+        }
+
+        public virtual async Task<string?> NewEscPosInvoice(PosIntegration integration, int chargeId)
+        {
+            var settings = ParseSyncSettings(integration);
+            if (settings.SkipInvoice)
+                return null;
+
+            var gateway = GetInvoiceGateway(settings);
             string docId = await GetInvoiceReceiptDocumentId(integration.MerchantId, chargeId, gateway);
             var file = await gateway.GetInvoiceReceiptFile(docId, DocumentFileFormat.EscPOS);
             var escPosContentBase64 = Encoding.UTF8.GetString(file);
@@ -78,33 +86,33 @@ namespace Quivi.Application.Pos
             return escPosContentBase64;
         }
 
-        //public async Task<SessionBill> NewConsumerBill(PosIntegration integration, int sessionId)
-        //{
-        //    var settings = ParseSyncSettings(integration);
-        //    var gateway = GetInvoiceGateway(settings);
-        //    var bill = await CommandProcessor.Execute(new ProcessQuiviSessionConsumerBillAsyncCommand(gateway)
-        //    {
-        //        SessionId = sessionId,
-        //        InvoicePrefix = settings.InvoicePrefix,
-        //    });
-        //    return bill;
-        //}
-
-        protected virtual Task<string> GetInvoiceReceiptDocumentId(int merchantId, int chargeId, IInvoiceGateway invoiceGateway)
+        public Task<string?> NewConsumerBill(PosIntegration integration, int sessionId)
         {
-            return Task.FromResult(string.Empty);
-            //var merchantDocumentQuery = await QueryProcessor.Execute(new GetInvoiceDocumentsAsyncQuery
-            //{
-            //    MerchantId = merchantId,
-            //    ChargeId = chargeId,
-            //    Types = [InvoiceDocumentType.OrderInvoice],
-            //});
+            var settings = ParseSyncSettings(integration);
+            var gateway = GetInvoiceGateway(settings);
+            return CommandProcessor.Execute(new ProcessQuiviSessionConsumerBillAsyncCommand
+            {
+                InvoiceGateway = gateway,
+                SessionId = sessionId,
+                InvoicePrefix = settings.InvoicePrefix,
+            });
+        }
 
-            //var merchantDocument = merchantDocumentQuery.SingleOrDefault();
-            //if (string.IsNullOrWhiteSpace(merchantDocument?.DocumentId))
-            //    throw new Exception($"The invoice of charge Id {chargeId} has no invoice!");
+        protected virtual async Task<string> GetInvoiceReceiptDocumentId(int merchantId, int chargeId, IInvoiceGateway invoiceGateway)
+        {
+            var merchantDocumentsQuery = await QueryProcessor.Execute(new GetMerchantInvoiceDocumentsAsyncQuery
+            {
+                MerchantIds = [merchantId],
+                PosChargeIds = [chargeId],
+                Types = [InvoiceDocumentType.OrderInvoice],
+                PageSize = 1,
+            });
 
-            //return merchantDocument.DocumentId;
+            var merchantDocument = merchantDocumentsQuery.SingleOrDefault();
+            if (string.IsNullOrWhiteSpace(merchantDocument?.DocumentId))
+                throw new Exception($"The invoice of charge Id {chargeId} has no invoice!");
+
+            return merchantDocument.DocumentId;
         }
 
         public virtual async Task OnIntegrationSetUp(PosIntegration integration)
@@ -211,14 +219,16 @@ namespace Quivi.Application.Pos
                 return;
 
             var gateway = GetInvoiceGateway(settings);
-            //await CommandProcessor.Execute(new ProcessQuiviChargeInvoiceAsyncCommand(gateway)
-            //{
-            //    ChargeId = chargeId,
-            //    PaymentAmount = paymentAmount,
-            //    InvoiceItems = itemsToBePaid,
-            //    IncludeTip = settings.IncludeTipInInvoice,
-            //    InvoicePrefix = settings.InvoicePrefix,
-            //});
+            await CommandProcessor.Execute(new ProcessQuiviChargeInvoiceAsyncCommand
+            {
+                InvoiceGateway = gateway,
+                PosChargeId = chargeId,
+                PaymentAmount = paymentAmount,
+                InvoiceItems = itemsToBePaid,
+                IncludeTip = settings.IncludeTipInInvoice,
+                InvoicePrefix = settings.InvoicePrefix,
+                IncludeSurcharge = false,
+            });
         }
 
         public virtual Task<decimal> RefundChargeAsCreditNote(PosIntegration integration, int chargeId, decimal amountToRefund)

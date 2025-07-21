@@ -382,6 +382,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         applyDiscount: applyDiscount,
         transferSession: transferSession,
         forceSync: forceSync,
+        sessionId: currentSession.id
     }), [channelId, currentSession, operationsToSync, pendingJobIds])
 
     return state;

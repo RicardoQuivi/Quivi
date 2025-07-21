@@ -8,6 +8,7 @@ import { useLoggedEmployee } from "./LoggedEmployeeContextProvider";
 import { useCartSession } from "../../hooks/pos/session/useCartSession";
 import { ChannelPermissions, useAllowedActions } from "../../hooks/pos/useAllowedActions";
 import { QueryResult } from "../../hooks/queries/QueryResult";
+import { usePosApi } from "../../hooks/api/usePosApi";
 
 interface PosSessionContextType {
     readonly signOut: () => void;
@@ -16,11 +17,14 @@ interface PosSessionContextType {
     readonly cartSession: ICartSession;
     readonly permissions: QueryResult<ChannelPermissions>;
     readonly changeToSession: (channelId: string) => void;
+    readonly openCashDrawer: (locationId?: string) => Promise<void>;
+    readonly printConsumerBill: (locationId?: string) => Promise<void>;
 }
 const PosSessionContext = createContext<PosSessionContextType | undefined>(undefined);
 
 export const PosSessionContextProvider = ({ children }: { children: ReactNode }) => {
     const employeeContext = useLoggedEmployee();
+    const posApi = usePosApi(employeeContext.token);
     
     const searchParamsHook = useBrowserStorage(BrowserStorageType.UrlParam);
     const [channelId, setChannelId] = useStoredState<string | undefined>("channelId", undefined, searchParamsHook);
@@ -54,7 +58,20 @@ export const PosSessionContextProvider = ({ children }: { children: ReactNode })
             isLoading: true,
         } : permissions,
         channelId,
-    }), [channelId, employeeContext, cartSession, permissions])
+        openCashDrawer: (l?: string) => posApi.openCashDrawer({
+            locationId: l,
+        }),
+        printConsumerBill: async (l?: string) => {
+            if(cartSession.sessionId == undefined) {
+                throw new Error("Cannot print a bill of a non specified session");
+            }
+
+            await posApi.printBill({
+                locationId: l,
+                sessionId: cartSession.sessionId
+            })
+        },
+    }), [channelId, employeeContext, cartSession, permissions, posApi])
     
     return (
         <PosSessionContext.Provider value={state}>

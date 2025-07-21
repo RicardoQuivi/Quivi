@@ -56,7 +56,7 @@
         /// <summary>
         /// Consumer bill
         /// </summary>
-        NewConsumerBill = 1 << 9,
+        ConsumerBill = 1 << 9,
 
         /// <summary>
         /// Consumer invoice generated

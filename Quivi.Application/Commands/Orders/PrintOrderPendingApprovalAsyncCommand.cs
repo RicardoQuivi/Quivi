@@ -1,16 +1,11 @@
-﻿using Quivi.Application.Queries.Orders;
-using Quivi.Application.Queries.PrinterNotificationsContacts;
+﻿using Quivi.Application.Commands.PrinterNotificationMessages;
+using Quivi.Application.Queries.Orders;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
-using Quivi.Infrastructure.Abstractions.Events;
-using Quivi.Infrastructure.Abstractions.Events.Data;
-using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationMessages;
-using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationTargets;
 using Quivi.Infrastructure.Abstractions.Pos.EscPos;
-using Quivi.Infrastructure.Abstractions.Repositories;
 
 namespace Quivi.Application.Commands.Orders
 {
@@ -24,23 +19,20 @@ namespace Quivi.Application.Commands.Orders
         private readonly IQueryProcessor queryProcessor;
         private readonly IIdConverter idConverter;
         private readonly IDateTimeProvider dateTimeProvider;
-        private readonly IPrinterNotificationMessagesRepository repository;
         private readonly IEscPosPrinterService printerService;
-        private readonly IEventService eventService;
+        private readonly ICommandProcessor commandProcessor;
 
         public PrintOrderPendingApprovalAsyncCommandHandler(IQueryProcessor queryProcessor,
                                                                 IIdConverter idConverter,
                                                                 IDateTimeProvider dateTimeProvider,
-                                                                IEventService eventService,
-                                                                IPrinterNotificationMessagesRepository repository,
-                                                                IEscPosPrinterService printerService)
+                                                                IEscPosPrinterService printerService,
+                                                                ICommandProcessor commandProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.idConverter = idConverter;
             this.dateTimeProvider = dateTimeProvider;
-            this.eventService = eventService;
-            this.repository = repository;
             this.printerService = printerService;
+            this.commandProcessor = commandProcessor;
         }
 
         public async Task Handle(PrintOrderPendingApprovalAsyncCommand command)
@@ -60,70 +52,26 @@ namespace Quivi.Application.Commands.Orders
             if (order == null)
                 return;
 
-            await GenerateMessages(order);
-        }
-
-        private async Task GenerateMessages(Order order)
-        {
-            var printers = await queryProcessor.Execute(new GetPrinterNotificationsContactsAsyncQuery
-            {
-                MerchantIds = [order.MerchantId],
-                MessageTypes = [NotificationMessageType.NewOrder],
-                IsDeleted = false,
-                IncludeNotificationsContact = true,
-
-                PageIndex = 0,
-                PageSize = 1,
-            });
-            if (printers.Any() == false)
-                return;
-
-            var document = printerService.Get(new NewPendingOrderParameters
-            {
-                Timestamp = dateTimeProvider.GetNow(order.Merchant!.TimeZone),
-                Title = "Pedido mobile pendente",
-                OrderPlaceholder = order.OrderSequence?.SequenceNumber.ToString() ?? idConverter.ToPublicId(order.Id),
-                ChannelPlaceholder = $"{order.Channel!.ChannelProfile!.Name} {order.Channel.Identifier}",
-            });
-
-            var now = dateTimeProvider.GetUtcNow();
-            var entity = new PrinterNotificationMessage
+            await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
             {
                 MessageType = NotificationMessageType.NewOrder,
-                ContentType = PrinterMessageContentType.EscPos,
-                Content = document,
-                MerchantId = order.MerchantId,
-                PrinterMessageTargets = printers.Select(p => new PrinterMessageTarget
+                Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetPrinterNotificationsContactsCriteria
                 {
-                    CreatedDate = now,
-                    ModifiedDate = now,
-                    RequestedAt = null,
-                    FinishedAt = null,
-                    Status = AuditStatus.Pending,
-                    PrinterNotificationsContactId = p.Id,
-                }).ToList(),
-                CreatedDate = now,
-                ModifiedDate = now,
-            };
+                    MerchantIds = [order.MerchantId],
+                    MessageTypes = [NotificationMessageType.ConsumerBill],
+                    IsDeleted = false,
 
-            repository.Add(entity);
-            await repository.SaveChangesAsync();
-
-            await eventService.Publish(new OnPrinterNotificationMessageOperationEvent
-            {
-                Id = entity.Id,
-                MerchantId = order.MerchantId,
-                Operation = EntityOperation.Create,
+                    PageIndex = 0,
+                    PageSize = null,
+                },
+                GetContent = () => Task.FromResult<string?>(printerService.Get(new NewPendingOrderParameters
+                {
+                    Timestamp = dateTimeProvider.GetNow(order.Merchant!.TimeZone),
+                    Title = "Pedido mobile pendente",
+                    OrderPlaceholder = order.OrderSequence?.SequenceNumber.ToString() ?? idConverter.ToPublicId(order.Id),
+                    ChannelPlaceholder = $"{order.Channel!.ChannelProfile!.Name} {order.Channel.Identifier}",
+                }))
             });
-
-            foreach (var target in entity.PrinterMessageTargets!)
-                await eventService.Publish(new OnPrinterMessageTargetOperationEvent
-                {
-                    PrinterNotificationMessageId = entity.Id,
-                    PrinterNotificationsContactId = target.PrinterNotificationsContactId,
-                    MerchantId = order.MerchantId,
-                    Operation = EntityOperation.Create,
-                });
         }
     }
 }

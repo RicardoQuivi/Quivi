@@ -1,5 +1,4 @@
-﻿using Quivi.Infrastructure.Abstractions;
-using Quivi.Infrastructure.Abstractions.Cqrs;
+﻿using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using Quivi.Infrastructure.Pos.Facturalusa.Commands;
@@ -11,29 +10,21 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
 {
     public class FacturalusaGateway : IInvoiceGateway
     {
-        private readonly IQueryProcessor queryProcessor;
-        private readonly ICommandProcessor commandProcessor;
-        private readonly IDateTimeProvider dateTimeProvider;
+        public required IQueryProcessor QueryProcessor { get; init; }
+        public required ICommandProcessor CommandProcessor { get; init; }
         private readonly Lazy<IFacturalusaService> facturalusaService;
 
-        public string GatewayCode => "FLv2";
+        public string GatewayCode => "FL";
 
-        public FacturalusaGateway(IServiceProvider serviceProvider, string accessToken, string accountUuid)
+        public FacturalusaGateway(IFacturalusaServiceFactory facturalusaServiceFactory, string accessToken, string accountUuid)
         {
-            queryProcessor = (IQueryProcessor)serviceProvider.GetService(typeof(IQueryProcessor))!;
-            commandProcessor = (ICommandProcessor)serviceProvider.GetService(typeof(ICommandProcessor))!;
-            dateTimeProvider = (IDateTimeProvider)serviceProvider.GetService(typeof(IDateTimeProvider))!;
-            facturalusaService = new Lazy<IFacturalusaService>(() =>
-            {
-                var factory = (IFacturalusaServiceFactory)serviceProvider.GetService(typeof(IFacturalusaServiceFactory))!;
-                return factory.Create(accessToken, accountUuid);
-            });
+            facturalusaService = new Lazy<IFacturalusaService>(() => facturalusaServiceFactory.Create(accessToken, accountUuid));
         }
 
         #region Invoice Receipt
         public async Task<gatewayAbstractions.InvoiceReceipt> CreateInvoiceReceipt(gatewayAbstractions.InvoiceReceipt invoice)
         {
-            var readDocument = await commandProcessor.Execute(new CreateInvoiceReceiptAsyncCommand(facturalusaService.Value)
+            var readDocument = await CommandProcessor.Execute(new CreateInvoiceReceiptAsyncCommand(facturalusaService.Value)
             {
                 Data = Convert(invoice),
                 IncludePdfFileInFormat = Models.Sales.DownloadSaleFormat.POS,
@@ -44,7 +35,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
 
         public async Task<gatewayAbstractions.InvoiceReceipt> GetInvoiceReceipt(string documentId)
         {
-            var document = await queryProcessor.Execute(new GetInvoiceReceiptAsyncQuery(facturalusaService.Value)
+            var document = await QueryProcessor.Execute(new GetInvoiceReceiptAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
             });
@@ -60,9 +51,9 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         {
             var dest = new facturalusaModels.InvoiceReceipt
             {
+                Customer = Convert(src.Customer),
                 SerieCode = src.SerieCode,
                 PaymentMethodCode = src.PaymentMethodCode,
-                Customer = Convert(src.Customer),
                 Items = src.Items.Select(Convert),
             };
             Map(src, dest);
@@ -89,7 +80,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.ConsumerBill> CreateConsumerBillReceipt(gatewayAbstractions.ConsumerBill receipt)
         {
-            var readDocument = await commandProcessor.Execute(new CreateConsumerBillReceiptAsyncCommand(facturalusaService.Value)
+            var readDocument = await CommandProcessor.Execute(new CreateConsumerBillReceiptAsyncCommand(facturalusaService.Value)
             {
                 Data = Convert(receipt),
                 IncludePdfFileInFormat = Models.Sales.DownloadSaleFormat.EscPOS,
@@ -101,7 +92,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.ConsumerBill> GetConsumerBillReceipt(string documentId)
         {
-            var document = await queryProcessor.Execute(new GetConsumerBillReceiptAsyncQuery(facturalusaService.Value)
+            var document = await QueryProcessor.Execute(new GetConsumerBillReceiptAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
             });
@@ -148,7 +139,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.CreditNote> CreateCreditNote(gatewayAbstractions.CreditNote creditNote)
         {
-            var readDocument = await commandProcessor.Execute(new CreateCreditNoteAsyncCommand(facturalusaService.Value)
+            var readDocument = await CommandProcessor.Execute(new CreateCreditNoteAsyncCommand(facturalusaService.Value)
             {
                 Data = Convert(creditNote),
                 IncludePdfFileInFormat = Models.Sales.DownloadSaleFormat.POS,
@@ -160,7 +151,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.CreditNote> GetCreditNote(string documentId)
         {
-            var document = await queryProcessor.Execute(new GetCreditNoteAsyncQuery(facturalusaService.Value)
+            var document = await QueryProcessor.Execute(new GetCreditNoteAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
             });
@@ -209,7 +200,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.InvoiceCancellation> CreateInvoiceCancellation(gatewayAbstractions.InvoiceCancellation invoiceCancellation)
         {
-            var readDocument = await commandProcessor.Execute(new CreateInvoiceCancellationAsyncCommand(facturalusaService.Value)
+            var readDocument = await CommandProcessor.Execute(new CreateInvoiceCancellationAsyncCommand(facturalusaService.Value)
             {
                 Data = Convert(invoiceCancellation),
                 IncludePdfFileInFormat = Models.Sales.DownloadSaleFormat.POS,
@@ -254,7 +245,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.SimplifiedInvoice> CreateSimplifiedInvoice(gatewayAbstractions.SimplifiedInvoice invoice)
         {
-            var readDocument = await commandProcessor.Execute(new CreateSimplifiedInvoiceAsyncCommand(facturalusaService.Value)
+            var readDocument = await CommandProcessor.Execute(new CreateSimplifiedInvoiceAsyncCommand(facturalusaService.Value)
             {
                 Data = Convert(invoice),
                 IncludePdfFileInFormat = Models.Sales.DownloadSaleFormat.POS,
@@ -266,7 +257,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
         /// <inheritdoc/>
         public async Task<gatewayAbstractions.SimplifiedInvoice> GetSimplifiedInvoice(string documentId)
         {
-            var document = await queryProcessor.Execute(new GetSimplifiedInvoiceAsyncQuery(facturalusaService.Value)
+            var document = await QueryProcessor.Execute(new GetSimplifiedInvoiceAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
             });
@@ -312,7 +303,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
 
         private async Task<byte[]> GetFileContent(string documentId, gatewayAbstractions.DocumentFileFormat format)
         {
-            return await queryProcessor.Execute(new GetDocumentFileAsyncQuery(facturalusaService.Value)
+            return await QueryProcessor.Execute(new GetDocumentFileAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
                 DocumentFormat = Convert(format),
@@ -321,7 +312,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
 
         private async Task<string> GetFileUrl(string documentId, gatewayAbstractions.DocumentFileFormat format)
         {
-            return await queryProcessor.Execute(new GetDocumentFileUrlAsyncQuery(facturalusaService.Value)
+            return await QueryProcessor.Execute(new GetDocumentFileUrlAsyncQuery(facturalusaService.Value)
             {
                 DocumentId = documentId,
                 DocumentFormat = Convert(format),
@@ -430,7 +421,6 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
             dest.PaymentMethodCode = src.PaymentMethodCode;
             dest.Notes = src.Notes;
             dest.PricesType = (facturalusaModels.PriceType)src.PricesType;
-            dest.Items = src.Items.Select(Convert);
         }
 
         private facturalusaModels.InvoiceItem Convert(gatewayAbstractions.BaseItem item)
@@ -516,7 +506,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
 
         public async Task UpsertInvoiceItems(IEnumerable<gatewayAbstractions.ProductItem> items)
         {
-            await commandProcessor.Execute(new UpsertItemsAsyncCommand(facturalusaService.Value)
+            await CommandProcessor.Execute(new UpsertItemsAsyncCommand(facturalusaService.Value)
             {
                 Items = items
                     .Select(it =>
@@ -538,7 +528,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa
             });
         }
 
-        public async Task<bool> HealthCheck() => await queryProcessor.Execute(new HealthCheckQuery(facturalusaService.Value));
+        public async Task<bool> HealthCheck() => await QueryProcessor.Execute(new HealthCheckQuery(facturalusaService.Value));
         #endregion
     }
 }

@@ -16,14 +16,13 @@ namespace Quivi.Infrastructure.Abstractions.Pos
         Task<bool> CanRefundCharge(int chargeId, decimal amountToRefund, InvoiceRefundType invoiceRefundType);
         Task ProcessCharge(int chargeId);
         Task RefundCharge(int chargeId, decimal amountToRefund);
-        //TODO: Add this?
-        //Task<PaymentSyncState> GetSynchronizationState(int chargeId);
-        Task<byte[]> GetInvoice(int chargeId);
-        Task<string> GetEscPosInvoice(int chargeId);
         #endregion
 
-        //TODO: Add this?
-        //Task<SessionBill> NewConsumerBill(int sessionId);
+        #region Documents
+        Task<byte[]> GetInvoice(int chargeId);
+        Task NewEscPosInvoice(int chargeId);
+        Task NewConsumerBill(int sessionId, int? locationId);
+        #endregion
 
         Task OnIntegrationSetUp(PosIntegration integration);
         Task OnIntegrationTearDown(PosIntegration integration);

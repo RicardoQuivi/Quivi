@@ -1,28 +1,35 @@
 ﻿using Quivi.Application.Pos.SyncStrategies;
+using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Pos.Facturalusa;
+using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using System.Collections.Concurrent;
 
 namespace Quivi.Application.Pos.Invoicing
 {
     public class InvoiceGatewayFactory : IInvoiceGatewayFactory
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly Lazy<IInvoiceGateway> _defaultGateway;
-        private readonly ConcurrentDictionary<string, IInvoiceGateway> _loadedFacturalusaGateways = new ConcurrentDictionary<string, IInvoiceGateway>();
+        private readonly IQueryProcessor queryProcessor;
+        private readonly ICommandProcessor commandProcessor;
+        private readonly IFacturalusaServiceFactory facturalusaServiceFactory;
+        private readonly Lazy<IInvoiceGateway> defaultGateway;
+        private readonly ConcurrentDictionary<string, IInvoiceGateway> loadedFacturalusaGateways = new ConcurrentDictionary<string, IInvoiceGateway>();
 
-        public InvoiceGatewayFactory(IServiceProvider serviceProvider)
+        public InvoiceGatewayFactory(IQueryProcessor queryProcessor, ICommandProcessor commandProcessor, IFacturalusaServiceFactory facturalusaServiceFactory)
         {
-            _serviceProvider = serviceProvider;
-            _defaultGateway = new Lazy<IInvoiceGateway>(() => CreateDefaultGateway());
+            this.queryProcessor = queryProcessor;
+            this.commandProcessor = commandProcessor;
+            this.facturalusaServiceFactory = facturalusaServiceFactory;
+
+            defaultGateway = new Lazy<IInvoiceGateway>(CreateDefaultGateway);
         }
 
-        public IInvoiceGateway GetDefaultInvoiceGateway() => _defaultGateway.Value;
+        public IInvoiceGateway GetDefaultInvoiceGateway() => defaultGateway.Value;
 
         private IInvoiceGateway CreateDefaultGateway()
         {
-            throw new NotSupportedException("Missing default Invoice Gateway. Verify if the web.config has DeGrazieInvoiceGateway configured.");
+            throw new NotSupportedException("Missing default Invoice Gateway. Verify if it is configured.");
         }
 
         public IInvoiceGateway GetInvoiceGateway(ISyncSettings settings)
@@ -36,10 +43,14 @@ namespace Quivi.Application.Pos.Invoicing
 
         private IInvoiceGateway CreateFacturalusaGateway(QuiviFacturalusaSyncSettings settings)
         {
-            if (_loadedFacturalusaGateways.TryGetValue(settings.AccessToken, out var gateway) == false)
+            if (loadedFacturalusaGateways.TryGetValue(settings.AccessToken, out var gateway) == false)
             {
-                gateway = new FacturalusaGateway(_serviceProvider, settings.AccessToken, settings.MerchantId.ToString());
-                _loadedFacturalusaGateways.TryAdd(settings.AccessToken, gateway);
+                gateway = new FacturalusaGateway(facturalusaServiceFactory, settings.AccessToken, settings.MerchantId.ToString())
+                {
+                    CommandProcessor = commandProcessor,
+                    QueryProcessor = queryProcessor,
+                };
+                loadedFacturalusaGateways.TryAdd(settings.AccessToken, gateway);
             }
 
             return gateway;
