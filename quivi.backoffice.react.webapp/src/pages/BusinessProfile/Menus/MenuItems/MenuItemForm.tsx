@@ -197,8 +197,8 @@ export const MenuItemForm = (props: Props) => {
 
         apiErrors: [],
     })), [props.model]);
-    useEffect(() => setLocal(p => getLocal(p, props.model, localsInfo.map, localsInfo.default)), [localsInfo])
-    useEffect(() => setCategories(p => getCategories(p, props.model, categoriesInfo?.map, categoriesInfo?.default)), [categoriesInfo])
+    useEffect(() => setLocal(p => getLocal(p, props.model, localsInfo.map, localsInfo.default)), [props.model, localsInfo])
+    useEffect(() => setCategories(p => getCategories(p, props.model, categoriesInfo?.map, categoriesInfo?.default)), [props.model, categoriesInfo])
 
     const form = useQuiviForm(state, schema);
 
@@ -215,7 +215,6 @@ export const MenuItemForm = (props: Props) => {
         if(logoUploadHandler != undefined) {
             image = await logoUploadHandler.getUrl();
         }
-
         await props.onSubmit({
             name: state.name,
             description: state.description,

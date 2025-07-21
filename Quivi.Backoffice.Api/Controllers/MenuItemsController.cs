@@ -80,6 +80,7 @@ namespace Quivi.Backoffice.Api.Controllers
                     Name = t.Value.Name,
                     Description = t.Value.Description,
                 }),
+                MenuItemCategoryIds = request.MenuCategoryIds?.Select(idConverter.FromPublicId) ?? [],
                 LocationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId),
             });
 
