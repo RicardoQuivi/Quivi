@@ -1,7 +1,6 @@
 ﻿using Quivi.Domain.Entities.Notifications;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
-using Quivi.Pos.Api.Dtos;
 
 namespace Quivi.Pos.Api.MapperHandlers
 {

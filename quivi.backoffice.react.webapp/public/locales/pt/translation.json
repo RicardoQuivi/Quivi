@@ -109,7 +109,10 @@
             "transactions": "Transações",
 
             "review": "Avaliação",
-            "reviews": "Avaliações"
+            "reviews": "Avaliações",
+
+            "merchantDocument": "Documento fiscal",
+            "merchantDocuments": "Documentos fiscais"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -502,7 +505,9 @@
         },
         "transactions": {
             "title": "Transações",
-            "syncingError": "Erro ao sincronizar"
+            "syncingError": "Erro ao sincronizar",
+            "noDocumentAvailable": "Não existem documentos disponíveis para esta transação",
+            "downloadDocument": "Descarregar documentos"
         }
     }
 }

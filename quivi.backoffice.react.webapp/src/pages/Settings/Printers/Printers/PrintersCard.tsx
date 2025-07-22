@@ -161,9 +161,11 @@ export const PrintersCard = (props: PrintersCardProps) => {
                     {
                         key: "actions",
                         render: d => <>
-                            <Tooltip message={t("pages.printers.printings", {
-                                name: d.name,
-                            })}>
+                            <Tooltip
+                                message={t("pages.printers.printings", {
+                                    name: d.name,
+                                })}
+                            >
                                 <IconButton
                                     onClick={(e) => rowAction(e, () => setPrinterToAudit(d))}
                                     className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"

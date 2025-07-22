@@ -57,13 +57,20 @@ namespace Quivi.SignalR.Extensions
             }
         }
 
+        private class TransactionGroup<T> : AGroup<T> where T : class
+        {
+            public TransactionGroup(IGroupManager groupManager, IHubClients<T> hubClients, string transactionId) : base(groupManager, hubClients, transactionId, "Transactions")
+            {
+            }
+        }
+
         public static async Task WithUserId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
         {
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new UserGroup<T>(context.Groups, context.Clients, id);
-            await func(userGroup);
+            var group = new UserGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
         }
 
         public static async Task WithUserId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
@@ -71,8 +78,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new UserGroup<T>(hub.Groups, hub.Clients, id);
-            await func(userGroup);
+            var group = new UserGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
         }
 
         public static async Task WithMerchantId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
@@ -80,8 +87,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new MerchantGroup<T>(context.Groups, context.Clients, id);
-            await func(userGroup);
+            var group = new MerchantGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
         }
 
         public static async Task WithMerchantId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
@@ -89,8 +96,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new MerchantGroup<T>(hub.Groups, hub.Clients, id);
-            await func(userGroup);
+            var group = new MerchantGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
         }
 
         public static async Task WithChannelId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
@@ -98,8 +105,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new ChannelGroup<T>(context.Groups, context.Clients, id);
-            await func(userGroup);
+            var group = new ChannelGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
         }
 
         public static async Task WithChannelId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
@@ -107,8 +114,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new ChannelGroup<T>(hub.Groups, hub.Clients, id);
-            await func(userGroup);
+            var group = new ChannelGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
         }
 
         public static async Task WithJobId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
@@ -116,8 +123,8 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new JobGroup<T>(context.Groups, context.Clients, id);
-            await func(userGroup);
+            var group = new JobGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
         }
 
         public static async Task WithJobId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
@@ -125,8 +132,26 @@ namespace Quivi.SignalR.Extensions
             if (string.IsNullOrWhiteSpace(id))
                 return;
 
-            var userGroup = new JobGroup<T>(hub.Groups, hub.Clients, id);
-            await func(userGroup);
+            var group = new JobGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
+        }
+
+        public static async Task WithTransactionId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var group = new TransactionGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
+        }
+
+        public static async Task WithTransactionId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var group = new TransactionGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
         }
     }
 }

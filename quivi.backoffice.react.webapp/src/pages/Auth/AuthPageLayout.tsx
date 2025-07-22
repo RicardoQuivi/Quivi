@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import FloatingThemeToggleButton from "../../components/common/FloatingThemeToggleButton";
 import { useTranslation } from "react-i18next";
 import { FloatingLanguageButton } from "../../components/header/LanguageButton";
+import { QuiviFullIcon } from "../../icons";
 
 interface AuthLayoutProps {
     readonly children: React.ReactNode;
@@ -20,12 +21,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
                     <GridShape />
                     <div className="flex flex-col items-center max-w-xs">
                         <Link to="/" className="block mb-4">
-                            <img
-                                width={231}
-                                height={48}
-                                src="/images/logo/auth-logo.svg"
-                                alt="Logo"
-                            />
+                            <QuiviFullIcon height="auto" width={231} />
                         </Link>
                         <p className="text-center text-gray-400 dark:text-white/60">
                             {t("quivi.product.description")}

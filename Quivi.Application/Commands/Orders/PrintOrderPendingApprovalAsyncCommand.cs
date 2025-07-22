@@ -58,7 +58,7 @@ namespace Quivi.Application.Commands.Orders
                 Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetPrinterNotificationsContactsCriteria
                 {
                     MerchantIds = [order.MerchantId],
-                    MessageTypes = [NotificationMessageType.ConsumerBill],
+                    MessageTypes = [NotificationMessageType.NewOrder],
                     IsDeleted = false,
 
                     PageIndex = 0,

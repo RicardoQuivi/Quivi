@@ -122,7 +122,7 @@ namespace Quivi.Infrastructure.Storage.Azure
             BlobContainerClient merchantContainerClient = blobServiceClient.GetBlobContainerClient(VirtualDirectory);
             await merchantContainerClient.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
 
-            var fullName = string.Join("/", (folderHierarchy ?? []).Append(name));
+            var fullName = string.Join("/", (folderHierarchy ?? []).Append(name.Replace("/", "")));
             return merchantContainerClient.GetBlobClient(fullName);
         }
     }

@@ -110,6 +110,7 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onTransactionOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.id),
             onTransactionSyncAttemptOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.posChargeId),
             onReviewOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Reviews), evt.id),
+            onMerchantDocumentOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.MerchantDocuments), evt.id),
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);

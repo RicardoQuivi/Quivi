@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
-import { ChevronDownIcon, GearIcon, GridIcon, HorizontaLDots, ListIcon, UserIcon } from "../icons";
+import { ChevronDownIcon, GearIcon, GridIcon, HorizontaLDots, ListIcon, QuiviFullIcon, QuiviIcon, UserIcon } from "../icons";
 import { useTranslation } from "react-i18next";
 import { useAuthenticatedUser } from "../context/AuthContext";
 
@@ -152,8 +152,7 @@ const AppSidebar = () => {
     const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
     const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-    // const isActive = (path: string) => location.pathname === path;
-    const isActive = useCallback((path: string) => location.pathname === path, [location.pathname]);
+    const isActive = useCallback((path: string) => location.pathname.startsWith(path), [location.pathname]);
 
     useEffect(() => {
         let submenuMatched = false;
@@ -319,34 +318,16 @@ const AppSidebar = () => {
             onMouseLeave={() => setIsHovered(false)}
         >
             <div
-                className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
+                className={`py-2 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
             >
-                <Link to="/">
-                    {isExpanded || isHovered || isMobileOpen ? (
-                        <>
-                            <img
-                                className="dark:hidden"
-                                src="/images/logo/logo.svg"
-                                alt="Logo"
-                                width={150}
-                                height={40}
-                            />
-                            <img
-                                className="hidden dark:block"
-                                src="/images/logo/logo-dark.svg"
-                                alt="Logo"
-                                width={150}
-                                height={40}
-                            />
-                        </>
-                    ) : (
-                        <img
-                            src="/images/logo/logo-icon.svg"
-                            alt="Logo"
-                            width={32}
-                            height={32}
-                        />
-                    )}
+                <Link to="/" className="w-full flex justify-center">
+                {
+                    isExpanded || isHovered || isMobileOpen 
+                    ?
+                    <QuiviFullIcon width="70%" className="h-auto" />
+                    :
+                    <QuiviIcon width="100%" className="h-auto" />
+                }
                 </Link>
             </div>
             <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">

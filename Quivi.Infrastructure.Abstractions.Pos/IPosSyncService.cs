@@ -19,8 +19,6 @@ namespace Quivi.Infrastructure.Abstractions.Pos
         #endregion
 
         #region Documents
-        Task<byte[]> GetInvoice(int chargeId);
-        Task NewEscPosInvoice(int chargeId);
         Task NewConsumerBill(int sessionId, int? locationId);
         #endregion
 

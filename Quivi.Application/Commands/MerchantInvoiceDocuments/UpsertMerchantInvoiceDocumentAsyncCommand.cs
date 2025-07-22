@@ -15,20 +15,22 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
         int? ChargeId { get; }
         string? DocumentReference { get; set; }
         InvoiceDocumentType DocumentType { get; }
+        DocumentFormat Format { get; }
 
         string? DocumentId { get; set; }
         string? DownloadUrl { get; set; }
     }
 
-    public class UpsertMerchantInvoiceDocumentAsyncCommand : AUpdateAsyncCommand<MerchantInvoiceDocument, IUpdatableMerchantInvoiceDocument>
+    public class UpsertMerchantInvoiceDocumentAsyncCommand : AUpdateAsyncCommand<IEnumerable<MerchantInvoiceDocument>, IUpdatableMerchantInvoiceDocument>
     {
-        public int MerchantId { get; set; }
-        public int? PosChargeId { get; set; }
-        public InvoiceDocumentType DocumentType { get; set; }
-        public string? DocumentReference { get; set; }
+        public int MerchantId { get; init; }
+        public int? PosChargeId { get; init; }
+        public InvoiceDocumentType DocumentType { get; init; }
+        public required IEnumerable<DocumentFormat> Formats { get; init; }
+        public string? DocumentReference { get; init; }
     }
 
-    public class UpsertMerchantInvoiceDocumentAsyncCommandHandler : ICommandHandler<UpsertMerchantInvoiceDocumentAsyncCommand, Task<MerchantInvoiceDocument>>
+    public class UpsertMerchantInvoiceDocumentAsyncCommandHandler : ICommandHandler<UpsertMerchantInvoiceDocumentAsyncCommand, Task<IEnumerable<MerchantInvoiceDocument>>>
     {
         private readonly IMerchantInvoiceDocumentsRepository repository;
         private readonly IEventService eventService;
@@ -64,6 +66,7 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
             public int? ChargeId => entity.ChargeId;
 
             public InvoiceDocumentType DocumentType => entity.DocumentType;
+            public DocumentFormat Format => entity.Format;
 
             public string? DocumentReference
             {
@@ -103,7 +106,7 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
             }
         }
 
-        public async Task<MerchantInvoiceDocument> Handle(UpsertMerchantInvoiceDocumentAsyncCommand command)
+        public async Task<IEnumerable<MerchantInvoiceDocument>> Handle(UpsertMerchantInvoiceDocumentAsyncCommand command)
         {
             var entityQuery = await repository.GetAsync(new GetMerchantInvoiceDocumentsCriteria
             {
@@ -111,42 +114,68 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
                 PosChargeIds = command.PosChargeId.HasValue ? [command.PosChargeId.Value] : null,
                 DocumentReferences = string.IsNullOrWhiteSpace(command.DocumentReference) ? null : [command.DocumentReference],
                 Types = [command.DocumentType],
+                Formats = command.Formats,
             });
-            var entity = entityQuery.SingleOrDefault();
+            var entitiesDictionary = entityQuery.ToDictionary(p => p.Format, p => p);
 
             var now = dateTimeProvider.GetUtcNow();
-            bool isUpdate = true;
-            if (entity == null)
+            List<MerchantInvoiceDocument> updatedEntities = new List<MerchantInvoiceDocument>();
+            List<MerchantInvoiceDocument> newEntities = new List<MerchantInvoiceDocument>();
+            foreach (var format in command.Formats)
             {
-                isUpdate = false;
-                entity = new MerchantInvoiceDocument
+                bool isNew = false;
+                entitiesDictionary.TryGetValue(format, out var entity);
+                if (entity == null)
                 {
-                    MerchantId = command.MerchantId,
-                    ChargeId = command.PosChargeId,
-                    DocumentReference = command.DocumentReference,
-                    DocumentType = command.DocumentType,
-                    CreatedDate = now,
-                    ModifiedDate = now,
-                };
-                repository.Add(entity);
+                    entity = new MerchantInvoiceDocument
+                    {
+                        MerchantId = command.MerchantId,
+                        ChargeId = command.PosChargeId,
+                        DocumentReference = command.DocumentReference,
+                        Format = format,
+                        DocumentType = command.DocumentType,
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                    };
+                    repository.Add(entity);
+                    newEntities.Add(entity);
+                    isNew = true;
+                }
+
+                var updatableEntity = new UpdatableMerchantInvoiceDocument(entity);
+                await command.UpdateAction(updatableEntity);
+                if (updatableEntity.HasChanges == false)
+                    continue;
+
+                entity.ModifiedDate = now;
+                if(isNew == false)
+                    updatedEntities.Add(entity);
             }
 
-            var updatableEntity = new UpdatableMerchantInvoiceDocument(entity);
-            await command.UpdateAction(updatableEntity);
-            if (updatableEntity.HasChanges == false)
-                return entity;
+            if (newEntities.Any() == false && updatedEntities.Any() == false)
+                return [];
 
-            entity.ModifiedDate = now;
             await repository.SaveChangesAsync();
 
-            await this.eventService.Publish(new OnMerchantInvoiceDocumentOperationEvent
-            {
-                Id = entity.Id,
-                MerchantId = entity.MerchantId,
-                PosChargeId = entity.ChargeId,
-                Operation = isUpdate ? EntityOperation.Update : EntityOperation.Create,
-            });
-            return entity;
+            foreach (var entity in updatedEntities)
+                await this.eventService.Publish(new OnMerchantInvoiceDocumentOperationEvent
+                {
+                    Id = entity.Id,
+                    MerchantId = entity.MerchantId,
+                    PosChargeId = entity.ChargeId,
+                    Operation = EntityOperation.Update,
+                });
+
+            foreach (var entity in newEntities)
+                await this.eventService.Publish(new OnMerchantInvoiceDocumentOperationEvent
+                {
+                    Id = entity.Id,
+                    MerchantId = entity.MerchantId,
+                    PosChargeId = entity.ChargeId,
+                    Operation = EntityOperation.Create,
+                });
+
+            return newEntities.Concat(updatedEntities);
         }
     }
 }

@@ -1,9 +1,9 @@
 import type { InvoiceType } from "./InvoiceType";
 
-export interface Invoice {
+export interface TransactionInvoice {
     readonly id: string;
     readonly transactionId: string;
     readonly name: string;
     readonly type: InvoiceType;
-    readonly url: string;
+    readonly downloadUrl: string;
 }

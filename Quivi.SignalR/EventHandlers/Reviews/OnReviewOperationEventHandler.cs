@@ -8,13 +8,13 @@ using Quivi.SignalR.Hubs.Guests;
 
 namespace Quivi.SignalR.EventHandlers.Reviews
 {
-    public class OnOnReviewOperationEventHandler : IEventHandler<OnReviewOperationEvent>
+    public class OnReviewOperationEventHandler : IEventHandler<OnReviewOperationEvent>
     {
         private readonly IHubContext<BackofficeHub, IBackofficeClient> backofficeHub;
         private readonly IHubContext<GuestsHub, IGuestClient> guestsHub;
         private readonly IIdConverter idConverter;
 
-        public OnOnReviewOperationEventHandler(IHubContext<BackofficeHub, IBackofficeClient> backofficeHub,
+        public OnReviewOperationEventHandler(IHubContext<BackofficeHub, IBackofficeClient> backofficeHub,
                                                 IHubContext<GuestsHub, IGuestClient> guestsHub,
                                                 IIdConverter idConverter)
         {

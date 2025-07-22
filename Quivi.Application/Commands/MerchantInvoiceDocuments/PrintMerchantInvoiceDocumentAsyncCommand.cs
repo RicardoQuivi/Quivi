@@ -1,7 +1,9 @@
-﻿using Quivi.Application.Queries.MerchantInvoiceDocuments;
+﻿using Quivi.Application.Commands.PrinterNotificationMessages;
+using Quivi.Application.Queries.MerchantInvoiceDocuments;
+using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Cqrs;
-using Quivi.Infrastructure.Abstractions.Pos;
+using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 
 namespace Quivi.Application.Commands.MerchantInvoiceDocuments
 {
@@ -10,15 +12,16 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
         public int MerchantInvoiceDocumentId { get; init; }
     }
 
-    public class PrintMerchantInvoiceDocumentAsyncCommandHandler : ICommandHandler<PrintMerchantInvoiceDocumentAsyncCommand, Task>
+    public class ProcessMerchantInvoiceDocumentAsyncCommandHandler : ICommandHandler<PrintMerchantInvoiceDocumentAsyncCommand, Task>
     {
         private readonly IQueryProcessor queryProcessor;
-        private readonly IPosSyncService posSyncService;
+        private readonly ICommandProcessor commandProcessor;
 
-        public PrintMerchantInvoiceDocumentAsyncCommandHandler(IQueryProcessor queryProcessor, IPosSyncService posSyncService)
+        public ProcessMerchantInvoiceDocumentAsyncCommandHandler(IQueryProcessor queryProcessor,
+                                                                    ICommandProcessor commandProcessor)
         {
             this.queryProcessor = queryProcessor;
-            this.posSyncService = posSyncService;
+            this.commandProcessor = commandProcessor;
         }
 
         public async Task Handle(PrintMerchantInvoiceDocumentAsyncCommand command)
@@ -26,6 +29,8 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
             var documentsQuery = await queryProcessor.Execute(new GetMerchantInvoiceDocumentsAsyncQuery
             {
                 Ids = [command.MerchantInvoiceDocumentId],
+                Formats = [DocumentFormat.EscPos],
+                HasDownloadPath = true,
                 PageIndex = 0,
                 PageSize = 1,
             });
@@ -38,7 +43,26 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
                 throw new Exception("Only printing of merchant invoice documents associated with charges are supported");
 
             if (document.DocumentType == InvoiceDocumentType.OrderInvoice)
-                await posSyncService.NewEscPosInvoice(document.ChargeId.Value);
+            {
+                await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
+                {
+                    MessageType = NotificationMessageType.NewConsumerInvoice,
+                    GetContent = async () =>
+                    {
+                        using HttpClient client = new HttpClient();
+                        return await client.GetStringAsync(document.Path!);
+                    },
+                    Criteria = new GetPrinterNotificationsContactsCriteria
+                    {
+                        MerchantIds = [document.MerchantId],
+                        MessageTypes = [NotificationMessageType.NewConsumerInvoice],
+                        IsDeleted = false,
+
+                        PageIndex = 0,
+                        PageSize = null,
+                    },
+                });
+            }
         }
     }
 }

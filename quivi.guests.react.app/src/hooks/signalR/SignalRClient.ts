@@ -5,6 +5,9 @@ import type { ChannelListener } from "./ChannelListener";
 import type { OnSessionUpdatedEvent } from "./dtos/OnSessionUpdatedEvent";
 import type { OnOrderOperationEvent } from "./dtos/OnOrderOperationEvent";
 import type { OnPosChargeOperationEvent } from "./dtos/OnPosChargeOperationEvent";
+import type { TransactionListener } from "./TransactionListener";
+import type { JobChangedEvent } from "./dtos/JobChangedEvent";
+import type { OnTransactionInvoiceOperationEvent } from "./dtos/OnTransactionInvoiceOperationEvent";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -15,6 +18,9 @@ export interface IWebClient {
 
     addJobListener(listener: JobListener): void;
     removeJobListener(listener: JobListener): void;
+
+    addTransactionListener(listener: TransactionListener): void;
+    removeTransactionListener(listener: TransactionListener): void;
 }
 
 export interface ISignalRListener {
@@ -30,6 +36,7 @@ export class SignalRClient implements IWebClient {
 
     public readonly channelListeners: Set<ChannelListener> = new Set<ChannelListener>();
     public readonly jobListeners: Set<JobListener> = new Set<JobListener>();
+    public readonly transactionListeners: Set<TransactionListener> = new Set<TransactionListener>();
 
     private connected = false;
 
@@ -87,6 +94,8 @@ export class SignalRClient implements IWebClient {
     private async connect() {
         this.connectToUserEvents();
         this.connectToChannelEvents();
+        this.connectToJobEvents();
+        this.connectToTransactionEvents();
     }
 
     private connectToUserEvents() {
@@ -104,6 +113,38 @@ export class SignalRClient implements IWebClient {
 
         this.channelListeners.forEach(l => this.connection.invoke('JoinChannelEvents', l.channelId));
     }
+
+    private connectToJobEvents() {
+
+        this.connection.off('OnBackgroundJobUpdated');
+        this.connection.on('OnBackgroundJobUpdated', (evt: JobChangedEvent) => this.jobListeners.forEach(l => {
+            if(l.jobId != evt.id) {
+                return;
+            }
+
+            l.OnJobChanged?.(evt);
+        }));
+
+        this.jobListeners.forEach(l => this.connection.invoke('JoinJobEvents', l.jobId));
+    }
+
+    private connectToTransactionEvents() {
+        if(this.jobListeners.size == 0) {
+            return;
+        }
+
+        this.connection.off('OnTransactionInvoiceOperation');
+        this.connection.on('OnTransactionInvoiceOperation', (evt: OnTransactionInvoiceOperationEvent) => this.transactionListeners.forEach(l => {
+            if(l.transactionId != evt.id) {
+                return;
+            }
+
+            l.onTransactionInvoiceOperation?.(evt);
+        }));
+        
+        this.jobListeners.forEach(l => this.connection.invoke('JoinTransactionEvents', l.jobId));
+    }
+
 
     addUserListener(_: UserEventListener): void {
     }
@@ -152,6 +193,28 @@ export class SignalRClient implements IWebClient {
                     return;
             }
             this.connection.invoke("LeaveJobEvents", listener.jobId);
+        }
+    }
+
+    addTransactionListener(listener: TransactionListener): void {
+        let listeners = this.transactionListeners;
+        if(listeners.has(listener)) {
+            return;
+        }
+
+        listeners.add(listener);
+        if (this.connection.state == HubConnectionState.Connected) {
+            this.connection.invoke("JoinTransactionEvents", listener.transactionId);
+        }
+    }
+    removeTransactionListener(listener: TransactionListener): void {
+        let listeners = this.transactionListeners;
+        if (listeners.delete(listener) && this.connection.state == HubConnectionState.Connected) {
+            for (let item of listeners.values()) {
+                if (item.transactionId == listener.transactionId)
+                    return;
+            }
+            this.connection.invoke("LeaveTransactionEvents", listener.transactionId);
         }
     }
 

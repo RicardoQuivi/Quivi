@@ -10,7 +10,7 @@ export enum Entity {
     OrderFields,
     Transactions,
     PaymentMethods,
-    Invoices,
+    TransactionInvoices,
     Reviews,
     PostCheckoutMessages,
     PostCheckoutLinks,
@@ -29,7 +29,7 @@ export const getEntityType = (entity: Entity): string => {
         case Entity.OrderFields: return "OrderFields";
         case Entity.Transactions: return "Transactions";
         case Entity.PaymentMethods: return "PaymentMethods";
-        case Entity.Invoices: return "Invoices";
+        case Entity.TransactionInvoices: return "TransactionInvoices";
         case Entity.Reviews: return "Reviews";
         case Entity.PostCheckoutMessages: return "PostCheckoutMessages";
         case Entity.PostCheckoutLinks: return "PostCheckoutLinks";

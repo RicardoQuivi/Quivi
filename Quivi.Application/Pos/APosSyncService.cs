@@ -7,6 +7,7 @@ using Quivi.Application.Queries.Orders;
 using Quivi.Application.Queries.PosIntegrations;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
+using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Jobs;
@@ -14,6 +15,7 @@ using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using Quivi.Infrastructure.Abstractions.Storage;
 using Quivi.Infrastructure.Jobs.Hangfire.Context;
 using Quivi.Infrastructure.Jobs.Hangfire.Filters;
 
@@ -26,18 +28,24 @@ namespace Quivi.Application.Pos
         protected readonly ICommandProcessor commandProcessor;
         protected readonly IBackgroundJobHandler backgroundJobHandler;
         protected readonly IEventService eventService;
+        protected readonly IIdConverter idConverter;
+        protected readonly IStorageService storageService;
 
         public APosSyncService(IEnumerable<IPosSyncStrategy> dataSyncStrategies,
                                 IQueryProcessor queryProcessor,
                                 ICommandProcessor commandProcessor,
                                 IBackgroundJobHandler backgroundJobHandler,
-                                IEventService eventService)
+                                IEventService eventService,
+                                IStorageService storageService,
+                                IIdConverter idConverter)
         {
             this.syncStrategies = dataSyncStrategies.ToDictionary(r => r.IntegrationType);
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.backgroundJobHandler = backgroundJobHandler;
             this.eventService = eventService;
+            this.storageService = storageService;
+            this.idConverter = idConverter;
         }
 
         public IPosSyncStrategy? Get(IntegrationType dataSyncStrategyType)
@@ -45,46 +53,6 @@ namespace Quivi.Application.Pos
             if (syncStrategies.TryGetValue(dataSyncStrategyType, out var result))
                 return result;
             return null;
-        }
-
-        public async Task<byte[]> GetInvoice(int chargeId)
-        {
-            var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
-            {
-                ChargeIds = [chargeId],
-                IncludeMerchant = true,
-                IsDeleted = false,
-                PageSize = 1,
-            });
-            var integration = integrationQuery.Single();
-            return await syncStrategies[integration.IntegrationType].GetInvoice(integration, chargeId);
-        }
-
-        public async Task NewEscPosInvoice(int chargeId)
-        {
-            var integrationQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
-            {
-                ChargeIds = [chargeId],
-                IncludeMerchant = true,
-                IsDeleted = false,
-                PageSize = 1,
-            });
-            var integration = integrationQuery.Single();
-
-            await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
-            {
-                MessageType = NotificationMessageType.NewConsumerInvoice,
-                GetContent = () => syncStrategies[integration.IntegrationType].NewEscPosInvoice(integration, chargeId),
-                Criteria = new GetPrinterNotificationsContactsCriteria
-                {
-                    MerchantIds = [integration.MerchantId],
-                    MessageTypes = [NotificationMessageType.NewConsumerInvoice],
-                    IsDeleted = false,
-
-                    PageIndex = 0,
-                    PageSize = null,
-                },
-            });
         }
 
         public async Task NewConsumerBill(int sessionId, int? locationId)

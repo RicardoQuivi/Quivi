@@ -110,7 +110,7 @@ export const PayPage: React.FC<Props> = ({ paymentSplit }) => {
             if(paymentSplit == "freepayment") {
                 navigate(`/c/${channelContext.channelId}/session/pay/methods/free`)
             } else {
-                navigate(`/c/${channelContext.channelId}/session/pay/method`)
+                navigate(`/c/${channelContext.channelId}/session/pay/methods`)
             }
             return;
         }

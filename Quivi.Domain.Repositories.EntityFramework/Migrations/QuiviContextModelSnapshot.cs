@@ -1961,6 +1961,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
 
+                    b.Property<int>("Format")
+                        .HasColumnType("int");
+
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
 

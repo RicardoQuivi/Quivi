@@ -6,24 +6,25 @@ interface Props {
     readonly logo: string,
     readonly username?: string,
 }
+
+const getImage = (url: string, onLoad: () => any): HTMLImageElement => {
+    const image = new Image();
+    image.onload = onLoad;
+    image.src = url;
+    return image;
+}
+
 const MerchantHeader: React.FC<Props> = ({
     logo,
     username,
-}) => {
-    const getImage = () => {
-        const image = new Image();
-        image.onload = () => setIsLoading(false);
-        image.src = logo;
-        return image;
-    }
-    
+}) => {    
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
-    const [image, setImage] = useState(() => getImage());
+    const [image, setImage] = useState<HTMLImageElement>();
 
     useEffect(() => {
         setIsLoading(true);
-        setImage(getImage());
+        setImage(getImage(logo, () => setIsLoading(false)));
     }, [logo])
 
     return (
@@ -41,7 +42,7 @@ const MerchantHeader: React.FC<Props> = ({
                     flex: "1 1",
                     margin: "1rem 0",
 
-                    backgroundImage: isLoading ? undefined : `url(${image.src})`,
+                    backgroundImage: isLoading || image == undefined ? undefined : `url(${image.src})`,
                     backgroundSize: "contain",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",

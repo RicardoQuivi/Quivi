@@ -27,11 +27,17 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.Types != null)
                 query = query.Where(q => criteria.Types.Contains(q.DocumentType));
 
+            if (criteria.Formats != null)
+                query = query.Where(q => criteria.Formats.Contains(q.Format));
+
             if (criteria.DocumentReferences != null)
                 query = query.Where(q => criteria.DocumentReferences.Contains(q.DocumentReference));
 
             if (criteria.DocumentIds != null)
                 query = query.Where(q => criteria.DocumentIds.Contains(q.DocumentId));
+
+            if (criteria.HasDownloadPath == true)
+                query = query.Where(q => string.IsNullOrWhiteSpace(q.Path) == false);
 
             return query.OrderByDescending(x => x.CreatedDate);
         }

@@ -69,6 +69,7 @@ import { ReactComponent as StripeIcon } from "./stripe.svg?react";
 import { ReactComponent as CheckoutIcon } from "./checkout.svg?react";
 import { ReactComponent as PaybyrdIcon } from "./paybyrd.svg?react";
 import { ReactComponent as QuiviIcon } from "./quivi.svg?react";
+import { ReactComponent as QuiviFullIcon } from "./quivifull.svg?react";
 import { ReactComponent as MbWayIcon } from "./mbway.svg?react";
 import { ReactComponent as VisaCreditCardIcon } from "./visa.svg?react";
 import { ReactComponent as CashIcon } from "./cash.svg?react";
@@ -157,6 +158,7 @@ export {
     CheckoutIcon,
     PaybyrdIcon,
     QuiviIcon,
+    QuiviFullIcon,
     MbWayIcon,
     VisaCreditCardIcon,
     CashIcon,

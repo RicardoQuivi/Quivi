@@ -7,7 +7,7 @@ import type { Transaction } from "../../hooks/api/Dtos/transactions/Transaction"
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { useAuth } from "../../context/AuthContext";
 import { CheckIcon, DownloadIcon, SuccessIcon } from "../../icons";
-import { useInvoicesQuery } from "../../hooks/queries/implementations/useInvoicesQuery";
+import { useTransactionInvoicesQuery } from "../../hooks/queries/implementations/useTransactionInvoicesQuery";
 import { useChannelContext } from "../../context/AppContextProvider";
 import ActionButton from "../../components/Buttons/ActionButton";
 import { Formatter } from "../../helpers/formatter";
@@ -48,12 +48,9 @@ export const SessionPaymentSuccess: React.FC<Props> = ({
     const checkoutLinksQuery = usePostCheckoutLinksQuery({
         merchantId: channelContext.merchantId,
     });
-    const invoicesQuery = useInvoicesQuery({
-        transactionId: transaction.id,
-        page: 0,
-    });
+    const invoicesQuery = useTransactionInvoicesQuery(transaction.id);
 
-    const downloadInvoices = () => invoicesQuery.data.filter(p => !!p.url).forEach(d => Files.saveFileFromURL(d.url, d.name));
+    const downloadInvoices = () => invoicesQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name));
 
     useEffect(() => {
         browserStorageService.savePaymentDivision(null);
@@ -61,7 +58,7 @@ export const SessionPaymentSuccess: React.FC<Props> = ({
     }, [])
     
     useEffect(() => {
-        if(invoicesQuery.data.filter(p => !!p.url).length == 0) {
+        if(invoicesQuery.data.length == 0) {
             return;
         }
 
@@ -119,7 +116,7 @@ export const SessionPaymentSuccess: React.FC<Props> = ({
                                 </Alert>
                             }
                             {
-                                invoicesQuery.data.filter(p => !!p.url).length > 0
+                                invoicesQuery.data.length > 0
                                 ?
                                 <ActionButton onClick={downloadInvoices} primaryButton={false} style={{ marginTop: "0.75rem", marginBottom: "0.75rem" }}>
                                     <DownloadIcon />

@@ -10,6 +10,7 @@ namespace Quivi.Domain.Entities.Pos
         public string? DocumentId { get; set; }
         public string? DocumentReference { get; set; }
         public InvoiceDocumentType DocumentType { get; set; }
+        public DocumentFormat Format { get; set; }
         public string? Path { get; set; }
 
         public DateTime CreatedDate { get; set; }

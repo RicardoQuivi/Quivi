@@ -1,15 +1,16 @@
-﻿using Quivi.Application.Pos;
+﻿using Quivi.Application.Extensions.Pos;
+using Quivi.Application.Pos;
+using Quivi.Application.Queries.PosCharges;
+using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
+using Quivi.Infrastructure.Abstractions.Services;
+using Quivi.Infrastructure.Extensions;
 using gatewayInvoiving = Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using gatewayModels = Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
-using Quivi.Infrastructure.Extensions;
-using Quivi.Application.Queries.PosCharges;
-using Quivi.Domain.Entities.Charges;
-using Quivi.Application.Extensions.Pos;
-using Quivi.Infrastructure.Abstractions.Services;
 
 namespace Quivi.Application.Commands.Pos.Invoicing
 {
@@ -48,28 +49,43 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
         public async Task Handle(ProcessQuiviChargeInvoiceAsyncCommand command)
         {
-            gatewayModels.InvoiceReceipt? receipt = null;
             var posCharge = await GetPosCharge(command.PosChargeId);
-            string documentId = await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
+
+            Lazy<Task<gatewayModels.InvoiceReceipt>> receipt = new Lazy<Task<InvoiceReceipt>>(() => CreateInvoice(command, posCharge));
+            await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge.MerchantId,
                 PosChargeId = command.PosChargeId,
                 DocumentType = InvoiceDocumentType.OrderInvoice,
-                CreateNewDocumentIdAction = async () =>
+                CreatePdfDocument = async () =>
                 {
-                    receipt = await CreateInvoice(command, posCharge);
-                    return receipt.DocumentId!;
+                    var r = await receipt.Value;
+                    return new CreateDocumentResponse
+                    {
+                        DocumentId = r.DocumentId!,
+                        FileData = await command.InvoiceGateway.GetInvoiceReceiptFile(r.DocumentId!, DocumentFileFormat.A4),
+                    };
+                },
+                CreateEscPosDocument = async () =>
+                {
+                    var r = await receipt.Value;
+                    return new CreateDocumentResponse
+                    {
+                        DocumentId = r.DocumentId!,
+                        FileData = await command.InvoiceGateway.GetInvoiceReceiptFile(r.DocumentId!, DocumentFileFormat.EscPOS),
+                    };
                 },
             });
 
             // If invoice already exists
-            if (receipt == null)
+            if (receipt.IsValueCreated == false)
                 return;
 
-            decimal receiptPaymentAmount = receipt.Items.Sum(p => PriceHelper.CalculatePriceAfterDiscount(p.Price * p.Quantity, p.DiscountPercentage));
+            var computedReceipt = await receipt.Value;
+            decimal receiptPaymentAmount = computedReceipt.Items.Sum(p => PriceHelper.CalculatePriceAfterDiscount(p.Price * p.Quantity, p.DiscountPercentage));
             decimal errorMargin = 0.01M;
             if (Math.Abs(command.PaymentAmount - receiptPaymentAmount) >= errorMargin)
-                logger.LogException(new Exception($"{GetType().Name}: This should never happen. If it does, it means the amount the receipt marks as paid ({receiptPaymentAmount}) is not the same as the total of the items ({command.PaymentAmount}). PosCharge: {command.PosChargeId}, document: {documentId}"));
+                logger.LogException(new Exception($"{GetType().Name}: This should never happen. If it does, it means the amount the receipt marks as paid ({receiptPaymentAmount}) is not the same as the total of the items ({command.PaymentAmount}). PosCharge: {command.PosChargeId}, document: {computedReceipt.DocumentId}"));
         }
 
         private async Task<PosCharge> GetPosCharge(int id)

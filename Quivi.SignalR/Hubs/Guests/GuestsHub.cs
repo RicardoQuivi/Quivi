@@ -24,5 +24,15 @@ namespace Quivi.SignalR.Hubs.Guests
         {
             await group.RemoveAsync(Context.ConnectionId);
         });
+
+        public Task JoinTransactionEvents(string transactionId) => this.WithTransactionId(transactionId, async group =>
+        {
+            await group.AddAsync(Context.ConnectionId);
+        });
+
+        public Task LeaveTransactionEvents(string transactionId) => this.WithTransactionId(transactionId, async group =>
+        {
+            await group.RemoveAsync(Context.ConnectionId);
+        });
     }
 }

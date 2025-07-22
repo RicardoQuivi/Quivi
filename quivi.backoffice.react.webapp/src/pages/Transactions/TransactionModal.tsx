@@ -17,6 +17,8 @@ import { useAuthenticatedUser } from "../../context/AuthContext";
 import { useCustomChargeMethodsQuery } from "../../hooks/queries/implementations/useCustomChargeMethodsQuery";
 import { Spinner } from "../../components/spinners/Spinner";
 import Avatar from "../../components/ui/avatar/Avatar";
+import { useMerchantDocumentsQuery } from "../../hooks/queries/implementations/useMerchantDocumentsQuery";
+import { Files } from "../../utilities/files";
 
 interface Props {
     readonly id?: string;
@@ -61,6 +63,11 @@ export const TransactionModal = (props: Props) => {
     })
     const profile = useMemo(() => profileQuery.data.length == 0 ? undefined : profileQuery.data[0], [profileQuery.data]);
 
+    const documentsQuery = useMerchantDocumentsQuery(props.id == undefined ? undefined : {
+        transactionIds: [props.id],
+        page: 0,
+    })
+
     const {
         total,
         discounts,
@@ -95,8 +102,7 @@ export const TransactionModal = (props: Props) => {
             onClose={props.onClose}
             size={ModalSize.Auto}
             title={<>
-                {t("common.entities.transaction")}
-                <PublicId id={props.id} />
+                {t("common.entities.transaction")}&nbsp;<PublicId id={props.id} />
             </>}
         >
             <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
@@ -345,8 +351,8 @@ export const TransactionModal = (props: Props) => {
                 </div>
 
                 <div className="-mx-4 flex flex-wrap p-6">
-                    <div className="w-full px-4 sm:w-1/2 xl:w-6/12">
-                        <div className="mb-10">
+                    <div className="w-full px-4 sm:w-1/3 xl:w-3/12">
+                        <div className="mb-10 flex flex-col justify-center">
                             <h4 className="mb-4 text-title-sm2 font-medium leading-[30px] text-black dark:text-white md:text-2xl">
                                 {t("common.paymentMethod")}
                             </h4>
@@ -355,7 +361,7 @@ export const TransactionModal = (props: Props) => {
                             </p>
                         </div>
                     </div>
-                    <div className="w-full px-4 xl:w-6/12">
+                    <div className="w-full px-4 sm:w-2/3 xl:w-9/12">
                         <div className="mr-10 text-right md:ml-auto">
                             <div className="ml-auto sm:w-1/2">
                                 <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
@@ -403,12 +409,32 @@ export const TransactionModal = (props: Props) => {
                             </div>
 
                             <div className="mt-10 flex flex-col justify-end gap-4 sm:flex-row">
-                                <Button
-                                    className="float-right mt-4"
+                                <Tooltip
+                                    message={(
+                                        documentsQuery.isFirstLoading == false && documentsQuery.data.length == 0
+                                        ?
+                                        t("pages.transactions.noDocumentAvailable")
+                                        :
+                                        t("pages.transactions.downloadDocument")
+                                    )}
                                 >
-                                    {t("common.download")}
-                                    <DownloadIcon />
-                                </Button>
+                                    <Button
+                                        className="float-right mt-4"
+                                        disabled={documentsQuery.isFirstLoading || documentsQuery.data.length == 0}
+                                        onClick={() => documentsQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name))}
+                                    >
+                                        {
+                                            documentsQuery.isFirstLoading
+                                            ?
+                                            <Spinner />
+                                            :
+                                            <>
+                                                {t("common.download")}
+                                                <DownloadIcon />
+                                            </>
+                                        }
+                                    </Button>
+                                </Tooltip>
                             </div>
                         </div>
                     </div>

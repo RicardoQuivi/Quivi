@@ -1,0 +1,6 @@
+﻿namespace Quivi.Pos.Api.Dtos.Responses.Pos
+{
+    public class PrintEndOfDayClosingResponse : AResponse
+    {
+    }
+}

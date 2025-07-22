@@ -41,7 +41,7 @@ layer(base);
   --color-white: #ffffff;
   --color-black: #101828;
 
-  --color-brand-25: #f2f7ff;
+  /* --color-brand-25: #f2f7ff;
   --color-brand-50: #ecf3ff;
   --color-brand-100: #dde9ff;
   --color-brand-200: #c2d6ff;
@@ -52,7 +52,20 @@ layer(base);
   --color-brand-700: #2a31d8;
   --color-brand-800: #252dae;
   --color-brand-900: #262e89;
-  --color-brand-950: #161950;
+  --color-brand-950: #161950; */
+
+  --color-brand-25: #FAFAFA;   /* Lightest (backgrounds) */
+  --color-brand-50: #F0F8EE;   /* Very light green tint */
+  --color-brand-100: #E0F1DB;  /* Slightly stronger light green */
+  --color-brand-200: #C8E6C9;  /* Secondary light green */
+  --color-brand-300: #A4D98F;  /* Mid-light green */
+  --color-brand-400: #91CF6D;  /* Soft green */
+  --color-brand-500: #7AC943;  /* Primary green */
+  --color-brand-600: #65B33B;  /* Slightly darker than primary */
+  --color-brand-700: #4C9A2A;  /* Dark green */
+  --color-brand-800: #3B7D22;  /* Deeper green */
+  --color-brand-900: #2F631C;  /* Even darker green */
+  --color-brand-950: #1C3A11;  /* Deepest green (almost black) */
 
   --color-blue-light-25: #f5fbff;
   --color-blue-light-50: #f0f9ff;

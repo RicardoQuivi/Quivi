@@ -18,7 +18,7 @@ import { DownloadIcon, SuccessIcon } from "../../icons";
 import { Files } from "../../helpers/files";
 import { Link } from "react-router";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
-import { useInvoicesQuery } from "../../hooks/queries/implementations/useInvoicesQuery";
+import { useTransactionInvoicesQuery } from "../../hooks/queries/implementations/useTransactionInvoicesQuery";
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { usePostCheckoutMessagesQuery } from "../../hooks/queries/implementations/usePostCheckoutMessagesQuery";
 import { Review } from "./Review";
@@ -50,7 +50,7 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
     const checkoutMessagesQuery = usePostCheckoutMessagesQuery({
         merchantId: order.merchantId,
     })
-    const invoicesQuery = useInvoicesQuery(transaction == undefined ? undefined : {
+    const invoicesQuery = useTransactionInvoicesQuery(transaction == undefined ? undefined : {
         transactionId: transaction.id,
         page: 0,
     });

@@ -13,6 +13,7 @@ import { OnPrinterMessageEvent } from "./Dtos/OnPrinterMessageEvent";
 import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
 import { OnReviewOperationEvent } from "./Dtos/OnReviewOperationEvent";
 import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSyncAttemptOperationEvent";
+import { OnMerchantDocumentOperation } from "./Dtos/OnMerchantDocumentOperation";
 
 export interface MerchantEventListener {
     readonly onChannelEvent?: (evt: OnChannelEvent) => any;
@@ -30,4 +31,5 @@ export interface MerchantEventListener {
     readonly onTransactionOperation?: (evt: OnTransactionOperationEvent) => any;
     readonly onTransactionSyncAttemptOperation?: (evt: OnTransactionSyncAttemptOperationEvent) => any;
     readonly onReviewOperation?: (evt: OnReviewOperationEvent) => any;
+    readonly onMerchantDocumentOperation?: (evt: OnMerchantDocumentOperation) => any;
 }

@@ -109,7 +109,10 @@
             "transactions": "Transactions",
 
             "review": "Review",
-            "reviews": "Reviews"
+            "reviews": "Reviews",
+
+            "merchantDocument": "Fiscal document",
+            "merchantDocuments": "Fiscal documents"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -502,7 +505,9 @@
         },
         "transactions": {
             "title": "Transactions",
-            "syncingError": "Syncing error"
+            "syncingError": "Syncing error",
+            "noDocumentAvailable": "There are no documents available for this transaction",
+            "downloadDocument": "Download documents"
         }
     }
 }

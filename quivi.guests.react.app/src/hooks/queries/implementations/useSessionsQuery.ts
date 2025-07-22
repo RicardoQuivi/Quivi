@@ -29,7 +29,7 @@ export const useSessionsQuery = (request: GetSessionRequest | undefined): QueryR
             }
         },
 
-        refreshOnAnyUpdate: false,
+        refreshOnAnyUpdate: true,
         canUseOptimizedResponse: _ => false,
         getResponseFromEntities: (e) => ({
             data: e,

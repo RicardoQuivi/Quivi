@@ -68,5 +68,15 @@ namespace Quivi.Pos.Api.Controllers
 
             };
         }
+
+        [HttpPost("endOfDayClosing")]
+        public async Task<PrintEndOfDayClosingResponse> PrintEndOfDayClosing([FromBody] PrintEndOfDayClosingRequest request)
+        {
+            //TODO: Implement
+            return new PrintEndOfDayClosingResponse
+            {
+
+            };
+        }
     }
 }

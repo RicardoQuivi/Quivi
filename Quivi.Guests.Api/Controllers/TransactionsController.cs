@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Commands.Charges;
 using Quivi.Application.Commands.PosCharges;
+using Quivi.Application.Queries.MerchantInvoiceDocuments;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Charges;
+using Quivi.Domain.Entities.Pos;
 using Quivi.Guests.Api.Dtos.Requests.Transactions;
 using Quivi.Guests.Api.Dtos.Responses.Transactions;
 using Quivi.Guests.Api.Validations;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Guests.Api.Controllers
@@ -63,6 +67,27 @@ namespace Quivi.Guests.Api.Controllers
                 Page = query.CurrentPage,
                 TotalItems = query.TotalItems,
                 TotalPages = query.NumberOfPages,
+            };
+        }
+
+        [HttpGet("{id}/invoices")]
+        public async Task<GetTransactionInvoicesResponse> GetInvoice(string id)
+        {
+            var query = await queryProcessor.Execute(new GetMerchantInvoiceDocumentsAsyncQuery
+            {
+                PosChargeIds = [idConverter.FromPublicId(id)],
+                Types = [InvoiceDocumentType.OrderInvoice, InvoiceDocumentType.SurchargeInvoice],
+                Formats = [DocumentFormat.Pdf, DocumentFormat.EscPos],
+                HasDownloadPath = true,
+
+                PageIndex = 0,
+                PageSize = null,
+            });
+
+            var result = query.GroupBy(g => g.DocumentType).Select(g => g.OrderBy(s => s.Format).First());
+            return new GetTransactionInvoicesResponse
+            {
+                Data = mapper.Map<Dtos.TransactionInvoice>(result),
             };
         }
 

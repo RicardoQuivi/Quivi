@@ -2,7 +2,7 @@
 {
     public class PrintConsumerBillRequest : ARequest
     {
-        public string SessionId { get; init; }
+        public required string SessionId { get; init; }
         public string? LocationId { get; init; }
     }
 }

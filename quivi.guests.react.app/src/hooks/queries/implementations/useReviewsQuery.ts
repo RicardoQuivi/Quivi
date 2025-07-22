@@ -10,7 +10,7 @@ export const useReviewsQuery = (id: string | undefined): QueryResult<Review | un
 
     const query = useQueryable({
         queryName: "useReviewsQuery",
-        entityType: getEntityType(Entity.Invoices),
+        entityType: getEntityType(Entity.Reviews),
         getId: (item: Review) => item.id,
         request: id == undefined ? undefined : {
             transactionId: id,

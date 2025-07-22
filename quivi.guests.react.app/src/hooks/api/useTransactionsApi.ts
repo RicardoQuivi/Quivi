@@ -6,6 +6,7 @@ import type { GetTransactionsResponse } from "./Dtos/transactions/GetTransaction
 import type { CreateTransactionRequest } from "./Dtos/transactions/CreateTransactionRequest";
 import type { CreateTransactionResponse } from "./Dtos/transactions/CreateTransactionResponse";
 import type { ProcessTransactionResponse } from "./Dtos/transactions/ProcessTransactionResponse";
+import type { GetTransactionInvoicesResponse } from "./Dtos/transactions/GetTransactionInvoicesResponse";
 
 export const useTransactionsApi = () => {
     const httpClient = useHttpClient();
@@ -36,6 +37,13 @@ export const useTransactionsApi = () => {
         });
     }
 
+    const getInvoice = (id: string) => {
+        const url = new URL(`api/transactions/${id}/invoices`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpGet<GetTransactionInvoicesResponse>(url, {
+            'Accept-Language': i18n.language,
+        });
+    }
+
     const create = (request: CreateTransactionRequest) => {
         const url = new URL(`api/transactions`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<CreateTransactionResponse>(url, request, {
@@ -52,6 +60,7 @@ export const useTransactionsApi = () => {
 
     const state = useMemo(() => ({
         get,
+        getInvoice,
         create,
         processCash,
     }), [httpClient, i18n, i18n.language]);
