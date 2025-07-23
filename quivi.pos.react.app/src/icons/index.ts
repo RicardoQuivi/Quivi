@@ -24,10 +24,13 @@ import { ReactComponent as PlusIcon } from "./plus.svg?react";
 import { ReactComponent as ArrowDropDownIcon } from "./arrowdropdown.svg?react";
 import { ReactComponent as CashDrawerIcon } from "./cashdrawer.svg?react";
 import { ReactComponent as ReceiptIcon } from "./receipt.svg?react";
+import { ReactComponent as LeftArrowIcon } from "./leftarrow.svg?react";
 import { ReactComponent as RightArrowIcon } from "./rightarrow.svg?react";
 import { ReactComponent as NotificationIcon } from "./notification.svg?react";
 import { ReactComponent as TakeAwayIcon } from "./takeaway.svg?react";
 import { ReactComponent as CashCoinIcon } from "./cashcoin.svg?react";
+import { ReactComponent as QuiviIcon } from "./quivi.svg?react";
+import { ReactComponent as QuiviFullIcon } from "./quivifull.svg?react";
 
 export {
     ExitIcon,
@@ -56,8 +59,11 @@ export {
     ArrowDropDownIcon,
     CashDrawerIcon,
     ReceiptIcon,
+    LeftArrowIcon,
     RightArrowIcon,
     NotificationIcon,
     TakeAwayIcon,
     CashCoinIcon,
+    QuiviIcon,
+    QuiviFullIcon,
 };

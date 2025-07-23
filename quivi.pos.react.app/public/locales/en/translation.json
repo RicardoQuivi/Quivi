@@ -118,5 +118,15 @@
     "accept": "Accept",
     "yes": "Yes",
     "no": "No",
-    "sendToInProgress": "Prepare"
+    "sendToInProgress": "Prepare",
+    "quivi": {
+        "product": {
+            "description": "A modern and revolutionary PoS for ramping up your business"
+        }
+    },
+    "pages": {
+        "employeeLockPage": {
+            "backToEmployee": "Back to select employee"
+        }
+    }
 }
