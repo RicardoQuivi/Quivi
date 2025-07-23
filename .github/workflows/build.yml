@@ -226,7 +226,7 @@ jobs:
           --build-arg API_URL=${{ vars.APPHOSTS__GUESTSAPI }} \
           --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
           -t ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:$IMAGE_TAG -f quivi.guests.react.app/Dockerfile quivi.guests.react.app
-          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.guests.app:$IMAGE_TAG
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:$IMAGE_TAG
 
   # create-tag:
   #   needs:

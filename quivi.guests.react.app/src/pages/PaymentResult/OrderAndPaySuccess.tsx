@@ -50,10 +50,7 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
     const checkoutMessagesQuery = usePostCheckoutMessagesQuery({
         merchantId: order.merchantId,
     })
-    const invoicesQuery = useTransactionInvoicesQuery(transaction == undefined ? undefined : {
-        transactionId: transaction.id,
-        page: 0,
-    });
+    const invoicesQuery = useTransactionInvoicesQuery(transaction?.id);
 
     const getSteps = () => {
         if(order.scheduledTo != undefined) {
@@ -175,7 +172,7 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
         name: t(`extraCost.${item.type}`),
     }))
 
-    const downloadInvoices = () => invoicesQuery.data.forEach(d => Files.saveFileFromURL(d.url, d.name));
+    const downloadInvoices = () => invoicesQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name));
 
     return (
         <>

@@ -87,7 +87,7 @@ export const SessionSummaryPage = () => {
 
     const [paySplitModalIsOpen, setPaySplitModalIsOpen] = useState(false);
     const [notMyBillModalIsOpen, setNotMyBillModalIsOpen] = useState(false);
-    const [isClearingSession, setIsClearingSession] = useState(false);
+    const [isClearingSession, _setIsClearingSession] = useState(false);
 
     const hasPaymentDivision = features.payAtTheTable.freePayment || features.payAtTheTable.itemSelectionPayment || features.payAtTheTable.splitBillPayment;
     const isLoading = sessionQuery.isFirstLoading || ordersQuery.isFirstLoading || (menuItemIds.length > 0 && menuItemsQuery.isFirstLoading);
