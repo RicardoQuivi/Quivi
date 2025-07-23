@@ -30,7 +30,8 @@ env:
   AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
   AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
   AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
-  AppHosts__GuestApp: ${{ vars.APPHOSTS__GUESTAPP }}
+  AppHosts__GuestsApp: ${{ vars.APPHOSTS__GUESTSAPP }}
+  AppHosts__GuestsApi: ${{ vars.APPHOSTS__GUESTSAPI }}
   AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
   JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
   JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
@@ -378,6 +379,48 @@ jobs:
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3011
 
+  quivi-guests-app:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy quivi.guests.react.app
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          registryUrl: ${{ env.ACR_NAME }}.azurecr.io
+          registryUsername: ${{ secrets.REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
+          containerAppEnvironment: sandbox-quivi-env
+          imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:${{ env.IMAGE_TAG }}
+          containerAppName: sbx-guests
+          ingress: external
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          targetPort: 3012
+
   disable-container-cors:
     needs:
       - quivi-migrator
@@ -388,6 +431,7 @@ jobs:
       - quivi-pos-api
       - quivi-backoffice-app
       - quivi-pos-app
+      - quivi-guests-app
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Azure
@@ -397,7 +441,7 @@ jobs:
 
       - name: Disable Azure platform CORS for all container apps
         run: |
-          APPS=("sbx-oauth" "sbx-backoffice-api" "sbx-background" "sbx-events" "sbx-pos-api" "sbx-backoffice" "sbx-pos")
+          APPS=("sbx-oauth" "sbx-backoffice-api" "sbx-background" "sbx-events" "sbx-pos-api" "sbx-backoffice" "sbx-pos" "sbx-guests-api" "sbx-guests")
           for APP in "${APPS[@]}"; do
             az containerapp ingress cors update \
               --name "$APP" \

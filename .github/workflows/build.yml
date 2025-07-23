@@ -134,6 +134,26 @@ jobs:
           docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG -f Quivi.Pos.Api/Dockerfile .
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:$IMAGE_TAG
 
+  quivi-guests-api:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Build Quivi.Guests.Api
+        run: |
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.api:$IMAGE_TAG -f Quivi.Guests.Api/Dockerfile .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.api:$IMAGE_TAG
+
   quivi-backoffice-app:
     runs-on: ubuntu-latest
     environment: Sandbox
@@ -183,6 +203,30 @@ jobs:
           --build-arg BACKOFFICE_URL=${{ vars.APPHOSTS__BACKOFFICE }} \
           -t ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG -f quivi.pos.react.app/Dockerfile quivi.pos.react.app
           docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:$IMAGE_TAG
+
+  quivi-guests-app:
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Build quivi.guests.react.app
+        run: |
+          docker build \
+          --build-arg OAUTH_URL=${{ vars.APPHOSTS__OAUTH }} \
+          --build-arg API_URL=${{ vars.APPHOSTS__GUESTSAPI }} \
+          --build-arg SIGNALR_URL=${{ vars.APPHOSTS__SIGNALR }} \
+          -t ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:$IMAGE_TAG -f quivi.guests.react.app/Dockerfile quivi.guests.react.app
+          docker push ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.guests.app:$IMAGE_TAG
 
   # create-tag:
   #   needs:
