@@ -13,7 +13,7 @@ import { EmployeeProvider } from './context/employee/EmployeeContextProvider.tsx
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#FF3F01'
+            main: '#1C3A11'
         }
     }
 });
