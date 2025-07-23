@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetSessionsRequest } from "./Dtos/sessions/GetSessionsRequest";
 import { GetSessionsResponse } from "./Dtos/sessions/GetSessionsResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useSessionsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useSessionsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetSessionsRequest) => {
         const queryParams = new URLSearchParams();
@@ -25,14 +25,12 @@ export const useSessionsApi = (token: string) => {
         request.channelIds?.forEach((id, i) => queryParams.set(`channelIds[${i}]`, id));
 
         const url = new URL(`api/sessions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetSessionsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetSessionsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

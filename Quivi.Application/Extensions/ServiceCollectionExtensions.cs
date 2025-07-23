@@ -244,6 +244,7 @@ namespace Quivi.Application.Extensions
                     ValidIssuer = hostsSettings.OAuth,
                     ValidAudiences = jwtSettings.Audiences,
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
+                    ClockSkew = TimeSpan.Zero,
                 };
 
                 options.Authority = hostsSettings.OAuth;

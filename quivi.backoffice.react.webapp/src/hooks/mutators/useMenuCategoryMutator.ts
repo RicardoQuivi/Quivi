@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuthenticatedUser } from "../../context/AuthContext";
 import { CreateMenuCategoryRequest } from "../api/Dtos/menuCategories/CreateMenuCategoryRequest";
 import { MenuCategory } from "../api/Dtos/menuCategories/MenuCategory";
 import { useMenuCategoriesApi } from "../api/useMenuCategoriesApi";
@@ -14,8 +13,7 @@ interface PatchMutator {
     readonly translations?: Record<Language, PatchMenuCategoryTranslation | undefined>;
 }
 export const useMenuCategoryMutator = () => {
-    const user = useAuthenticatedUser();
-    const api = useMenuCategoriesApi(user.token);
+    const api = useMenuCategoriesApi();
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.MenuCategories),
@@ -90,7 +88,7 @@ export const useMenuCategoryMutator = () => {
         },
         delete:  (e: MenuCategory) => deleteMutator.mutate([e], {}),
         sort:  (entities: MenuCategory[]) => sortMutator.mutate(entities, {}),
-    }), [user, api]);
+    }), [api]);
 
     return result;
 }

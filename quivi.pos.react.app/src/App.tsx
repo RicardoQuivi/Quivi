@@ -25,7 +25,7 @@ const AuthLayoutRoute = () => {
     const auth = useAuth();
     const employeeManager = useEmployeeManager();
     
-    if(auth.isAuth == false) {
+    if(auth.principal == undefined) {
         window.location.href = import.meta.env.VITE_BACKOFFICE_APP_URL
         return <></>
     }

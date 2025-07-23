@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetMenuCategoriesRequest } from "./Dtos/menuCategories/GetMenuCategoriesRequest";
 import { GetMenuCategoriesResponse } from "./Dtos/menuCategories/GetMenuCategoriesResponse";
 import { CreateMenuCategoryRequest } from "./Dtos/menuCategories/CreateMenuCategoryRequest";
@@ -10,46 +9,37 @@ import { DeleteMenuCategoryRequest } from "./Dtos/menuCategories/DeleteMenuCateg
 import { DeleteMenuCategoryResponse } from "./Dtos/menuCategories/DeleteMenuCategoryResponse";
 import { SortMenuCategoriesResponse } from "./Dtos/menuCategories/SortMenuCategoriesResponse";
 import { SortMenuCategoriesRequest } from "./Dtos/menuCategories/SortMenuCategoriesRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useMenuCategoriesApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useMenuCategoriesApi = () => {
+    const client = useAuthenticatedHttpClient();
+    
     const get = (request: GetMenuCategoriesRequest) => {
         const queryParams = new URLSearchParams();
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/menucategories?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMenuCategoriesResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetMenuCategoriesResponse>(url, {});
     }
 
     const create = (request: CreateMenuCategoryRequest) => {
         const url = new URL(`api/menucategories`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateMenuCategoryResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateMenuCategoryResponse>(url, request, {});
     }
 
     const patch = (request: PatchMenuCategoryRequest) => {
         const url = new URL(`api/menucategories/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchMenuCategoryResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchMenuCategoryResponse>(url, request, {});
     }
 
     const deleteCategory = (request: DeleteMenuCategoryRequest) => {
         const url = new URL(`api/menucategories/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpDelete<DeleteMenuCategoryResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.delete<DeleteMenuCategoryResponse>(url, request, {});
     }
 
     const sort = (request: SortMenuCategoriesRequest) => {
         const url = new URL(`api/menucategories/sort`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPut<SortMenuCategoriesResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.put<SortMenuCategoriesResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -58,7 +48,7 @@ export const useMenuCategoriesApi = (token?: string) => {
         patch,
         delete: deleteCategory,
         sort,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

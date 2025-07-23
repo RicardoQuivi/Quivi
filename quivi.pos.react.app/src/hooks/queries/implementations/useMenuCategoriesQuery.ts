@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
@@ -8,8 +7,7 @@ import { MenuCategory } from "../../api/Dtos/menucategories/MenuCategory";
 import { useMenuCategoriesApi } from "../../api/useMenuCategoriesApi";
 
 export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undefined) : PagedQueryResult<MenuCategory> => {      
-    const posContext = useLoggedEmployee();
-    const api = useMenuCategoriesApi(posContext.token);
+    const api = useMenuCategoriesApi();
 
     const queryResult = useQueryable({
         queryName: "useMenuCategoriesQuery",

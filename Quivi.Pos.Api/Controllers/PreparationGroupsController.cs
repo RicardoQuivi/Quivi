@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Quivi.Application.Attributes;
 using Quivi.Application.Commands.PreparationGroups;
 using Quivi.Application.Queries.PreparationGroups;
 using Quivi.Domain.Entities.Pos;
@@ -13,6 +14,8 @@ using Quivi.Pos.Api.Dtos.Responses.PreparationGroups;
 namespace Quivi.Pos.Api.Controllers
 {
     [Route("api/[controller]")]
+    [RequireEmployee]
+    [RequireSubMerchant]
     [ApiController]
     public class PreparationGroupsController : ControllerBase
     {
@@ -35,7 +38,7 @@ namespace Quivi.Pos.Api.Controllers
         [HttpGet]
         public async Task<GetPreparationsGroupsResponse> Get([FromQuery] GetPreparationGroupsRequest request)
         {
-            int? locationId = string.IsNullOrWhiteSpace(request.LocationId) ? (int?)null : idConverter.FromPublicId(request.LocationId);
+            int? locationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId);
             var query = await queryProcessor.Execute(new GetPreparationGroupsAsyncQuery
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
@@ -70,7 +73,7 @@ namespace Quivi.Pos.Api.Controllers
                 Note = request.Note,
                 IsPrepared = request.IsPrepared,
                 PreparationGroupItemsQuantities = request.ItemsToCommit?.ToDictionary(e => idConverter.FromPublicId(e.Key), e => e.Value),
-                SourceLocationId = string.IsNullOrWhiteSpace(request.LocationId) ? (int?)null : idConverter.FromPublicId(request.LocationId),
+                SourceLocationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId),
             });
 
             return new CommitPreparationGroupResponse

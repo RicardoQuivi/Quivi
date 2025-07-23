@@ -142,7 +142,7 @@ services:
         ports:
             - "3010:3010"
         environment:
-            - CHOKIDAR_USEPOLLING=true
+            - CHOKIDAR_USEPOLLING=false
         networks:
             - quivi_network
         working_dir: /app
@@ -156,7 +156,7 @@ services:
         ports:
             - "3011:3011"
         environment:
-            - CHOKIDAR_USEPOLLING=true
+            - CHOKIDAR_USEPOLLING=false
         networks:
             - quivi_network
         working_dir: /app
@@ -170,7 +170,7 @@ services:
         ports:
             - "3012:3012"
         environment:
-            - CHOKIDAR_USEPOLLING=true
+            - CHOKIDAR_USEPOLLING=false
         networks:
             - quivi_network
         working_dir: /app

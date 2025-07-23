@@ -7,7 +7,7 @@ import { MenuItem } from "../../api/Dtos/menuItems/MenuItem";
 
 export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useMenuItemsApi(user.token);
+    const api = useMenuItemsApi();
 
     const queryResult = useQueryable({
         queryName: "useMenuItemsQuery",

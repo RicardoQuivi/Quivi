@@ -7,6 +7,8 @@ import { AuthenticationError, useAuthApi } from '../../hooks/api/useAuthApi';
 import { useEmployeesQuery } from '../../hooks/queries/implementations/useEmployeesQuery';
 import { useUserInactivity } from '../../hooks/useUserInactivity';
 import { EmployeeTokenData } from './EmployeeToken';
+import { HttpClient, HttpHelper } from '../../helpers/httpClient';
+import { UnauthorizedException } from '../../hooks/api/exceptions/UnauthorizedException';
 
 const EMPLOYEE_TOKENS = "employeeTokens";
 
@@ -69,6 +71,7 @@ interface EmployeeContextType {
     readonly signOut: () => void;
     readonly employee: Employee | undefined;
     readonly token: string | undefined;
+    readonly client: HttpClient;
 }
 
 const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
@@ -80,7 +83,6 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     const toast = useToast();
 
     const [state, setState] = useState(getState);
-    const [expiresAt, setExpiresAt] = useState<number>();
 
     const loggedEmployeeQuery = useEmployeesQuery(state?.employeeId == undefined ? undefined : {
         ids: [state.employeeId],
@@ -97,12 +99,12 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     const activity = useUserInactivity({ timeout: getLogoutTimeout(loggedEmployeeQuery.data.length > 0 ? loggedEmployeeQuery.data[0] : undefined, 2 * 60 * 1000)});
 
     const login = async (employeeId: string, pinCode: string) => {
-        if(auth.token == undefined) {
+        if(auth.principal == undefined) {
             throw new Error("Cannot login an employee because no merchant is available");
         }
 
         try {
-            const response = await authApi.employeeLogin(auth.token, employeeId, pinCode);
+            const response = await authApi.employeeLogin(auth.principal.token, employeeId, pinCode);
 
             saveTokens({
                 accessToken: response.access_token,
@@ -119,32 +121,6 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const refreshJwt = async (refreshToken: string, retry: boolean) => {
-        try {
-            console.debug("Refreshing JWT!")
-            const response = await authApi.jwtRefresh({
-                refreshToken: refreshToken,
-            });
-            console.debug("Refreshing JWT response:", response)
-
-            saveTokens({
-                accessToken: response.access_token,
-                refreshToken: response.refresh_token,
-            });
-            setState(getState);
-        } catch (e) {
-            if(e instanceof AuthenticationError) {
-                saveTokens(undefined);
-                setState(getState);
-                return;
-            }
-
-            if(retry) {
-                setTimeout(() => refreshJwt(refreshToken, retry), 1000);
-            }
-        }
-    }
-
     const signOut = () => {
         saveTokens(undefined);
         setState(getState);
@@ -158,52 +134,71 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
         signOut();
     }, [activity.isInactive, loggedEmployee])
 
-    useEffect(() => {
+    const guard = async <TResponse = void>(call: (token: string) => Promise<TResponse>) => {
         if(state == undefined) {
-            setExpiresAt(undefined);
-            return;
+            throw new UnauthorizedException(); 
         }
 
-        const tokenData = state;
-        setExpiresAt(tokenData.expire * 1000);
-    }, [state]);
-
-    useEffect(() => {
-        if(expiresAt == undefined) {
-            return;
+        try {
+            return await call(state.accessToken);
+        } catch (e) {
+            if(e instanceof UnauthorizedException) {
+                try {
+                    console.debug("Refreshing JWT!");
+                    const refreshResponse = await authApi.jwtRefresh({
+                        refreshToken: state.refreshToken,
+                    });
+                    console.debug("Refreshing JWT response:", refreshResponse)
+                    saveTokens({
+                        accessToken: refreshResponse.access_token,
+                        refreshToken: refreshResponse.refresh_token,
+                    });
+                    setState(getState);
+                    const response = await call(refreshResponse.access_token);
+                    return response;
+                } catch (e2) {
+                    if(e2 instanceof AuthenticationError) {
+                        saveTokens(undefined);
+                        setState(getState);
+                        throw e;
+                    }
+                    throw e2;
+                }
+            }
+            throw e;
         }
-
-        const refreshToken = state?.refreshToken;
-        if(refreshToken == undefined) {
-            setExpiresAt(undefined);
-            return;
-        }
-
-        const timeToExpire = expiresAt - Date.now();
-        // if(timeToExpire <= 0) {
-        //     saveTokens({
-        //         accessToken: undefined,
-        //         refreshToken: refreshToken,
-        //     });
-        //     setState(getState);
-        // }
-
-        const delay = timeToExpire - 15000;
-        if (delay <= 0) {
-            refreshJwt(refreshToken, true);
-            return;
-        }
-
-        const timeout = setTimeout(() => refreshJwt(refreshToken, false), delay);
-        return () => clearTimeout(timeout);
-    }, [expiresAt])
+    }
+    
+    const httpClient = useMemo<HttpClient>(() => ({
+        get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+    }), [state?.accessToken, state?.refreshToken])
 
     const result = useMemo(() => ({
         token: state?.accessToken,
         login: login,
         signOut: signOut,
         employee: loggedEmployee,
-    }), [state, loggedEmployee, auth.token])
+        client: httpClient,
+    }), [state, loggedEmployee, auth.principal?.token])
     
     return (
         <EmployeeContext.Provider value={result}>
@@ -218,4 +213,12 @@ export const useEmployeeManager = (): EmployeeContextType => {
         throw new Error('useEmployeeManager must be used within a EmployeeProvider');
     }
     return context;
+}
+
+export const useEmployeeHttpClient = (): HttpClient => {
+    const context = useContext(EmployeeContext);
+    if (!context) {
+        throw new Error('useEmployeeHttpClient must be used within a EmployeeProvider');
+    }
+    return context.client;
 }

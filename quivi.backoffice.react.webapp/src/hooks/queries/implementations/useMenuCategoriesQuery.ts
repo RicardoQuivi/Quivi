@@ -7,7 +7,7 @@ import { MenuCategory } from "../../api/Dtos/menuCategories/MenuCategory";
 
 export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useMenuCategoriesApi(user.token);
+    const api = useMenuCategoriesApi();
 
     const queryResult = useQueryable({
         queryName: "useMenuCategoriesQuery",

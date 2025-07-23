@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetMenuItemsRequest } from "./Dtos/menuItems/GetMenuItemsRequest";
 import { GetMenuItemsResponse } from "./Dtos/menuItems/GetMenuItemsResponse";
 import { CreateMenuItemResponse } from "./Dtos/menuItems/CreateMenuItemResponse";
@@ -8,10 +7,11 @@ import { PatchMenuItemResponse } from "./Dtos/menuItems/PatchMenuItemResponse";
 import { PatchMenuItemRequest } from "./Dtos/menuItems/PatchMenuItemRequest";
 import { DeleteMenuItemResponse } from "./Dtos/menuItems/DeleteMenuItemResponse";
 import { DeleteMenuItemRequest } from "./Dtos/menuItems/DeleteMenuItemRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useMenuItemsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useMenuItemsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetMenuItemsRequest) => {
         const queryParams = new URLSearchParams();
         
@@ -28,30 +28,22 @@ export const useMenuItemsApi = (token?: string) => {
         }
 
         const url = new URL(`api/menuitems?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMenuItemsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetMenuItemsResponse>(url, {});
     }
 
     const create = (request: CreateMenuItemRequest) => {
         const url = new URL(`api/menuitems`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateMenuItemResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateMenuItemResponse>(url, request, {});
     }
 
     const patch = (request: PatchMenuItemRequest) => {
         const url = new URL(`api/menuitems/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchMenuItemResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchMenuItemResponse>(url, request, {});
     }
 
     const deleteItem = (request: DeleteMenuItemRequest) => {
         const url = new URL(`api/menuitems/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpDelete<DeleteMenuItemResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.delete<DeleteMenuItemResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -59,7 +51,7 @@ export const useMenuItemsApi = (token?: string) => {
         create,
         patch,
         delete: deleteItem,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

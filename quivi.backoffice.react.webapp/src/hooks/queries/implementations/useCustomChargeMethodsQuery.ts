@@ -8,7 +8,7 @@ import { CustomChargeMethod } from "../../api/Dtos/customchargemethods/CustomCha
 
 export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useCustomChargeMethodsApi(user.token);
+    const api = useCustomChargeMethodsApi();
 
     const queryResult = useQueryable({
         queryName: "useCustomChargeMethodsQuery",

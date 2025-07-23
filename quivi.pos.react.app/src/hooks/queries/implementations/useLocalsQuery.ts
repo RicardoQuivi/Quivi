@@ -1,4 +1,3 @@
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { GetLocalsRequest } from "../../api/Dtos/locals/GetLocalsRequest";
 import { Local } from "../../api/Dtos/locals/Local";
 import { useLocalsApi } from "../../api/useLocalsApi";
@@ -7,8 +6,7 @@ import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const useLocalsQuery = (request: GetLocalsRequest | undefined) : QueryResult<Local[]> => {       
-    const posContext = useLoggedEmployee();
-    const api = useLocalsApi(posContext.token);
+    const api = useLocalsApi();
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",

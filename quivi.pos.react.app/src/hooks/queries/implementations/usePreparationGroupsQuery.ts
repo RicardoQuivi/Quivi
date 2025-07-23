@@ -4,12 +4,10 @@ import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 import { GetPreparationGroupsRequest } from "../../api/Dtos/preparationgroups/GetPreparationGroupsRequest";
 import { PreparationGroup } from "../../api/Dtos/preparationgroups/PreparationGroup";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { usePreparationGroupsApi } from "../../api/usePreparationGroupsApi";
 
 export const usePreparationGroupsQuery = (request: GetPreparationGroupsRequest | undefined) : PagedQueryResult<PreparationGroup> => {   
-    const posContext = useLoggedEmployee();
-    const api = usePreparationGroupsApi(posContext.token);
+    const api = usePreparationGroupsApi();
         
     const queryResult = useQueryable({
         queryName: "usePreparationGroupsQuery",

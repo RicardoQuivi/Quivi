@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { usePrinterWorkersApi } from "../api/usePrinterWorkersApi";
@@ -10,8 +9,7 @@ interface PatchMutator {
     readonly name?: string;
 }
 export const usePrinterWorkerMutator = () => {
-    const user = useAuthenticatedUser();
-    const api = usePrinterWorkersApi(user.token);
+    const api = usePrinterWorkersApi();
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.PrinterWorkers),
@@ -71,7 +69,7 @@ export const usePrinterWorkerMutator = () => {
             return result.response[0];
         },
         delete:  (e: PrinterWorker) => deleteMutator.mutate([e], {}),
-    }), [user, api]);
+    }), [api]);
 
     return result;
 }

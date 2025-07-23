@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
@@ -61,8 +60,7 @@ export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | und
 }
 
 export const useInternalChannelProfilesQuery = () => {      
-    const posContext = useLoggedEmployee();
-    const api = useChannelProfilesApi(posContext.token);
+    const api = useChannelProfilesApi();
 
     const queryResult = useQueryable({
         queryName: "useChannelProfilesQuery",

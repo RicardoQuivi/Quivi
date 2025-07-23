@@ -1,23 +1,21 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetBackgroundJobResponse } from "./Dtos/backgroundjobs/GetBackgroundJobResponse";
 import { GetBackgroundJobRequest } from "./Dtos/backgroundjobs/GetBackgroundJobRequest";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useBackgroundJobsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useBackgroundJobsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetBackgroundJobRequest) => {
         const queryParams = new URLSearchParams();
         request.ids.filter(id => !!id).forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         const url = new URL(`api/backgroundJobs?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetBackgroundJobResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetBackgroundJobResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

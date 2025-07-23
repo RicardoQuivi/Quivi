@@ -8,9 +8,10 @@ import { UpdateOrderToNextStateRequest } from "./Dtos/orders/UpdateOrderToNextSt
 import { UpdateOrderToNextStateResponse } from "./Dtos/orders/UpdateOrderToNextStateResponse";
 import { DeclineOrderRequest } from "./Dtos/orders/DeclineOrderRequest";
 import { DeclineOrderResponse } from "./Dtos/orders/DeclineOrderResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useOrdersApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useOrdersApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetOrdersRequest) => {
         const queryParams = new URLSearchParams();
@@ -24,16 +25,12 @@ export const useOrdersApi = (token: string) => {
         request.states?.forEach((s, i) => queryParams.set(`states[${i}]`, s.toString()));
 
         const url = new URL(`api/orders?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetOrdersResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetOrdersResponse>(url, {});
     }
 
     const post = async (request: CreateOrdersRequest) => {
         const url = new URL(`api/orders`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateOrdersResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.post<CreateOrdersResponse>(url, request, {});
     }
 
     const processTo = async (request: UpdateOrderToNextStateRequest): Promise<UpdateOrderToNextStateResponse> => {
@@ -42,16 +39,12 @@ export const useOrdersApi = (token: string) => {
             queryParams.set("complete", request.completeOrder ? "true" : "false");
         }
         const url = new URL(`api/orders/${request.id}/next?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPost<UpdateOrderToNextStateResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.post<UpdateOrderToNextStateResponse>(url, request, {});
     }
 
     const decline = async (request: DeclineOrderRequest): Promise<DeclineOrderResponse> => {
         const url = new URL(`api/orders/${request.id}/decline`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPost<DeclineOrderResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.post<DeclineOrderResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -59,7 +52,7 @@ export const useOrdersApi = (token: string) => {
         post,
         processTo,
         decline,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

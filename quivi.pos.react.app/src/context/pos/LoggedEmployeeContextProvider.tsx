@@ -5,7 +5,6 @@ import { useEmployeeManager } from "../employee/EmployeeContextProvider";
 interface LoggedEmployeeContextType {
     readonly signOut: () => void;
     readonly employee: Employee;
-    readonly token: string;
 }
 
 const LoggedEmployeeContext = createContext<LoggedEmployeeContextType | undefined>(undefined);
@@ -19,7 +18,6 @@ export const LoggedEmployeeContextProvider = ({ children }: { children: ReactNod
 
         return {
             signOut: context.signOut,
-            token: context.token,
             employee: context.employee,
         } as LoggedEmployeeContextType;
     }, [context])
@@ -40,4 +38,4 @@ export const useLoggedEmployee = (): LoggedEmployeeContextType => {
         throw new Error('usePos must be used within a PosContextProvider');
     }
     return context;
-};
+}

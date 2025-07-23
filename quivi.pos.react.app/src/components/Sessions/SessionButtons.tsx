@@ -58,7 +58,7 @@ export const SessionButtons = ({
     const toast = useToast();
     const webEvents = useWebEvents();
     const pos = usePosSession();
-    const transactionApi = useTransactionsApi(pos.token);
+    const transactionApi = useTransactionsApi();
     const transactionMutator = useTransactionMutator();
 
     const printersQuery = usePrintersQuery({

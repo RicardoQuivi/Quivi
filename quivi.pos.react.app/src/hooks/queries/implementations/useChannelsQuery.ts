@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { Channel } from "../../api/Dtos/channels/Channel";
 import { GetChannelsRequest } from "../../api/Dtos/channels/GetChannelsRequest";
 import { useChannelsApi } from "../../api/useChannelsApi";
@@ -8,8 +7,7 @@ import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const useChannelsQuery = (request: GetChannelsRequest | undefined) : PagedQueryResult<Channel> => {      
-    const posContext = useLoggedEmployee();
-    const api = useChannelsApi(posContext.token);
+    const api = useChannelsApi();
 
     const queryResult = useQueryable({
         queryName: "useChannelsQuery",

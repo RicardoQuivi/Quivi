@@ -4,12 +4,10 @@ import { Order } from "../../api/Dtos/orders/Order";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { useOrdersApi } from "../../api/useOrdersApi";
 
 export const useOrdersQuery = (request: GetOrdersRequest | undefined) : PagedQueryResult<Order> => {
-    const posContext = useLoggedEmployee();
-    const api = useOrdersApi(posContext.token);
+    const api = useOrdersApi();
 
     const queryResult = useQueryable({
         queryName: "useOrdersQuery",

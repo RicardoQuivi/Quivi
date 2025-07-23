@@ -1,4 +1,3 @@
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { CustomChargeMethod } from "../../api/Dtos/customchargemethods/CustomChargeMethod";
 import { GetCustomChargeMethodsRequest } from "../../api/Dtos/customchargemethods/GetCustomChargeMethodsRequest";
 import { useCustomChargeMethodsApi } from "../../api/useCustomChargeMethodsApi";
@@ -7,8 +6,7 @@ import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsRequest | undefined) : QueryResult<CustomChargeMethod[]> => {
-    const posContext = useLoggedEmployee();
-    const api = useCustomChargeMethodsApi(posContext.token);
+    const api = useCustomChargeMethodsApi();
     
     const queryResult = useQueryable({
         queryName: "useCustomChargeMethodsQuery",

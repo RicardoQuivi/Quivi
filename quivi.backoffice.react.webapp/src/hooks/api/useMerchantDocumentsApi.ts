@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetMerchantDocumentsRequest } from "./Dtos/merchantdocuments/GetMerchantDocumentsRequest";
 import { GetMerchantDocumentsResponse } from "./Dtos/merchantdocuments/GetMerchantDocumentsResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useMerchantDocumentsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useMerchantDocumentsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetMerchantDocumentsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -19,14 +19,12 @@ export const useMerchantDocumentsApi = (token?: string) => {
         }
 
         const url = new URL(`api/merchantDocuments?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMerchantDocumentsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetMerchantDocumentsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

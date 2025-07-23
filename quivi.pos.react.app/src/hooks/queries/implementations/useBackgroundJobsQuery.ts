@@ -1,4 +1,3 @@
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
@@ -6,8 +5,7 @@ import { BackgroundJob } from "../../api/Dtos/backgroundjobs/BackgroundJob";
 import { useBackgroundJobsApi } from "../../api/useBackgroundJobsApi";
 
 export const useBackgroundJobsQuery = (ids: string[] | undefined) : QueryResult<BackgroundJob[]> => {      
-    const posContext = useLoggedEmployee();
-    const api = useBackgroundJobsApi(posContext.token);
+    const api = useBackgroundJobsApi();
 
     const queryResult = useQueryable({
         queryName: "useBackgroundJobsQuery",

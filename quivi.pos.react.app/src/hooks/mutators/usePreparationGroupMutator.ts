@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
-import { useLoggedEmployee } from "../../context/pos/LoggedEmployeeContextProvider";
 import { usePreparationGroupsApi } from "../api/usePreparationGroupsApi";
 import { PreparationGroup } from "../api/Dtos/preparationgroups/PreparationGroup";
 
@@ -21,8 +20,7 @@ interface PrintMutator {
 }
 
 export const usePreparationGroupMutator = () => {
-    const posContext = useLoggedEmployee();
-    const api = usePreparationGroupsApi(posContext.token);
+    const api = usePreparationGroupsApi();
 
     const patchMutator = useMutator({
         entityType: getEntityType(Entity.PreparationGroups),

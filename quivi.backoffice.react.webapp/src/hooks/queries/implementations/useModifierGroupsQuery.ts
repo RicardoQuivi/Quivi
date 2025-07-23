@@ -8,7 +8,7 @@ import { ModifierGroup } from "../../api/Dtos/modifierGroups/ModifierGroup";
 
 export const useModifierGroupsQuery = (request: GetModifierGroupsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useModifierGroupsApi(user.token);
+    const api = useModifierGroupsApi();
 
     const queryResult = useQueryable({
         queryName: "useModifierGroupsQuery",

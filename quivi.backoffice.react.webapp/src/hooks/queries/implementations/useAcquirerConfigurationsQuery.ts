@@ -8,7 +8,7 @@ import { AcquirerConfiguration } from "../../api/Dtos/acquirerconfigurations/Acq
 
 export const useAcquirerConfigurationsQuery = (request: GetAcquirerConfigurationsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useAcquirerConfigurationsApi(user.token);
+    const api = useAcquirerConfigurationsApi();
 
     const queryResult = useQueryable({
         queryName: "useAcquirerConfigurationsQuery",

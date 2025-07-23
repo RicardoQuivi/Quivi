@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetCustomChargeMethodsRequest } from "./Dtos/customchargemethods/GetCustomChargeMethodsRequest";
 import { GetCustomChargeMethodsResponse } from "./Dtos/customchargemethods/GetCustomChargeMethodsResponse";
 import { CreateCustomChargeMethodRequest } from "./Dtos/customchargemethods/CreateCustomChargeMethodRequest";
@@ -8,10 +7,11 @@ import { PatchCustomChargeMethodRequest } from "./Dtos/customchargemethods/Patch
 import { PatchCustomChargeMethodResponse } from "./Dtos/customchargemethods/PatchCustomChargeMethodResponse";
 import { DeleteCustomChargeMethodRequest } from "./Dtos/customchargemethods/DeleteCustomChargeMethodRequest";
 import { DeleteCustomChargeMethodResponse } from "./Dtos/customchargemethods/DeleteCustomChargeMethodResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useCustomChargeMethodsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useCustomChargeMethodsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetCustomChargeMethodsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -22,30 +22,22 @@ export const useCustomChargeMethodsApi = (token?: string) => {
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/customchargemethods?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetCustomChargeMethodsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetCustomChargeMethodsResponse>(url, {});
     }
 
     const create = (request: CreateCustomChargeMethodRequest) => {
         const url = new URL(`api/customchargemethods`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateCustomChargeMethodResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateCustomChargeMethodResponse>(url, request, {});
     }
 
     const patch = (request: PatchCustomChargeMethodRequest) => {
         const url = new URL(`api/customchargemethods/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchCustomChargeMethodResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchCustomChargeMethodResponse>(url, request, {});
     }
 
     const deleteCustomChargeMethod = (request: DeleteCustomChargeMethodRequest) => {
         const url = new URL(`api/customchargemethods/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpDelete<DeleteCustomChargeMethodResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.delete<DeleteCustomChargeMethodResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -53,7 +45,7 @@ export const useCustomChargeMethodsApi = (token?: string) => {
         create,
         patch,
         delete: deleteCustomChargeMethod,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

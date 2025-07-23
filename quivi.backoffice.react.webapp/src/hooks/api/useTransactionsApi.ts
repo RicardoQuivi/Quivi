@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetTransactionsRequest } from "./Dtos/transactions/GetTransactionsRequest";
 import { GetTransactionsResponse } from "./Dtos/transactions/GetTransactionsResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useTransactionApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
-    const get = (request: GetTransactionsRequest) => {
+export const useTransactionApi = () => {
+    const client = useAuthenticatedHttpClient();
+
+     const get = (request: GetTransactionsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
         if(request.pageSize != undefined) {
@@ -59,14 +59,12 @@ export const useTransactionApi = (token?: string) => {
         }
 
         const url = new URL(`api/transactions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetTransactionsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetTransactionsResponse>(url);
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

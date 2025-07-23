@@ -13,7 +13,6 @@ import { useToast } from "../../../context/ToastProvider";
 import { useMenuItemsQuery } from "../../../hooks/queries/implementations/useMenuItemsQuery";
 import { useWebEvents } from "../../../hooks/signalR/useWebEvents";
 import { useBackgroundJobsApi } from "../../../hooks/api/useBackgroundJobsApi";
-import { usePosSession } from "../../../context/pos/PosSessionContextProvider";
 import { CardItemDetails } from "../CardItemDetails";
 import { SingleSelect } from "../../Inputs/SingleSelect";
 import { ActionButton } from "../../Buttons/ActionButton";
@@ -153,14 +152,13 @@ const GroupDetail = ({
     onCheckedItemsChanged,
 }: GroupDetailProps) => {
     const { t } = useTranslation();
-    const pos = usePosSession();
     const dateHelper = useDateHelper();
     const now = useNow(1000);
     const helper = useOrderHelper();
     const toast = useToast();
     const webEvents = useWebEvents();
     const mutator = usePreparationGroupMutator();
-    const jobsApi = useBackgroundJobsApi(pos.token);
+    const jobsApi = useBackgroundJobsApi();
     
     const [selectedLocation, setSelectedLocation] = useState<Local>();
     const [innerNote, setInnerNote] = useState(note);

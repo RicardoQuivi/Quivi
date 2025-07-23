@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetLocalsRequest } from "./Dtos/locals/GetLocalsRequest";
 import { GetLocalsResponse } from "./Dtos/locals/GetLocalsResponse";
 import { CreateLocalRequest } from "./Dtos/locals/CreateLocalRequest";
@@ -8,10 +7,11 @@ import { PatchLocalRequest } from "./Dtos/locals/PatchLocalRequest";
 import { PatchLocalResponse } from "./Dtos/locals/PatchLocalResponse";
 import { DeleteLocalRequest } from "./Dtos/locals/DeleteLocalRequest";
 import { DeleteLocalResponse } from "./Dtos/locals/DeleteLocalResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useLocalsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useLocalsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetLocalsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -21,30 +21,22 @@ export const useLocalsApi = (token?: string) => {
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/locals?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetLocalsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetLocalsResponse>(url, {});
     }
 
     const create = (request: CreateLocalRequest) => {
         const url = new URL(`api/locals`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateLocalResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateLocalResponse>(url, request, {});
     }
 
     const patch = (request: PatchLocalRequest) => {
         const url = new URL(`api/locals/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchLocalResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchLocalResponse>(url, request, {});
     }
 
     const deleteLocal = (request: DeleteLocalRequest) => {
         const url = new URL(`api/locals/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpDelete<DeleteLocalResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.delete<DeleteLocalResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -52,7 +44,7 @@ export const useLocalsApi = (token?: string) => {
         create,
         patch,
         delete: deleteLocal,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

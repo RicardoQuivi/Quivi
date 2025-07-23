@@ -14,6 +14,7 @@ namespace Quivi.Pos.Api.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [RequireEmployee]
+    [RequireSubMerchant]
     [ApiController]
     public class PrintersController : ControllerBase
     {

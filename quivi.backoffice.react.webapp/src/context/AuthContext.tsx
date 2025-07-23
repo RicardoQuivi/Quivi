@@ -1,8 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthenticationError, useAuthApi } from '../hooks/api/useAuthApi';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../layout/ToastProvider';
+import { HttpClient, HttpHelper } from '../utilities/httpClient';
+import { UnauthorizedException } from '../hooks/api/exceptions/UnauthorizedException';
 
 const TOKENS = "tokens";
 interface Tokens {
@@ -53,6 +55,7 @@ interface AuthContextType {
     readonly signOut: () => void;
     readonly switchMerchant: (merchantId: string) => Promise<void>;
     readonly user: UserDetails | undefined;
+    readonly client: HttpClient;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const toast = useToast();
 
     const [state, setState] = useState<TokenData | undefined>(getState);
-    const [expiresAt, setExpiresAt] = useState<number>();
 
     const signIn = async (email: string, password: string) => {
         try {
@@ -90,23 +92,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setState(getState);
     }
 
-    const switchMerchant = (merchantId: string) => {
+    const switchMerchant = async (merchantId: string) => {
         if(state?.refreshToken == undefined) {
-            throw new Error("Unautorized");
+            throw new UnauthorizedException(); 
         }
 
-        return refreshJwt(state.refreshToken, merchantId, false);
-    }
-
-    const refreshJwt = async (refreshToken: string, merchantId: string | undefined, retry: boolean) => {
         try {
-            console.debug("Refreshing JWT!")
             const response = await authApi.jwtRefresh({
                 merchantId: merchantId,
-                refreshToken: refreshToken,
+                refreshToken: state.refreshToken,
             });
-            console.debug("Refreshing JWT response:", response)
-
             saveTokens({
                 accessToken: response.access_token,
                 refreshToken: response.refresh_token,
@@ -118,45 +113,68 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setState(getState);
                 return;
             }
+        }
+    }
+    
+    const guard = async <TResponse = void>(call: (token: string) => Promise<TResponse>) => {
+        if(state == undefined) {
+            throw new UnauthorizedException(); 
+        }
 
-            if(retry) {
-                setTimeout(() => refreshJwt(refreshToken, merchantId, retry), 1000);
+        try {
+            return await call(state.accessToken);
+        } catch (e) {
+            if(e instanceof UnauthorizedException) {
+                try {
+                    console.debug("Refreshing JWT!");
+                    const refreshResponse = await authApi.jwtRefresh({
+                        merchantId: state.subMerchantId ?? state.merchantId,
+                        refreshToken: state.refreshToken,
+                    });
+                    console.debug("Refreshing JWT response:", refreshResponse)
+                    saveTokens({
+                        accessToken: refreshResponse.access_token,
+                        refreshToken: refreshResponse.refresh_token,
+                    });
+                    setState(getState);
+                    const response = await call(refreshResponse.access_token);
+                    return response;
+                } catch (e2) {
+                    if(e2 instanceof AuthenticationError) {
+                        saveTokens(undefined);
+                        setState(getState);
+                        throw e;
+                    }
+                    throw e2;
+                }
             }
+            throw e;
         }
     }
 
-    useEffect(() => {
-        if(state == undefined) {
-            setExpiresAt(undefined);
-            return;
-        }
+    const httpClient = useMemo<HttpClient>(() => ({
+        get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+    }), [state?.accessToken, state?.refreshToken])
 
-        const tokenData = state;
-        setExpiresAt(tokenData.expire * 1000);
-    }, [state]);
-
-    useEffect(() => {
-        if(expiresAt == undefined) {
-            return;
-        }
-
-        const refreshToken = state?.refreshToken;
-        if(refreshToken == undefined) {
-            setExpiresAt(undefined);
-            return;
-        }
-
-        const timeToExpire = expiresAt - Date.now();
-        const delay = timeToExpire - 15000;
-        if (delay <= 0) {
-            refreshJwt(refreshToken, state?.subMerchantId ?? state?.merchantId, true);
-            return;
-        }
-
-        const timeout = setTimeout(() => refreshJwt(refreshToken, state?.subMerchantId ?? state?.merchantId, false), delay);
-        return () => clearTimeout(timeout);
-    }, [expiresAt])
-    
     return (
         <AuthContext.Provider value={{
             signIn,
@@ -170,7 +188,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 subMerchantId: state.subMerchantId,
                 merchantActivated: state.isActivated == true,
                 token: state.accessToken,
-            }
+            },
+            client: httpClient,
         }}
         >
             {children}
@@ -197,6 +216,14 @@ export const useAuthenticatedUser = (): UserDetails => {
     }
     return context.user;
 };
+
+export const useAuthenticatedHttpClient = (): HttpClient => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuthenticatedHttpClient must be used within a AuthProvider');
+    }
+    return context.client;
+}
 
 interface DecodedToken {
     readonly aud: string;

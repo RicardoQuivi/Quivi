@@ -17,13 +17,13 @@ export const WebEventsProvider = ({ children }: { children: ReactNode }): ReactN
     const [connectionState, setConnectionState] = useState(client.isConnected);
 
     useEffect(() => {
-        const token = auth.token;
+        const token = auth.principal?.token;
         if(token == undefined) {
             client.jwtFetcher = undefined;
         } else {
             client.jwtFetcher = () => token;
         }
-    }, [auth.token])
+    }, [auth.principal?.token])
 
     useEffect(() => {
         const listener: ISignalRListener = {

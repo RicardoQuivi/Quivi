@@ -7,7 +7,7 @@ import { usePrintersApi } from "../../api/usePrintersApi";
 
 export const usePrintersQuery = (request: GetPrintersRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = usePrintersApi(user.token);
+    const api = usePrintersApi();
 
     const queryResult = useQueryable({
         queryName: "usePrintersQuery",

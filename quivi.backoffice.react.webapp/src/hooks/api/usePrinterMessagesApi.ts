@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { CreatePrinterMessageRequest } from "./Dtos/printerMessages/CreatePrinterMessageRequest";
 import { CreatePrinterMessageResponse } from "./Dtos/printerMessages/CreatePrinterMessageResponse";
 import { GetPrinterMessagesResponse } from "./Dtos/printerMessages/GetPrinterMessagesResponse";
 import { GetPrinterMessagesRequest } from "./Dtos/printerMessages/GetPrinterMessagesRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const usePrinterMessagesApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const usePrinterMessagesApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const state = useMemo(() => ({
         get: (request: GetPrinterMessagesRequest) => {
             const queryParams = new URLSearchParams();
@@ -21,17 +21,13 @@ export const usePrinterMessagesApi = (token?: string) => {
             }
             
             const url = new URL(`api/printermessages?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpGet<GetPrinterMessagesResponse>(url, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.get<GetPrinterMessagesResponse>(url, {});
         },
         create: (request: CreatePrinterMessageRequest) => {
             const url = new URL(`api/printermessages`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpPost<CreatePrinterMessageResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.post<CreatePrinterMessageResponse>(url, request, {});
         },
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

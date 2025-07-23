@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetChannelProfilesRequest } from "./Dtos/channelProfiles/GetChannelProfilesRequest";
 import { GetChannelProfilesResponse } from "./Dtos/channelProfiles/GetChannelProfilesResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useChannelProfilesApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useChannelProfilesApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetChannelProfilesRequest) => {
         const queryParams = new URLSearchParams();
@@ -16,14 +16,12 @@ export const useChannelProfilesApi = (token: string) => {
         request.ids?.filter(id => !!id).forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
         const url = new URL(`api/channelprofiles?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetChannelProfilesResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetChannelProfilesResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

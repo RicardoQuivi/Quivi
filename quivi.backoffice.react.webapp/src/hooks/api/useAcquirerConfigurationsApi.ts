@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetAcquirerConfigurationsRequest } from "./Dtos/acquirerconfigurations/GetAcquirerConfigurationsRequest";
 import { GetAcquirerConfigurationsResponse } from "./Dtos/acquirerconfigurations/GetAcquirerConfigurationsResponse";
 import { UpsertAcquirerConfigurationResponse } from "./Dtos/acquirerconfigurations/UpsertAcquirerConfigurationResponse";
 import { UpsertCashAcquirerConfigurationRequest } from "./Dtos/acquirerconfigurations/UpsertCashAcquirerConfigurationRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useAcquirerConfigurationsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useAcquirerConfigurationsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetAcquirerConfigurationsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -16,22 +16,18 @@ export const useAcquirerConfigurationsApi = (token?: string) => {
         }
 
         const url = new URL(`api/acquirerConfigurations?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetAcquirerConfigurationsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetAcquirerConfigurationsResponse>(url, {});
     }
 
     const upsertCash = (request: UpsertCashAcquirerConfigurationRequest) => {
         const url = new URL(`api/acquirerConfigurations/cash`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPut<UpsertAcquirerConfigurationResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.put<UpsertAcquirerConfigurationResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
         get,
         upsertCash,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

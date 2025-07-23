@@ -8,8 +8,7 @@ import { useChannelProfilesApi } from "../../api/useChannelProfilesApi";
 
 export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useChannelProfilesApi(user.token);
-
+    const api = useChannelProfilesApi();
     const queryResult = useQueryable({
         queryName: "useChannelProfilesQuery",
         entityType: getEntityType(Entity.ChannelProfiles),

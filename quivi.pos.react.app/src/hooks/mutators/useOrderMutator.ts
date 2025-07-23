@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
-import { useLoggedEmployee } from "../../context/pos/LoggedEmployeeContextProvider";
 import { useOrdersApi } from "../api/useOrdersApi";
 import { Order } from "../api/Dtos/orders/Order";
 
@@ -17,8 +16,7 @@ interface ExtendedOrder extends Order {
     readonly jobId: string;
 }
 export const useOrderMutator = () => {
-    const posContext = useLoggedEmployee();
-    const api = useOrdersApi(posContext.token);
+    const api = useOrdersApi();
 
     const processMutator = useMutator<Order, ProcessProps>({
         entityType: getEntityType(Entity.Orders),

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetPrinterWorkersRequest } from "./Dtos/printerWorkers/GetPrinterWorkersRequest";
 import { GetPrinterWorkersResponse } from "./Dtos/printerWorkers/GetPrinterWorkersResponse";
 import { CreatePrinterWorkerRequest } from "./Dtos/printerWorkers/CreatePrinterWorkerRequest";
@@ -8,10 +7,11 @@ import { PatchPrinterWorkerRequest } from "./Dtos/printerWorkers/PatchPrinterWor
 import { PatchPrinterWorkerResponse } from "./Dtos/printerWorkers/PatchPrinterWorkerResponse";
 import { DeletePrinterWorkerRequest } from "./Dtos/printerWorkers/DeletePrinterWorkerRequest";
 import { DeletePrinterWorkerResponse } from "./Dtos/printerWorkers/DeletePrinterWorkerResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const usePrinterWorkersApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const usePrinterWorkersApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const state = useMemo(() => ({
         get: (request: GetPrinterWorkersRequest) => {
             const queryParams = new URLSearchParams();
@@ -23,29 +23,21 @@ export const usePrinterWorkersApi = (token?: string) => {
             request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
             const url = new URL(`api/printerworkers?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpGet<GetPrinterWorkersResponse>(url, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.get<GetPrinterWorkersResponse>(url, {});
         },
         create: (request: CreatePrinterWorkerRequest) => {
             const url = new URL(`api/printerworkers`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpPost<CreatePrinterWorkerResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.post<CreatePrinterWorkerResponse>(url, request, {});
         },
         patch: (request: PatchPrinterWorkerRequest) => {
             const url = new URL(`api/printerworkers/${request.id}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpPatch<PatchPrinterWorkerResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.patch<PatchPrinterWorkerResponse>(url, request, {});
         },
         delete: (request: DeletePrinterWorkerRequest) => {
             const url = new URL(`api/printerworkers/${request.id}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpDelete<DeletePrinterWorkerResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.delete<DeletePrinterWorkerResponse>(url, request, {});
         },
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

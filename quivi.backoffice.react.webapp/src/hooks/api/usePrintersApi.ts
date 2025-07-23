@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetPrintersRequest } from "./Dtos/printers/GetPrintersRequest";
 import { GetPrintersResponse } from "./Dtos/printers/GetPrintersResponse";
 import { CreatePrinterRequest } from "./Dtos/printers/CreatePrinterRequest";
@@ -8,10 +7,11 @@ import { PatchPrinterRequest } from "./Dtos/printers/PatchPrinterRequest";
 import { PatchPrinterResponse } from "./Dtos/printers/PatchPrinterResponse";
 import { DeletePrinterRequest } from "./Dtos/printers/DeletePrinterRequest";
 import { DeletePrinterResponse } from "./Dtos/printers/DeletePrinterResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const usePrintersApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const usePrintersApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const state = useMemo(() => ({
         get: (request: GetPrintersRequest) => {
             const queryParams = new URLSearchParams();
@@ -27,29 +27,21 @@ export const usePrintersApi = (token?: string) => {
             }
             
             const url = new URL(`api/printers?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpGet<GetPrintersResponse>(url, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.get<GetPrintersResponse>(url, {});
         },
         create: (request: CreatePrinterRequest) => {
             const url = new URL(`api/printers`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpPost<CreatePrinterResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.post<CreatePrinterResponse>(url, request, {});
         },
         patch: (request: PatchPrinterRequest) => {
             const url = new URL(`api/printers/${request.id}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpPatch<PatchPrinterResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.patch<PatchPrinterResponse>(url, request, {});
         },
         delete: (request: DeletePrinterRequest) => {
             const url = new URL(`api/printers/${request.id}`, import.meta.env.VITE_API_URL).toString();
-            return httpClient.httpDelete<DeletePrinterResponse>(url, request, {
-                "Authorization": `Bearer ${token}`,
-            });
+            return client.delete<DeletePrinterResponse>(url, request, {});
         },
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

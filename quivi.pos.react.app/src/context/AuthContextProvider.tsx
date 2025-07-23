@@ -1,6 +1,8 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthenticationError, useAuthApi } from '../hooks/api/useAuthApi';
+import { UnauthorizedException } from '../hooks/api/exceptions/UnauthorizedException';
+import { HttpClient, HttpHelper } from '../helpers/httpClient';
 
 const TOKENS = "tokens";
 
@@ -37,13 +39,16 @@ const getState = () => {
     return data;
 }
 
-interface AuthContextType {
-    readonly isAuth: boolean;
-    readonly merchantId: string | undefined;
-    readonly subMerchantId: string | undefined;
-    readonly signIn: (token: string) => Promise<void>;
-    readonly token: string | undefined;
+interface Principal {
+    readonly merchantId: string;
+    readonly subMerchantId: string;
+    readonly token: string;
     readonly isAdmin: boolean;
+}
+interface AuthContextType {
+    readonly signIn: (token: string) => Promise<void>;
+    readonly principal: Principal | undefined;
+    readonly client: HttpClient;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -52,7 +57,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const authApi = useAuthApi();
 
     const [state, setState] = useState(getState());
-    const [expiresAt, setExpiresAt] = useState<number>();
 
     const signIn = async (token: string) => {
         const response = await authApi.tokenExchange({
@@ -65,81 +69,75 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
         setState(getState());
     }
+    
+    const guard = async <TResponse = void>(call: (token: string) => Promise<TResponse>) => {
+        if(state == undefined) {
+            throw new UnauthorizedException(); 
+        }
 
-    const refreshJwt = async (refreshToken: string, retry: boolean) => {
         try {
-            console.debug("Refreshing JWT!")
-            const response = await authApi.jwtRefresh({
-                refreshToken: refreshToken,
-            });
-            console.debug("Refreshing JWT response:", response)
-
-            saveTokens({
-                accessToken: response.access_token,
-                refreshToken: response.refresh_token,
-            });
-            setState(getState());
+            return await call(state.accessToken);
         } catch (e) {
-            if(e instanceof AuthenticationError) {
-                saveTokens(undefined);
-                setState(getState());
-                return;
+            if(e instanceof UnauthorizedException) {
+                try {
+                    console.debug("Refreshing JWT!");
+                    const refreshResponse = await authApi.jwtRefresh({
+                        refreshToken: state.refreshToken,
+                    });
+                    console.debug("Refreshing JWT response:", refreshResponse)
+                    saveTokens({
+                        accessToken: refreshResponse.access_token,
+                        refreshToken: refreshResponse.refresh_token,
+                    });
+                    setState(getState);
+                    const response = await call(refreshResponse.access_token);
+                    return response;
+                } catch (e2) {
+                    if(e2 instanceof AuthenticationError) {
+                        saveTokens(undefined);
+                        setState(getState);
+                        throw e;
+                    }
+                    throw e2;
+                }
             }
-
-            if(retry) {
-                setTimeout(() => refreshJwt(refreshToken, retry), 1000);
-            }
+            throw e;
         }
     }
 
-    useEffect(() => {
-        if(state == undefined) {
-            setExpiresAt(undefined);
-            return;
-        }
+    const httpClient = useMemo<HttpClient>(() => ({
+        get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
+            ...(headers ?? {}),
+            "Authorization": `Bearer ${token}`,
+        })),
+    }), [state?.accessToken, state?.refreshToken])
 
-        const tokenData = state;
-        setExpiresAt(tokenData.expire * 1000);
-    }, [state]);
-
-    useEffect(() => {
-        if(expiresAt == undefined) {
-            return;
-        }
-
-        const refreshToken = state?.refreshToken;
-        if(refreshToken == undefined) {
-            setExpiresAt(undefined);
-            return;
-        }
-
-        const timeToExpire = expiresAt - Date.now();
-        // if(timeToExpire <= 0) {
-        //     saveTokens({
-        //         accessToken: undefined,
-        //         refreshToken: refreshToken,
-        //     });
-        //     setState(getState());
-        // }
-
-        const delay = timeToExpire - 15000;
-        if (delay <= 0) {
-            refreshJwt(refreshToken, true);
-            return;
-        }
-
-        const timeout = setTimeout(() => refreshJwt(refreshToken, false), delay);
-        return () => clearTimeout(timeout);
-    }, [expiresAt])
-    
     return (
         <AuthContext.Provider value={{
-            isAuth: state != undefined,
-            token: state?.accessToken,
             signIn,
-            merchantId: state?.merchantId,
-            subMerchantId: state?.subMerchantId,
-            isAdmin: state?.isAdmin ?? false,
+            principal: state == undefined ? undefined : {
+                token: state.accessToken,
+                merchantId: state.merchantId,
+                subMerchantId: state.subMerchantId,
+                isAdmin: state.isAdmin ?? false,
+            },
+            client: httpClient,
         }}>
             {children}
         </AuthContext.Provider>
@@ -152,7 +150,15 @@ export const useAuth = (): AuthContextType => {
         throw new Error('useAuth must be used within a AuthProvider');
     }
     return context;
-};
+}
+
+export const useAuthenticatedHttpClient = (): HttpClient => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuthenticatedHttpClient must be used within a AuthProvider');
+    }
+    return context.client;
+}
 
 interface DecodedToken {
     readonly aud: string;
@@ -161,8 +167,8 @@ interface DecodedToken {
     readonly sub: string;
     readonly iss: string;
     readonly jti: string;
-    readonly merchant_id?: string;
-    readonly sub_merchant_id?: string;
+    readonly merchant_id: string;
+    readonly sub_merchant_id: string;
     readonly activated_at?: number;
     readonly role: string[];
 }
@@ -176,8 +182,8 @@ class TokenData {
     public readonly expire: number;
     public readonly userId: string;
     public readonly email: string;
-    public readonly merchantId?: string;
-    public readonly subMerchantId?: string;
+    public readonly merchantId: string;
+    public readonly subMerchantId: string;
     public readonly isAdmin: boolean;
     public readonly isActivated: boolean;
 

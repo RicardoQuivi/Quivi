@@ -8,7 +8,7 @@ import { useMemo } from "react";
 
 export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useEmployeesApi(user.token);
+    const api = useEmployeesApi();
 
     const queryResult = useQueryable({
         queryName: "useEmployeesQuery",

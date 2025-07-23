@@ -1,21 +1,19 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetLocalsRequest } from "./Dtos/locals/GetLocalsRequest";
 import { GetLocalsResponse } from "./Dtos/locals/GetLocalsResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useLocalsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useLocalsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (_: GetLocalsRequest) => {
         const url = new URL(`api/locations`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetLocalsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetLocalsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

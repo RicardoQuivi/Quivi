@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Quivi.Application.Attributes;
 using Quivi.Application.Commands.Employees;
 using Quivi.Application.Queries.Employees;
 using Quivi.Infrastructure.Abstractions.Converters;
@@ -12,6 +13,7 @@ using Quivi.Pos.Api.Dtos.Responses.Employees;
 namespace Quivi.Pos.Api.Controllers
 {
     [Route("api/[controller]")]
+    [RequireSubMerchant]
     [Authorize]
     [ApiController]
     public class EmployeesController : ControllerBase

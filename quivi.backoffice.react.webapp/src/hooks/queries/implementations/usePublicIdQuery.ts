@@ -5,12 +5,12 @@ import { useMemo } from "react";
 
 export const usePublicIdQuery = (id: string | undefined) => {
     const user = useAuthenticatedUser();
-    const api = usePublicIdsApi(user.token);
+    const api = usePublicIdsApi();
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",
         entityType: "PublicId",
-        request: user.token == undefined || user.isAdmin == false || id == undefined ? undefined : {
+        request: user.isAdmin == false || id == undefined ? undefined : {
             id: id,
         },
         getId: (e: number) => e.toString(),

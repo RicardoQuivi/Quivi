@@ -8,7 +8,7 @@ import { Channel } from "../../api/Dtos/channels/Channel";
 
 export const useChannelsQuery = (request: GetChannelsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useChannelsApi(user.token);
+    const api = useChannelsApi();
 
     const queryResult = useQueryable({
         queryName: "useChannelsQuery",

@@ -8,7 +8,7 @@ import { useMemo } from "react";
 
 export const useLocalsQuery = (request: GetLocalsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useLocalsApi(user.token);
+    const api = useLocalsApi();
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",

@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetMenuItemsRequest } from "./Dtos/menuitems/GetMenuItemsRequest";
 import { GetMenuItemsResponse } from "./Dtos/menuitems/GetMenuItemsResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useMenuItemsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useMenuItemsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetMenuItemsRequest) => {
         const queryParams = new URLSearchParams();
@@ -28,14 +28,12 @@ export const useMenuItemsApi = (token: string) => {
         }
 
         const url = new URL(`api/menuitems?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMenuItemsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetMenuItemsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

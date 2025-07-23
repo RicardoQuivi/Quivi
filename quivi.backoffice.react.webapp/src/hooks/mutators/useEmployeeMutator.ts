@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
 import { Employee, EmployeeRestriction } from "../api/Dtos/employees/Employee";
@@ -12,8 +11,7 @@ interface PatchMutator {
     readonly restrictions?: EmployeeRestriction[];
 }
 export const useEmployeeMutator = () => {
-    const user = useAuthenticatedUser();
-    const api = useEmployeesApi(user.token);
+    const api = useEmployeesApi();
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.Employees),
@@ -95,7 +93,7 @@ export const useEmployeeMutator = () => {
         },
         delete:  (e: Employee) => deleteMutator.mutate([e], {}),
         resetPin:  (e: Employee) => resetPinMutator.mutate([e], {}),
-    }), [user, api]);
+    }), [api]);
 
     return result;
 }

@@ -7,7 +7,7 @@ import { PrinterWorker } from "../../api/Dtos/printerWorkers/PrinterWorker";
 
 export const usePrinterWorkersQuery = (request: GetPrinterWorkersRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = usePrinterWorkersApi(user.token);
+    const api = usePrinterWorkersApi();
 
     const queryResult = useQueryable({
         queryName: "usePrinterWorkersQuery",

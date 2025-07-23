@@ -11,7 +11,6 @@ import { useToast } from "../../context/ToastProvider";
 import { OrderCard } from "./OrderCard";
 import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
 import { useWebEvents } from "../../hooks/signalR/useWebEvents";
-import { usePosSession } from "../../context/pos/PosSessionContextProvider";
 import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
 
 interface Props {
@@ -21,11 +20,10 @@ interface Props {
 }
 export const OrdersQueueCards = (props: Props) => {
     const { t } = useTranslation();
-    const pos = usePosSession();
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
     const webEvents = useWebEvents();
-    const jobsApi = useBackgroundJobsApi(pos.token);
+    const jobsApi = useBackgroundJobsApi();
     const toast = useToast();
     
     const [page, setPage] = useState(0);

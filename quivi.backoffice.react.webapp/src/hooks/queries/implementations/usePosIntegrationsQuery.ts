@@ -8,7 +8,7 @@ import { PosIntegration } from "../../api/Dtos/posIntegrations/PosIntegration";
 
 export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = usePosIntegrationsApi(user.token);
+    const api = usePosIntegrationsApi();
 
     const queryResult = useQueryable({
         queryName: "usePosIntegrationsQuery",

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuthenticatedUser } from "../../context/AuthContext";
 import { usePrinterMessagesApi } from "../api/usePrinterMessagesApi";
 import { CreatePrinterMessageRequest } from "../api/Dtos/printerMessages/CreatePrinterMessageRequest";
 import { useMutator } from "./useMutator";
@@ -7,8 +6,7 @@ import { Entity, getEntityType } from "../EntitiesName";
 import { PrinterMessage } from "../api/Dtos/printerMessages/PrinterMessage";
 
 export const usePrinterMessageMutator = () => {
-    const user = useAuthenticatedUser();
-    const api = usePrinterMessagesApi(user.token);
+    const api = usePrinterMessagesApi();
     
     const createMutator = useMutator({
         entityType: getEntityType(Entity.PrinterMessages),
@@ -24,7 +22,7 @@ export const usePrinterMessageMutator = () => {
             const result = await createMutator.mutate([], request);
             return result.response;
         },
-    }), [user, api]);
+    }), [api]);
 
     return result;
 }

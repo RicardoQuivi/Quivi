@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { GetMerchantsRequest } from "./Dtos/merchants/GetMerchantsRequest";
-import { useHttpClient } from "./useHttpClient";
 import { GetMerchantsResponse } from "./Dtos/merchants/GetMerchantsResponse";
 import { CreateMerchantRequest } from "./Dtos/merchants/CreateMerchantRequest";
 import { CreateMerchantResponse } from "./Dtos/merchants/CreateMerchantResponse";
 import { PatchMerchantResponse } from "./Dtos/merchants/PatchMerchantResponse";
 import { PatchMerchantRequest } from "./Dtos/merchants/PatchMerchantRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useMerchantsApi = (token?: string) => {
-    const httpClient = useHttpClient();
-    
+export const useMerchantsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetMerchantsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -28,30 +28,24 @@ export const useMerchantsApi = (token?: string) => {
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/merchants?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMerchantsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetMerchantsResponse>(url, {});
     }
 
     const create = (request: CreateMerchantRequest) => {
         const url = new URL(`api/merchants`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateMerchantResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateMerchantResponse>(url, request, {});
     }
 
     const patch = (request: PatchMerchantRequest) => {
         const url = new URL(`api/merchants/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchMerchantResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchMerchantResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
         get,
         create,
         patch,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

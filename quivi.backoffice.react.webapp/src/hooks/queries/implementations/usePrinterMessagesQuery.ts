@@ -8,7 +8,7 @@ import { useMemo } from "react";
 
 export const usePrinterMessagesQuery = (request: GetPrinterMessagesRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = usePrinterMessagesApi(user.token);
+    const api = usePrinterMessagesApi();
 
     const queryResult = useQueryable({
         queryName: "usePrintersQuery",

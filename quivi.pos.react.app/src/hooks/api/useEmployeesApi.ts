@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetEmployeesRequest } from "./Dtos/employees/GetEmployeesRequest";
 import { UpdateEmployeePinCodeRequest } from "./Dtos/employees/UpdateEmployeePinCodeRequest";
 import { GetEmployeesResponse } from "./Dtos/employees/GetEmployeesResponse";
 import { UpdateEmployeePinCodeResponse } from "./Dtos/employees/UpdateEmployeePinCodeResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContextProvider";
 
-export const useEmployeesApi = (token: string | undefined) => {
-    const httpClient = useHttpClient();
+export const useEmployeesApi = () => {
+    const httpClient = useAuthenticatedHttpClient();
 
     const get = async (request: GetEmployeesRequest) => {
         const queryParams = new URLSearchParams();
@@ -30,22 +30,18 @@ export const useEmployeesApi = (token: string | undefined) => {
         }
 
         const url = new URL(`api/employees?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetEmployeesResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetEmployeesResponse>(url, {});
     }
 
     const updatePinCode = async (request: UpdateEmployeePinCodeRequest) => {
         const url = new URL(`api/employees/${request.id}/pincode`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPut<UpdateEmployeePinCodeResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.put<UpdateEmployeePinCodeResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
         get,
         updatePinCode,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

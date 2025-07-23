@@ -1,4 +1,3 @@
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { GetPosIntegrationsRequest } from "../../api/Dtos/posintegrations/GetPosIntegrationsRequest";
 import { PosIntegration } from "../../api/Dtos/posintegrations/PosIntegration";
 import { usePosIntegrationsApi } from "../../api/usePosIntegrationsApi";
@@ -7,8 +6,7 @@ import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | undefined) : QueryResult<PosIntegration[]> => {
-    const posContext = useLoggedEmployee();
-    const api = usePosIntegrationsApi(posContext.token);
+    const api = usePosIntegrationsApi();
 
     const queryResult = useQueryable({
         queryName: "usePosIntegrationsQuery",

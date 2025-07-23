@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { GetSessionsRequest } from "../../api/Dtos/sessions/GetSessionsRequest";
 import { Session } from "../../api/Dtos/sessions/Session";
 import { useSessionsApi } from "../../api/useSessionsApi";
@@ -66,8 +65,7 @@ export const useSessionsQuery = (request: GetSessionsRequest | undefined) : Quer
 }
 
 const useInternalSessionsQuery = () : QueryResult<Session[]> => {
-    const posContext = useLoggedEmployee();
-    const api = useSessionsApi(posContext.token);
+    const api = useSessionsApi();
     
     const queryResult = useQueryable({
         queryName: "useSessionsQuery",

@@ -13,7 +13,6 @@ import { GenericPreparationGroupCard } from "./GenericPreparationGroupCard";
 import ConfirmButton from "../../Buttons/ConfirmButton";
 import { useWebEvents } from "../../../hooks/signalR/useWebEvents";
 import { useBackgroundJobsApi } from "../../../hooks/api/useBackgroundJobsApi";
-import { usePosSession } from "../../../context/pos/PosSessionContextProvider";
 import { PreparationGroupDetailModal } from "./PreparationGroupDetailModal";
 import { usePreparationGroupMutator } from "../../../hooks/mutators/usePreparationGroupMutator";
 import { BackgroundJobPromise } from "../../../hooks/signalR/promises/BackgroundJobPromise";
@@ -83,11 +82,10 @@ interface PreparationGroupCardProps {
 }
 const PreparationGroupCard = (props: PreparationGroupCardProps) => {
     const { t } = useTranslation();
-    const pos = usePosSession();
     const toast = useToast();
     const webEvents = useWebEvents();
     const mutator = usePreparationGroupMutator();
-    const jobsApi = useBackgroundJobsApi(pos.token);
+    const jobsApi = useBackgroundJobsApi();
 
     const [itemsCheck, setItemsCheck] = useState(() => {
         const result = {} as Record<string, boolean>;

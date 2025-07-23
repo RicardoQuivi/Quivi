@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetCustomChargeMethodsResponse } from "./Dtos/customchargemethods/GetCustomChargeMethodsResponse";
 import { GetCustomChargeMethodsRequest } from "./Dtos/customchargemethods/GetCustomChargeMethodsRequest";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useCustomChargeMethodsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useCustomChargeMethodsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetCustomChargeMethodsRequest) => {
         const queryParams = new URLSearchParams();
@@ -15,14 +15,12 @@ export const useCustomChargeMethodsApi = (token: string) => {
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
         const url = new URL(`api/customchargemethods?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetCustomChargeMethodsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetCustomChargeMethodsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

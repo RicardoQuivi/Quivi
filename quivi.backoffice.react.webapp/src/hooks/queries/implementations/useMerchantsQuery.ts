@@ -8,7 +8,7 @@ import { useAuthenticatedUser } from "../../../context/AuthContext";
 
 export const useMerchantsQuery = (request: GetMerchantsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useMerchantsApi(user.token);
+    const api = useMerchantsApi();
 
     const queryResult = useQueryable({
         queryName: "useMerchantsQuery",

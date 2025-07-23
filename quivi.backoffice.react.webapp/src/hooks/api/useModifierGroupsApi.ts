@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetModifierGroupsRequest } from "./Dtos/modifierGroups/GetModifierGroupsRequest";
 import { GetModifierGroupsResponse } from "./Dtos/modifierGroups/GetModifierGroupsResponse";
 import { CreateModifierGroupResponse } from "./Dtos/modifierGroups/CreateModifierGroupResponse";
@@ -8,10 +7,11 @@ import { PatchModifierGroupResponse } from "./Dtos/modifierGroups/PatchModifierG
 import { PatchModifierGroupRequest } from "./Dtos/modifierGroups/PatchModifierGroupRequest";
 import { DeleteModifierGroupResponse } from "./Dtos/modifierGroups/DeleteModifierGroupResponse";
 import { DeleteModifierGroupRequest } from "./Dtos/modifierGroups/DeleteModifierGroupRequest";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const useModifierGroupsApi = (token?: string) => {
-    const httpClient = useHttpClient();
- 
+export const useModifierGroupsApi = () => {
+    const client = useAuthenticatedHttpClient();
+    
     const get = (request: GetModifierGroupsRequest) => {
         const queryParams = new URLSearchParams();
         
@@ -19,30 +19,22 @@ export const useModifierGroupsApi = (token?: string) => {
         request.menuItemIds?.forEach((id, index) => queryParams.set(`menuItemIds[${index}]`, id));
 
         const url = new URL(`api/modifiergroups?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetModifierGroupsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetModifierGroupsResponse>(url, {});
     }
 
     const create = (request: CreateModifierGroupRequest) => {
         const url = new URL(`api/modifiergroups`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateModifierGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.post<CreateModifierGroupResponse>(url, request, {});
     }
 
     const patch = (request: PatchModifierGroupRequest) => {
         const url = new URL(`api/modifiergroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchModifierGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.patch<PatchModifierGroupResponse>(url, request, {});
     }
 
     const deleteItem = (request: DeleteModifierGroupRequest) => {
         const url = new URL(`api/modifiergroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpDelete<DeleteModifierGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.delete<DeleteModifierGroupResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -50,7 +42,7 @@ export const useModifierGroupsApi = (token?: string) => {
         create,
         patch,
         delete: deleteItem,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

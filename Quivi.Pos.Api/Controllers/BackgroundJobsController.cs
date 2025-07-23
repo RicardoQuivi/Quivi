@@ -12,6 +12,7 @@ namespace Quivi.Pos.Api.Controllers
 {
     [Route("api/[controller]")]
     [RequireEmployee]
+    [RequireSubMerchant]
     [Authorize]
     [ApiController]
     public class BackgroundJobsController : ControllerBase

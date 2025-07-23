@@ -5,11 +5,9 @@ import { useQueryable } from "../useQueryable";
 import { GetPrintersRequest } from "../../api/Dtos/printers/GetPrintersRequest";
 import { Printer } from "../../api/Dtos/printers/Printer";
 import { usePrinterApi } from "../../api/usePrinterApi";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 
 export const usePrintersQuery = (request: GetPrintersRequest | undefined) : PagedQueryResult<Printer> => {
-    const posContext = useLoggedEmployee();
-    const api = usePrinterApi(posContext.token);
+    const api = usePrinterApi();
 
     const queryResult = useQueryable({
         queryName: "usePrintersQuery",

@@ -1,14 +1,12 @@
 import { useMemo } from "react";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
-import { useLoggedEmployee } from "../../context/pos/LoggedEmployeeContextProvider";
 import { useTransactionsApi } from "../api/useTransactionsApi";
 import { Transaction } from "../api/Dtos/transactions/Transaction";
 import { CreateTransactionRequest } from "../api/Dtos/transactions/CreateTransactionRequest";
 
 export const useTransactionMutator = () => {
-    const posContext = useLoggedEmployee();
-    const api = useTransactionsApi(posContext.token);
+    const api = useTransactionsApi();
 
     const createMutator = useMutator({
         entityType: getEntityType(Entity.Transactions),

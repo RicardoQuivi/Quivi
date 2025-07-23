@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetPosIntegrationsRequest } from "./Dtos/posIntegrations/GetPosIntegrationsRequest";
 import { GetPosIntegrationsResponse } from "./Dtos/posIntegrations/GetPosIntegrationsResponse";
+import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 
-export const usePosIntegrationsApi = (token?: string) => {
-    const httpClient = useHttpClient();
-    
+export const usePosIntegrationsApi = () => {
+    const client = useAuthenticatedHttpClient();
+
     const get = (request: GetPosIntegrationsRequest) => {
         const queryParams = new URLSearchParams();
         queryParams.set("page", request.page.toString());
@@ -24,14 +24,12 @@ export const usePosIntegrationsApi = (token?: string) => {
         }
 
         const url = new URL(`api/posintegrations?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetPosIntegrationsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return client.get<GetPosIntegrationsResponse>(url, {});
     }
 
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [client]);
 
     return state;
 }

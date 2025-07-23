@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuth } from "../../../context/AuthContextProvider";
 import { Employee } from "../../api/Dtos/employees/Employee";
 import { GetEmployeesRequest } from "../../api/Dtos/employees/GetEmployeesRequest";
 import { useEmployeesApi } from "../../api/useEmployeesApi";
@@ -7,8 +6,7 @@ import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
 
 export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
-    const auth = useAuth();
-    const api = useEmployeesApi(auth.token);
+    const api = useEmployeesApi();
 
     const queryResult = useQueryable({
         queryName: "useEmployeesQuery",

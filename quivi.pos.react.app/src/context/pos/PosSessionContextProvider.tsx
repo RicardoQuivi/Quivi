@@ -13,7 +13,6 @@ import { usePosApi } from "../../hooks/api/usePosApi";
 interface PosSessionContextType {
     readonly signOut: () => void;
     readonly employee: Employee;
-    readonly token: string;
     readonly cartSession: ICartSession;
     readonly permissions: QueryResult<ChannelPermissions>;
     readonly changeToSession: (channelId: string) => void;
@@ -24,7 +23,7 @@ const PosSessionContext = createContext<PosSessionContextType | undefined>(undef
 
 export const PosSessionContextProvider = ({ children }: { children: ReactNode }) => {
     const employeeContext = useLoggedEmployee();
-    const posApi = usePosApi(employeeContext.token);
+    const posApi = usePosApi();
     
     const searchParamsHook = useBrowserStorage(BrowserStorageType.UrlParam);
     const [channelId, setChannelId] = useStoredState<string | undefined>("channelId", undefined, searchParamsHook);

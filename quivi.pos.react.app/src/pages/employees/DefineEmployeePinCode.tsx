@@ -4,7 +4,6 @@ import { Alert, Fade, Step, StepLabel, Stepper, } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Employee } from "../../hooks/api/Dtos/employees/Employee";
 import { useEmployeesApi } from "../../hooks/api/useEmployeesApi";
-import { useAuth } from "../../context/AuthContextProvider";
 import { useEmployeeManager } from "../../context/employee/EmployeeContextProvider";
 
 enum PinCodeStep {
@@ -19,8 +18,7 @@ interface Props {
 }
 export const DefineEmployeePinCode = (props: Props) => {
     const { t } = useTranslation();
-    const auth = useAuth();
-    const api = useEmployeesApi(auth.token);
+    const api = useEmployeesApi();
     const employeeManager = useEmployeeManager();
 
     const [pinCode, setPinCode] = useState<string>("");

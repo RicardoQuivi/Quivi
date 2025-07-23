@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetPreparationGroupsRequest } from "./Dtos/preparationgroups/GetPreparationGroupsRequest";
 import { GetPreparationGroupsResponse } from "./Dtos/preparationgroups/GetPreparationGroupsResponse";
 import { CommitPreparationGroupRequest } from "./Dtos/preparationgroups/CommitPreparationGroupRequest";
@@ -8,9 +7,10 @@ import { PatchPreparationGroupRequest } from "./Dtos/preparationgroups/PatchPrep
 import { PatchPreparationGroupResponse } from "./Dtos/preparationgroups/PatchPreparationGroupResponse";
 import { PrintCommitedPreparationGroupRequest } from "./Dtos/preparationgroups/PrintCommitedPreparationGroupRequest";
 import { PrintCommitedPreparationGroupResponse } from "./Dtos/preparationgroups/PrintCommitedPreparationGroupResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const usePreparationGroupsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const usePreparationGroupsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetPreparationGroupsRequest) => {
         const queryParams = new URLSearchParams();
@@ -29,30 +29,22 @@ export const usePreparationGroupsApi = (token: string) => {
         }
 
         const url = new URL(`api/preparationGroups?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetPreparationGroupsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetPreparationGroupsResponse>(url, {});
     }
 
     const commit = async (request: CommitPreparationGroupRequest) => {
         const url = new URL(`api/preparationGroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPut<CommitPreparationGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.put<CommitPreparationGroupResponse>(url, request, {});
     }
 
     const patch = async (request: PatchPreparationGroupRequest): Promise<PatchPreparationGroupResponse> => {
         const url = new URL(`api/preparationGroups/${request.id}`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPatch<PatchPreparationGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.patch<PatchPreparationGroupResponse>(url, request, {});
     }
 
     const print = async (request: PrintCommitedPreparationGroupRequest): Promise<PrintCommitedPreparationGroupResponse> => {
         const url = new URL(`api/preparationGroups/${request.id}/print`, import.meta.env.VITE_API_URL).toString();
-        return await httpClient.httpPost<PatchPreparationGroupResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return await httpClient.post<PatchPreparationGroupResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
@@ -60,7 +52,7 @@ export const usePreparationGroupsApi = (token: string) => {
         commit,
         patch,
         print,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

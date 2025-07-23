@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useAuthenticatedUser } from "../../context/AuthContext";
 import { Channel } from "../api/Dtos/channels/Channel";
 import { CreateChannelsRequest } from "../api/Dtos/channels/CreateChannelRequest";
 import { useChannelsApi } from "../api/useChannelsApi";
@@ -11,8 +10,7 @@ interface PatchRequest {
     readonly name?: string;
 }
 export const useChannelMutator = () => {
-    const user = useAuthenticatedUser();
-    const api = useChannelsApi(user.token);
+    const api = useChannelsApi();
 
     const createMutator = useMutator({
         entityType: getEntityType(Entity.Channels),
@@ -54,7 +52,7 @@ export const useChannelMutator = () => {
         },
         patch: (e: Channel[], patch: PatchRequest) => editMutator.mutate(e, patch),
         delete: (e: Channel[]) => deleteMutator.mutate(e, {}),
-    }), [user, api]);
+    }), [api]);
 
     return result;
 }

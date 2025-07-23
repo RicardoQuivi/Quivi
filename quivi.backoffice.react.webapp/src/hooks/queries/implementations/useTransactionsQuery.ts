@@ -8,7 +8,7 @@ import { useTransactionApi } from "../../api/useTransactionsApi";
 
 export const useTransactionsQuery = (request: GetTransactionsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useTransactionApi(user.token);
+    const api = useTransactionApi();
 
     const queryResult = useQueryable({
         queryName: "useLocalsQuery",

@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { CreateTransactionRequest } from "./Dtos/transactions/CreateTransactionRequest";
 import { CreateTransactionResponse } from "./Dtos/transactions/CreateTransactionResponse";
 import { GetTransactionsRequest } from "./Dtos/transactions/GetTransactionsRequest";
 import { GetTransactionsResponse } from "./Dtos/transactions/GetTransactionsResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const useTransactionsApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const useTransactionsApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetTransactionsRequest) => {
         const queryParams = new URLSearchParams();
@@ -18,22 +18,18 @@ export const useTransactionsApi = (token: string) => {
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
 
         const url = new URL(`api/transactions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetTransactionsResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetTransactionsResponse>(url, {});
     }
 
     const create = async (request: CreateTransactionRequest) => {
         const url = new URL(`api/transactions`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateTransactionResponse>(url, request, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.post<CreateTransactionResponse>(url, request, {});
     }
 
     const state = useMemo(() => ({
         get,
         create,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }

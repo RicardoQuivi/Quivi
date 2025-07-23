@@ -8,7 +8,7 @@ import { MerchantDocument } from "../../api/Dtos/merchantdocuments/MerchantDocum
 
 export const useMerchantDocumentsQuery = (request: GetMerchantDocumentsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useMerchantDocumentsApi(user.token);
+    const api = useMerchantDocumentsApi();
 
     const queryResult = useQueryable({
         queryName: "useMerchantDocumentsQuery",

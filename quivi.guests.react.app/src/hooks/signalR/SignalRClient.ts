@@ -115,7 +115,6 @@ export class SignalRClient implements IWebClient {
     }
 
     private connectToJobEvents() {
-
         this.connection.off('OnBackgroundJobUpdated');
         this.connection.on('OnBackgroundJobUpdated', (evt: JobChangedEvent) => this.jobListeners.forEach(l => {
             if(l.jobId != evt.id) {

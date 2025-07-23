@@ -4,7 +4,6 @@ import { BaseSessionItem, SessionItem } from "../../api/Dtos/sessions/SessionIte
 import { MenuItem } from "../../api/Dtos/menuitems/MenuItem";
 import { BaseCreateOrderItem, CreateOrder, CreateOrderItem } from "../../api/Dtos/orders/CreateOrdersRequest";
 import { Session } from "../../api/Dtos/sessions/Session";
-import { useLoggedEmployee } from "../../../context/pos/LoggedEmployeeContextProvider";
 import { useOrdersApi } from "../../api/useOrdersApi";
 import { useTranslation } from "react-i18next";
 import { useToast } from "../../../context/ToastProvider";
@@ -23,8 +22,7 @@ interface ItemToSync {
 
 export const useCartSession = (channelId: string | undefined): ICartSession => {
     const { t } = useTranslation();
-    const employeeContext = useLoggedEmployee();
-    const ordersApi = useOrdersApi(employeeContext.token);
+    const ordersApi = useOrdersApi();
     const toast = useToast();
   
     const sessionsQuery = useSessionsQuery(!channelId ? undefined : {

@@ -8,7 +8,7 @@ import { useQueryable } from "../useQueryable";
 
 export const useReviewsQuery = (request: GetReviewsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useReviewsApi(user.token);
+    const api = useReviewsApi();
 
     const queryResult = useQueryable({
         queryName: "useReviewsQuery",

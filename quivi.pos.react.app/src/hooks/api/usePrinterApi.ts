@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetPrintersRequest } from "./Dtos/printers/GetPrintersRequest";
 import { GetPrintersResponse } from "./Dtos/printers/GetPrintersResponse";
+import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
 
-export const usePrinterApi = (token: string) => {
-    const httpClient = useHttpClient();
+export const usePrinterApi = () => {
+    const httpClient = useEmployeeHttpClient();
 
     const get = async (request: GetPrintersRequest) => {
         const queryParams = new URLSearchParams();
@@ -14,13 +14,11 @@ export const usePrinterApi = (token: string) => {
         queryParams.set("page", request.page.toString());
 
         const url = new URL(`api/printers?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetPrintersResponse>(url, {
-            "Authorization": `Bearer ${token}`,
-        });
+        return httpClient.get<GetPrintersResponse>(url, {});
     }
     const state = useMemo(() => ({
         get,
-    }), [httpClient, token]);
+    }), [httpClient]);
 
     return state;
 }
