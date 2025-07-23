@@ -17,7 +17,6 @@ COPY . .
 ENV VITE_AUTH_URL="${OAUTH_URL}"
 ENV VITE_API_URL="${API_URL}"
 ENV VITE_SIGNALR_URL="${SIGNALR_URL}"
-ENV VITE_GUESTS_APP_URL="${GUESTS_URL}"
 RUN npm run build
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
