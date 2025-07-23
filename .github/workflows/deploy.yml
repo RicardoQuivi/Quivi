@@ -295,6 +295,52 @@ jobs:
           targetPort: 8080
           runtimeStack: 'dotnetcore:8.0'
 
+  quivi-guests-api:
+    needs:
+      - quivi-migrator
+    runs-on: ubuntu-latest
+    environment: Sandbox
+    env:
+      Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__GUESTSAPP }}
+      JwtSettings__Audiences__0: guests
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Log in to ACR
+        run: az acr login --name $ACR_NAME
+
+      - name: Load .env to single line separated variable
+        id: load-env
+        run: |
+          env_vars=$(printenv | grep '__' | while IFS= read -r line; do
+            # Skip empty lines and comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Escape inner quotes in value
+            value_escaped="${value//\"/\\\"}"
+            printf '%s="%s" ' "$key" "$value_escaped"
+          done | sed 's/ *$//')
+          echo "env_vars=$env_vars" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Quivi.Guests.Api
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          registryUrl: ${{ env.ACR_NAME }}.azurecr.io
+          registryUsername: ${{ secrets.REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
+          containerAppEnvironment: sandbox-quivi-env
+          imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.api:${{ env.IMAGE_TAG }}
+          containerAppName: sbx-guests-api
+          ingress: external
+          environmentVariables: ${{ steps.load-env.outputs.env_vars }}
+          targetPort: 8080
+          runtimeStack: 'dotnetcore:8.0'
+
   quivi-backoffice-app:
     needs:
       - quivi-migrator
@@ -425,10 +471,11 @@ jobs:
     needs:
       - quivi-migrator
       - quivi-oauth
-      - quivi-backoffice-api
       - quivi-hangfire
       - quivi-signalr
+      - quivi-backoffice-api
       - quivi-pos-api
+      - quivi-guests-api
       - quivi-backoffice-app
       - quivi-pos-app
       - quivi-guests-app

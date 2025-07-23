@@ -236,8 +236,10 @@ jobs:
   #     - quivi-hangfire
   #     - quivi-signalr
   #     - quivi-pos-api
+  #     - quivi-guests-api
   #     - quivi-backoffice-app
   #     - quivi-pos-app
+  #     - quivi-guests-app
   #   runs-on: ubuntu-latest
   #   environment: Sandbox
   #   steps:
