@@ -18,7 +18,7 @@ env:
   Mailing__Provider: ${{ vars.MAILING__PROVIDER }}
   Mailing__FromAddress: ${{ vars.MAILING__FROMADDRESS }}
   Mailing__FromName: ${{ vars.MAILING__FROMNAME }}
-  SendGrid__ApiKey: ${{ secrets.SENDGRID_APIKEY }}
+  SendGrid__ApiKey: ${{ secrets.SENDGRID__APIKEY }}
   Smtp__Host: ${{ secrets.SMTP__HOST }}
   Smtp__Port: ${{ secrets.SMTP__PORT }}
   Smtp__Username: ${{ secrets.SMTP__USERNAME }}
@@ -41,7 +41,7 @@ env:
   JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
   JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
   DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
-  Storage__Provider: ${{ secrets.STORAGE__PROVIDER }}
+  Storage__Provider: ${{ vars.STORAGE__PROVIDER }}
   FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
   AzureBlobStorage__ConnectionString: ${{ secrets.AZUREBLOBSTORAGE__CONNECTIONSTRING }}
   AzureBlobStorage__VirtualDirectory: ${{ secrets.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
