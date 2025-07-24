@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\*.mjml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mjml.Net" Version="4.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions\Quivi.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

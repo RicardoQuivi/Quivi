@@ -1,0 +1,10 @@
+﻿<mj-section full-width="full-width" background-color="#1C3A11" padding-bottom="5px">
+	<mj-column>
+		<mj-image
+			src="https://quivistorage.blob.core.windows.net/static/quivifull.png"
+			alt=""
+			align="center"
+			width="65px"
+		/>
+	</mj-column>
+</mj-section>

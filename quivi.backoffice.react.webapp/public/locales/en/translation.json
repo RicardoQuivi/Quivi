@@ -5,6 +5,10 @@
         }
     },
     "common": {
+        "admin": {
+            "settings": "Administration settings",
+            "settingsDescription": "This section contains sensitive and relevant data only available for the administration."
+        },
         "errors": {
             "required": "This field is required",
             "minLength": "Minimum lenght for this field is {{min}}",

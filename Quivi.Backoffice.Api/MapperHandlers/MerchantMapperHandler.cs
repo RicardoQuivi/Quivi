@@ -30,8 +30,19 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 Name = model.Name,
                 VatNumber = model.VatNumber ?? "",
                 LogoUrl = logoUrl,
-                TransactionFee = model.TransactionFee,
                 SetUpFee = 0.0m,
+
+                TransactionFee = model.TransactionFee,
+                TransactionFeeUnit = model.TransactionFeeUnit,
+
+                SurchargeFee = model.SurchargeFee,
+                SurchargeFeeUnit = model.SurchargeFeeUnit,
+
+                SurchargeFees = model.SurchargeFees?.ToDictionary(s => s.ChargeMethod, s => new Dtos.MerchantFee
+                {
+                    Fee = s.Fee,
+                    Unit = s.FeeUnit,
+                }) ?? [],
             };
         }
     }

@@ -11,7 +11,10 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public IEnumerable<DocumentFormat>? Formats { get; init; }
         public IEnumerable<string>? DocumentReferences { get; init; }
         public IEnumerable<string>? DocumentIds { get; init; }
-        public bool HasDownloadPath { get; init; }
+        public bool? HasDownloadPath { get; init; }
+        public bool? HasPosCharge { get; init; }
+        public bool IncludePosCharge { get; init; }
+        public bool IncludePosChargeMerchant { get; init; }
 
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }

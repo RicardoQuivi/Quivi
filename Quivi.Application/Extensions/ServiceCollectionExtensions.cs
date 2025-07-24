@@ -33,6 +33,7 @@ using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
+using Quivi.Infrastructure.Mailing.EmailEngine.Mjml;
 using Quivi.Infrastructure.Mailing.SendGrid;
 using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
@@ -149,6 +150,7 @@ namespace Quivi.Application.Extensions
 
             serviceCollection.RegisterChargeMethods();
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
+            serviceCollection.RegisterSingleton<IEmailEngine, MjmlEmailEngine>();
 
             return serviceCollection;
         }
@@ -245,6 +247,8 @@ namespace Quivi.Application.Extensions
                     ValidAudiences = jwtSettings.Audiences,
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
                     ClockSkew = TimeSpan.Zero,
+
+                    RoleClaimType = "role",
                 };
 
                 options.Authority = hostsSettings.OAuth;

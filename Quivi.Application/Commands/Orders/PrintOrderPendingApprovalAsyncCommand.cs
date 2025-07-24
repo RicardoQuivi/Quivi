@@ -6,6 +6,7 @@ using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.EscPos;
+using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.Orders
 {
@@ -66,7 +67,7 @@ namespace Quivi.Application.Commands.Orders
                 },
                 GetContent = () => Task.FromResult<string?>(printerService.Get(new NewPendingOrderParameters
                 {
-                    Timestamp = dateTimeProvider.GetNow(order.Merchant!.TimeZone),
+                    Timestamp = dateTimeProvider.GetUtcNow().ToTimeZone(order.Merchant!.TimeZone),
                     Title = "Pedido mobile pendente",
                     OrderPlaceholder = order.OrderSequence?.SequenceNumber.ToString() ?? idConverter.ToPublicId(order.Id),
                     ChannelPlaceholder = $"{order.Channel!.ChannelProfile!.Name} {order.Channel.Identifier}",

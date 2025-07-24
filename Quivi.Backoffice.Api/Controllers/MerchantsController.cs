@@ -4,12 +4,15 @@ using Quivi.Application.Commands.Merchants;
 using Quivi.Application.Queries.Merchants;
 using Quivi.Backoffice.Api.Dtos;
 using Quivi.Backoffice.Api.Requests.Merchants;
+using Quivi.Backoffice.Api.Requests.ModifierGroups;
 using Quivi.Backoffice.Api.Responses.Merchants;
 using Quivi.Backoffice.Api.Validations;
+using Quivi.Domain.Entities.Charges;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Extensions;
+using Quivi.Infrastructure.Pos.Facturalusa.Models.Items;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Backoffice.Api.Controllers
@@ -57,8 +60,9 @@ namespace Quivi.Backoffice.Api.Controllers
                 IsDeleted = User.IsAdmin() ? null : false,
                 ParentIds = parentMerchantId.HasValue ? [ parentMerchantId.Value ] : null,
                 Ids = ids,
+                IncludeFees = User.IsAdmin(),
 
-                PageIndex = Math.Max(request.Page, 1),
+                PageIndex = request.Page,
                 PageSize = request.PageSize,
             });
 
@@ -98,7 +102,6 @@ namespace Quivi.Backoffice.Api.Controllers
                 Data = mapper.Map<Merchant>(merchant),
             };
         }
-
 
         [HttpPatch("{id}")]
         public async Task<PatchMerchantResponse> Patch(string id, [FromBody] PatchMerchantRequest request)
@@ -141,11 +144,45 @@ namespace Quivi.Backoffice.Api.Controllers
                         if (request.TransactionFeeUnit.HasValue)
                             e.TransactionFeeUnit = request.TransactionFeeUnit.Value;
 
+                        if (request.SurchargeFee.HasValue)
+                            e.SurchargeFee = request.SurchargeFee.Value;
+
+                        if (request.SurchargeFeeUnit.HasValue)
+                            e.SurchargeFeeUnit = request.SurchargeFeeUnit.Value;
+
                         if (request.Inactive.HasValue)
                             e.IsDeleted = request.Inactive.Value;
 
                         if (request.IsDemo.HasValue)
                             e.IsDemo = request.IsDemo.Value;
+
+                        if(request.SurchargeFees != null)
+                        {
+                            var fees = request.SurchargeFees.ToDictionary(s => s.Key, s => s.Value);
+                            foreach (var c in e.Surcharges.ToList())
+                            {
+                                if (fees.ContainsKey(c.Method))
+                                    continue;
+
+                                e.Surcharges.Remove(c.Method);
+                            }
+
+                            foreach (var (method, upsertingItem) in fees)
+                            {
+                                e.Surcharges.Upsert(method, t =>
+                                {
+                                    if (upsertingItem.Fee.HasValue)
+                                        t.Fee = upsertingItem.Fee.Value;
+
+                                    if (upsertingItem.Unit.HasValue)
+                                        t.Unit = upsertingItem.Unit.Value; 
+                                });
+
+                                var newValue = e.Surcharges[method];
+                                if (newValue.Fee == e.SurchargeFee && newValue.Unit == e.SurchargeFeeUnit)
+                                    e.Surcharges.Remove(method);
+                            }
+                        }
                     }
 
                     if (e.TermsAndConditionsAccepted == false && request.AcceptTermsAndConditions == true)

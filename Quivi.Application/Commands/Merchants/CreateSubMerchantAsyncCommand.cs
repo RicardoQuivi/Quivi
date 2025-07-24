@@ -126,15 +126,7 @@ namespace Quivi.Application.Commands.Merchants
 
         private static void SetUpFees(Merchant merchant)
         {
-            merchant.Fees = [
-                new MerchantFee
-                {
-                    FeeUnit = FeeUnit.Percentage,
-                    FeeType = FeeType.Surcharge,
-                    Fee = 1.00M,
-                    Merchant = merchant,
-                },
-            ];
+            merchant.Fees = [];
         }
 
         private static string GetTimeZoneByPostalCode(string postalCode)

@@ -5,7 +5,7 @@ namespace Quivi.Domain.Entities.Merchants
     public class MerchantFee : IDeletableEntity
     {
         public int MerchantId { get; set; }
-        public required Merchant Merchant { get; set; }
+        public Merchant? Merchant { get; set; }
 
         public ChargeMethod ChargeMethod { get; set; }
         public FeeType FeeType { get; set; }

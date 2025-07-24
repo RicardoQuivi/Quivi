@@ -245,7 +245,7 @@ export const MenuItemForm = (props: Props) => {
                         onChange={(e) => setState(s => ({ ...s, price: e }))}
                         errorMessage={form.touchedErrors.get("price")?.message}
                         endElement={<SingleSelect
-                            className="rounded-none border-0"
+                            className="rounded-none border-0 h-full"
                             value={state.priceType}
                             options={Array.from(priceTypesMap.keys())}
                             getId={e => priceTypesMap.get(e)!}

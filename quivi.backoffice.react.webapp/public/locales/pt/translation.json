@@ -5,6 +5,10 @@
         }
     },
     "common": {
+        "admin": {
+            "settings": "Definições de administração",
+            "settingsDescription": "Esta secção está apenas disponível para a administração e contêm campos sensiveis e relevantes."
+        },
         "errors": {
             "required": "Este campo é obrigatório",
             "minLength": "Este campo tem de ter pelo menos {{min}} caractéres",

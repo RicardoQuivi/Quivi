@@ -60,6 +60,13 @@ namespace Quivi.Application.Commands.Charges
                 Operation = EntityOperation.Update,
             });
 
+            await eventService.Publish(new OnPosChargeCapturedEvent
+            {
+                Id = charge.Id,
+                MerchantId = charge.PosCharge!.MerchantId,
+                ChannelId = charge.PosCharge!.ChannelId,
+            });
+
             return charge;
         }
 

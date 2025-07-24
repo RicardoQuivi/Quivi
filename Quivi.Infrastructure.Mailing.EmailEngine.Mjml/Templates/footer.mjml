@@ -1,0 +1,18 @@
+﻿<mj-hero background-color="#1A1A1A">
+	<mj-text align="center" font-size="12px" color="#888888">
+		Não responda a este e-mail.
+	</mj-text>
+	<mj-social font-size="15px" icon-size="30px" mode="horizontal" padding="0" align="center">
+		<mj-social-element name="facebook" href="https://mjml.io/">
+		</mj-social-element>
+		<mj-social-element name="instagram" href="https://mjml.io/">
+		</mj-social-element>
+		<mj-social-element name="x" href="https://mjml.io/">
+		</mj-social-element>
+		<mj-social-element name="linkedin" href="https://mjml.io/">
+		</mj-social-element>
+	</mj-social>
+	<mj-text color="#888888" font-size="11px" align="center" line-height="16px">
+		&copy; 2025 Quivi, Todos os direitos reservados.
+	</mj-text>
+</mj-hero>

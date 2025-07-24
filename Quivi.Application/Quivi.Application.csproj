@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Quivi.Infrastructure.Events.RabbitMQ\Quivi.Infrastructure.Events.RabbitMQ.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Images.SixLabors.ImageSharp\Quivi.Infrastructure.Images.SixLabors.ImageSharp.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Jobs.Hangfire\Quivi.Infrastructure.Jobs.Hangfire.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Mailing.EmailEngine.Mjml\Quivi.Infrastructure.Mailing.EmailEngine.Mjml.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.SendGrid\Quivi.Infrastructure.Mailing.SendGrid.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.Smtp\Quivi.Infrastructure.Mailing.Smtp.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.ESCPOS_NET\Quivi.Infrastructure.Pos.ESCPOS_NET.csproj" />

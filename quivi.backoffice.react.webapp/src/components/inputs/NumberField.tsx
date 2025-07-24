@@ -12,6 +12,7 @@ interface NumberFieldProps {
     readonly autoComplete?: string;
     readonly onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     readonly className?: string;
+    readonly startElement?: React.ReactNode;
     readonly endElement?: React.ReactNode;
     readonly decimalPlaces?: number;
 }
@@ -31,6 +32,10 @@ export const NumberField = (props: NumberFieldProps) => {
     }
 
     inputClasses += borderClasses;
+    if(props.startElement != undefined) {
+        inputClasses += ' rounded-l-none border-l-0';
+    }
+
     if(props.endElement != undefined) {
         inputClasses += ' rounded-r-none border-r-0';
     }
@@ -46,6 +51,14 @@ export const NumberField = (props: NumberFieldProps) => {
         }
         <div className="relative flex flex-col">
             <div className={`gap-0 flex flex-row`}>
+                {
+                    props.startElement != undefined &&
+                    <div
+                        className={`${borderClasses} rounded-r-none box-border h-11 flex-none`}
+                    >
+                        {props.startElement}
+                    </div>
+                }
                 <input
                     type="number"
                     name={props.name}

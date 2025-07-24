@@ -4,6 +4,9 @@ import { CreateMerchantRequest } from "../api/Dtos/merchants/CreateMerchantReque
 import { Merchant } from "../api/Dtos/merchants/Merchant";
 import { Entity, getEntityType } from "../EntitiesName";
 import { useMutator } from "./useMutator";
+import { FeeUnit } from "../api/Dtos/merchants/FeeUnit";
+import { ChargeMethod } from "../api/Dtos/ChargeMethod";
+import { PatchSurcharge } from "../api/Dtos/merchants/PatchMerchantRequest";
 
 interface PatchMutator {
     readonly name?: string;
@@ -12,8 +15,16 @@ interface PatchMutator {
     readonly vatRate?: string;
     readonly postalCode?: string;
     readonly logoUrl?: string;
-    readonly transactionFee?: number;
     readonly acceptTermsAndConditions?: boolean;
+
+    readonly transactionFee?: number;
+    readonly transactionFeeUnit?: FeeUnit;
+
+    readonly surchargeFee?: number;
+    readonly surchargeFeeUnit?: FeeUnit;
+
+    readonly surchargefees?: Record<ChargeMethod, PatchSurcharge>;
+    
     readonly isDemo?: boolean;
     readonly inactive?: boolean;
 }

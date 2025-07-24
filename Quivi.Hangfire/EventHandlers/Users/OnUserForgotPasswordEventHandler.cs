@@ -12,16 +12,19 @@ namespace Quivi.Hangfire.EventHandlers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IAppHostsSettings hostsSettings;
+        private readonly IEmailEngine emailEngine;
         private readonly IEmailService emailService;
 
         public OnUserForgotPasswordEventHandler(UserManager<ApplicationUser> userManager,
                                                         IAppHostsSettings hostsSettings,
                                                         IEmailService emailService,
-                                                        IBackgroundJobHandler backgroundJobHandler) : base(backgroundJobHandler)
+                                                        IBackgroundJobHandler backgroundJobHandler,
+                                                        IEmailEngine emailEngine) : base(backgroundJobHandler)
         {
             this.userManager = userManager;
             this.hostsSettings = hostsSettings;
             this.emailService = emailService;
+            this.emailEngine = emailEngine;
         }
 
         public override async Task Run(OnUserForgotPasswordEvent message)
@@ -33,8 +36,12 @@ namespace Quivi.Hangfire.EventHandlers
             await emailService.SendAsync(new MailMessage
             {
                 ToAddress = applicationUser.Email!,
-                Subject = "Your Reset Password Link",
-                Body = $"{hostsSettings.Backoffice.TrimEnd('/')}/forgotPassword/reset?email={WebUtility.UrlEncode(applicationUser.Email)}&code={WebUtility.UrlEncode(message.Code)}",
+                Subject = "Recuperar Password",
+                Body = emailEngine.ForgotPassword(new ForgotPasswordParameters
+                {
+                    Email = applicationUser.Email!,
+                    ResetPasswordUrl = $"{hostsSettings.Backoffice.TrimEnd('/')}/forgotPassword/reset?email={WebUtility.UrlEncode(applicationUser.Email)}&code={WebUtility.UrlEncode(message.Code)}",
+                }),
             });
 
             //TODO: Implement email razor

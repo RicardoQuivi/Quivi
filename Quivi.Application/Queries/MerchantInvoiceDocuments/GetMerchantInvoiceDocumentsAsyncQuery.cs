@@ -16,7 +16,10 @@ namespace Quivi.Application.Queries.MerchantInvoiceDocuments
         public IEnumerable<DocumentFormat>? Formats { get; init; }
         public IEnumerable<string>? DocumentReferences { get; init; }
         public IEnumerable<string>? DocumentIds { get; init; }
-        public bool HasDownloadPath { get; init; }
+        public bool? HasDownloadPath { get; init; }
+        public bool? HasPosCharge { get; init; }
+        public bool IncludePosCharge { get; init; }
+        public bool IncludePosChargeMerchant { get; init; }
     }
 
     public class GetMerchantInvoiceDocumentsAsyncQueryHandler : IQueryHandler<GetMerchantInvoiceDocumentsAsyncQuery, Task<IPagedData<MerchantInvoiceDocument>>>
@@ -40,6 +43,9 @@ namespace Quivi.Application.Queries.MerchantInvoiceDocuments
                 DocumentIds = query.DocumentIds,
                 DocumentReferences = query.DocumentReferences,
                 HasDownloadPath = query.HasDownloadPath,
+                HasPosCharge = query.HasPosCharge,
+                IncludePosCharge = query.IncludePosCharge,
+                IncludePosChargeMerchant = query.IncludePosChargeMerchant,
 
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

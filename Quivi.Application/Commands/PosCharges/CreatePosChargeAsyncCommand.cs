@@ -88,6 +88,12 @@ namespace Quivi.Application.Commands.PosCharges
                 ChannelId = posCharge.ChannelId,
                 Operation = EntityOperation.Create,
             });
+            await eventService.Publish(new OnPosChargeCapturedEvent
+            {
+                Id = posCharge.Id,
+                MerchantId = posCharge.MerchantId,
+                ChannelId = posCharge.ChannelId,
+            });
 
             return posCharge;
         }

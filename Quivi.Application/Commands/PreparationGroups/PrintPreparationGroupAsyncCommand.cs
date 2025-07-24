@@ -14,6 +14,7 @@ using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationTargets;
 using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.PreparationGroups
 {
@@ -133,7 +134,7 @@ namespace Quivi.Application.Commands.PreparationGroups
                 PreparationType = i.Item.OriginalQuantity >= 0 ? PreparationType.Order : PreparationType.Cancellation
             });
 
-            var merchantNow = dateTimeProvider.GetNow(merchant.TimeZone);
+            var merchantNow = dateTimeProvider.GetUtcNow().ToTimeZone(merchant.TimeZone);
             var now = dateTimeProvider.GetUtcNow();
             var addedEntities = new List<PrinterNotificationMessage>();
             foreach (var entry in entries)

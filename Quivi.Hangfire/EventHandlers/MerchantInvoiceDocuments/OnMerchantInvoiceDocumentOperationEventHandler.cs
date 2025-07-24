@@ -15,9 +15,15 @@ namespace Quivi.Hangfire.EventHandlers.MerchantInvoiceDocuments
             this.commandProcessor = commandProcessor;
         }
 
-        public override Task Run(OnMerchantInvoiceDocumentOperationEvent message) => commandProcessor.Execute(new PrintMerchantInvoiceDocumentAsyncCommand
+        public override Task Run(OnMerchantInvoiceDocumentOperationEvent message)
         {
-            MerchantInvoiceDocumentId = message.Id,
-        });
+            if(message.PosChargeId.HasValue == false)
+                return Task.CompletedTask;
+
+            return commandProcessor.Execute(new ProcessMerchantInvoiceDocumentAsyncCommand
+            {
+                MerchantInvoiceDocumentId = message.Id,
+            });
+        }
     }
 }

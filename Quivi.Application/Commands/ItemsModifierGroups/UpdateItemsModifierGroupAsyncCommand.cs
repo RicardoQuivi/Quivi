@@ -122,7 +122,7 @@ namespace Quivi.Application.Commands.ItemsModifierGroups
         private class UpdatableModifierGroup : AUpdatableTranslatableEntity<ItemsModifierGroupTranslation, UpdatableModifierTranslation, IItemsModifierGroupTranslation>, IUpdatableItemsModifierGroup
         {
             private readonly ItemsModifierGroup model;
-            private readonly UpdatableRelationshipEntity<MenuItemModifier, IUpdatableModifierItem, int> updatebleItems;
+            private readonly UpdatableRelationshipEntity<MenuItemModifier, IUpdatableModifierItem, int> updatableItems;
             private readonly string originalName;
             private readonly int originalMinSelection;
             private readonly int originalMaxSelection;
@@ -137,7 +137,7 @@ namespace Quivi.Application.Commands.ItemsModifierGroups
             })
             {
                 this.model = model;
-                this.updatebleItems = new (model.MenuItemModifiers!, m => m.MenuItemId, t => new UpdatableModifierItem(t), (id) => new MenuItemModifier
+                this.updatableItems = new (model.MenuItemModifiers!, m => m.MenuItemId, t => new UpdatableModifierItem(t), (id) => new MenuItemModifier
                 {
                     MenuItemId = id,
 
@@ -161,7 +161,7 @@ namespace Quivi.Application.Commands.ItemsModifierGroups
             public string Name { get => model.Name; set => model.Name = value; }
             public int MinSelection { get => model.MinSelection; set => model.MinSelection = value; }
             public int MaxSelection { get => model.MaxSelection; set => model.MaxSelection = value; }
-            public IUpdatableRelationship<IUpdatableModifierItem, int> MenuItems => updatebleItems;
+            public IUpdatableRelationship<IUpdatableModifierItem, int> MenuItems => updatableItems;
 
             public override bool HasChanges
             {
@@ -176,7 +176,7 @@ namespace Quivi.Application.Commands.ItemsModifierGroups
                     if (originalMaxSelection != model.MaxSelection)
                         return true;
 
-                    if (updatebleItems.HasChanges)
+                    if (updatableItems.HasChanges)
                         return true;
 
                     return base.HasChanges;
