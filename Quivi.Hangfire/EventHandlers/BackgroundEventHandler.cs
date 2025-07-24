@@ -14,14 +14,14 @@ namespace Quivi.Hangfire.EventHandlers
 
         public async Task Process(T message)
         {
-            try
-            {
-                await Run(message);
-            }
-            catch
-            {
+            //try
+            //{
+            //    await Run(message);
+            //}
+            //catch
+            //{
                 backgroundJobHandler.Enqueue(() => Run(message));
-            }
+            //}
         }
 
         public abstract Task Run(T message);
