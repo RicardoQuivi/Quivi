@@ -14,7 +14,11 @@ namespace Quivi.Infrastructure.Mailing.SendGrid
 
         public async Task SendAsync(MailMessage message, IEnumerable<MailAttachment> attachments)
         {
-            var client = new SendGridClient(this.ApiKey);
+            var options = new SendGridClientOptions
+            {
+                ApiKey = this.ApiKey
+            };
+            var client = new SendGridClient(options);
             var msg = new SendGridMessage
             {
                 From = new EmailAddress(this.FromAddress, this.FromName),
