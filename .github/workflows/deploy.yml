@@ -13,26 +13,46 @@ env:
   LOCATION: westeurope
   IMAGE_TAG: ${{ github.sha }}
 
+  # Connection Strings
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
   ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
+
+  # Mailing
   Mailing__Provider: ${{ vars.MAILING__PROVIDER }}
   Mailing__FromAddress: ${{ vars.MAILING__FROMADDRESS }}
   Mailing__FromName: ${{ vars.MAILING__FROMNAME }}
+
+  # SendGrid
   SendGrid__ApiKey: ${{ secrets.SENDGRID__APIKEY }}
+  
+  # Smtp
   Smtp__Host: ${{ secrets.SMTP__HOST }}
   Smtp__Port: ${{ secrets.SMTP__PORT }}
   Smtp__Username: ${{ secrets.SMTP__USERNAME }}
   Smtp__Password: ${{ secrets.SMTP__PASSWORD }}
+
+  # RabbitMq
   RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
   RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
   RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
+
+  # Printer Connector RabbitMq
+  PrinterConnector__Host: ${{ secrets.PRINTERCONNECTOR__HOST }}
+  PrinterConnector__Port: ${{ secrets.PRINTERCONNECTOR__PORT }}
+  PrinterConnector__Username: ${{ secrets.PRINTERCONNECTOR__USERNAME }}
+  PrinterConnector__Password: ${{ secrets.PRINTERCONNECTOR__PASSWORD }}
+
   IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
+  
+  # AppHosts
   AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
   AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
   AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
   AppHosts__GuestsApp: ${{ vars.APPHOSTS__GUESTSAPP }}
   AppHosts__GuestsApi: ${{ vars.APPHOSTS__GUESTSAPI }}
   AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
+
+  # JWT Settings
   JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
   JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
   JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
@@ -40,12 +60,24 @@ env:
   JwtSettings__RefreshTokenExpireTimeSpan: ${{ secrets.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
   JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
   JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
+
+  # Defaults
   DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
+
+  # Storage
   Storage__Provider: ${{ vars.STORAGE__PROVIDER }}
+
+  # File System Storage
   FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
+
+  # Azure Blob Storage
   AzureBlobStorage__ConnectionString: ${{ secrets.AZUREBLOBSTORAGE__CONNECTIONSTRING }}
   AzureBlobStorage__VirtualDirectory: ${{ secrets.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
+
+  # Invoicing
   Invoicing__Provider: ${{ vars.INVOICING__PROVIDER }}
+
+  # Facturalusa invoicing
   Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
   Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
   Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
