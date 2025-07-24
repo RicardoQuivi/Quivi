@@ -8,7 +8,7 @@ namespace Quivi.Guests.Api.Dtos
         public decimal Total { get; init; }
         public decimal Payment { get; init; }
         public decimal Tip { get; init; }
-        public decimal Surchage { get; init; }
+        public decimal Surcharge { get; init; }
         public decimal SyncedAmount { get; init; }
         public DateTimeOffset? CapturedDate { get; init; }
         public TransactionStatus Status { get; init; }

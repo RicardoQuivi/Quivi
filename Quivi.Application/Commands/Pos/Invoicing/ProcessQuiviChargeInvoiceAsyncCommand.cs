@@ -20,7 +20,6 @@ namespace Quivi.Application.Commands.Pos.Invoicing
         public required int PosChargeId { get; init; }
         public required decimal PaymentAmount { get; init; }
         public required IEnumerable<AQuiviSyncStrategy.InvoiceItem> InvoiceItems { get; init; }
-        public required bool IncludeSurcharge { get; init; }
         public required bool IncludeTip { get; init; }
         public required string InvoicePrefix { get; init; }
     }
@@ -51,7 +50,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
         {
             var posCharge = await GetPosCharge(command.PosChargeId);
 
-            Lazy<Task<gatewayModels.InvoiceReceipt>> receipt = new Lazy<Task<InvoiceReceipt>>(() => CreateInvoice(command, posCharge));
+            Lazy<Task<InvoiceReceipt>> receipt = new Lazy<Task<InvoiceReceipt>>(() => CreateInvoice(command, posCharge));
             await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge.MerchantId,
@@ -101,9 +100,9 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             return posChargeQuery.Single();
         }
 
-        private async Task<gatewayModels.InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
+        private async Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
         {
-            var invoiceItems = command.InvoiceItems.Select(g => new gatewayModels.InvoiceItem(g.Type)
+            var invoiceItems = command.InvoiceItems.Select(g => new InvoiceItem(g.Type)
             {
                 CorrelationId = idConverter.ToPublicId(g.MenuItemId),
                 Name = g.Name,
@@ -113,22 +112,9 @@ namespace Quivi.Application.Commands.Pos.Invoicing
                 DiscountPercentage = g.DiscountPercentage,
             }).ToList();
 
-            if (command.IncludeSurcharge && posCharge.SurchargeFeeAmount > 0.0M)
-            {
-                invoiceItems.Add(new gatewayModels.InvoiceItem(gatewayModels.InvoiceItemType.Services)
-                {
-                    CorrelationId = "ConvenienceFee",
-                    Name = "Taxa de Conveniência",
-                    Price = posCharge.SurchargeFeeAmount,
-                    Quantity = 1,
-                    TaxPercentage = 23,
-                    DiscountPercentage = 0,
-                });
-            }
-
             if (command.IncludeTip && posCharge.Tip > 0.0M)
             {
-                invoiceItems.Add(new gatewayModels.InvoiceItem(gatewayModels.InvoiceItemType.Services)
+                invoiceItems.Add(new InvoiceItem(InvoiceItemType.Services)
                 {
                     CorrelationId = "Tip",
                     Name = "Gratificação",
@@ -139,12 +125,12 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             }
 
             var charge = posCharge.Charge!;
-            return await command.InvoiceGateway.CreateInvoiceReceipt(new gatewayModels.InvoiceReceipt
+            return await command.InvoiceGateway.CreateInvoiceReceipt(new InvoiceReceipt
             {
                 CreatedDateUtc = dateTimeProvider.GetUtcNow(),
                 PaymentMethodCode = charge.ChargeMethod == ChargeMethod.Custom ? charge.MerchantCustomCharge!.CustomChargeMethod!.Name : "Quivi",
                 SerieCode = command.InvoiceGateway.BuildCompleteSerieCode("QV", command.InvoicePrefix),
-                Customer = new gatewayModels.Customer(gatewayModels.CustomerType.Personal)
+                Customer = new Customer(CustomerType.Personal)
                 {
                     Code = posCharge.VatNumber,
                     VatNumber = posCharge.VatNumber,

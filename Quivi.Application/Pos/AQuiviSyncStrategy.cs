@@ -58,8 +58,6 @@ namespace Quivi.Application.Pos
 
         protected virtual IInvoiceGateway GetInvoiceGateway(T settings)
         {
-            if (settings.IsDefault)
-                return InvoiceGatewayFactory.GetDefaultInvoiceGateway();
             return InvoiceGatewayFactory.GetInvoiceGateway(settings);
         }
 
@@ -227,7 +225,6 @@ namespace Quivi.Application.Pos
                 InvoiceItems = itemsToBePaid,
                 IncludeTip = settings.IncludeTipInInvoice,
                 InvoicePrefix = settings.InvoicePrefix,
-                IncludeSurcharge = false,
             });
         }
 

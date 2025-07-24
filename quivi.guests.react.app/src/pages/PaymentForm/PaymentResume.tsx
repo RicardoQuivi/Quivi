@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BigNumber from "bignumber.js";
 import type { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import withStyles from "@mui/styles/withStyles";
@@ -39,8 +39,26 @@ export const PaymentResume = ({
     
     const [isOpen, setIsOpen] = useState(false);
     const [serviceFeeTooltipOpen, setServiceFeeTooltipOpen] = useState(false);
+
+    const {
+        surcharge,
+        amount,
+        total,
+     } = useMemo(() => {
+        const amount = getAmount(nextTransaction ?? transaction);
+        const surcharge = getServiceFee(nextTransaction ?? transaction);
+
+        return {
+            amount: amount,
+            surcharge: surcharge,
+            total: amount + surcharge,
+        }
+    }, [nextTransaction, transaction])
+
+
     const walletDiscount = nextTransaction != null ? getTotal(nextTransaction) - getTotal(transaction) : 0;
     const paymentDetails = browserStorageService.getPaymentDetails();
+
 
     if(paymentDetails == null) {
         return <Navigate to={`/c/${channelContext.channelId}`} replace />
@@ -94,11 +112,11 @@ export const PaymentResume = ({
                         </div>
                     </div>
                     {
-                        !!getServiceFee(nextTransaction ?? transaction) &&
+                        surcharge > 0 &&
                         <>
                             <div className="purchase-summary__row">
                                 <p>{t("paymentMethods.amount")}</p>
-                                <p className="purchase-info">{Formatter.price(getAmount(nextTransaction ?? transaction), "€")}</p>
+                                <p className="purchase-info">{Formatter.price(amount, "€")}</p>
                             </div>
                             <div className="purchase-summary__row">
                                 <p style={{display: "flex", alignItems: "center"}}>
@@ -118,7 +136,7 @@ export const PaymentResume = ({
                                         </IconButton>
                                     </CustomTooltip>
                                 </p>
-                                <p className="purchase-info">{Formatter.price(getServiceFee(nextTransaction ?? transaction)!, "€")}</p>
+                                <p className="purchase-info">{Formatter.price(surcharge, "€")}</p>
                             </div>
                         </>
                     }
@@ -131,7 +149,7 @@ export const PaymentResume = ({
                     }
                     <div className="purchase-summary__row">
                         <p>{t("paymentMethods.total")}</p>
-                        <p className="purchase-amount">{Formatter.price(BigNumber(getTotal(nextTransaction ?? transaction)).minus(walletDiscount).toNumber(), "€")}</p>
+                        <p className="purchase-amount">{Formatter.price(BigNumber(total).minus(walletDiscount).toNumber(), "€")}</p>
                     </div>
                 </div>
             </div>
@@ -139,7 +157,7 @@ export const PaymentResume = ({
                 {
                     transaction.method !== ChargeMethod.Wallet && transaction.topUpData == null &&
                     wallet.isAvailable &&
-                    0 < wallet.balance && wallet.balance < getTotal(nextTransaction ?? transaction) &&
+                    0 < wallet.balance && wallet.balance < total &&
                     walletDiscount === 0 &&
                     <div className="purchase-summary__row">
                         <p style={{ fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", marginBottom: "1rem", marginLeft: "auto", marginRight: "0"}} onClick={() => applyDiscount(wallet.balance)}>
@@ -149,7 +167,7 @@ export const PaymentResume = ({
                 }
             </div>
             {
-                !!getServiceFee(nextTransaction ?? transaction) &&
+                surcharge > 0 &&
                 <>
                     <p style={{marginTop: "-10px", fontSize: "0.8rem", cursor: "pointer"}} onClick={() => setIsOpen(true)}>{t("paymentMethods.termsAndConditions")}</p>
                     <br/>
@@ -162,4 +180,4 @@ export const PaymentResume = ({
 
 const getAmount = (c: Transaction) =>  c.payment + c.tip;
 const getServiceFee = (c: Transaction) => c.surcharge;
-const getTotal = (c: Transaction) => getAmount(c) + (getServiceFee(c) ?? 0);
+const getTotal = (c: Transaction) => getAmount(c) + getServiceFee(c);

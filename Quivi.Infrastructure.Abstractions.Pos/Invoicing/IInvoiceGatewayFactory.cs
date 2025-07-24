@@ -3,6 +3,5 @@
     public interface IInvoiceGatewayFactory
     {
         IInvoiceGateway GetInvoiceGateway(ISyncSettings settings);
-        IInvoiceGateway GetDefaultInvoiceGateway();
     }
 }

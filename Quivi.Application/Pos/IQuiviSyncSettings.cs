@@ -15,11 +15,6 @@ namespace Quivi.Application.Pos
         bool IncludeTipInInvoice { get; }
 
         /// <summary>
-        /// Indicates if it is default data sync configuration not related to a specific merchant.
-        /// </summary>
-        bool IsDefault { get; }
-
-        /// <summary>
         /// A prefix to add to generated invoices.
         /// </summary>
         string InvoicePrefix { get; }

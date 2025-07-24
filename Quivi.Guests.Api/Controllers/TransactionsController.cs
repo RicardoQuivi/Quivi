@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Commands.Charges;
 using Quivi.Application.Commands.PosCharges;
 using Quivi.Application.Queries.MerchantInvoiceDocuments;
@@ -12,7 +11,6 @@ using Quivi.Guests.Api.Validations;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
-using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Guests.Api.Controllers

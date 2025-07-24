@@ -6,6 +6,7 @@ using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data.Users;
+using Quivi.Infrastructure.Abstractions.Repositories;
 
 namespace Quivi.Application.Commands.Users
 {
@@ -33,16 +34,19 @@ namespace Quivi.Application.Commands.Users
         private readonly IOptions<IdentityOptions> identityOptions;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
+        private readonly IPeopleRepository repository;
 
         public CreateUserAsyncCommandHandler(UserManager<ApplicationUser> userManager,
                                                 IOptions<IdentityOptions> identityOptions,
                                                 IDateTimeProvider dateTimeProvider,
-                                                IEventService eventService)
+                                                IEventService eventService,
+                                                IPeopleRepository repository)
         {
             this.userManager = userManager;
             this.identityOptions = identityOptions;
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
+            this.repository = repository;
         }
 
         public async Task<ApplicationUser?> Handle(CreateUserAsyncCommand command)
@@ -88,6 +92,26 @@ namespace Quivi.Application.Commands.Users
                     }
                 }
 
+                if (command.PersonData != null)
+                {
+                    var personQuery = await repository.GetAsync(new Infrastructure.Abstractions.Repositories.Criterias.GetPeopleCriteria
+                    {
+                        Emails = [command.Email]
+                    });
+                    var person = personQuery.FirstOrDefault();
+                    if (person == null)
+                    {
+                        person = new Person
+                        {
+                            UserId = applicationUser.Id,
+                            Vat = command.PersonData.VatNumber,
+                            PhoneNumber = command.PersonData.PhoneNumber,
+                        };
+                        repository.Add(person);
+                        await repository.SaveChangesAsync();
+                        applicationUser.Person = person;
+                    }
+                }
                 return applicationUser;
             }
 

@@ -40,7 +40,7 @@ namespace Quivi.Guests.Api.MapperHandlers
                 Total = model.Total,
                 Payment = model.Payment,
                 Tip = model.Tip,
-                Surchage = model.SurchargeFeeAmount,
+                Surcharge = model.SurchargeFeeAmount,
                 SyncedAmount = syncedAmount,
                 Status = this.mapper.Map<TransactionStatus>(model.Charge?.Status ?? ChargeStatus.Processing),
                 Method = model.Charge?.ChargeMethod ?? ChargeMethod.Custom,

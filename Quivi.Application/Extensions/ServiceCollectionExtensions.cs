@@ -148,6 +148,23 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterPosSyncStrategies();
             serviceCollection.RegisterFacturalusa(configuration);
 
+            //Register Default Invoicing
+            serviceCollection.RegisterScoped<IInvoiceGateway>(p =>
+            {
+                var settings = configuration.GetSection("Invoicing").Get<InvoicingSettings>();
+                if (settings?.Provider?.Equals("FacturaLusa", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    var facturalusaSettings = p.GetService<IFacturalusaSettings>()!;
+                    return new FacturalusaGateway(p.GetService<IFacturalusaServiceFactory>()!, facturalusaSettings.AccessToken, "Default")
+                    {
+                        CommandProcessor = p.GetService<ICommandProcessor>()!,
+                        QueryProcessor = p.GetService<IQueryProcessor>()!
+                    };
+                }
+
+                throw new NotImplementedException();
+            });
+
             serviceCollection.RegisterChargeMethods();
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
             serviceCollection.RegisterSingleton<IEmailEngine, MjmlEmailEngine>();

@@ -45,6 +45,7 @@ env:
   FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
   AzureBlobStorage__ConnectionString: ${{ secrets.AZUREBLOBSTORAGE__CONNECTIONSTRING }}
   AzureBlobStorage__VirtualDirectory: ${{ secrets.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
+  Invoicing__Provider: ${{ vars.INVOICING__PROVIDER }}
   Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
   Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
   Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
