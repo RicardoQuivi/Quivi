@@ -50,7 +50,8 @@ export class SignalRClient implements IWebClient {
     private merchantListeners: Set<MerchantEventListener> = new Set<MerchantEventListener>();
 
     constructor(private signalRHost: string) {
-        this.connection = new HubConnectionBuilder().withUrl(`${signalRHost}Backoffice?`).build();
+        const url = new URL(`Backoffice`, signalRHost).toString();
+        this.connection = new HubConnectionBuilder().withUrl(`${url}?`).build();
         this.start();
     }
 
@@ -84,7 +85,8 @@ export class SignalRClient implements IWebClient {
     
                 try {
                     let jwt = this.getJwt();
-                    this.connection.baseUrl = `${this.signalRHost}Backoffice?access_token=${jwt}`;
+                    const url = new URL(`Backoffice`, this.signalRHost).toString();
+                    this.connection.baseUrl = `${url}?access_token=${jwt}`;
                     await this.connection.start().then(async () => {
                         if(this.connection.state != HubConnectionState.Connected) {
                             return;
