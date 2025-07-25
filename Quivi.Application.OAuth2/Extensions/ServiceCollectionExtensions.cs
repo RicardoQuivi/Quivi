@@ -32,7 +32,9 @@ namespace Quivi.Application.OAuth2.Extensions
                                 .AddServer(options =>
                                 {
                                     IJwtSettings jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+                                    var hostsSettings = configuration.GetSection("AppHosts").Get<AppHostsSettings>()!;
 
+                                    options.SetIssuer(new Uri(hostsSettings.OAuth));
                                     options.DisableAccessTokenEncryption();
 
                                     options.SetAccessTokenLifetime(jwtSettings.ExpireTimeSpan)
