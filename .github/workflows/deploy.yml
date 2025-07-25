@@ -111,6 +111,7 @@ jobs:
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
       Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
+      Cors__AllowedOrigins__2: ${{ vars.APPHOSTS__GUESTSAPP }}
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -243,8 +244,10 @@ jobs:
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
       Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
+      Cors__AllowedOrigins__2: ${{ vars.APPHOSTS__GUESTSAPP }}
       JwtSettings__Audiences__0: backoffice
       JwtSettings__Audiences__1: pos
+      JwtSettings__Audiences__2: guests
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
