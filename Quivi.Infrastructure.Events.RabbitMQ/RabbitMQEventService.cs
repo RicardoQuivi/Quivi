@@ -45,6 +45,7 @@ namespace Quivi.Infrastructure.Events.RabbitMQ
         public Task Publish(IEvent evt)
         {
             var exchangeName = evt.GetType().FullName;
+            Console.WriteLine($"Trying to publish into {exchangeName}");
             Channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false);
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(evt, jsonSettings));
             Channel.BasicPublish(exchange: exchangeName, routingKey: "", basicProperties: null, body: body);

@@ -56,6 +56,7 @@ namespace Quivi.Infrastructure.Repositories
 
         public Task Publish(IEvent evt)
         {
+            Console.WriteLine($"Enqueued publishing of {evt.GetType().FullName}");
             publishQueue.Enqueue(() => eventService.Publish(evt));
             return Task.CompletedTask;
         }

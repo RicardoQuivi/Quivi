@@ -1133,8 +1133,6 @@ namespace Quivi.Domain.Repositories.EntityFramework
         public DbSet<Channel> Channels { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Session> Sessions { get; set; }
-        //TODO: Should I add this?
-        //public DbSet<SessionBill> SessionBills { get; set; }
         public DbSet<PosIntegration> PosIntegrations { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<DepositSurcharge> DepositSurcharges { get; set; }

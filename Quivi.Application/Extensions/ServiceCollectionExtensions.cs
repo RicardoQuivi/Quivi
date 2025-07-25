@@ -432,11 +432,9 @@ namespace Quivi.Application.Extensions
                 {
                     // Load the assembly from the path
                     Assembly.LoadFrom(assemblyFile);
-                    Console.WriteLine($"Loaded assembly: {assemblyFile}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine($"Failed to load assembly {assemblyFile}: {ex.Message}");
                 }
             }
         }
