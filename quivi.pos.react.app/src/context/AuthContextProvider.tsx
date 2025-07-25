@@ -170,7 +170,7 @@ interface DecodedToken {
     readonly merchant_id: string;
     readonly sub_merchant_id: string;
     readonly activated_at?: number;
-    readonly role: string[];
+    readonly role?: string[];
 }
 class TokenData {
     public readonly accessToken: string;
@@ -202,6 +202,6 @@ class TokenData {
         this.merchantId = decoded.merchant_id;
         this.subMerchantId = decoded.sub_merchant_id;
         this.isActivated = decoded.activated_at != undefined;
-        this.isAdmin = decoded.role.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
+        this.isAdmin = decoded.role?.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
     }
 }
