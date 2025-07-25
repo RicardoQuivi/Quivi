@@ -3,7 +3,7 @@ import Badge from "../../../components/ui/badge/Badge";
 import { HandleIcon } from "../../../icons";
 import { Spinner } from "../../../components/spinners/Spinner";
 import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
-import Checkbox from "../../../components/form/input/Checkbox";
+import { useMemo } from "react";
 
 export enum TaskType {
     Required,
@@ -35,18 +35,30 @@ const getMessage = (type: TaskType): string => {
     }
 }
 
+const getPendingTasks = (task: Task): Task[] => {
+    const result = [] as Task[];
+    for(const t of task.requires ?? []) {
+        const pendingTasks = getPendingTasks(t);
+        result.push(...pendingTasks);
+        if(t.isChecked == false) {
+            result.push(task);
+        }
+    }
+    
+    return result;
+}
 const TaskItem = (props: Task) => {
     const { t } = useTranslation();
 
-    const requiresAny = props.requires?.find(g => g.isChecked == false);
+    const pendingRequiredTasks = useMemo(() => getPendingTasks(props), [props.requires])
+
     const aux = (
         <div
             id={`task-${props.id}`}
             className="p-5 mb-4 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"
             style={{
                 cursor: "pointer",
-                //background: requiresAny ? 'var(--color-gray-200)' : undefined,
-                pointerEvents: requiresAny ? "none" : undefined
+                pointerEvents: pendingRequiredTasks.length > 0 ? "none" : undefined
             }}
             onClick={props.isChecked ? undefined : props.onClick}
         >
@@ -146,7 +158,7 @@ const TaskItem = (props: Task) => {
         </div>
     );
 
-    if(requiresAny) {
+    if(pendingRequiredTasks.length > 0) {
         return <Tooltip 
             message={<div
                 className="text-sm"
@@ -154,14 +166,14 @@ const TaskItem = (props: Task) => {
                 {t("pages.onboarding.taskRequires")}
                 <div className="rounded-lg sm:w-fit">
                     <ul className="flex flex-col">
-                        {
-                             props.requires?.map(r => (
-                                <li key={r.id} className="flex items-center gap-2 px-3 text-sm last:border-b-0 dark:border-gray-800 dark:text-gray-400 text-sm">
-                                    <span className="ml-2 block h-[3px] w-[3px] rounded-full bg-gray-500 dark:bg-gray-400"></span>
-                                    <span>{r.title}</span>
-                                </li>
-                             ))
-                        }
+                    {
+                        pendingRequiredTasks.map(r => (
+                            <li key={r.id} className="flex items-center gap-2 px-3 text-sm last:border-b-0 dark:border-gray-800 dark:text-gray-400 text-sm">
+                                <span className="ml-2 block h-[3px] w-[3px] rounded-full bg-gray-500 dark:bg-gray-400"></span>
+                                <span>{r.title}</span>
+                            </li>
+                        ))
+                    }
                     </ul>
                 </div>
             </div>}

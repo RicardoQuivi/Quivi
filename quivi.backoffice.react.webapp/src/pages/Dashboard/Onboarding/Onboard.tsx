@@ -154,7 +154,7 @@ export const Onboarding = () => {
             <div>
                 <div className="flex items-center justify-between mb-2">
                     <h3 className="flex items-center gap-3 text-base font-medium text-gray-800 capitalize dark:text-white/90">
-                        {"todo"}
+                        {t("pages.onboarding.todo")}
                         <span
                             className="inline-flex rounded-full gap-2 px-2 py-0.5 text-theme-xs font-medium bg-gray-100 text-gray-700 dark:bg-white/[0.03] dark:text-white/80"
                         >
