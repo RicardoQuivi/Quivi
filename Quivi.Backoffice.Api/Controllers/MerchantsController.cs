@@ -1,24 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Commands.Merchants;
 using Quivi.Application.Queries.Merchants;
 using Quivi.Backoffice.Api.Dtos;
 using Quivi.Backoffice.Api.Requests.Merchants;
-using Quivi.Backoffice.Api.Requests.ModifierGroups;
 using Quivi.Backoffice.Api.Responses.Merchants;
 using Quivi.Backoffice.Api.Validations;
-using Quivi.Domain.Entities.Charges;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Extensions;
-using Quivi.Infrastructure.Pos.Facturalusa.Models.Items;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
     [ApiController]
     public class MerchantsController : ControllerBase
     {
