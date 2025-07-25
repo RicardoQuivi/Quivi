@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/header/ThemeToggleButton";
-import { CloseIcon, MenuIcon } from "../icons";
+import { CloseIcon, MenuIcon, QuiviIcon } from "../icons";
 import { GoToPosButton } from "../components/header/GoToPosButton";
 import { UserDropdown } from "../components/header/UserDropdown";
 import { LanguageButton } from "../components/header/LanguageButton";
@@ -54,16 +54,12 @@ export const AppHeader: React.FC = () => {
                         }
                     </button>
 
-                    <Link to="/" className="lg:hidden">
-                        <img
-                            className="dark:hidden"
-                            src="./images/logo/logo.svg"
-                            alt="Logo"
-                        />
-                        <img
-                            className="hidden dark:block"
-                            src="./images/logo/logo-dark.svg"
-                            alt="Logo"
+                    <Link to="/" className="lg:hidden h-full">
+                        <QuiviIcon 
+                            style={{
+                                height: "100%",
+                                width: "auto"
+                            }}
                         />
                     </Link>
 

@@ -252,6 +252,7 @@
             "EndOfDayClosing": "Fecho de caixa"
         },
         "notificationTypeDescriptions": {
+            "Test": "Impresso pelo utilizador para efeitos de teste",
             "FailedCharge": "Impresso quando o cliente falha o pagamento via app",
             "ExpiredCharge": "Impresso quando o cliente inicia mas não conclui o pagamento via app",
             "PosOffline": "Impresso quando a ligação ao PoS se encontra desligada",

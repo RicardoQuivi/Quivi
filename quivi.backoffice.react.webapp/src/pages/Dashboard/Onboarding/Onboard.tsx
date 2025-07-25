@@ -58,7 +58,7 @@ export const Onboarding = () => {
                     title: t("pages.onboarding.createChannelProfile."),
                     description: t("pages.onboarding.createChannelProfile.description"),
                     type: TaskType.Required,
-                    onClick: () => navigate("/businessProfile/channels/profiles/add"),
+                    onClick: () => navigate("/businessProfile/channelprofiles/add"),
                 });
 
                 if(channelsQuery.isLoading == false) {

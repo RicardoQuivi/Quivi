@@ -15,7 +15,6 @@ import { PrinterWorker } from "../../../../hooks/api/Dtos/printerWorkers/Printer
 import { usePrinterWorkersQuery } from "../../../../hooks/queries/implementations/usePrinterWorkersQuery";
 import { MultiSelectionZone } from "../../../../components/inputs/MultiSelectionZone";
 import { NotificationType } from "../../../../hooks/api/Dtos/notifications/NotificationType";
-import { CheckLineIcon } from "../../../../icons";
 
 const schema = yup.object<PrinterFormState>({
     name: yup.string().required(),
@@ -238,7 +237,6 @@ export const PrinterForm = (props: Props) => {
                     options={getNotifications()}
                     selected={Array.from(state.notifications)}
                     getId={s => s.toString()}
-                    checkIcon={() => <CheckLineIcon className='text-500' />}
                     render={s => (
                         <div>
                             <h5 className="text-sm font-medium text-gray-800 dark:text-white/90">

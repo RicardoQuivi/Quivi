@@ -43,21 +43,20 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
                             }));
                         }}
                     >
-                        <div className="relative h-7 w-full max-w-[48px] rounded-full text-success-500 ">
+                        <div className="relative h-7 flex-none rounded-full text-success-500 p-1">
                             {
-                                selected &&
-                                (
-                                    props.checkIcon == undefined
-                                    ?
-                                    <CheckLineIcon
-                                        className="object-cover object-center size-full rounded-full"
-                                    />
-                                    :
-                                    <props.checkIcon className="object-cover object-center size-full rounded-full"/>
-                                )
+                                props.checkIcon == undefined
+                                ?
+                                <CheckLineIcon
+                                    className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
+                                />
+                                :
+                                <props.checkIcon
+                                    className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
+                                />
                             }
                         </div>
-                        <div className="w-full">
+                        <div className="w-full flex-1">
                             <div className="flex items-start justify-between">
                                 {props.render(o)}
                             </div>

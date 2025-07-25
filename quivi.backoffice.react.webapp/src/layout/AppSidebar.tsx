@@ -70,7 +70,7 @@ const items: NavItem[] = [
             },
             { 
                 name: "sidebar.businessProfile.channelProfiles",
-                path: "/businessProfile/channels/profiles",
+                path: "/businessProfile/channelprofiles",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
             { 
@@ -152,7 +152,7 @@ const AppSidebar = () => {
     const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
     const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-    const isActive = useCallback((path: string) => location.pathname.startsWith(path), [location.pathname]);
+    const isActive = useCallback((path: string) => location.pathname.toLowerCase().startsWith(path.toLowerCase()), [location.pathname]);
 
     useEffect(() => {
         let submenuMatched = false;

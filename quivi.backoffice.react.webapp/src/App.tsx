@@ -62,9 +62,9 @@ export const App = () => {
                     <Route path="/businessProfile/merchant" element={<MerchantProfileInfo />} />
 
                     {/* Channel Profile */}
-                    <Route path="/businessProfile/channels/profiles" element={<ChannelProfilesPage />} />
-                    <Route path="/businessProfile/channels/profiles/add" element={<ChannelProfileFormPage />} />
-                    <Route path="/businessProfile/channels/profiles/:id/edit" element={<ChannelProfileFormPage />} />
+                    <Route path="/businessProfile/channelprofiles" element={<ChannelProfilesPage />} />
+                    <Route path="/businessProfile/channelprofiles/add" element={<ChannelProfileFormPage />} />
+                    <Route path="/businessProfile/channelprofiles/:id/edit" element={<ChannelProfileFormPage />} />
 
                     {/* Channel */}
                     <Route path="/businessProfile/channels" element={<ChannelsPage />} />

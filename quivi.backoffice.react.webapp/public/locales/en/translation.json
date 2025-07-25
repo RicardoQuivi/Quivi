@@ -252,6 +252,7 @@
             "EndOfDayClosing": "End of day closing"
         },
         "notificationTypeDescriptions": {
+            "Test": "Printed when triggered by the user for testing purposes",
             "FailedCharge": "Printed when a client fails an app payment",
             "ExpiredCharge": "Printed when a client starts payment via app but it expires",
             "PosOffline": "Printed when connection to the PoS is offilne",

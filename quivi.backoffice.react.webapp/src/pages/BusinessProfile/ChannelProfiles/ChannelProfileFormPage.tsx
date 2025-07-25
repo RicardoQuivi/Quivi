@@ -52,7 +52,7 @@ export const ChannelProfileFormPage = () => {
             })
             toast.success(t("common.operations.success.edit"));
         }
-        navigate("/businessProfile/channels/profiles")
+        navigate("/businessProfile/channelprofiles")
     }
 
     const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
@@ -69,7 +69,7 @@ export const ChannelProfileFormPage = () => {
             breadcrumbs={[
                 {
                     title: t("pages.channelProfiles.title"),
-                    to: "/businessProfile/channels/profiles",
+                    to: "/businessProfile/channelprofiles",
                 }
             ]}
             breadcrumb={title}

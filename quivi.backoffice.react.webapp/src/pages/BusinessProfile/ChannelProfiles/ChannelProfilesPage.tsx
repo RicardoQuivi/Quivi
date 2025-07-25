@@ -134,7 +134,7 @@ export const ChannelProfilesPage = () => {
                                 render: d => <>
                                     <Tooltip message={t("common.edit")}>
                                         <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/businessProfile/channels/profiles/${d.id}/edit`))}
+                                            onClick={(e) => rowAction(e, () => navigate(`/businessProfile/channelprofiles/${d.id}/edit`))}
                                             className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
                                         >
                                             <PencilIcon className="size-5" />

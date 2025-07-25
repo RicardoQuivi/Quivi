@@ -136,7 +136,7 @@ export const EmployeeForm = (props: Props) => {
                     options={getRestrictions()}
                     selected={Array.from(state.restrictions)}
                     getId={s => s.toString()}
-                    checkIcon={() => <CloseLineIcon className='text-error-500' />}
+                    checkIcon={p => <CloseLineIcon className={`${p.className ?? ""} text-error-500`} />}
                     render={s => (
                         <div>
                             <h5 className="text-sm font-medium text-gray-800 dark:text-white/90">
