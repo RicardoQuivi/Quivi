@@ -31,6 +31,7 @@ using Quivi.Infrastructure.Configurations;
 using Quivi.Infrastructure.Converters;
 using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
+using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
 using Quivi.Infrastructure.Mailing.EmailEngine.Mjml;
@@ -260,7 +261,7 @@ namespace Quivi.Application.Extensions
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidIssuer = hostsSettings.OAuth,
+                    ValidIssuer = hostsSettings.OAuth.EnsureTrailingSlash(),
                     ValidAudiences = jwtSettings.Audiences,
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
                     ClockSkew = TimeSpan.Zero,
