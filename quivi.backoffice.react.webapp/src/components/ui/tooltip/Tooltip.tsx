@@ -11,6 +11,7 @@ interface Props {
     readonly children: React.ReactNode;
     readonly placement?: Placement;
     readonly onOpen?: () => any;
+    readonly className?: string;
 }
 
 const topClasses = {
@@ -51,7 +52,7 @@ export const Tooltip = (props: Props) => {
 
     return (
         <div 
-            className="relative inline-block group"
+            className={`relative inline-block group ${props.className ?? ""}`}
             onMouseEnter={props.onOpen}
         >
             {props.children}

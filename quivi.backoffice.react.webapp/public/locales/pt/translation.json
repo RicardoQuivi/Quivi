@@ -124,7 +124,7 @@
         "logo": "Logo",
         "browseFile": "Procurar ficheiro",
         "browseImage": "Procurar imagem",
-        "dragAndDropFiles": "Arreste os seus ficheiros para aqui. Os ficheiros permitidos são: {{files}}",
+        "dragAndDropFiles": "Arraste os seus ficheiros para aqui. Os ficheiros permitidos são: {{files}}",
         "dropFilesHere": "Largue os Ficheiros Aqui",
         "dropImageHere": "Largue a Imagem Aqui",
         "required": "Obrigatório",
@@ -401,6 +401,7 @@
         "onboarding": {
             "title": "Onboarding",
             "description": "Para utilizar o Quivi, é necessário configurar algumas coisas. Abaixo encontra-se uma lista que terá de completar para utilizar o nosso PoS.",
+            "taskRequires": "Antes de completar este passo, por favor complete os seguintes passos:",
 
             "createMerchant": {
                 "": "Informação comercial",

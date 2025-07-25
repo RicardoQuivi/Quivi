@@ -50,7 +50,7 @@ export const Onboarding = () => {
     const tasks = useMemo(() => {
         const result = [] as Task[];
 
-        result.push({
+        const createMerchant = {
             id: "createMerchant",
             isChecked: user.merchantActivated == true || merchantsQuery.totalItems != 0,
             isLoading: merchantsQuery.isFirstLoading && user.subMerchantId != undefined,
@@ -58,9 +58,10 @@ export const Onboarding = () => {
             description: t("pages.onboarding.createMerchant.description"),
             type: TaskType.Required,
             onClick: () => navigate("/businessProfile/merchant/setup"),
-        });
+        };
+        result.push(createMerchant);
 
-        result.push({
+        const activateMerchant = {
             id: "activateMerchant",
             isChecked: user.merchantActivated == true,
             isLoading: false,
@@ -68,17 +69,21 @@ export const Onboarding = () => {
             description: t("pages.onboarding.termsAndConditions.description"),
             type: TaskType.Required,
             onClick: () => navigate("/termsAndConditions"),
-        });
+            requires: [createMerchant],
+        };
+        result.push(activateMerchant);
 
-        result.push({
+        const createChannelProfile = {
             id: "createChannelProfile",
             isChecked: channelProfilesQuery.totalItems != 0,
             isLoading: channelProfilesQuery.isFirstLoading && user.subMerchantId != undefined,
             title: t("pages.onboarding.createChannelProfile."),
             description: t("pages.onboarding.createChannelProfile.description"),
             type: TaskType.Required,
-            onClick: () => navigate("/businessProfile/channels/profiles/add"),
-        });
+            onClick: () => navigate("/businessProfile/channelprofiles/add"),
+            requires: [activateMerchant],
+        }
+        result.push(createChannelProfile);
 
         result.push({
             id: "createChannel",
@@ -88,6 +93,7 @@ export const Onboarding = () => {
             description: t("pages.onboarding.createChannel.description"),
             type: TaskType.Required,
             onClick: () => navigate("/businessProfile/channels"),
+            requires: [createChannelProfile],
         });
 
         result.push({
@@ -97,7 +103,8 @@ export const Onboarding = () => {
             title: t("pages.onboarding.createLocal."),
             description: t("pages.onboarding.createLocal.description"),
             type: TaskType.Optional,
-            onClick: () => navigate("/settings/employees"),
+            onClick: () => navigate("/settings/locals"),
+            requires: [activateMerchant],
         });
 
         result.push({
@@ -107,7 +114,8 @@ export const Onboarding = () => {
             title: t("pages.onboarding.createCustomChargeMethod."),
             description: t("pages.onboarding.createCustomChargeMethod.description"),
             type: TaskType.Optional,
-            onClick: () => navigate("/settings/employees"),
+            onClick: () => navigate("/settings/chargemethods"),
+            requires: [activateMerchant],
         });
 
         result.push({
@@ -118,6 +126,7 @@ export const Onboarding = () => {
             description: t("pages.onboarding.createEmployee.description"),
             type: TaskType.Optional,
             onClick: () => navigate("/settings/employees"),
+            requires: [activateMerchant],
         });
 
         return result;

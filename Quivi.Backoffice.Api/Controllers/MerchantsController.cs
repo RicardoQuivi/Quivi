@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Commands.Merchants;
 using Quivi.Application.Queries.Merchants;
 using Quivi.Backoffice.Api.Dtos;
@@ -14,6 +15,7 @@ using Quivi.Infrastructure.Validations;
 namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class MerchantsController : ControllerBase
     {
