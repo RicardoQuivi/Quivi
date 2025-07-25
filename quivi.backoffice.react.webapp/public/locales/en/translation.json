@@ -349,7 +349,8 @@
             "signIn": "Sign in",
             "verifyYourInbox": "Verify your inbox",
             "signUpCompletedDescription": "A confirmation email was sent to your email address. Click the email link to complete signing up.",
-            "resendConfirmation": "Send another confirmation email"
+            "resendConfirmation": "Send another confirmation email",
+            "resendConfirmationSent": "A new confirmation was sent successfully!"
         },
         "signUpConfirm": {
             "title": "Email confirmation",
@@ -407,7 +408,7 @@
             },
 
             "termsAndConditions": {
-                "": "Activate merchant",
+                "": "Activate Merchant",
                 "description": "Before starting to use Quivi, activate it by reading and accepting our terms and conditions."
             },
 
@@ -417,8 +418,23 @@
             },
 
             "createChannel": {
-                "": "Create channels",
+                "": "Create Channels",
                 "description": "Add one or more sales channels. A channel represents a virtual or physical location on which you can operate sales. On a restaurant, for instance, tables are channels. On an hotel a room is a channel. It can also be an online store, a kiosk, etc."
+            },
+
+            "createLocal": {
+                "": "Create Location",
+                "description": "Add one or more location. Locations allows you to define where an item shoudl be prepared. When ordered, a request for the specific location will be triggered."
+            },
+
+            "createCustomChargeMethod": {
+                "": "Create Charge Methods",
+                "description": "Add onbe or more change methods. A charge method allows you to assign a PoS payment to it. This will be available when closing the day or in reports."
+            },
+
+            "createEmployee": {
+                "": "Create Employees",
+                "description": "Add one or more employees. This action is required to access the PoS, where a user will need to be identified as an employee to keep track of their actions."
             }
         },
         "setUpNewMerchant": {

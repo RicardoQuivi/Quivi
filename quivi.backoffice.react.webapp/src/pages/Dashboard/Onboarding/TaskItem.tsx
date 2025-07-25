@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import Badge from "../../../components/ui/badge/Badge";
 import { HandleIcon } from "../../../icons";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 export enum TaskType {
     Required,
@@ -12,6 +13,7 @@ export interface Task {
     readonly title: string;
     readonly description: string;
     readonly isChecked: boolean;
+    readonly isLoading: boolean;
     readonly type: TaskType;
     readonly onClick: () => any;
 }
@@ -53,32 +55,42 @@ const TaskItem = (props: Task) => {
                         className="w-full cursor-pointer"
                     >
                         <div className="relative flex items-start">
-                            <input
-                                type="checkbox"
-                                id={`taskCheckbox${props.id}`}
-                                className="sr-only taskCheckbox cursor-none"
-                                checked={props.isChecked}
-                                onChange={() => {}}
-                            />
-                            <div className="flex items-center justify-center w-full h-5 mr-3 border border-gray-300 rounded-md box max-w-5 dark:border-gray-700">
-                                <span className={`opacity-${props.isChecked ? "100" : "0"}`}>
-                                    <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 14 14"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M11.6668 3.5L5.25016 9.91667L2.3335 7"
-                                            stroke="white"
-                                            strokeWidth="1.94437"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
+                            {
+                                props.isLoading
+                                ?
+                                <div className="flex items-center justify-center w-full h-5 mr-3 rounded-md box max-w-5">
+                                    <Spinner />
+                                </div>
+                                :
+                                <>
+                                    <input
+                                        type="checkbox"
+                                        id={`taskCheckbox${props.id}`}
+                                        className="sr-only taskCheckbox cursor-none"
+                                        checked={props.isChecked}
+                                        onChange={() => {}}
+                                    />
+                                    <div className="flex items-center justify-center w-full h-5 mr-3 border border-gray-300 rounded-md box max-w-5 dark:border-gray-700">
+                                        <span className={`opacity-${props.isLoading == false && props.isChecked ? "100" : "0"}`}>
+                                            <svg
+                                                width="14"
+                                                height="14"
+                                                viewBox="0 0 14 14"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M11.6668 3.5L5.25016 9.91667L2.3335 7"
+                                                    stroke="white"
+                                                    strokeWidth="1.94437"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </>
+                            }
                             <p className="-mt-0.5 text-base text-gray-800 dark:text-white/90">
                                 {props.title}
                             </p>

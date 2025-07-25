@@ -349,7 +349,8 @@
             "signIn": "Entrar",
             "verifyYourInbox": "Verifique o seu e-mail",
             "signUpCompletedDescription": "Um email de confirmação foi enviado para o seu email. Siga as instruções para completar o registo.",
-            "resendConfirmation": "Enviar novo email de confirmação"
+            "resendConfirmation": "Enviar novo email de confirmação",
+            "resendConfirmationSent": "Um novo email de confirmação foi enviado!"
         },
         "signUpConfirm": {
             "title": "Confirmar Email",
@@ -419,6 +420,21 @@
             "createChannel": {
                 "": "Criar canais",
                 "description": "Crie um ou mais canais de venda. Um canal de venda representa um sítio físico ou virtual onde poderá efetuar vendas. Num restaurante, por exemplo, um canal serão mesas. Já num Hotel um canal poderá ser um Quarto. Poderá representar também uma loja online, um quiosque, etc."
+            },
+
+            "createLocal": {
+                "": "Criar Local",
+                "description": "Adicione um ou mais locais. Um local permite que itens lhes sejam atribuídos. Esses itens, quando pedidos, serão enviados para a local especificada."
+            },
+
+            "createCustomChargeMethod": {
+                "": "Criar Métodos de Pagamento",
+                "description": "Crie um ou mais métodos de pagamento. Um método de pagamento permite que atribua um determinado pagamento via Pos a este método de pagamento. Estes dados poderão ser consulatos em fechos de dia ou relatórios."
+            },
+
+            "createEmployee": {
+                "": "Criar funcionários",
+                "description": "Crie um ou mais funcionários, sendo obrigatório para aceder ao PoS, permitindo que um utilizador se idenfique como um funcionário associando desta forma qualquer ação efetuada."
             }
         },
         "setUpNewMerchant": {

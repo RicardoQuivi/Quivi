@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Button from "../ui/button/Button";
 import { ClipLoader } from "react-spinners";
+import { useToast } from "../../layout/ToastProvider";
+import { useTranslation } from "react-i18next";
 
 interface CheckYourInboxProps {
     readonly title: string;
@@ -9,12 +11,17 @@ interface CheckYourInboxProps {
     readonly onResend: () => Promise<any>
 }
 export const CheckYourInbox = (props: CheckYourInboxProps) => {
+    const { t } = useTranslation();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const toast = useToast();
 
     const submit = async () => {
         try {
             setIsSubmitting(true);
             await props.onResend();
+            toast.success(t("pages.signUp.resendConfirmationSent"));
+        } catch {
+            toast.error(t("common.operations.failure.generic"));
         } finally {
             setIsSubmitting(false);
         }
