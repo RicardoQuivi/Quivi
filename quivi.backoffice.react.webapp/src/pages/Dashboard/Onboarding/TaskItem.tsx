@@ -41,7 +41,7 @@ const getPendingTasks = (task: Task): Task[] => {
         const pendingTasks = getPendingTasks(t);
         result.push(...pendingTasks);
         if(t.isChecked == false) {
-            result.push(task);
+            result.push(t);
         }
     }
     
@@ -58,7 +58,8 @@ const TaskItem = (props: Task) => {
             className="p-5 mb-4 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5"
             style={{
                 cursor: "pointer",
-                pointerEvents: pendingRequiredTasks.length > 0 ? "none" : undefined
+                pointerEvents: pendingRequiredTasks.length > 0 ? "none" : undefined,
+                opacity: pendingRequiredTasks.length > 0 ? 0.5 : undefined,
             }}
             onClick={props.isChecked ? undefined : props.onClick}
         >
