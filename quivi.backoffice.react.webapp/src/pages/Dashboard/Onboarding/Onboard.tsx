@@ -98,8 +98,8 @@ export const Onboarding = () => {
 
         result.push({
             id: "createLocal",
-            isChecked: employeesQuery.totalItems != 0,
-            isLoading: employeesQuery.isFirstLoading && user.subMerchantId != undefined,
+            isChecked: localsQuery.totalItems != 0,
+            isLoading: localsQuery.isFirstLoading && user.subMerchantId != undefined,
             title: t("pages.onboarding.createLocal."),
             description: t("pages.onboarding.createLocal.description"),
             type: TaskType.Optional,
@@ -135,6 +135,7 @@ export const Onboarding = () => {
         channelProfilesQuery.totalItems, channelProfilesQuery.isLoading,
         channelsQuery.totalItems, channelsQuery.isLoading,
         localsQuery.totalItems, localsQuery.isLoading,
+        customChargeMethodsQuery.totalItems, customChargeMethodsQuery.isLoading,
         employeesQuery.totalItems, employeesQuery.isLoading,
         user.merchantActivated,
     ])
