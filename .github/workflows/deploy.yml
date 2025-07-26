@@ -530,4 +530,6 @@ jobs:
               --name "$APP" \
               --resource-group ${{ env.RESOURCE_GROUP }} \
               --allowed-origins "*"
+              --allowed-methods GET POST PUT PATCH DELETE OPTIONS HEAD
+              --allow-credentials true
           done
