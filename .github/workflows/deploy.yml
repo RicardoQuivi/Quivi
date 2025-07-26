@@ -529,7 +529,7 @@ jobs:
             az containerapp ingress cors update \
               --name "$APP" \
               --resource-group ${{ env.RESOURCE_GROUP }} \
-              --allowed-origins "*"
-              --allowed-methods GET POST PUT PATCH DELETE OPTIONS HEAD
+              --allowed-origins "*" \
+              --allowed-methods GET POST PUT PATCH DELETE OPTIONS HEAD \
               --allow-credentials true
           done
