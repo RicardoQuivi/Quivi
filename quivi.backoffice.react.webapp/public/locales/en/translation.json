@@ -429,6 +429,11 @@
                 "description": "Add one or more location. Locations allows you to define where an item shoudl be prepared. When ordered, a request for the specific location will be triggered."
             },
 
+            "createMenuItem": {
+                "": "Create Items",
+                "description": "Before selling anything, you need to set up items. Items can be associated with categories or be composed as menus."
+            },
+
             "createCustomChargeMethod": {
                 "": "Create Charge Methods",
                 "description": "Add onbe or more change methods. A charge method allows you to assign a PoS payment to it. This will be available when closing the day or in reports."

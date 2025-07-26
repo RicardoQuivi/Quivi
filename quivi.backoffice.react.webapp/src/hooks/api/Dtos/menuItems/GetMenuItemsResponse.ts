@@ -1,6 +1,6 @@
-import { DataResponse } from "../DataResponse";
+import { PagedResponse } from "../PagedResponse";
 import { MenuItem } from "./MenuItem";
 
-export interface GetMenuItemsResponse extends DataResponse<MenuItem[]> {
+export interface GetMenuItemsResponse extends PagedResponse<MenuItem> {
 
 }

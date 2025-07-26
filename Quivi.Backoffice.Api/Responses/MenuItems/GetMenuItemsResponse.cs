@@ -1,6 +1,6 @@
 ﻿namespace Quivi.Backoffice.Api.Responses.MenuItems
 {
-    public class GetMenuItemsResponse : AListResponse<Dtos.MenuItem>
+    public class GetMenuItemsResponse : APagedResponse<Dtos.MenuItem>
     {
     }
 }

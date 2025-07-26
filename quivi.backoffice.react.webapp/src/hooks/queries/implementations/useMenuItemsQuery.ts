@@ -4,6 +4,7 @@ import { useAuthenticatedUser } from "../../../context/AuthContext";
 import { useMenuItemsApi } from "../../api/useMenuItemsApi";
 import { GetMenuItemsRequest } from "../../api/Dtos/menuItems/GetMenuItemsRequest";
 import { MenuItem } from "../../api/Dtos/menuItems/MenuItem";
+import { useMemo } from "react";
 
 export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) => {
     const user = useAuthenticatedUser();
@@ -30,5 +31,14 @@ export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) => {
         }),
     })
 
-    return queryResult;
+    const result = useMemo(() => ({
+        isFirstLoading: queryResult.isFirstLoading,
+        isLoading: queryResult.isLoading,
+        data: queryResult.data,
+        page: queryResult.response?.page ?? 0,
+        totalPages: queryResult.response?.totalPages ?? 0,
+        totalItems: queryResult.response?.totalItems ?? 0,
+    }), [queryResult])
+
+    return result;
 }

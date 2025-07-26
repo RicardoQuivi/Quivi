@@ -111,6 +111,7 @@ export const ModifierGroupForm = (props: Props) => {
     const toast = useToast();
 
     const itemsQuery = useMenuItemsQuery({
+        page: 0,
     });
     const itemsMap = useMemo(() => {
         if(itemsQuery.isFirstLoading) {

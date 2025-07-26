@@ -10,6 +10,7 @@ import { useEmployeesQuery } from "../../../hooks/queries/implementations/useEmp
 import { useLocalsQuery } from "../../../hooks/queries/implementations/useLocalsQuery";
 import { useCustomChargeMethodsQuery } from "../../../hooks/queries/implementations/useCustomChargeMethodsQuery";
 import { Spinner } from "../../../components/spinners/Spinner";
+import { useMenuItemsQuery } from "../../../hooks/queries/implementations/useMenuItemsQuery";
 
 export const Onboarding = () => {
     const { t } = useTranslation();
@@ -43,6 +44,11 @@ export const Onboarding = () => {
     })
 
     const employeesQuery = useEmployeesQuery({
+        page: 0,
+        pageSize: 0,
+    })
+
+    const menuItemsQuery = useMenuItemsQuery({
         page: 0,
         pageSize: 0,
     })
@@ -107,6 +113,18 @@ export const Onboarding = () => {
             requires: [activateMerchant],
         });
 
+        const creteItems = {
+            id: "createItems",
+            isChecked: menuItemsQuery.totalItems != 0,
+            isLoading: menuItemsQuery.isFirstLoading && user.subMerchantId != undefined,
+            title: t("pages.onboarding.createMenuItem."),
+            description: t("pages.onboarding.createMenuItem.description"),
+            type: TaskType.Required,
+            onClick: () => navigate("/businessProfile/menumanagement"),
+            requires: [activateMerchant],
+        }
+        result.push(creteItems);
+
         result.push({
             id: "createChargeMethods",
             isChecked: customChargeMethodsQuery.totalItems != 0,
@@ -133,6 +151,7 @@ export const Onboarding = () => {
     }, [
         merchantsQuery.totalItems, merchantsQuery.isLoading,
         channelProfilesQuery.totalItems, channelProfilesQuery.isLoading,
+        menuItemsQuery.totalItems, menuItemsQuery.isLoading,
         channelsQuery.totalItems, channelsQuery.isLoading,
         localsQuery.totalItems, localsQuery.isLoading,
         customChargeMethodsQuery.totalItems, customChargeMethodsQuery.isLoading,

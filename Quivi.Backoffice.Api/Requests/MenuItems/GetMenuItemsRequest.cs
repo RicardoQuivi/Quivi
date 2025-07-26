@@ -1,6 +1,6 @@
 ﻿namespace Quivi.Backoffice.Api.Requests.MenuItems
 {
-    public class GetMenuItemsRequest : ARequest
+    public class GetMenuItemsRequest : APagedRequest
     {
         public IEnumerable<string>? Ids { get; init; }
         public string? ItemCategoryId { get; init; }

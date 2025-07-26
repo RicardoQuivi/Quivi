@@ -429,6 +429,11 @@
                 "description": "Adicione um ou mais locais. Um local permite que itens lhes sejam atribuídos. Esses itens, quando pedidos, serão enviados para a local especificada."
             },
 
+            "createMenuItem": {
+                "": "Criar itens",
+                "description": "Antes de começar a vender é necessário criar e configurar itens. Itens podem ser associados a categorias ou compostos em menus."
+            },
+
             "createCustomChargeMethod": {
                 "": "Criar Métodos de Pagamento",
                 "description": "Crie um ou mais métodos de pagamento. Um método de pagamento permite que atribua um determinado pagamento via Pos a este método de pagamento. Estes dados poderão ser consulatos em fechos de dia ou relatórios."

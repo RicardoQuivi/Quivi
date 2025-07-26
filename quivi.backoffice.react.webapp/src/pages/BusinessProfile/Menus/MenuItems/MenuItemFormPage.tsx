@@ -24,6 +24,7 @@ export const MenuItemFormPage = () => {
 
     const itemsQuery = useMenuItemsQuery(id == undefined ? undefined : {
         ids: [ id ],
+        page: 0,
     })
 
     const item = useMemo(() => {

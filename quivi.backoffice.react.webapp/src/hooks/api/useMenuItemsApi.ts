@@ -14,6 +14,10 @@ export const useMenuItemsApi = () => {
 
     const get = (request: GetMenuItemsRequest) => {
         const queryParams = new URLSearchParams();
+        queryParams.set("page", request.page.toString());
+        if(request.pageSize != undefined) {
+            queryParams.set("pageSize", request.pageSize.toString());
+        }
         
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
         if(request.itemCategoryId != undefined) {

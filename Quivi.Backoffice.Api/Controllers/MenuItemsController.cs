@@ -54,12 +54,16 @@ namespace Quivi.Backoffice.Api.Controllers
                 IncludeMenuItemCategoryAssociations = true,
 
                 IsDeleted = false,
-                PageSize = null,
+                PageIndex = request.Page,
+                PageSize = request.PageSize,
             });
 
             return new GetMenuItemsResponse
             {
                 Data = mapper.Map<Dtos.MenuItem>(query),
+                Page = query.CurrentPage,
+                TotalPages = query.NumberOfPages,
+                TotalItems = query.TotalItems,
             };
         }
 

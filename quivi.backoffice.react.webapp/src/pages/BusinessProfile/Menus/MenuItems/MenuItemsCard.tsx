@@ -37,6 +37,7 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
         itemCategoryId: props.categoryId ?? undefined,
         hasCategory: props.categoryId === null ? false : undefined,
         search: !!debouncedSearch ? debouncedSearch : undefined,
+        page: 0,
     });
     const localIds = useMemo(() => {
         const set = new Set<string>();
