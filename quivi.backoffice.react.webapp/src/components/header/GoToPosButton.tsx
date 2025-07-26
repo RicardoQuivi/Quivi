@@ -19,7 +19,8 @@ export const GoToPosButton: React.FC = () => {
 
             const queryParams = new URLSearchParams();
             queryParams.set("subjectToken", user.token);
-            let url = `${import.meta.env.VITE_POS_APP_URL}signIn?${queryParams}`;
+
+            const url = new URL(`signIn?${queryParams}`, import.meta.env.VITE_POS_APP_URL).toString();
             window.open(url, keepSession ? '_blank' : '_self', 'noopener,noreferrer');
         } finally {
             setIsOpen(false);
