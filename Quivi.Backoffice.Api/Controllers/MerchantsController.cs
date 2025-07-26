@@ -39,16 +39,7 @@ namespace Quivi.Backoffice.Api.Controllers
         public async Task<GetMerchantsResponse> Get([FromQuery] GetMerchantsRequest request)
         {
             int? parentMerchantId = string.IsNullOrWhiteSpace(request.ParentId) ? null : idConverter.FromPublicId(request.ParentId);
-            IEnumerable<int>? ids = null;
-            if (User.IsAdmin())
-                ids = request.Ids?.Select(idConverter.FromPublicId);
-            else
-            {
-                if (parentMerchantId.HasValue)
-                    ids = request.Ids?.Select(idConverter.FromPublicId);
-                else if (request.Ids?.Any() == true && request.Ids.Count() != 1 && request.Ids.SingleOrDefault() != User.SubMerchantId())
-                    throw new UnauthorizedAccessException();
-            }
+            IEnumerable<int>? ids = request.Ids?.Select(idConverter.FromPublicId);
 
             var merchantsQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
             {
