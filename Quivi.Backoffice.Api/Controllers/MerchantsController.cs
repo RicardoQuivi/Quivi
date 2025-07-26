@@ -44,9 +44,9 @@ namespace Quivi.Backoffice.Api.Controllers
             var merchantsQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
             {
                 Search = request.Search,
-                ApplicationUserIds = User.IsAdmin() ? null : [ User.UserId(idConverter) ],
+                ApplicationUserIds = User.IsAdmin() ? null : [User.UserId(idConverter)],
                 IsDeleted = User.IsAdmin() ? null : false,
-                ParentIds = parentMerchantId.HasValue ? [ parentMerchantId.Value ] : null,
+                ParentIds = parentMerchantId.HasValue ? [parentMerchantId.Value] : null,
                 Ids = ids,
                 IncludeFees = User.IsAdmin(),
 
@@ -144,7 +144,10 @@ namespace Quivi.Backoffice.Api.Controllers
                         if (request.IsDemo.HasValue)
                             e.IsDemo = request.IsDemo.Value;
 
-                        if(request.SurchargeFees != null)
+                        if (e.TermsAndConditionsAccepted == false && request.AcceptTermsAndConditions == true)
+                            e.TermsAndConditionsAccepted = true;
+
+                        if (request.SurchargeFees != null)
                         {
                             var fees = request.SurchargeFees.ToDictionary(s => s.Key, s => s.Value);
                             foreach (var c in e.Surcharges.ToList())
@@ -172,9 +175,6 @@ namespace Quivi.Backoffice.Api.Controllers
                             }
                         }
                     }
-
-                    if (e.TermsAndConditionsAccepted == false && request.AcceptTermsAndConditions == true)
-                        e.TermsAndConditionsAccepted = true;
 
                     return Task.CompletedTask;
                 }

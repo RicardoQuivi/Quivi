@@ -144,7 +144,7 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterHangfireJobHandler(configuration.GetConnectionString("Quivi")!);
 
             serviceCollection.RegisterSingleton<IPasswordHasher, PasswordHasher>();
-            serviceCollection.RegisterSingleton<ILogger, NoLogger>();
+            serviceCollection.RegisterSingleton<ILogger, ConsoleLogger>();
 
             serviceCollection.RegisterPosSyncStrategies();
             serviceCollection.RegisterFacturalusa(configuration);

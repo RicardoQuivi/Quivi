@@ -31,13 +31,15 @@ namespace Quivi.OAuth2.Controllers
         private readonly IIdConverter idConverter;
         private readonly IAppHostsSettings appHostsSettings;
         private readonly IJwtSettings jwtSettings;
+        private readonly Infrastructure.Abstractions.Services.ILogger logger;
 
         public AuthController(UserManager<ApplicationUser> userManager,
                                 SignInManager<ApplicationUser> signInManager,
                                 IQueryProcessor queryProcessor,
                                 IIdConverter idConverter,
                                 IAppHostsSettings appHostsSettings,
-                                IJwtSettings jwtSettings)
+                                IJwtSettings jwtSettings,
+                                Infrastructure.Abstractions.Services.ILogger logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -45,6 +47,7 @@ namespace Quivi.OAuth2.Controllers
             this.idConverter = idConverter;
             this.appHostsSettings = appHostsSettings;
             this.jwtSettings = jwtSettings;
+            this.logger = logger;
         }
 
         [HttpPost("~/connect/token")]
@@ -234,7 +237,10 @@ namespace Quivi.OAuth2.Controllers
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
                 });
                 if (tokenValidationResult.IsValid == false)
+                {
+                    logger.LogException(tokenValidationResult.Exception);
                     return null;
+                }
 
                 claims = tokenValidationResult.ClaimsIdentity.Claims;
             }
