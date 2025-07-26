@@ -232,7 +232,7 @@ namespace Quivi.OAuth2.Controllers
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidIssuer = appHostsSettings.OAuth,
+                    ValidIssuer = new Uri(appHostsSettings.OAuth, UriKind.Absolute).ToString(),
                     ValidAudience = audience,
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
                 });

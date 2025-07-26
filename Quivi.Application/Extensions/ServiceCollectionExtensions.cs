@@ -256,12 +256,13 @@ namespace Quivi.Application.Extensions
                 var hostsSettings = configuration.GetSection("AppHosts").Get<AppHostsSettings>()!;
                 var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
                 var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+                var authUri = new Uri(hostsSettings.OAuth, UriKind.Absolute).ToString();
                 var tokenParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidIssuer = hostsSettings.OAuth.EnsureTrailingSlash(),
+                    ValidIssuer = new Uri(authUri, UriKind.Absolute).ToString(),
                     ValidAudiences = jwtSettings.Audiences,
                     IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
                     ClockSkew = TimeSpan.Zero,
@@ -269,7 +270,7 @@ namespace Quivi.Application.Extensions
                     RoleClaimType = "role",
                 };
 
-                options.Authority = hostsSettings.OAuth;
+                options.Authority = authUri;
                 options.RequireHttpsMetadata = options.Authority.StartsWith("https://");
 
                 options.TokenValidationParameters = tokenParameters;

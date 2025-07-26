@@ -98,14 +98,5 @@ namespace Quivi.Infrastructure.Extensions
         {
             return str.Length <= maxChars ? str : str.Substring(0, maxChars) + "..";
         }
-
-        public static string EnsureTrailingSlash(this string uri)
-        {
-            if (string.IsNullOrWhiteSpace(uri)) 
-                throw new ArgumentException("Invalid URI");
-
-            var parsed = new Uri(uri, UriKind.Absolute);
-            return parsed.ToString().TrimEnd('/') + "/";
-        }
     }
 }
