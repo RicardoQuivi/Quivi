@@ -15,6 +15,7 @@
             "notAnEmail": "O valor introduzido não é um email"
         },
         "apiErrors": {
+            "InvalidValue": "O valor introduzido não é válido",
             "InvalidEmail": "O email é inválido",
             "InvalidPassword": "A password é inválida.\nTamanho mínimo: {{requiredLength}} caractéres",
             "InvalidCredentials": "As credenciais introduzidas são inválidas",

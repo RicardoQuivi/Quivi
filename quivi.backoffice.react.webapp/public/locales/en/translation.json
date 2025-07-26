@@ -15,6 +15,7 @@
             "notAnEmail": "Provided value isn't an email"
         },
         "apiErrors": {
+            "InvalidValue": "The provided value is not valid",
             "InvalidEmail": "Email is invalid",
             "InvalidPassword": "The password is invalid.\nMinimum Lenght: {{requiredLength}} characters",
             "InvalidCredentials": "The provided credentials are invalid",
