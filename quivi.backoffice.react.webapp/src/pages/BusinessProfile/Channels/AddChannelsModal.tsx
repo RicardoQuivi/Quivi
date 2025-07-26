@@ -3,7 +3,6 @@ import { Trans, useTranslation } from "react-i18next";
 import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelProfile";
 import { Modal, ModalSize } from "../../../components/ui/modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
-import { ClipLoader } from "react-spinners";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
@@ -13,6 +12,7 @@ import Button from "../../../components/ui/button/Button";
 import { useChannelMutator } from "../../../hooks/mutators/useChannelMutator";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 interface NewChannel {
     name: string;
@@ -168,12 +168,7 @@ export const AddChannelsModal = (props: Props) => {
                 primaryButton={{
                     content: isSubmitting
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                <Spinner />
                                 :
                                 t("common.confirm"),
                     disabled: channelsToAdd.length == 0,

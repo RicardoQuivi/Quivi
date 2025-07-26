@@ -14,10 +14,10 @@ import { ChannelModeCard } from "./ChannelModeCard";
 import { useQuiviForm } from "../../../hooks/api/exceptions/useQuiviForm";
 import * as yup from 'yup';
 import Button from "../../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 const schema = yup.object<QrCodeProfileFormState>({
     name: yup.string().required(),
@@ -279,12 +279,7 @@ export const ChannelProfileForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

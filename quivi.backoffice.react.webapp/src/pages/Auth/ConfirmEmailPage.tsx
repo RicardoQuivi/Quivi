@@ -4,10 +4,11 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { ChevronLeftIcon } from "../../icons";
 import React, { useEffect, useState } from "react";
 import { useUserApi } from "../../hooks/api/useUserApi";
-import { ClipLoader, PuffLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 import { ApiException } from "../../hooks/api/exceptions/ApiException";
 import Button from "../../components/ui/button/Button";
 import AuthLayout from "./AuthPageLayout";
+import { Spinner } from "../../components/spinners/Spinner";
 
 enum ConfirmState {
     Confirming,
@@ -211,12 +212,7 @@ const TokenExpired = (props: TokenExpiredProps) => {
             {
                 isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 t("pages.signUpConfirm.resendConfirmation")
             }

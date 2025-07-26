@@ -6,11 +6,11 @@ import { ImageInput } from "../../../../components/upload/ImageInput";
 import { UploadHandler } from "../../../../components/upload/UploadHandler";
 import { useQuiviForm } from "../../../../hooks/api/exceptions/useQuiviForm";
 import Button from "../../../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { Language } from "../../../../hooks/api/Dtos/Language";
 import { LanguageSelector } from "../../../../components/ui/language/LanguageSelector";
 import { useToast } from "../../../../layout/ToastProvider";
 import { TextField } from "../../../../components/inputs/TextField";
+import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<MenuCategoryFormState>({
     name: yup.string().required(),
@@ -142,12 +142,7 @@ export const MenuCategoryForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

@@ -1,10 +1,10 @@
 import { Trans, useTranslation } from "react-i18next";
 import { Modal, ModalSize } from "../ui/modal"
-import { ClipLoader } from "react-spinners";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
 import { useState } from "react";
 import { Entity } from "../../hooks/EntitiesName";
 import { useToast } from "../../layout/ToastProvider";
+import { Spinner } from "../spinners/Spinner";
 
 interface Props<T,> {
     readonly isOpen: boolean;
@@ -80,12 +80,7 @@ export const DeleteEntitiesModal = <T,>(props: Props<T>) => {
                 primaryButton={{
                     content: isSubmitting
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                <Spinner />
                                 :
                                 t("common.confirm"),
                     disabled: isSubmitting,

@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
-import { ClipLoader } from 'react-spinners';
 import { useToast } from '../../../layout/ToastProvider';
 import { TextField } from '../../../components/inputs/TextField';
 import { Employee, EmployeeRestriction } from '../../../hooks/api/Dtos/employees/Employee';
 import { TimeField } from '../../../components/inputs/TimeField';
 import { MultiSelectionZone } from '../../../components/inputs/MultiSelectionZone';
 import { CloseLineIcon } from '../../../icons';
+import { Spinner } from '../../../components/spinners/Spinner';
 
 const schema = yup.object<EmployeeFormState>({
     name: yup.string().required(),
@@ -161,12 +161,7 @@ export const EmployeeForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

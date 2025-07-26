@@ -16,6 +16,7 @@ import { IconButton } from "../../../components/ui/button/IconButton";
 import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
 import { Divider } from "../../../components/dividers/Divider";
 import { CustomChargeMethod } from "../../../hooks/api/Dtos/customchargemethods/CustomChargeMethod";
+import Avatar from "../../../components/ui/avatar/Avatar";
 
 export const CustomChargeMethodsPage = () => {
     const { t } = useTranslation();
@@ -66,8 +67,21 @@ export const CustomChargeMethodsPage = () => {
                         columns={[
                             {
                                 key: "name",
-                                render: (d) => d.name,
                                 label: t("common.name"),
+                                render: d => <>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar
+                                            src={d.logoUrl}
+                                            alt={d.name}
+                                            size="large"
+                                        />
+                                        <div>
+                                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                {d.name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </>
                             },
                             {
                                 render: d => <>

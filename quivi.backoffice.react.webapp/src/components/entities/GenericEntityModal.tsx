@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Modal, ModalSize } from "../ui/modal"
 import { ApiException } from "../../hooks/api/exceptions/ApiException";
-import { ClipLoader } from "react-spinners";
 import { useTranslation } from "react-i18next";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
+import { Spinner } from "../spinners/Spinner";
 
 interface GenericEntityModalProps<TEntity> {
     readonly model?: TEntity;
@@ -66,12 +66,7 @@ export const GenericEntityModal = <TEntity,>(props: GenericEntityModalProps<TEnt
                 primaryButton={{
                     content: isSubmitting
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                    <Spinner />
                                 :
                                 t("common.confirm"),
                     disabled: isSubmitting || props.isValid == false,

@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
-import { ClipLoader } from 'react-spinners';
 import { useToast } from '../../../layout/ToastProvider';
 import { TextField } from '../../../components/inputs/TextField';
 import { CustomChargeMethod } from '../../../hooks/api/Dtos/customchargemethods/CustomChargeMethod';
 import { ImageInput } from '../../../components/upload/ImageInput';
 import { UploadHandler } from '../../../components/upload/UploadHandler';
+import { Spinner } from '../../../components/spinners/Spinner';
 
 const schema = yup.object<CustomChargeMethodFormState>({
     name: yup.string().required(),
@@ -88,12 +88,7 @@ export const CustomChargeMethodForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

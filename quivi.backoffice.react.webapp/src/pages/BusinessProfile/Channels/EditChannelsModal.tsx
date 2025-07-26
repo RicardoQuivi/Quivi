@@ -6,11 +6,11 @@ import { useChannelsQuery } from "../../../hooks/queries/implementations/useChan
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
 import { Modal, ModalSize } from "../../../components/ui/modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
-import { ClipLoader } from "react-spinners";
 import Alert from "../../../components/ui/alert/Alert";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { TextField } from "../../../components/inputs/TextField";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 interface Props {
     readonly applyToAll?: boolean;
@@ -110,12 +110,7 @@ export const EditChannelsModal = (props: Props) => {
                 primaryButton={{
                     content: state.isSubmiting
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                <Spinner />
                                 :
                                 t("common.confirm"),
                     onClick: onSubmit,

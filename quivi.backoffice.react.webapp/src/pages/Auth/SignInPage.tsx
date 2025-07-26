@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import Button from "../../components/ui/button/Button";
 import { GoogleIcon, XIcon } from "../../icons";
 import { Link, useNavigate } from "react-router";
-import { ClipLoader } from "react-spinners";
 import { useAuth } from "../../context/AuthContext";
 import { AuthenticationError } from "../../hooks/api/useAuthApi";
 import { TextField } from "../../components/inputs/TextField";
 import { PasswordField } from "../../components/inputs/PasswordField";
+import { Spinner } from "../../components/spinners/Spinner";
 
 export const SignInPage = () => {
     const { t } = useTranslation();
@@ -125,12 +125,7 @@ export const SignInPage = () => {
                                         {
                                             isSubmitting
                                             ?
-                                            <ClipLoader
-                                                size={20}
-                                                cssOverride={{
-                                                    borderColor: "white"
-                                                }}
-                                            />
+                                            <Spinner />
                                             :
                                             t("pages.signIn.signIn")
                                         }

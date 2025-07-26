@@ -8,8 +8,8 @@ import { useNavigate } from "react-router";
 import { useMemo, useState } from "react";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import Button from "../../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { useMerchantMutator } from "../../../hooks/mutators/useMerchantMutator";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 export const TermsAndConditionsPage = () => {
     const { t } = useTranslation();
@@ -463,12 +463,7 @@ export const TermsAndConditionsPage = () => {
                     {
                         isSubmitting
                         ?
-                        <ClipLoader
-                            size={20}
-                            cssOverride={{
-                                borderColor: "white"
-                            }}
-                        />
+                        <Spinner />
                         :
                         t("common.accept")
                     }

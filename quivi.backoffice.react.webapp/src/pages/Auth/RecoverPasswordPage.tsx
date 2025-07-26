@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { ChevronLeftIcon, } from "../../icons";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import Button from "../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import * as yup from 'yup';
 import { useQuiviForm } from "../../hooks/api/exceptions/useQuiviForm";
 import { useToast } from "../../layout/ToastProvider";
 import { PasswordField } from "../../components/inputs/PasswordField";
+import { Spinner } from "../../components/spinners/Spinner";
 
 export const RecoverPasswordPage = () => {
     const { t } = useTranslation();
@@ -134,12 +134,7 @@ const RecoverForm = (props: RecoverFormProps) => {
                         {
                             form.isSubmitting
                             ?
-                            <ClipLoader
-                                size={20}
-                                cssOverride={{
-                                    borderColor: "white"
-                                }}
-                            />
+                            <Spinner />
                             :
                             t("pages.recoverPassword.changePassword")
                         }

@@ -3,7 +3,6 @@ import Button from "../../../../components/ui/button/Button";
 import { useQuiviForm } from "../../../../hooks/api/exceptions/useQuiviForm";
 import * as yup from 'yup';
 import { useTranslation } from "react-i18next";
-import { ClipLoader } from "react-spinners";
 import { useToast } from "../../../../layout/ToastProvider";
 import { TextField } from "../../../../components/inputs/TextField";
 import { SingleSelect } from "../../../../components/inputs/SingleSelect";
@@ -15,6 +14,7 @@ import { PrinterWorker } from "../../../../hooks/api/Dtos/printerWorkers/Printer
 import { usePrinterWorkersQuery } from "../../../../hooks/queries/implementations/usePrinterWorkersQuery";
 import { MultiSelectionZone } from "../../../../components/inputs/MultiSelectionZone";
 import { NotificationType } from "../../../../hooks/api/Dtos/notifications/NotificationType";
+import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<PrinterFormState>({
     name: yup.string().required(),
@@ -261,12 +261,7 @@ export const PrinterForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

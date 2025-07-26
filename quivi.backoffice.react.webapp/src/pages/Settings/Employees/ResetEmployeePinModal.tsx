@@ -1,11 +1,11 @@
 import { Trans, useTranslation } from "react-i18next";
-import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 import { Employee } from "../../../hooks/api/Dtos/employees/Employee";
 import { useToast } from "../../../layout/ToastProvider";
 import { Modal, ModalSize } from "../../../components/ui/modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import { useEmployeeMutator } from "../../../hooks/mutators/useEmployeeMutator";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 interface Props {
     readonly model: Employee | undefined;
@@ -47,12 +47,7 @@ export const ResetEmployeePinModal = (props: Props) => {
                 primaryButton={{
                     content: isSubmitting
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                <Spinner />
                                 :
                                 t("common.confirm"),
                     disabled: isSubmitting,

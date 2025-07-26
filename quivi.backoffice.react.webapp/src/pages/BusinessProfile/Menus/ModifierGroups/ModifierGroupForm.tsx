@@ -5,7 +5,6 @@ import { useQuiviForm } from "../../../../hooks/api/exceptions/useQuiviForm";
 import { Language } from "../../../../hooks/api/Dtos/Language";
 import * as yup from 'yup';
 import { useTranslation } from "react-i18next";
-import { ClipLoader } from "react-spinners";
 import { LanguageSelector } from "../../../../components/ui/language/LanguageSelector";
 import { useToast } from "../../../../layout/ToastProvider";
 import { TextField } from "../../../../components/inputs/TextField";
@@ -16,6 +15,7 @@ import { useMenuItemsQuery } from "../../../../hooks/queries/implementations/use
 import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
 import Avatar from "../../../../components/ui/avatar/Avatar";
+import { Spinner } from "../../../../components/spinners/Spinner";
 
 const syncedRecord = <T1, T2>(left: Record<string, T1>, right: Record<string, T2>, create: (a: T1) => T2): Record<string, T2> => {
     const result: Record<string, T2> = {};
@@ -303,12 +303,7 @@ export const ModifierGroupForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

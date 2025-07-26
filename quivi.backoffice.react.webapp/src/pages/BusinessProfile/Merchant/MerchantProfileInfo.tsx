@@ -9,7 +9,6 @@ import { ImageInput } from "../../../components/upload/ImageInput";
 import { UploadHandler } from "../../../components/upload/UploadHandler";
 import { Merchant } from "../../../hooks/api/Dtos/merchants/Merchant";
 import Button from "../../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import * as yup from 'yup';
 import { useQuiviForm } from "../../../hooks/api/exceptions/useQuiviForm";
 import { useMerchantMutator } from "../../../hooks/mutators/useMerchantMutator";
@@ -20,6 +19,7 @@ import { ChargeMethod } from "../../../hooks/api/Dtos/ChargeMethod";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { FeeUnit } from "../../../hooks/api/Dtos/merchants/FeeUnit";
 import { MerchantFee } from "../../../hooks/api/Dtos/merchants/MerchantFee";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 const mapApiRecordToEnum = <TEnum extends { [key: string]: string | number }, TValue>(apiData: Record<string, TValue>, enumType: TEnum): Record<TEnum[keyof TEnum] & number, TValue> => {
     const result = {} as Record<TEnum[keyof TEnum] & number, TValue>;
@@ -247,12 +247,7 @@ export const MerchantProfileInfo = () => {
                 {
                     form.isSubmitting
                     ?
-                    <ClipLoader
-                        size={20}
-                        cssOverride={{
-                            borderColor: "white"
-                        }}
-                    />
+                    <Spinner />
                     :
                     t("common.submit")
                 }

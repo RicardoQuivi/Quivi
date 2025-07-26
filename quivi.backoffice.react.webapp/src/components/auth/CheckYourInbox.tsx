@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Button from "../ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { useToast } from "../../layout/ToastProvider";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "../spinners/Spinner";
 
 interface CheckYourInboxProps {
     readonly title: string;
@@ -70,12 +70,7 @@ export const CheckYourInbox = (props: CheckYourInboxProps) => {
             {
                 isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.buttonText
             }

@@ -6,7 +6,6 @@ import { UploadHandler } from "../../../../components/upload/UploadHandler";
 import { Language } from "../../../../hooks/api/Dtos/Language";
 import * as yup from 'yup';
 import { useTranslation } from "react-i18next";
-import { ClipLoader } from "react-spinners";
 import { ImageInput } from "../../../../components/upload/ImageInput";
 import { LanguageSelector } from "../../../../components/ui/language/LanguageSelector";
 import { PriceType } from "../../../../hooks/api/Dtos/menuItems/PriceType";
@@ -22,6 +21,7 @@ import { MultiSelect } from "../../../../components/inputs/MultiSelect";
 import { useMenuCategoriesQuery } from "../../../../hooks/queries/implementations/useMenuCategoriesQuery";
 import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCategory";
 import { useMenuCategoryMutator } from "../../../../hooks/mutators/useMenuCategoryMutator";
+import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<MenuItemFormState>({
     name: yup.string().required(),
@@ -394,12 +394,7 @@ export const MenuItemForm = (props: Props) => {
             {
                 form.isSubmitting
                 ?
-                <ClipLoader
-                    size={20}
-                    cssOverride={{
-                        borderColor: "white"
-                    }}
-                />
+                <Spinner />
                 :
                 props.submitText
             }

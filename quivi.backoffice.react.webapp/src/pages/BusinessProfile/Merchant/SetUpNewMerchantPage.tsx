@@ -15,11 +15,11 @@ import { useEffect, useState } from "react";
 import { useQuiviForm } from "../../../hooks/api/exceptions/useQuiviForm";
 import { UploadHandler } from "../../../components/upload/UploadHandler";
 import Button from "../../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { FileExtension } from "../../../hooks/api/Dtos/fileStorage/FileExtension";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 interface IbanProof {
     readonly name: string;
@@ -218,12 +218,7 @@ export const SetUpNewMerchantPage = () => {
                 {
                     form.isSubmitting
                     ?
-                    <ClipLoader
-                        size={20}
-                        cssOverride={{
-                            borderColor: "white"
-                        }}
-                    />
+                    <Spinner />
                     :
                     t("common.submit")
                 }

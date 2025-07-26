@@ -3,7 +3,6 @@ import PageMeta from "../../components/common/PageMeta";
 import AuthLayout from "./AuthPageLayout";
 import { useMemo, useState } from "react";
 import Button from "../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { Link } from "react-router";
 import { ChevronLeftIcon } from "../../icons";
 import { useUserApi } from "../../hooks/api/useUserApi";
@@ -12,6 +11,7 @@ import * as yup from 'yup';
 import { useQuiviForm } from "../../hooks/api/exceptions/useQuiviForm";
 import { useToast } from "../../layout/ToastProvider";
 import { TextField } from "../../components/inputs/TextField";
+import { Spinner } from "../../components/spinners/Spinner";
 
 export const ForgotPasswordPage = () => {
     const { t } = useTranslation();
@@ -116,12 +116,7 @@ const RecoverForm = (props: RecoverFormProps) => {
                         {
                             form.isSubmitting
                             ?
-                            <ClipLoader
-                                size={20}
-                                cssOverride={{
-                                    borderColor: "white"
-                                }}
-                            />
+                            <Spinner />
                             :
                             t("pages.forgotPassword.sendEmail")
                         }

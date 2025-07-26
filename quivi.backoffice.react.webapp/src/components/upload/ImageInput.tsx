@@ -9,10 +9,10 @@ import { Tooltip } from '../ui/tooltip/Tooltip';
 import { IconButton } from '../ui/button/IconButton';
 import { Modal, ModalSize } from '../ui/modal';
 import { ModalButtonsFooter } from '../ui/modal/ModalButtonsFooter';
-import { ClipLoader } from 'react-spinners';
 import { FileDropZone } from './FileDropZone';
 import { UploadHandler } from './UploadHandler';
 import Label from '../form/Label';
+import { Spinner } from '../spinners/Spinner';
 
 const readFile = (file: File): Promise<string> => new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -414,12 +414,7 @@ const EditImageModal = (props: EditImageModal) => {
                 primaryButton={{
                     content: isLoading
                                 ?
-                                <ClipLoader
-                                    size={20}
-                                    cssOverride={{
-                                        borderColor: "white"
-                                    }}
-                                />
+                                <Spinner />
                                 :
                                 t("common.confirm"),
                     disabled: isLoading,

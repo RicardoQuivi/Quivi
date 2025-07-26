@@ -6,13 +6,13 @@ import { useState } from "react";
 import { CheckYourInbox } from "../../components/auth/CheckYourInbox";
 import { ChevronLeftIcon, GoogleIcon, XIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
-import { ClipLoader } from "react-spinners";
 import { useQuiviForm } from "../../hooks/api/exceptions/useQuiviForm";
 import * as yup from 'yup';
 import { Link } from "react-router";
 import { useToast } from "../../layout/ToastProvider";
 import { TextField } from "../../components/inputs/TextField";
 import { PasswordField } from "../../components/inputs/PasswordField";
+import { Spinner } from "../../components/spinners/Spinner";
 
 export const SignUpPage = () => {
     const { t } = useTranslation();
@@ -151,12 +151,7 @@ const SigningUpForm = (props: SigningUpFormProps) => {
                     {
                         form.isSubmitting
                         ?
-                        <ClipLoader
-                            size={20}
-                            cssOverride={{
-                                borderColor: "white"
-                            }}
-                        />
+                        <Spinner />
                         :
                         t("pages.signUp.signUp")
                     }
