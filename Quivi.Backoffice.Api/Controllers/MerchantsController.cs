@@ -99,8 +99,8 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetMerchantsCriteria
                 {
-                    Ids = [ idConverter.FromPublicId(id) ],
-                    ApplicationUserIds = User.IsAdmin() ? null : [ User.UserId(idConverter) ],
+                    Ids = [idConverter.FromPublicId(id)],
+                    ApplicationUserIds = User.IsAdmin() ? null : [User.UserId(idConverter)],
                     IsDeleted = false,
                     PageSize = 1,
                 },
@@ -124,6 +124,9 @@ namespace Quivi.Backoffice.Api.Controllers
                     if (string.IsNullOrWhiteSpace(request.LogoUrl) == false)
                         e.LogoUrl = request.LogoUrl;
 
+                    if (e.TermsAndConditionsAccepted == false && request.AcceptTermsAndConditions == true)
+                        e.TermsAndConditionsAccepted = true;
+
                     if (User.IsAdmin())
                     {
                         if (request.TransactionFee.HasValue)
@@ -143,9 +146,6 @@ namespace Quivi.Backoffice.Api.Controllers
 
                         if (request.IsDemo.HasValue)
                             e.IsDemo = request.IsDemo.Value;
-
-                        if (e.TermsAndConditionsAccepted == false && request.AcceptTermsAndConditions == true)
-                            e.TermsAndConditionsAccepted = true;
 
                         if (request.SurchargeFees != null)
                         {
