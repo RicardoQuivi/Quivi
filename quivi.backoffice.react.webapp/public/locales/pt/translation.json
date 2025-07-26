@@ -402,7 +402,7 @@
             "title": "Onboarding",
             "description": "Para utilizar o Quivi, é necessário configurar algumas coisas. Abaixo encontra-se uma lista que terá de completar para utilizar o nosso PoS.",
             "todo": "Por completar",
-            "taskRequires": "Antes de completar este passo, por favor complete os seguintes passos:",
+            "taskRequires": "Complete os seguintes passos primeiro:",
 
             "createMerchant": {
                 "": "Informação comercial",

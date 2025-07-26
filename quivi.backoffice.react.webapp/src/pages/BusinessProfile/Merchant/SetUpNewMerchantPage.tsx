@@ -100,7 +100,7 @@ export const SetUpNewMerchantPage = () => {
         />
 
         <ComponentCard title={t("pages.setUpNewMerchant.title")}>
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {/* Fiscal Information */}
                 <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-2">
                     <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
@@ -127,7 +127,7 @@ export const SetUpNewMerchantPage = () => {
                 </div>
 
                 {/* Comercial Information */}
-                <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+                <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1">
                     <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
                         {t("pages.setUpNewMerchant.comercialInfo")}
                     </h4>
@@ -165,7 +165,7 @@ export const SetUpNewMerchantPage = () => {
                 </div>
 
                 {/* Banking Information */}
-                <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+                <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1">
                     <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
                         {t("pages.setUpNewMerchant.bankingInfo")}
                     </h4>

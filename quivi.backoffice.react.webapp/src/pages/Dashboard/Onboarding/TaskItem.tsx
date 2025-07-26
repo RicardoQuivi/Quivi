@@ -122,11 +122,6 @@ const TaskItem = (props: Task) => {
                     <Badge variant="light" color={getColor(props.type)} size="sm">
                         {t(getMessage(props.type))}
                     </Badge>
-
-                    <div className="flex items-center justify-between w-full gap-5 xl:w-auto xl:justify-normal">
-                        <div className="h-6 w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
-                        </div>
-                    </div>
                 </div>
             </div>
 

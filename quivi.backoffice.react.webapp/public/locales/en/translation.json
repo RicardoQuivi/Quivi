@@ -402,7 +402,7 @@
             "title": "Onboarding",
             "description": "Some steps are still required before using Quivi. Bellow you will find a list of things you need to complete to unlock Quivi.",
             "todo": "Todo",
-            "taskRequires": "Before proceding with this step, please complete the following steps:",
+            "taskRequires": "Complete the following steps first:",
 
             "createMerchant": {
                 "": "Comercial Information",
