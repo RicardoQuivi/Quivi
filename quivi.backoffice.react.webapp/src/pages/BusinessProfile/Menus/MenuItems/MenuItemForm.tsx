@@ -15,13 +15,13 @@ import { SingleSelect } from "../../../../components/inputs/SingleSelect";
 import { useLocalsQuery } from "../../../../hooks/queries/implementations/useLocalsQuery";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
 import { Local } from "../../../../hooks/api/Dtos/locals/Local";
-import { NumberField } from "../../../../components/inputs/NumberField";
 import { TextAreaField } from "../../../../components/inputs/TextAreaField";
 import { MultiSelect } from "../../../../components/inputs/MultiSelect";
 import { useMenuCategoriesQuery } from "../../../../hooks/queries/implementations/useMenuCategoriesQuery";
 import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCategory";
 import { useMenuCategoryMutator } from "../../../../hooks/mutators/useMenuCategoryMutator";
 import { Spinner } from "../../../../components/spinners/Spinner";
+import { CurrencyField } from "../../../../components/inputs/CurrencyField";
 
 const schema = yup.object<MenuItemFormState>({
     name: yup.string().required(),
@@ -239,7 +239,7 @@ export const MenuItemForm = (props: Props) => {
                     errorMessage={form.touchedErrors.get("name")?.message}
                 />
                 <div className="col-span-1 grid grid-cols-7 gap-4">
-                    <NumberField
+                    <CurrencyField
                         label={t("common.price")}
                         value={state.price}
                         onChange={(e) => setState(s => ({ ...s, price: e }))}
@@ -253,6 +253,7 @@ export const MenuItemForm = (props: Props) => {
                             onChange={e => setState(s => ({ ...s, priceType: e}))}
                         />}
                         decimalPlaces={2}
+                        minValue={0}
                         className="col-span-5 sm:col-span-7 md:col-span-7 lg:col-span-7 xl:col-span-5"
                     />
                     <div
