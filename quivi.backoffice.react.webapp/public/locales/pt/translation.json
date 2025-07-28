@@ -21,6 +21,7 @@
             "InvalidCredentials": "As credenciais introduzidas são inválidas",
             "Duplicate": "Já existe um registo com este valor"
         },
+        "back": "Voltar",
         "id": "Id",
         "date": "Data",
         "subTotal": "Subtotal",
@@ -331,7 +332,19 @@
             "openMessage": "Abrir PoS numa nova aba",
             "openDescription": "Está prestes a abrir o PoS numa nova aba. Deseja <b>terminar</b> a sessão? <br/> Manter a sessão do portal aberta permite que os funcionários acedam a este portal e tenham potencial acesso a dados sensíveis.",
             "goAndLogout": "Terminar sessão do portal",
-            "goAndKeepSession": "Manter sessão do portal"
+            "goAndKeepSession": "Manter sessão do portal",
+            "takeMeToOnboarding": "Ir para onboarding",
+            "takeMeToStep": "Ir para <b>{{name}}</b>",
+
+            "requires": {
+                "merchant": "Para abrir o PoS é necessário ter um comerciante.",
+                "termsAndConditions": "Para abrir o PoS é necessário aceitar os nossos termos e condições.",
+                "channelProfiles": "Para abrir o PoS é necessário ter perfis de canais.",
+                "channels": "Para abrir o PoS é necessário ter canais.",
+                "customChargeMethods": "Para abrir o PoS é necessário definir métodos de pagamento.",
+                "employees": "Para abrir o PoS é necessário criar funcionários.",
+                "menuItems": "Para abrir o PoS é necessário criar items."
+            }
         },
         "changeLanguage": "Alterar idioma",
         "editProfile": "Editar perfil",

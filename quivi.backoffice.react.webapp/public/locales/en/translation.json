@@ -21,6 +21,7 @@
             "InvalidCredentials": "The provided credentials are invalid",
             "Duplicate": "A entry with this value already exists"
         },
+        "back": "Back",
         "id": "Id",
         "date": "Date",
         "subTotal": "Subtotal",
@@ -331,7 +332,19 @@
             "openMessage": "Open PoS in new Tab",
             "openDescription": "You are about to open PoS in a new tab. Would you like to <b>close</b> session? <br/> Keeping an open session allows employees to access to this portal and potentially access sensitive data.",
             "goAndLogout": "End portal session",
-            "goAndKeepSession": "Keep portal session"
+            "goAndKeepSession": "Keep portal session",
+            "takeMeToOnboarding": "Take me to onboarding",
+            "takeMeToStep": "Take me to <b>{{name}}</b>",
+
+            "requires": {
+                "merchant": "Before proceeding to PoS you must create a merchant.",
+                "termsAndConditions": "Before proceeding to PoS you must accept our terms and conditions.",
+                "channelProfiles": "Before proceeding to PoS you must create a channel profile.",
+                "channels": "Before proceeding to PoS you must create a channel.",
+                "customChargeMethods": "Before proceeding to PoS you must create charge methods.",
+                "employees": "Before proceeding to PoS you must create employees.",
+                "menuItems": "Before proceeding to PoS you must create items."
+            }
         },
         "changeLanguage": "Change language",
         "editProfile": "Edit profile",
