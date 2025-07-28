@@ -39,10 +39,10 @@ export const PosTabs = (props: Props) => {
         includeDeleted: true,
     })
 
-    const requestedOrdersQuery = useOrdersQuery({
+    const pendingApprovalOrdersQuery = useOrdersQuery({
         page: 0,
-        pageSize: 1,
-        states: [OrderState.Requested],
+        pageSize: 0,
+        states: [OrderState.PendingApproval],
         sortDirection: SortDirection.Desc,
     });
     const preparationGroupsQuery = usePreparationGroupsQuery({
@@ -51,7 +51,7 @@ export const PosTabs = (props: Props) => {
         pageSize: 0,
     });
 
-    const totalPendingOrders = requestedOrdersQuery.totalItems + preparationGroupsQuery.totalItems;
+    const totalPendingOrders = pendingApprovalOrdersQuery.totalItems + preparationGroupsQuery.totalItems;
     if(pos.permissions.data.canViewSessions === false) {
         return <></>
     }

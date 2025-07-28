@@ -76,7 +76,7 @@ export const TransactionModal = (props: Props) => {
         let totalFinal = 0;
         for(const item of transaction?.items ?? []) {
             totalFinal += item.finalPrice * item.quantity;
-            totalOriginal = item.originalPrice * item.quantity;
+            totalOriginal += item.originalPrice * item.quantity;
         }
         return {
             total: totalFinal,

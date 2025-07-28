@@ -5,7 +5,7 @@ using Quivi.Infrastructure.Abstractions.Mapping;
 
 namespace Quivi.Backoffice.Api.MapperHandlers
 {
-    public class PosChargeInvoiceItemMapperHandler : IMapperHandler<PosChargeInvoiceItem, Dtos.TransactionItem>
+    public class PosChargeInvoiceItemMapperHandler : IMapperHandler<IEnumerable<PosChargeInvoiceItem>, IEnumerable<Dtos.TransactionItem>>
     {
         private readonly IIdConverter idConverter;
 
@@ -14,19 +14,36 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             this.idConverter = idConverter;
         }
 
-        public TransactionItem Map(PosChargeInvoiceItem model)
+        public IEnumerable<TransactionItem> Map(IEnumerable<PosChargeInvoiceItem> model)
         {
-            if (model.OrderMenuItem == null)
-                throw new Exception($"Entity {nameof(OrderMenuItem)} was not included into {nameof(PosChargeInvoiceItem)}.");
-
-            return new TransactionItem
+            return model.GroupBy(g =>
             {
-                Id = idConverter.ToPublicId(model.Id),
-                Name = model.OrderMenuItem.Name,
-                Quantity = model.Quantity,
-                FinalPrice = model.OrderMenuItem.FinalPrice,
-                OriginalPrice = model.OrderMenuItem.OriginalPrice,
-            };
+                if (g.OrderMenuItem == null)
+                    throw new Exception($"Entity {nameof(OrderMenuItem)} was not included into {nameof(PosChargeInvoiceItem)}.");
+
+                return new
+                {
+                    g.OrderMenuItem.MenuItemId,
+                    g.OrderMenuItem.Name,
+                    g.OrderMenuItem!.FinalPrice,
+                    g.OrderMenuItem!.OriginalPrice,
+                };
+            }).Select(g =>
+            {
+                var first = g.First();
+
+                if (first.OrderMenuItem == null)
+                    throw new Exception($"Entity {nameof(OrderMenuItem)} was not included into {nameof(PosChargeInvoiceItem)}.");
+
+                return new TransactionItem
+                {
+                    Id = idConverter.ToPublicId(first.Id),
+                    Name = first.OrderMenuItem.Name,
+                    Quantity = g.Sum(i => i.Quantity),
+                    FinalPrice = first.OrderMenuItem.FinalPrice,
+                    OriginalPrice = first.OrderMenuItem.OriginalPrice,
+                };
+            }).ToList();
         }
     }
 }

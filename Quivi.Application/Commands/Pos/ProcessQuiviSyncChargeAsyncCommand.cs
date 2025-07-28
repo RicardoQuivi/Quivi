@@ -33,6 +33,16 @@ namespace Quivi.Application.Commands.Pos
             public required SessionItem SessionItem { get; init; }
         }
 
+        private class GrouppedOrderMenuItem
+        {
+            public decimal TotalPaidQuantity { get; init; }
+            public decimal TotalQuantity { get; init; }
+            public decimal AvailableQuantity => TotalQuantity - TotalPaidQuantity;
+
+            public required SessionItem SessionItem { get; init; }
+            public required IEnumerable<ExtendedOrderMenuItem> Items { get; init; }
+        }
+
 
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
@@ -192,51 +202,75 @@ namespace Quivi.Application.Commands.Pos
                                                     SessionItem = omi.AsSessionItem(),
                                                 })
                                                 .GroupBy(e => e.SessionItem, comparer)
-                                                .Select(g => new
+                                                .Select(g => new GrouppedOrderMenuItem
                                                 {
+                                                    SessionItem = g.Key,
                                                     TotalPaidQuantity = g.Sum(s => s.PaidQuantity),
                                                     TotalQuantity = g.Sum(s => s.OrderMenuItem.Quantity),
                                                     Items = g.AsEnumerable(),
                                                 }).Where(e => e.TotalQuantity > e.TotalPaidQuantity)
-                                                .SelectMany(e => e.Items)
                                                 .ToList();
 
-            Dictionary<int, ExtendedOrderMenuItem> availableItemsDictionary = new Dictionary<int, ExtendedOrderMenuItem>();
-            IList<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();
+            Dictionary<int, GrouppedOrderMenuItem> availableItemsDictionary = new Dictionary<int, GrouppedOrderMenuItem>();
+            List<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();
             foreach (var pendingItem in availableItems)
             {
                 if (pendingItem.SessionItem.GetUnitPrice(maxDecimalPlaces) > 0)
                 {
-                    availableItemsDictionary.Add(pendingItem.OrderMenuItem.Id, pendingItem);
+                    foreach(var item in pendingItem.Items)
+                        availableItemsDictionary.Add(item.OrderMenuItem.Id, pendingItem);
                     continue;
                 }
 
-                itemsWithNoValue.Add((pendingItem.OrderMenuItem, pendingItem.AvailableQuantity));
+                itemsWithNoValue.AddRange(Take(pendingItem, pendingItem.AvailableQuantity));
             }
 
-            var items = charge.PosChargeSelectedMenuItems!.Any() == true ? GetPayingItemsFromUsersSelection(availableItemsDictionary, charge) : GetPayingItemsFromFreePayment(availableItemsDictionary, charge);
+            var items = charge.PosChargeSelectedMenuItems!.Any() == true ? GetPayingItemsFromUsersSelection(availableItems, availableItemsDictionary, charge) : GetPayingItemsFromFreePayment(availableItems, charge);
             return itemsWithNoValue.Concat(items);
         }
 
-        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromUsersSelection(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> Take(GrouppedOrderMenuItem group, decimal totalQuantityToTake)
         {
             const decimal quantityMargin = 0.000001M;
 
-            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            var remainingQuantityToTake = totalQuantityToTake;
+            foreach (var item in group.Items)
+            {
+                if (item.AvailableQuantity <= 0)
+                    continue;
+
+                var quantityToTake = remainingQuantityToTake;
+                if (item.AvailableQuantity < quantityToTake)
+                    quantityToTake = item.AvailableQuantity;
+
+                yield return (item.OrderMenuItem, quantityToTake);
+
+                remainingQuantityToTake -= quantityToTake;
+                if (Math.Abs(remainingQuantityToTake) <= quantityMargin)
+                    break;
+            }
+        }
+
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromUsersSelection(IEnumerable<GrouppedOrderMenuItem> availableItems, IReadOnlyDictionary<int, GrouppedOrderMenuItem> availableItemsDictionary, PosCharge posCharge)
+        {
+            const decimal quantityMargin = 0.000001M;
+
+            Dictionary<GrouppedOrderMenuItem, decimal> availableQuantities = availableItemsDictionary.Values.Distinct().ToDictionary(g => g, g => g.AvailableQuantity);
+            List<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
             foreach (var selectedItem in posCharge.PosChargeSelectedMenuItems!)
             {
                 decimal quantity = selectedItem.Quantity;
 
-                if (availableItems.TryGetValue(selectedItem.OrderMenuItemId, out var orderedItem))
+                if (availableItemsDictionary.TryGetValue(selectedItem.OrderMenuItemId, out var orderedItem))
                 {
-                    decimal availableQuantity = orderedItem.AvailableQuantity;
-                    if (availableQuantity == 0)
+                    decimal availableQuantity = availableQuantities[orderedItem];
+                    if (availableQuantity <= 0)
                         return GetPayingItemsFromFreePayment(availableItems, posCharge);
 
                     decimal quantityToTake = quantity - availableQuantity >= 0 ? availableQuantity : quantity;
-
                     quantity -= quantityToTake;
-                    result.Add((orderedItem.OrderMenuItem, quantityToTake));
+                    result.AddRange(Take(orderedItem, quantityToTake));
+                    availableQuantities[orderedItem] = availableQuantity - quantityToTake;
                 }
 
                 if (Math.Abs(quantity) > quantityMargin)
@@ -245,25 +279,23 @@ namespace Quivi.Application.Commands.Pos
             return result;
         }
 
-        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromFreePayment(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromFreePayment(IEnumerable<GrouppedOrderMenuItem> availableItems, PosCharge posCharge)
         {
             const decimal quantityMargin = 0.000001M;
 
-            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            List<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
             decimal amountToTakeRemaining = posCharge.Payment;
-            foreach (var item in availableItems.Values)
+            foreach (var item in availableItems)
             {
-                decimal availableQuantity = item.AvailableQuantity;
-                if (availableQuantity == 0)
+                if (item.AvailableQuantity <= 0)
                     continue;
 
                 decimal itemUnitPrice = item.SessionItem.GetUnitPrice(maxDecimalPlaces);
-                decimal quantityToTake = itemUnitPrice * availableQuantity <= amountToTakeRemaining ? availableQuantity : amountToTakeRemaining / itemUnitPrice;
-                decimal amountToTake = quantityToTake * itemUnitPrice;
+                decimal quantityToTake = itemUnitPrice * item.AvailableQuantity <= amountToTakeRemaining ? item.AvailableQuantity : amountToTakeRemaining / itemUnitPrice;
+                result.AddRange(Take(item, quantityToTake));
 
-                amountToTakeRemaining -= amountToTake;
-                result.Add((item.OrderMenuItem, quantityToTake));
-
+                decimal amountTaken = quantityToTake * itemUnitPrice;
+                amountToTakeRemaining -= amountTaken;
                 if (Math.Abs(amountToTakeRemaining) <= quantityMargin)
                     return result;
             }

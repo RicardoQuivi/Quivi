@@ -19,7 +19,7 @@ namespace Quivi.Guests.Api.MapperHandlers
 
         public Transaction Map(PosCharge model)
         {
-            SyncStatus state = SyncStatus.Failed;
+            SyncStatus state = model.PosChargeSyncAttempts?.Any() != true ? SyncStatus.Syncing : SyncStatus.Failed;
             decimal syncedAmount = 0.0m;
             foreach(var syncAttempt in model.PosChargeSyncAttempts ?? [])
             {
@@ -45,7 +45,7 @@ namespace Quivi.Guests.Api.MapperHandlers
                 Status = this.mapper.Map<TransactionStatus>(model.Charge?.Status ?? ChargeStatus.Processing),
                 Method = model.Charge?.ChargeMethod ?? ChargeMethod.Custom,
                 CapturedDate = model.CaptureDate.HasValue ? new DateTimeOffset(model.CaptureDate.Value, TimeSpan.Zero) : null,
-                SyncStatus = state
+                SyncStatus = state,
             };
         }
     }

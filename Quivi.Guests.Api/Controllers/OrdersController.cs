@@ -61,9 +61,9 @@ namespace Quivi.Guests.Api.Controllers
                             (
                                 string.IsNullOrWhiteSpace(request.SessionId)
                                 ?
-                                [OrderState.Requested]
+                                [OrderState.Accepted]
                                 :
-                                [OrderState.Requested, OrderState.Scheduled, OrderState.Processing, OrderState.Rejected, OrderState.Completed]
+                                [OrderState.Accepted, OrderState.Scheduled, OrderState.Processing, OrderState.Rejected, OrderState.Completed]
                             );
 
             var ordersQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery
@@ -174,7 +174,10 @@ namespace Quivi.Guests.Api.Controllers
 
             var order = orders.Single();
             var orderIds = orders.Select(s => s.Id).ToList();
-            var jobId = await posSyncService.ProcessOrders(orderIds, order.MerchantId, order.State, false);
+            string? jobId = null;
+            if(order.State == OrderState.Draft)
+                jobId = await posSyncService.ProcessOrders(orderIds, order.MerchantId, OrderState.Draft, false);
+
             return new SubmitOrderResponse
             {
                 Data = mapper.Map<Dtos.Order>(order),

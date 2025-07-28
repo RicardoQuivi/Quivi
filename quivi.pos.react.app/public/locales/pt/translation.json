@@ -19,7 +19,7 @@
     "openLink": "Abrir ligação",
     "closeSession": "Fechar sessão",
     "transferSession": "Transferir sessão",
-    "closeSessionQuestion": "Tem a certeza que deseja fechar a sessão de <bold>{name}</bold>?",
+    "closeSessionQuestion": "Tem a certeza que deseja fechar a sessão de <bold>{{name}}</bold>?",
     "sessionInformation": "Informação da sessão",
     "emptySession": "Esta sessão está vazia",
     "unpaid": "Por pagar",

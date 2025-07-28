@@ -5,15 +5,20 @@ import { useMenuCategoriesApi } from "../../api/useMenuCategoriesApi";
 import { Entity, getEntityType } from "../../EntitiesName";
 import type { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
+import { useTranslation } from "react-i18next";
 
 export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undefined): PagedQueryResult<MenuCategory> => {
+    const { i18n } = useTranslation();
     const api = useMenuCategoriesApi();
 
     const query = useQueryable({
         queryName: "useMenuCategoriesQuery",
         entityType: getEntityType(Entity.MenuCategories),
         getId: (item: MenuCategory) => item.id,
-        request: request,
+        request: request == undefined ? undefined : {
+            ...request,
+            i18nLanguage: i18n.language,
+        },
         query: request => api.get(request),
         
         refreshOnAnyUpdate: false,

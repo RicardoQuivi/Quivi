@@ -69,7 +69,7 @@ export const Pagination = (props: Props) => {
 
     return (
         <div className="border border-t-0 rounded-b-xl border-gray-100 py-3 pl-[18px] pr-4 dark:border-white/[0.05]">
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2">
                 {/* Left side: Showing entries */}
                 {
                     (props.isLoading || props.totalItems > 0) &&
@@ -93,7 +93,7 @@ export const Pagination = (props: Props) => {
                         </button>
                     </div>
                 }
-                <div className="pt-3 xl:pt-0">
+                <div className="flex-1 overflow-hidden">
                     {
                         props.isLoading
                         ?

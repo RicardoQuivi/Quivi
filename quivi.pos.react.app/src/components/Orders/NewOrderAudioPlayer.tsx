@@ -11,7 +11,7 @@ export const NewOrderAudioPlayer = () => {
     const requestedOrdersQuery = useOrdersQuery({
         page: 0,
         pageSize: 1,
-        states: [OrderState.Requested],
+        states: [OrderState.PendingApproval],
         sortDirection: SortDirection.Desc,
     });
 

@@ -40,7 +40,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 SessionId = model.SessionId.HasValue ? idConverter.ToPublicId(model.SessionId.Value) : null,
                 ChannelId = idConverter.ToPublicId(model.ChannelId),
                 CustomChargeMethodId = model.Charge.MerchantCustomCharge == null ? null : idConverter.ToPublicId(model.Charge.MerchantCustomCharge.CustomChargeMethodId),
-                Items = mapper.Map<Dtos.TransactionItem>(model.PosChargeInvoiceItems!),
+                Items = mapper.Map<IEnumerable<PosChargeInvoiceItem>, IEnumerable<Dtos.TransactionItem>>(model.PosChargeInvoiceItems!) ?? [],
             };
         }
 
@@ -49,7 +49,8 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             if (model.PosChargeInvoiceItems?.Any() != true)
                 return null;
 
-            return model.PosChargeInvoiceItems.Where(x => !x.ParentPosChargeInvoiceItemId.HasValue)
+            var result = model.PosChargeInvoiceItems.Where(x => !x.ParentPosChargeInvoiceItemId.HasValue)
+                                                .Where(x => x.OrderMenuItem!.OriginalPrice > x.OrderMenuItem.FinalPrice)
                                                 .Select(item => new
                                                 {
                                                     Quantity = item.Quantity,
@@ -61,6 +62,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                                                     }),
                                                 })
                                                 .Sum(item => item.Quantity * item.Discount + (item.Modifiers?.Sum(m => m.Quantity * m.Discount) ?? 0));
+            return result;
         }
 
         private SynchronizationState GetSyncingState(PosCharge model)

@@ -10,8 +10,9 @@ namespace Quivi.Guests.Api.MapperHandlers
         {
             switch (model)
             {
-                case OrderState.Draft: return Dtos.OrderState.PreOrder;
-                case OrderState.Requested: return Dtos.OrderState.Requested;
+                case OrderState.Draft: return Dtos.OrderState.Draft;
+                case OrderState.PendingApproval: return Dtos.OrderState.Requested;
+                case OrderState.Accepted: return Dtos.OrderState.Requested;
                 case OrderState.Rejected: return Dtos.OrderState.Rejected;
                 case OrderState.Processing: return Dtos.OrderState.Processing;
                 case OrderState.Completed: return Dtos.OrderState.Completed;
@@ -25,8 +26,8 @@ namespace Quivi.Guests.Api.MapperHandlers
         {
             switch (model)
             {
-                case Dtos.OrderState.PreOrder: return OrderState.Draft;
-                case Dtos.OrderState.Requested: return OrderState.Requested;
+                case Dtos.OrderState.Draft: return OrderState.Draft;
+                case Dtos.OrderState.Requested: return OrderState.Accepted;
                 case Dtos.OrderState.Rejected: return OrderState.Rejected;
                 case Dtos.OrderState.Processing: return OrderState.Processing;
                 case Dtos.OrderState.Completed: return OrderState.Completed;

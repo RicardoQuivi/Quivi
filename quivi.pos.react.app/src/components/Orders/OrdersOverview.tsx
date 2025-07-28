@@ -10,8 +10,8 @@ import { PreparationGroupsQueueCards } from "./groups/PreparationGroupsQueueCard
 import { CommitedPreparationGroupsQueueCards } from "./groups/CommitedPreparationGroupsQueueCards";
 import { OrdersQueueCards } from "./OrdersQueueCards";
 
-const newTabStates = [OrderState.Requested, OrderState.ScheduledRequested];
-const processingStates = [OrderState.Processing];
+const newTabStates = [OrderState.PendingApproval, OrderState.ScheduledRequested];
+const processingStates = [OrderState.Accepted, OrderState.Processing];
 const historyStates = [OrderState.Rejected, OrderState.Completed];
 const scheduledStates = [OrderState.Scheduled];
 const preparingStates: OrderState[] = [];

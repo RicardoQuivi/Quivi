@@ -41,7 +41,7 @@ namespace Quivi.Application.Commands.Orders
             var ordersQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery
             {
                 Ids = [command.OrderId],
-                States = [OrderState.Requested],
+                States = [OrderState.Accepted],
                 IncludeMerchant = true,
                 IncludeChannelProfile = true,
                 IncludeOrderSequence = true,

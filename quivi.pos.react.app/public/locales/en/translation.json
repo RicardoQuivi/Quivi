@@ -19,7 +19,7 @@
     "openLink": "Open link",
     "closeSession": "Close session",
     "transferSession": "Tranfer session",
-    "closeSessionQuestion": "Are you sure you want to close session of <bold>{name}</bold>?",
+    "closeSessionQuestion": "Are you sure you want to close session of <bold>{{name}}</bold>?",
     "sessionInformation": "Session information",
     "emptySession": "This session is empty",
     "unpaid": "Unpaid",

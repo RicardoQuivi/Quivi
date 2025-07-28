@@ -2,7 +2,7 @@
 {
     public enum OrderState
     {
-        PreOrder = -1,
+        Draft = -2,
         Requested = 0,
         Scheduled = 1,
         Rejected = 2,

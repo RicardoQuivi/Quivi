@@ -127,9 +127,9 @@ export const SessionViewer: React.FC<Props> = ({
         return profilesQuery.data[0];
     }, [profilesQuery.data]);
 
-    const ordersQuery = useOrdersQuery(!pos.cartSession.channelId ? undefined : {
+    const pendingOrdersQuery = useOrdersQuery(!pos.cartSession.channelId ? undefined : {
         channelIds: [pos.cartSession.channelId],
-        states: [OrderState.Requested],
+        states: [OrderState.PendingApproval],
         sortDirection: SortDirection.Desc,
         page: 0,
     })
@@ -143,7 +143,7 @@ export const SessionViewer: React.FC<Props> = ({
             }
         }
 
-        for(const order of ordersQuery.data) {
+        for(const order of pendingOrdersQuery.data) {
             for(const item of order.items) {
                 set.add(item.menuItemId);
                 for(const e of item.extras) {
@@ -153,7 +153,7 @@ export const SessionViewer: React.FC<Props> = ({
         }
 
         return Array.from(set.values());
-    }, [pos.cartSession.items, ordersQuery.data])
+    }, [pos.cartSession.items, pendingOrdersQuery.data])
 
     const itemsQuery = useMenuItemsQuery(itemsIds.length == 0 ? undefined : {
         ids: itemsIds,
@@ -234,7 +234,7 @@ export const SessionViewer: React.FC<Props> = ({
                 <Divider variant="fullWidth" style={{flex: "0 0 auto"}}/>
                 <Box style={{flex: "1 1 auto", overflow: "hidden auto", }}>
                     {
-                        pos.cartSession.items.length == 0 && ordersQuery.data.length == 0
+                        pos.cartSession.items.length == 0 && pendingOrdersQuery.data.length == 0
                         ?
                         <Box style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                             <p style={{ textAlign: "center", fontSize: "16px" }}>{ t("emptySession")}</p>
@@ -243,7 +243,7 @@ export const SessionViewer: React.FC<Props> = ({
                         <List sx={{ bgcolor: 'background.paper'}}>
                             {
                                 itemStatusFilter == false &&
-                                ordersQuery.data.map(item =>
+                                pendingOrdersQuery.data.map(item =>
                                     <OrderItemComponent 
                                         key={item.id}
                                         order={item}

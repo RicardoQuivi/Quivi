@@ -93,7 +93,7 @@ namespace Quivi.Application.Commands.Orders
                 {
                     yield return (OrderState.Draft, OrderState.ScheduledRequested);
                     yield return (OrderState.Draft, OrderState.Rejected);
-                    yield return (OrderState.Draft, OrderState.Requested);
+                    yield return (OrderState.Draft, OrderState.Accepted);
                     yield return (OrderState.Draft, OrderState.Processing);
                     yield return (OrderState.Draft, OrderState.Completed);
 
@@ -102,13 +102,18 @@ namespace Quivi.Application.Commands.Orders
                     yield return (OrderState.ScheduledRequested, OrderState.Rejected);
 
                     yield return (OrderState.Scheduled, OrderState.Processing);
-                    yield return (OrderState.Scheduled, OrderState.Requested);
+                    yield return (OrderState.Scheduled, OrderState.Accepted);
                     yield return (OrderState.Scheduled, OrderState.Rejected);
                     #endregion
 
-                    yield return (OrderState.Requested, OrderState.Processing);
-                    yield return (OrderState.Requested, OrderState.Completed);
-                    yield return (OrderState.Requested, OrderState.Rejected);
+                    yield return (OrderState.PendingApproval, OrderState.Accepted);
+                    yield return (OrderState.PendingApproval, OrderState.Processing);
+                    yield return (OrderState.PendingApproval, OrderState.Completed);
+                    yield return (OrderState.PendingApproval, OrderState.Rejected);
+
+                    yield return (OrderState.Accepted, OrderState.Processing);
+                    yield return (OrderState.Accepted, OrderState.Completed);
+                    yield return (OrderState.Accepted, OrderState.Rejected);
 
                     yield return (OrderState.Scheduled, OrderState.Processing);
                     yield return (OrderState.Scheduled, OrderState.Rejected);
@@ -295,7 +300,7 @@ namespace Quivi.Application.Commands.Orders
             {
                 var entity = updatableEntity.Model;
 
-                if (updatableEntity.OriginalState != entity.State && entity.State == OrderState.Requested)
+                if (updatableEntity.OriginalState != entity.State && entity.State == OrderState.Accepted)
                     await CreateOrderChangeEvent(entity);
                 else
                     await GenerateOrderChangeEvent(entity);
@@ -333,7 +338,7 @@ namespace Quivi.Application.Commands.Orders
                 if (order.State != OrderState.Scheduled)
                     return Task.CompletedTask;
 
-                order.State = OrderState.Requested;
+                order.State = OrderState.Accepted;
                 return Task.CompletedTask;
             }, [entity]);
         }

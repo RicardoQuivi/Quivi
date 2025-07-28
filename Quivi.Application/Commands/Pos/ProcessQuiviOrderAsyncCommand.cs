@@ -44,6 +44,16 @@ namespace Quivi.Application.Commands.Pos
             public required SessionItem SessionItem { get; init; }
         }
 
+        private class GrouppedOrderMenuItem
+        {
+            public decimal TotalPaidQuantity { get; init; }
+            public decimal TotalQuantity { get; init; }
+            public decimal AvailableQuantity => TotalQuantity - TotalPaidQuantity;
+
+            public required SessionItem SessionItem { get; init; }
+            public required IEnumerable<ExtendedOrderMenuItem> Items { get; init; }
+        }
+
         private enum ProcessingType
         {
             Next,
@@ -66,40 +76,48 @@ namespace Quivi.Application.Commands.Pos
                     throw new PosOrderAlreadySyncedException(Order.Id, OriginalState, NextState);
             }
 
-            private OrderState GetNextState(Order order, OrderState state, ProcessingType processingType = ProcessingType.Next)
+            private OrderState GetNextState(Order order, OrderState fromState, ProcessingType processingType = ProcessingType.Next)
             {
                 switch (processingType)
                 {
                     case ProcessingType.Next:
-                        switch (state)
+                        switch (fromState)
                         {
                             case OrderState.Draft:
+                            {
                                 if (order.ScheduledTo.HasValue)
                                     return OrderState.ScheduledRequested;
-                                if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoApproval))
-                                    return GetNextState(order, OrderState.Requested);
-                                else if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoApproval))
-                                    return GetNextState(order, OrderState.Requested);
-                                return OrderState.Requested;
 
-                            case OrderState.Requested:
+                                if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoApproval))
+                                    return GetNextState(order, OrderState.Accepted);
+
+                                if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoApproval))
+                                    return GetNextState(order, OrderState.Accepted);
+
+                                return OrderState.PendingApproval;
+                            }
+                            case OrderState.PendingApproval:
+                            case OrderState.Accepted:
+                            {
                                 if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoComplete))
                                     return GetNextState(order, OrderState.Processing);
-                                else if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoComplete))
-                                    return GetNextState(order, OrderState.Processing);
-                                return OrderState.Processing;
 
+                                if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoComplete))
+                                    return GetNextState(order, OrderState.Processing);
+
+                                return OrderState.Processing;
+                            }
                             case OrderState.Rejected: return OrderState.Rejected;
                             case OrderState.Processing: return OrderState.Completed;
                             case OrderState.Completed: return OrderState.Completed;
 
                             case OrderState.ScheduledRequested: return OrderState.Scheduled;
-                            case OrderState.Scheduled: return GetNextState(order, OrderState.Requested);
+                            case OrderState.Scheduled: return GetNextState(order, OrderState.Accepted);
                         }
                         break;
                     case ProcessingType.Complete: return OrderState.Completed;
                     case ProcessingType.Cancel:
-                        if (state == OrderState.Completed)
+                        if (fromState == OrderState.Completed)
                             throw new Exception("Order is already completed!");
                         return OrderState.Rejected;
                 }
@@ -239,7 +257,7 @@ namespace Quivi.Application.Commands.Pos
             if (order.State == OrderState.Rejected)
                 return;
 
-            if (new[] { OrderState.Draft, OrderState.Requested, OrderState.ScheduledRequested }.Contains(orderData.OriginalState) &&
+            if (new[] { OrderState.Draft, OrderState.PendingApproval, OrderState.Accepted, OrderState.ScheduledRequested }.Contains(orderData.OriginalState) &&
                     new[] { OrderState.Processing, OrderState.Completed, OrderState.Scheduled }.Contains(orderData.NextState))
                 AddOrderEvent(order, o => new OnOrderCommitedEvent
                 {
@@ -265,7 +283,7 @@ namespace Quivi.Application.Commands.Pos
                     MerchantId = o.MerchantId,
                 });
 
-            if(order.Origin == OrderOrigin.GuestsApp && order.State == OrderState.Requested)
+            if(order.State == OrderState.PendingApproval)
                 AddOrderEvent(order, o => new OnOrderPendingApprovalEvent
                 {
                     ChannelId = o.ChannelId,
@@ -277,7 +295,7 @@ namespace Quivi.Application.Commands.Pos
         private async Task ProcessOrderToSession(AQuiviSyncStrategy syncStrategy, OrderData orderData)
         {
             var order = orderData.Order;
-            if (order.SessionId.HasValue || new[] { OrderState.ScheduledRequested, OrderState.Requested }.Contains(orderData.NextState))
+            if (order.SessionId.HasValue || new[] { OrderState.ScheduledRequested, OrderState.Accepted }.Contains(orderData.NextState))
                 return;
 
             if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.AllowsSessions) == false)
@@ -522,53 +540,77 @@ namespace Quivi.Application.Commands.Pos
                                                     SessionItem = omi.AsSessionItem(),
                                                 })
                                                 .GroupBy(e => e.SessionItem, comparer)
-                                                .Select(g => new
+                                                .Select(g => new GrouppedOrderMenuItem
                                                 {
+                                                    SessionItem = g.Key,
                                                     TotalPaidQuantity = g.Sum(s => s.PaidQuantity),
                                                     TotalQuantity = g.Sum(s => s.OrderMenuItem.Quantity),
                                                     Items = g.AsEnumerable(),
                                                 })
                                                 .Where(e => e.TotalQuantity > e.TotalPaidQuantity)
-                                                .SelectMany(e => e.Items)
                                                 .ToList();
 
 
-            Dictionary<int, ExtendedOrderMenuItem> availableItemsDictionary = new Dictionary<int, ExtendedOrderMenuItem>();
-            IList<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();
+            Dictionary<int, GrouppedOrderMenuItem> availableItemsDictionary = new Dictionary<int, GrouppedOrderMenuItem>();
+            List<(OrderMenuItem ItemPaid, decimal Quantity)> itemsWithNoValue = new List<(OrderMenuItem ItemPaid, decimal Quantity)>();
             foreach (var pendingItem in availableItems)
             {
                 if (pendingItem.SessionItem.GetUnitPrice(maxDecimalPlaces) > 0)
                 {
-                    availableItemsDictionary.Add(pendingItem.OrderMenuItem.Id, pendingItem);
+                    foreach (var item in pendingItem.Items)
+                        availableItemsDictionary.Add(item.OrderMenuItem.Id, pendingItem);
                     continue;
                 }
 
-                itemsWithNoValue.Add((pendingItem.OrderMenuItem, pendingItem.AvailableQuantity));
+                itemsWithNoValue.AddRange(Take(pendingItem, pendingItem.AvailableQuantity));
             }
 
-            var items = charge.PosChargeSelectedMenuItems!.Any() == true ? GetPayingItemsFromUsersSelection(availableItemsDictionary, charge) : GetPayingItemsFromFreePayment(availableItemsDictionary, charge);
+            var items = charge.PosChargeSelectedMenuItems!.Any() == true ? GetPayingItemsFromUsersSelection(availableItems, availableItemsDictionary, charge) : GetPayingItemsFromFreePayment(availableItems, charge);
             return itemsWithNoValue.Concat(items);
         }
 
-        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromUsersSelection(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> Take(GrouppedOrderMenuItem group, decimal totalQuantityToTake)
         {
             const decimal quantityMargin = 0.000001M;
 
-            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            var remainingQuantityToTake = totalQuantityToTake;
+            foreach (var item in group.Items)
+            {
+                if (item.AvailableQuantity <= 0)
+                    continue;
+
+                var quantityToTake = remainingQuantityToTake;
+                if (item.AvailableQuantity < quantityToTake)
+                    quantityToTake = item.AvailableQuantity;
+
+                yield return (item.OrderMenuItem, quantityToTake);
+
+                remainingQuantityToTake -= quantityToTake;
+                if (Math.Abs(remainingQuantityToTake) <= quantityMargin)
+                    break;
+            }
+        }
+
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromUsersSelection(IEnumerable<GrouppedOrderMenuItem> availableItems, IReadOnlyDictionary<int, GrouppedOrderMenuItem> availableItemsDictionary, PosCharge posCharge)
+        {
+            const decimal quantityMargin = 0.000001M;
+
+            Dictionary<GrouppedOrderMenuItem, decimal> availableQuantities = availableItemsDictionary.Values.Distinct().ToDictionary(g => g, g => g.AvailableQuantity);
+            List<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
             foreach (var selectedItem in posCharge.PosChargeSelectedMenuItems!)
             {
                 decimal quantity = selectedItem.Quantity;
 
-                if (availableItems.TryGetValue(selectedItem.OrderMenuItemId, out var orderedItem))
+                if (availableItemsDictionary.TryGetValue(selectedItem.OrderMenuItemId, out var orderedItem))
                 {
-                    decimal availableQuantity = orderedItem.AvailableQuantity;
-                    if (availableQuantity == 0)
+                    decimal availableQuantity = availableQuantities[orderedItem];
+                    if (availableQuantity <= 0)
                         return GetPayingItemsFromFreePayment(availableItems, posCharge);
 
                     decimal quantityToTake = quantity - availableQuantity >= 0 ? availableQuantity : quantity;
-
                     quantity -= quantityToTake;
-                    result.Add((orderedItem.OrderMenuItem, quantityToTake));
+                    result.AddRange(Take(orderedItem, quantityToTake));
+                    availableQuantities[orderedItem] = availableQuantity - quantityToTake;
                 }
 
                 if (Math.Abs(quantity) > quantityMargin)
@@ -577,25 +619,23 @@ namespace Quivi.Application.Commands.Pos
             return result;
         }
 
-        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromFreePayment(IReadOnlyDictionary<int, ExtendedOrderMenuItem> availableItems, PosCharge posCharge)
+        private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItemsFromFreePayment(IEnumerable<GrouppedOrderMenuItem> availableItems, PosCharge posCharge)
         {
             const decimal quantityMargin = 0.000001M;
 
-            IList<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
+            List<(OrderMenuItem, decimal)> result = new List<(OrderMenuItem, decimal)>();
             decimal amountToTakeRemaining = posCharge.Payment;
-            foreach (var item in availableItems.Values)
+            foreach (var item in availableItems)
             {
-                decimal availableQuantity = item.AvailableQuantity;
-                if (availableQuantity == 0)
+                if (item.AvailableQuantity <= 0)
                     continue;
 
                 decimal itemUnitPrice = item.SessionItem.GetUnitPrice(maxDecimalPlaces);
-                decimal quantityToTake = itemUnitPrice * availableQuantity <= amountToTakeRemaining ? availableQuantity : amountToTakeRemaining / itemUnitPrice;
-                decimal amountToTake = quantityToTake * itemUnitPrice;
+                decimal quantityToTake = itemUnitPrice * item.AvailableQuantity <= amountToTakeRemaining ? item.AvailableQuantity : amountToTakeRemaining / itemUnitPrice;
+                result.AddRange(Take(item, quantityToTake));
 
-                amountToTakeRemaining -= amountToTake;
-                result.Add((item.OrderMenuItem, quantityToTake));
-
+                decimal amountTaken = quantityToTake * itemUnitPrice;
+                amountToTakeRemaining -= amountTaken;
                 if (Math.Abs(amountToTakeRemaining) <= quantityMargin)
                     return result;
             }

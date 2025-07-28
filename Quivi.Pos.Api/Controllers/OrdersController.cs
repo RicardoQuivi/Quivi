@@ -52,6 +52,7 @@ namespace Quivi.Pos.Api.Controllers
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
+                ChannelIds = request.ChannelIds?.Select(idConverter.FromPublicId),
                 SessionIds = request.SessionIds?.Select(idConverter.FromPublicId),
                 States = request.States,
                 IncludeOrderMenuItems = true,
@@ -96,7 +97,7 @@ namespace Quivi.Pos.Api.Controllers
             {
                 MerchantId = User.SubMerchantId(idConverter)!.Value,
                 EmployeeId = User.EmployeeId(idConverter)!.Value,
-                OrdersOrigin = Domain.Entities.Pos.OrderOrigin.PoS,
+                OrdersOrigin = OrderOrigin.PoS,
                 Orders = ordersToAdd,
             });
 
@@ -111,7 +112,7 @@ namespace Quivi.Pos.Api.Controllers
         {
             var orderId = idConverter.FromPublicId(id);
             var merchantId = User.SubMerchantId(idConverter)!.Value;
-            int[] orderIds = [ orderId ];
+            int[] orderIds = [orderId];
 
             if (state == null)
             {

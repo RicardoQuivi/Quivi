@@ -88,7 +88,7 @@ namespace Quivi.Application.Commands.Orders
                     EmployeeId = command.EmployeeId,
                     Origin = command.OrdersOrigin,
                     PayLater = true,
-                    State = OrderState.Requested,
+                    State = OrderState.Accepted,
                     ScheduledTo = null,
                     CreatedDate = now,
                     ModifiedDate = now,
@@ -110,16 +110,16 @@ namespace Quivi.Application.Commands.Orders
             foreach (var order in addedOrders)
             {
                 orderIds.Add(order.Id);
-                await eventService.Publish(new OnOrderOperationEvent
-                {
-                    MerchantId = order.MerchantId,
-                    ChannelId = order.ChannelId,
-                    Id = order.Id,
-                    Operation = EntityOperation.Create,
-                });
+                //await eventService.Publish(new OnOrderOperationEvent
+                //{
+                //    MerchantId = order.MerchantId,
+                //    ChannelId = order.ChannelId,
+                //    Id = order.Id,
+                //    Operation = EntityOperation.Create,
+                //});
             }
 
-            return await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Requested, false);
+            return await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Accepted, false);
         }
 
         private IReadOnlyDictionary<int, IEnumerable<AddOrderItem>> GetItemsPerChannel(IEnumerable<AddOrder> orders)

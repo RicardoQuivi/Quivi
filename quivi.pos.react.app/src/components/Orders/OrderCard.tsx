@@ -212,9 +212,9 @@ export const OrderCard = (props: OrderCardProps) => {
             case OrderState.Scheduled:
                 return order.state == OrderState.ScheduledRequested;
             case OrderState.Processing:
-                return [OrderState.Requested, OrderState.Scheduled].includes(order.state);
+                return [OrderState.PendingApproval, OrderState.Accepted, OrderState.Scheduled].includes(order.state);
             case OrderState.Completed:
-                return order.state != OrderState.Requested && order.state == OrderState.Processing;
+                return [OrderState.PendingApproval, OrderState.Accepted, OrderState.Scheduled].includes(order.state) == false;
             default:
                 return false;
         }
