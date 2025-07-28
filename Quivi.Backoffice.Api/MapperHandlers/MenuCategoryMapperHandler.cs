@@ -1,6 +1,7 @@
 ﻿using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Storage;
 
 namespace Quivi.Backoffice.Api.MapperHandlers
 {
@@ -21,7 +22,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             {
                 Id = idConverter.ToPublicId(model.Id),
                 Name = model.Name,
-                ImageUrl = model.ImagePath,
+                ImageUrl = model.ImagePath?.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 SortIndex = model.SortIndex,
                 Translations = model.ItemCategoryTranslations?.ToDictionary(s => s.Language, mapper.Map<Dtos.MenuCategoryTranslation>) ?? [],
             };

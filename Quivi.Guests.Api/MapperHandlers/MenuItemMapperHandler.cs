@@ -2,6 +2,7 @@
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Storage;
 
 namespace Quivi.Guests.Api.MapperHandlers
 {
@@ -28,7 +29,7 @@ namespace Quivi.Guests.Api.MapperHandlers
                 Description = string.IsNullOrWhiteSpace(translation?.Description) ? model.Description : translation.Description,
                 Price = model.Price,
                 PriceType = model.PriceType.ToString(),
-                ImageUrl = model.ImageUrl,
+                ImageUrl = model.ImageUrl?.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Modifiers = mapper.Map<Dtos.MenuItemModifierGroup>(model.MenuItemModifierGroups?.OrderBy(r => r.SortIndex).Select(r => r.MenuItemModifierGroup).ToList() ?? []),
                 IsAvailable = model.IsUnavailable || model.Stock == false,
             };

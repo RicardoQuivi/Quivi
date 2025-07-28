@@ -1,6 +1,7 @@
 ﻿using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Storage;
 
 namespace Quivi.Pos.Api.MapperHandlers
 {
@@ -19,7 +20,7 @@ namespace Quivi.Pos.Api.MapperHandlers
             {
                 Id = idConverter.ToPublicId(model.Id),
                 Name = model.Name,
-                ImageUrl = model.ImageUrl,
+                ImageUrl = model.ImageUrl?.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Price = model.Price,
                 ModifierGroups = [],
             };

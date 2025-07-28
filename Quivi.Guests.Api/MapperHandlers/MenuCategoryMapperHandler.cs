@@ -3,6 +3,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Guests.Api.Dtos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Storage;
 
 namespace Quivi.Guests.Api.MapperHandlers
 {
@@ -26,7 +27,7 @@ namespace Quivi.Guests.Api.MapperHandlers
             {
                 Id = idConverter.ToPublicId(model.Id),
                 Name = string.IsNullOrWhiteSpace(translation?.Name) ? model.Name : translation.Name,
-                ImageUrl = model.ImagePath,
+                ImageUrl = model.ImagePath?.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
             };
         }
 
