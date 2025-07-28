@@ -157,6 +157,7 @@ export const Onboarding = () => {
         customChargeMethodsQuery.totalItems, customChargeMethodsQuery.isLoading,
         employeesQuery.totalItems, employeesQuery.isLoading,
         user.merchantActivated,
+        user.subMerchantId,
     ])
     
     return (

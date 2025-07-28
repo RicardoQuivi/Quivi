@@ -275,13 +275,13 @@ const GoToPosModal = (props: Props) => {
             />
         }
     }, [
-        merchantsQuery.isFirstLoading, merchantsQuery.data,
+        merchantsQuery.isFirstLoading, merchantsQuery.totalItems,
         user.merchantActivated,
-        channelProfilesQuery.isFirstLoading, channelProfilesQuery.data,
-        channelsQuery.isFirstLoading, channelsQuery.data,
-        customChargeMethodsQuery.isFirstLoading, customChargeMethodsQuery.data,
-        employeesQuery.isFirstLoading, employeesQuery.data,
-        menuItemsQuery.isFirstLoading, menuItemsQuery.data,
+        channelProfilesQuery.isFirstLoading, channelProfilesQuery.totalItems,
+        channelsQuery.isFirstLoading, channelsQuery.totalItems,
+        customChargeMethodsQuery.isFirstLoading, customChargeMethodsQuery.totalItems,
+        employeesQuery.isFirstLoading, employeesQuery.totalItems,
+        menuItemsQuery.isFirstLoading, menuItemsQuery.totalItems,
     ])
 
     return <Modal
