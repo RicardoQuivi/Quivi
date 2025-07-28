@@ -6,7 +6,6 @@ using Quivi.Application.Queries.Orders;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
-using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Jobs;
@@ -21,18 +20,15 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
         private readonly IPosSyncService posSyncService;
-        private readonly IDateTimeProvider dateTimeProvider;
 
         public PosChargeEventHandler(IQueryProcessor queryProcessor,
                                         ICommandProcessor commandProcessor,
                                         IPosSyncService posSyncService,
-                                        IBackgroundJobHandler backgroundJobHandler,
-                                        IDateTimeProvider dateTimeProvider) : base(backgroundJobHandler)
+                                        IBackgroundJobHandler backgroundJobHandler) : base(backgroundJobHandler)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.posSyncService = posSyncService;
-            this.dateTimeProvider = dateTimeProvider;
         }
 
         public override async Task Run(OnPosChargeOperationEvent message)
@@ -89,15 +85,6 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
         {
             if (posCharge.CaptureDate.HasValue == false)
                 return;
-
-            //if (posCharge.SurchargeFeeAmount > 0)
-            //{
-            //    var processDeGrazieInvoiceJob = backgroundJobHandler.Enqueue(() => _invoiceService.ProcessSurchargeInvoice(charge.ChargeId));
-            //    if (string.IsNullOrWhiteSpace(posCharge.Email) == false)
-            //        backgroundJobHandler.ContinueJobWith(processDeGrazieInvoiceJob, () => SendPaymentConfirmation(charge.ChargeId));
-            //}
-            //else if (string.IsNullOrWhiteSpace(posCharge.Email) == false)
-            //    backgroundJobHandler.Enqueue(() => SendPaymentConfirmation(charge.ChargeId));
 
             switch (posCharge.GetPosChargeType())
             {

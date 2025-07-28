@@ -61,9 +61,9 @@ namespace Quivi.Guests.Api.Controllers
                             (
                                 string.IsNullOrWhiteSpace(request.SessionId)
                                 ?
-                                [OrderState.Accepted]
+                                [OrderState.PendingApproval]
                                 :
-                                [OrderState.Accepted, OrderState.Scheduled, OrderState.Processing, OrderState.Rejected, OrderState.Completed]
+                                [OrderState.PendingApproval, OrderState.Accepted, OrderState.Scheduled, OrderState.Processing, OrderState.Rejected, OrderState.Completed]
                             );
 
             var ordersQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery

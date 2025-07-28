@@ -10,7 +10,7 @@ namespace Quivi.Infrastructure.Pos.Facturalusa.Queries
         }
         
         /// <summary>
-        /// Document ID used in Degrazie queries. This ID is not known by Facturalusa.
+        /// Document ID used in queries. This ID is not known by Facturalusa.
         /// </summary>
         public string DocumentId { get; set; }
     }

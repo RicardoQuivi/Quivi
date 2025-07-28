@@ -1,6 +1,7 @@
 ﻿using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos;
 using Quivi.Application.Pos.Items;
+using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
@@ -134,6 +135,7 @@ namespace Quivi.Application.Commands.Pos
         private readonly ISessionsRepository sessionsRepo;
         private readonly IPosChargesRepository posChargesRepo;
         private readonly IOrdersRepository ordersRepo;
+        private readonly IOrderSequencesRepository sequencesRepository;
         //private readonly IOrderConfigurableFieldsRepository configurableFieldsRepo;
 
         public ProcessQuiviOrderAsyncCommandHandler(IUnitOfWork unitOfWork,
@@ -147,6 +149,7 @@ namespace Quivi.Application.Commands.Pos
             this.sessionsRepo = unitOfWork.Sessions;
             this.ordersRepo = unitOfWork.Orders;
             this.posChargesRepo = unitOfWork.PosCharges;
+            this.sequencesRepository = unitOfWork.OrderSequences;
             //configurableFieldsRepo = unitOfWork.OrderConfigurableFieldRepository;
         }
 
@@ -178,6 +181,7 @@ namespace Quivi.Application.Commands.Pos
                 IncludeOrderMenuItemsAndMofifiers = true,
                 IncludeOrderMenuItemsPosChargeInvoiceItems = true,
                 IncludeChannelProfile = true,
+                IncludeOrderSequence = true,
 
                 PageIndex = 0,
                 PageSize = null,
@@ -240,8 +244,24 @@ namespace Quivi.Application.Commands.Pos
                 order.OrderType = OrderType.OnSite;
 
             AddChangeLog(null, orderData);
+            var now = dateTimeProvider.GetUtcNow();
             order.State = orderData.NextState;
-            order.ModifiedDate = dateTimeProvider.GetUtcNow();
+            order.ModifiedDate = now;
+            if (order.OrderSequence == null)
+            {
+                var lastOrderOfMerchantQuery = await sequencesRepository.GetAsync(new GetOrderSequencesCriteria
+                {
+                    MerchantIds = [order.MerchantId],
+                    PageSize = 1,
+                });
+
+                order.OrderSequence = new OrderSequence
+                {
+                    SequenceNumber = (lastOrderOfMerchantQuery.SingleOrDefault()?.SequenceNumber ?? 0) + 1,
+                    CreatedDate = now,
+                    ModifiedDate = now,
+                };
+            }
 
             AddOrderEvent(order, o => new OnOrderOperationEvent
             {
@@ -353,7 +373,6 @@ namespace Quivi.Application.Commands.Pos
             session.Orders!.Add(order);
             order.Session = session;
             order.SessionId = session.Id;
-
             if (order.PayLater == false)
                 await ProcessPrePaidOrder(syncStrategy, order, session);
 

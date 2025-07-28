@@ -19,7 +19,6 @@ namespace Quivi.Application.Commands.Orders
     public class AddOrderAsyncCommandHandler : ICommandHandler<AddOrderAsyncCommand, Task<Order>>
     {
         private readonly IOrdersRepository repository;
-        private readonly IOrderSequencesRepository sequencesRepository;
         private readonly IChannelProfilesRepository channelProfileRepository;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
@@ -27,14 +26,12 @@ namespace Quivi.Application.Commands.Orders
         public AddOrderAsyncCommandHandler(IOrdersRepository repository,
                                             IChannelProfilesRepository channelProfileRepository,
                                             IDateTimeProvider dateTimeProvider,
-                                            IEventService eventService,
-                                            IOrderSequencesRepository sequencesRepository)
+                                            IEventService eventService)
         {
             this.repository = repository;
             this.channelProfileRepository = channelProfileRepository;
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
-            this.sequencesRepository = sequencesRepository;
         }
 
         public async Task<Order> Handle(AddOrderAsyncCommand command)
@@ -60,7 +57,6 @@ namespace Quivi.Application.Commands.Orders
                 EmployeeId = null,
                 CreatedDate = now,
                 ModifiedDate = now,
-                OrderSequence = await GetOrderSequence(channelProfile.MerchantId, now),
             };
             repository.Add(order);
             await repository.SaveChangesAsync();
@@ -73,22 +69,6 @@ namespace Quivi.Application.Commands.Orders
                 Operation = EntityOperation.Create,
             });
             return order;
-        }
-
-        public async Task<OrderSequence> GetOrderSequence(int merchantId, DateTime now)
-        {
-            var lastOrderOfMerchantQuery = await sequencesRepository.GetAsync(new GetOrderSequencesCriteria
-            {
-                MerchantIds = [merchantId],
-                PageSize = 1,
-            });
-
-            return new OrderSequence
-            {
-                SequenceNumber = (lastOrderOfMerchantQuery.SingleOrDefault()?.SequenceNumber ?? 0) + 1,
-                CreatedDate = now,
-                ModifiedDate = now,
-            };
         }
     }
 }

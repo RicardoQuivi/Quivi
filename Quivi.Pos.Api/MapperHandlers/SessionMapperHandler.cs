@@ -25,7 +25,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 IsOpen = model.Status == SessionStatus.Ordering,
                 IsDeleted = model.Status == SessionStatus.Unknown,
                 ClosedAt = model.EndDate.HasValue ? new DateTimeOffset(model.EndDate.Value, TimeSpan.Zero) : null,
-                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(model.Orders!.SelectMany(o => o.OrderMenuItems!))!,
+                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(model.Orders!.Where(s => new[] { OrderState.Draft, OrderState.PendingApproval}.Contains(s.State) == false).SelectMany(o => o.OrderMenuItems!))!,
             };
         }
     }

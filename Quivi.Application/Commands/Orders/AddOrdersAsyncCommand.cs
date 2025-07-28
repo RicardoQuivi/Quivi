@@ -92,12 +92,6 @@ namespace Quivi.Application.Commands.Orders
                     ScheduledTo = null,
                     CreatedDate = now,
                     ModifiedDate = now,
-                    OrderSequence = new OrderSequence
-                    {
-                        SequenceNumber = nextSequence,
-                        CreatedDate = now,
-                        ModifiedDate = now,
-                    },
                 };
                 nextSequence += 1;
                 PopulateOrderItems(menuItemDictionary, itemsPerChannelWithDefaultPrice[channel.Id], order);

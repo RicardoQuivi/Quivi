@@ -15,17 +15,14 @@ namespace Quivi.Backoffice.Api.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly IQueryProcessor queryProcessor;
-        private readonly ICommandProcessor commandProcessor;
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
 
         public TransactionsController(IQueryProcessor queryProcessor,
-                                        ICommandProcessor commandProcessor,
                                         IMapper mapper,
                                         IIdConverter idConverter)
         {
             this.queryProcessor = queryProcessor;
-            this.commandProcessor = commandProcessor;
             this.mapper = mapper;
             this.idConverter = idConverter;
         }
