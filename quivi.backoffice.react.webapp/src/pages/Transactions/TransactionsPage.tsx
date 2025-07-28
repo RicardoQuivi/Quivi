@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import ResponsiveTable from "../../components/tables/ResponsiveTable";
 import { Tooltip } from "../../components/ui/tooltip/Tooltip";
 import { CommentIcon, FeesIcon, QuiviIcon, StarIcon, SyncIcon } from "../../icons";
 import { Divider } from "../../components/dividers/Divider";
@@ -30,6 +29,7 @@ import Badge from "../../components/ui/badge/Badge";
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { Review } from "../../hooks/api/Dtos/reviews/Review";
 import { TransactionModal } from "./TransactionModal";
+import { ResponsiveTable } from "../../components/tables/ResponsiveTable";
 
 interface Props {
     readonly isAdmin?: boolean;

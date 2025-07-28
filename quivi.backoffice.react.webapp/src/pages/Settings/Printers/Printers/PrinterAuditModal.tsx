@@ -4,7 +4,6 @@ import { ModalButtonsFooter } from "../../../../components/ui/modal/ModalButtons
 import { Printer } from "../../../../hooks/api/Dtos/printers/Printer";
 import Button from "../../../../components/ui/button/Button";
 import { usePrinterMessageMutator } from "../../../../hooks/mutators/usePrinterMessageMutator";
-import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
 import { Divider } from "../../../../components/dividers/Divider";
 import { QueryPagination } from "../../../../components/pagination/QueryPagination";
 import { useEffect, useMemo, useState } from "react";
@@ -16,6 +15,7 @@ import { PrinterMessage } from "../../../../hooks/api/Dtos/printerMessages/Print
 import { Tooltip } from "../../../../components/ui/tooltip/Tooltip";
 import { useToast } from "../../../../layout/ToastProvider";
 import { Spinner } from "../../../../components/spinners/Spinner";
+import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 
 interface Props {
     readonly printer?: Printer;

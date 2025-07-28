@@ -12,15 +12,13 @@ import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCate
 import ComponentCard from "../../../../components/common/ComponentCard";
 import Button from "../../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, SearchIcon, TrashBinIcon } from "../../../../icons";
-import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
 import Avatar from "../../../../components/ui/avatar/Avatar";
 import Badge from "../../../../components/ui/badge/Badge";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
 import CurrencySpan from "../../../../components/currency/CurrencySpan";
-import { IconButton } from "../../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../../components/ui/tooltip/Tooltip";
 import { DeleteEntityModal } from "../../../../components/modals/DeleteEntityModal";
 import { Entity } from "../../../../hooks/EntitiesName";
+import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 
 interface ItemsCardProps {
     readonly categoryId: string | undefined | null;   
@@ -74,11 +72,6 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
         return result;
     }, [categoriesQuery.data])
 
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
-
     return <ComponentCard
         title={t("common.entities.menuItems")}
         className="size-full"
@@ -119,28 +112,28 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
         <div className="max-w-full overflow-x-auto">
             <ResponsiveTable
                 isLoading={menuItemsQuery.isFirstLoading}
-                columns={[
-                    {
-                        key: "name",
-                        label: t("common.name"),
-                        render: item => <>
-                            <div className="flex items-center gap-3">
-                                <Avatar
-                                    src={item.imageUrl}
-                                    alt={item.name}
-                                    size="large"
-                                />
-                                <div>
-                                    <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                        {item.name}
-                                    </span>
-                                    <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {item.description}
-                                    </span>
-                                </div>
+                name={{
+                    key: "name",
+                    label: t("common.name"),
+                    render: item => <>
+                        <div className="flex items-center gap-3">
+                            <Avatar
+                                src={item.imageUrl}
+                                alt={item.name}
+                                size="large"
+                            />
+                            <div>
+                                <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                    {item.name}
+                                </span>
+                                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                    {item.description}
+                                </span>
                             </div>
-                        </>
-                    },
+                        </div>
+                    </>
+                }}
+                columns={[
                     {
                         key: "categories",
                         label: t("common.entities.menuCategories"),
@@ -186,23 +179,19 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                         key: "price",
                         label: t("common.price"),
                         render: item => <>
-                            <div className="flex items-center gap-3">
-                                <div>
-                                    <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                        <CurrencySpan value={item.price} />
-                                    </span>
-                                    <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                        <Trans
-                                            t={t}
-                                            i18nKey="common.vatRateIncluded"
-                                            shouldUnescape={true}
-                                            values={{
-                                                value: `${item.vatRate.toFixed(0)}%`
-                                            }}
-                                        />
-                                    </span>
-                                </div>
-                            </div>
+                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                <CurrencySpan value={item.price} />
+                            </span>
+                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                <Trans
+                                    t={t}
+                                    i18nKey="common.vatRateIncluded"
+                                    shouldUnescape={true}
+                                    values={{
+                                        value: `${item.vatRate.toFixed(0)}%`
+                                    }}
+                                />
+                            </span>
                         </>
                     },
                     {
@@ -224,28 +213,19 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                             }
                         </>
                     },
+                ]}
+                actions={[
                     {
-                        render: d => <>
-                            <Tooltip message={t("common.edit")}>
-                                <IconButton
-                                    onClick={(e) => rowAction(e, () => navigate(`/businessProfile/menumanagement/items/${d.id}/edit`, ))}
-                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                >
-                                    <PencilIcon className="size-5" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip message={t("common.delete")}>
-                                <IconButton
-                                    onClick={() => setMenuItemToDelete(d)}
-                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                >
-                                    <TrashBinIcon className="size-5" />
-                                </IconButton>
-                            </Tooltip>
-                        </>,
-                        key: "actions",
-                        label: "",
-                        isActions: true,
+                        render: () => <PencilIcon className="size-5" />,
+                        key: "edit",
+                        label: t("common.edit"),
+                        onClick: d => navigate(`/businessProfile/menumanagement/items/${d.id}/edit`)
+                    },
+                    {
+                        render: () => <TrashBinIcon className="size-5" />,
+                        key: "delete",
+                        label: t("common.delete"),
+                        onClick: d => setMenuItemToDelete(d)
                     },
                 ]}
                 data={menuItemsQuery.data}

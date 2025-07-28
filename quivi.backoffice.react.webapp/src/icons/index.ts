@@ -85,6 +85,7 @@ import { ReactComponent as UnitedKingdomFlagIcon } from "./unitedkingdomflag.svg
 import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
 import { ReactComponent as ProfileIcon } from "./profile.svg?react";
 import { ReactComponent as SignOutIcon } from "./sign-out.svg?react";
+import { ReactComponent as ThreeDotsVertical } from "./3-dots-vertical.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -174,4 +175,5 @@ export {
     PortugalFlagIcon,
     ProfileIcon,
     SignOutIcon,
+    ThreeDotsVertical,
 };

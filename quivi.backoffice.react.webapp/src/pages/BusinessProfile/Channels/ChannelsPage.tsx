@@ -11,10 +11,7 @@ import PageMeta from "../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import Button from "../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, PrinterIcon, TrashBinIcon } from "../../../icons";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
-import { IconButton } from "../../../components/ui/button/IconButton";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import Checkbox from "../../../components/form/input/Checkbox";
 import { AddChannelsModal } from "./AddChannelsModal";
@@ -23,6 +20,7 @@ import { CheckedItemsActions } from "../../../components/ui/notification/Checked
 import { DeleteEntitiesModal } from "../../../components/modals/DeleteEntitiesModal";
 import { EditChannelsModal } from "./EditChannelsModal";
 import { Divider } from "../../../components/dividers/Divider";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const ChannelsPage = () => {
     const { t } = useTranslation();
@@ -84,11 +82,6 @@ export const ChannelsPage = () => {
     const onDeleteSelectedItems = () => {
         setChannelsToDelete(allItemsChecked ? [] : Array.from(checkedItems.values()));
         setIsOpenDeleteConfirmModal(true);
-    }
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
     }
 
     const onEditChannelModalClose = () => {
@@ -170,23 +163,29 @@ export const ChannelsPage = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={channelsQuery.isFirstLoading}
-                        columns={[
-                            {
-                                render: d => <Checkbox
+                        name={{
+                            key: "identifier",
+                            render: (d) => <div
+                                className="flex flex-row gap-5"
+                            >
+                                <Checkbox
                                     checked={checkedItems.has(d) || false}
                                     onChange={(e) => onCheckItem(d, e)}
-                                />,
-                                label: <Checkbox 
+                                />
+                                {d.name}
+                            </div>,
+                            label: <div
+                                className="flex flex-row gap-5"
+                            >
+                                <Checkbox 
                                     checked={allPageItemsChecked}
                                     onChange={(e) => onCheckAllPageItems(e)}
-                                />,
-                                key: "checks"
-                            },
-                            {
-                                key: "identifier",
-                                render: (d) => d.name,
-                                label: t("common.identifier"),
-                            },
+                                    className="hidden sm:block"
+                                />
+                                {t("common.identifier")}
+                            </div>,
+                        }}
+                        columns={[
                             {
                                 key: "profile",
                                 render: d => {
@@ -198,36 +197,25 @@ export const ChannelsPage = () => {
                                 },
                                 label: t("common.entities.channelProfile"),
                             },
+                        ]}
+                        actions={[
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={() => {}}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PrinterIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => setChannelsToEdit([d]))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d}))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <PrinterIcon className="size-5" />,
+                                key: "print",
+                                label: t("common.print"),
+                                onClick: _d => { }, //TODO: Print
+                            },
+                            {
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => setChannelsToEdit([d]),
+                            },
+                            {
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d})),
                             },
                         ]}
                         data={channelsQuery.data}

@@ -11,11 +11,9 @@ import { useLocalMutator } from "../../../hooks/mutators/useLocalMutator";
 import { Entity } from "../../../hooks/EntitiesName";
 import Button from "../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
-import { IconButton } from "../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
 import { Divider } from "../../../components/dividers/Divider";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const LocalsPage = () => {
     const { t } = useTranslation();
@@ -31,11 +29,6 @@ export const LocalsPage = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
 
     return <>
         <PageMeta
@@ -63,34 +56,23 @@ export const LocalsPage = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={localsQuery.isFirstLoading}
-                        columns={[
+                        name={{
+                            key: "name",
+                            render: (d) => d.name,
+                            label: t("common.name"),
+                        }}
+                        actions={[
                             {
-                                key: "name",
-                                render: (d) => d.name,
-                                label: t("common.name"),
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/settings/locals/${d.id}/edit`),
                             },
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/settings/locals/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d}))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d}))
                             },
                         ]}
                         data={localsQuery.data}

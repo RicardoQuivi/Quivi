@@ -10,13 +10,11 @@ import { useCustomChargeMethodMutator } from "../../../hooks/mutators/useCustomC
 import { Entity } from "../../../hooks/EntitiesName";
 import Button from "../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
-import { IconButton } from "../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
 import { Divider } from "../../../components/dividers/Divider";
 import { CustomChargeMethod } from "../../../hooks/api/Dtos/customchargemethods/CustomChargeMethod";
 import Avatar from "../../../components/ui/avatar/Avatar";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const CustomChargeMethodsPage = () => {
     const { t } = useTranslation();
@@ -32,11 +30,6 @@ export const CustomChargeMethodsPage = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
 
     return <>
         <PageMeta
@@ -64,47 +57,36 @@ export const CustomChargeMethodsPage = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={chargeMethodsQuery.isFirstLoading}
-                        columns={[
-                            {
-                                key: "name",
-                                label: t("common.name"),
-                                render: d => <>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar
-                                            src={d.logoUrl}
-                                            alt={d.name}
-                                            size="large"
-                                        />
-                                        <div>
-                                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                {d.name}
-                                            </span>
-                                        </div>
+                        name={{
+                            key: "name",
+                            label: t("common.name"),
+                            render: d => <>
+                                <div className="flex items-center gap-3">
+                                    <Avatar
+                                        src={d.logoUrl}
+                                        alt={d.name}
+                                        size="large"
+                                    />
+                                    <div>
+                                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                            {d.name}
+                                        </span>
                                     </div>
-                                </>
+                                </div>
+                            </>,
+                        }}
+                        actions={[
+                            {
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/settings/chargemethods/${d.id}/edit`)
                             },
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/settings/chargemethods/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d}))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d}))
                             },
                         ]}
                         data={chargeMethodsQuery.data}

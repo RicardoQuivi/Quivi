@@ -12,10 +12,10 @@ import { NumberField } from "../../../../components/inputs/NumberField";
 import { MultiSelect } from "../../../../components/inputs/MultiSelect";
 import { ModifierGroup } from "../../../../hooks/api/Dtos/modifierGroups/ModifierGroup";
 import { useMenuItemsQuery } from "../../../../hooks/queries/implementations/useMenuItemsQuery";
-import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
 import Avatar from "../../../../components/ui/avatar/Avatar";
 import { Spinner } from "../../../../components/spinners/Spinner";
+import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 
 const syncedRecord = <T1, T2>(left: Record<string, T1>, right: Record<string, T2>, create: (a: T1) => T2): Record<string, T2> => {
     const result: Record<string, T2> = {};

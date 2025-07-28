@@ -6,10 +6,7 @@ import { Local } from "../../../../hooks/api/Dtos/locals/Local";
 import ComponentCard from "../../../../components/common/ComponentCard";
 import Button from "../../../../components/ui/button/Button";
 import { InfoIcon, PencilIcon, PlusIcon, TrashBinIcon } from "../../../../icons";
-import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
-import { IconButton } from "../../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../../components/ui/tooltip/Tooltip";
 import { DeleteEntityModal } from "../../../../components/modals/DeleteEntityModal";
 import { Entity } from "../../../../hooks/EntitiesName";
 import { usePrintersQuery } from "../../../../hooks/queries/implementations/usePrintersQuery";
@@ -19,6 +16,7 @@ import { usePrinterWorkersQuery } from "../../../../hooks/queries/implementation
 import { PrinterWorker } from "../../../../hooks/api/Dtos/printerWorkers/PrinterWorker";
 import Badge from "../../../../components/ui/badge/Badge";
 import { PrinterAuditModal } from "./PrinterAuditModal";
+import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 
 interface PrintersCardProps {
     readonly printerWorkerId?: string;   
@@ -70,11 +68,6 @@ export const PrintersCard = (props: PrintersCardProps) => {
         return map;
     }, [localsQuery.data])
 
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
-
     return <ComponentCard
         title={t("common.entities.printers")}
         className="size-full"
@@ -100,24 +93,20 @@ export const PrintersCard = (props: PrintersCardProps) => {
         <div className="max-w-full overflow-x-auto">
             <ResponsiveTable
                 isLoading={printersQuery.isFirstLoading}
+                name={{
+                key: "name",
+                    label: t("common.name"),
+                    render: item => <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                        {item.name}
+                    </span>
+                }}
                 columns={[
-                    {
-                        key: "name",
-                        label: t("common.name"),
-                        render: item => <>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                {item.name}
-                            </span>
-                        </>
-                    },
                     {
                         key: "address",
                         label: t("common.hardwareAddress"),
-                        render: item => <>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                {item.address}
-                            </span>
-                        </>
+                        render: item => <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {item.address}
+                        </span>
                     },
                     {
                         key: "worker",
@@ -158,40 +147,25 @@ export const PrintersCard = (props: PrintersCardProps) => {
                             </Badge>;
                         }
                     },
+                ]}
+                actions={[
                     {
-                        key: "actions",
-                        render: d => <>
-                            <Tooltip
-                                message={t("pages.printers.printings", {
-                                    name: d.name,
-                                })}
-                            >
-                                <IconButton
-                                    onClick={(e) => rowAction(e, () => setPrinterToAudit(d))}
-                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                >
-                                    <InfoIcon className="size-5" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip message={t("common.edit")}>
-                                <IconButton
-                                    onClick={(e) => rowAction(e, () => navigate(`/settings/printersmanagement/printers/${d.id}/edit`, ))}
-                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                >
-                                    <PencilIcon className="size-5" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip message={t("common.delete")}>
-                                <IconButton
-                                    onClick={() => setPrinterToDelete(d)}
-                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                >
-                                    <TrashBinIcon className="size-5" />
-                                </IconButton>
-                            </Tooltip>
-                        </>,
-                        label: "",
-                        isActions: true,
+                        render: () => <InfoIcon className="size-5" />,
+                        key: "audit",
+                        label: t("pages.printers.printings"),
+                        onClick: setPrinterToAudit,
+                    },
+                    {
+                        render: () => <PencilIcon className="size-5" />,
+                        key: "edit",
+                        label: t("common.edit"),
+                        onClick: d => navigate(`/settings/printersmanagement/printers/${d.id}/edit`)
+                    },
+                    {
+                        render: () => <TrashBinIcon className="size-5" />,
+                        key: "delete",
+                        label: t("common.delete"),
+                        onClick: setPrinterToDelete,
                     },
                 ]}
                 data={printersQuery.data}

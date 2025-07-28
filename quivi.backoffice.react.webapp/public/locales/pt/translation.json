@@ -517,7 +517,7 @@
             "notificationsDescription": "Configure os documentos que a impressora irá processar para impressão.",
             "locationDescription": "Configure o local da impressora. A impressora apenas irá imprimir itens ou talões associados ao local designado.",
             "printerWorkerDescription": "Configure o serviço de impressão responsável por comunicar com a impressora. O serviço de impressão terá de estar ligado à impressora via USB ou ligado à mesma rede que esta impressora.",
-            "printings": "Impressões de {{name}}",
+            "printings": "Histórico de impressões",
             "pingPrinter": "Pingar impressora",
             "printTest": "Imprimir página de teste",
             "textMessage": "Teste de impressão efetuado via Quivi backoffice",

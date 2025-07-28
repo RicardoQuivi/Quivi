@@ -8,15 +8,13 @@ import { DeleteEntityModal } from "../../../components/modals/DeleteEntityModal"
 import { Entity } from "../../../hooks/EntitiesName";
 import Button from "../../../components/ui/button/Button";
 import { KeyIcon, PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
-import { IconButton } from "../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
 import { Divider } from "../../../components/dividers/Divider";
 import { useEmployeeMutator } from "../../../hooks/mutators/useEmployeeMutator";
 import { Employee } from "../../../hooks/api/Dtos/employees/Employee";
 import { useEmployeesQuery } from "../../../hooks/queries/implementations/useEmployeesQuery";
 import { ResetEmployeePinModal } from "./ResetEmployeePinModal";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const EmployeesPage = () => {
     const { t } = useTranslation();
@@ -33,11 +31,6 @@ export const EmployeesPage = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
 
     return <>
         <PageMeta
@@ -65,45 +58,29 @@ export const EmployeesPage = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={employeesQuery.isFirstLoading}
-                        columns={[
+                        name={{
+                            key: "name",
+                            render: (d) => d.name,
+                            label: t("common.name"),
+                        }}
+                        actions={[
                             {
-                                key: "name",
-                                render: (d) => d.name,
-                                label: t("common.name"),
+                                render: d => d.hasPinCode == true ? <KeyIcon className="size-5" /> : undefined,
+                                key: "resetPin",
+                                label: t("pages.employees.resetPin"),
+                                onClick: d => setState(s => ({ ...s, resetEntity: d})),
                             },
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/settings/employees/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d }))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {
-                                        d.hasPinCode &&
-                                        <Tooltip message={t("pages.employees.resetPin")}>
-                                            <IconButton
-                                                onClick={e => rowAction(e, () => setState(s => ({ ...s, resetEntity: d })))}
-                                                className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                            >
-                                                <KeyIcon className="size-5" />
-                                            </IconButton>
-                                        </Tooltip>
-                                    }
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/settings/employees/${d.id}/edit`),
+                            },
+                            {
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d}))
                             },
                         ]}
                         data={employeesQuery.data}

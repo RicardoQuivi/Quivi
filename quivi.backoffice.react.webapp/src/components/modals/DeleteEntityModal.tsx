@@ -93,17 +93,19 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
             />
         )}
     >
-        <Trans
-            t={t}
-            i18nKey="common.operations.deleteDescription"
-            shouldUnescape={true}
-            values={{
-                name: props.model != undefined && props.getName(props.model),
-                entity: getEntityName(),
-            }}
-            components={{
-                b: <b/>,
-            }}
-        />
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+            <Trans
+                t={t}
+                i18nKey="common.operations.deleteDescription"
+                shouldUnescape={true}
+                values={{
+                    name: props.model != undefined && props.getName(props.model),
+                    entity: getEntityName(),
+                }}
+                components={{
+                    b: <b/>,
+                }}
+            />
+        </p>
     </Modal>
 }

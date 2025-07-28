@@ -7,13 +7,11 @@ import { useModifierGroupsQuery } from "../../../../hooks/queries/implementation
 import ComponentCard from "../../../../components/common/ComponentCard";
 import Button from "../../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../../icons";
-import ResponsiveTable from "../../../../components/tables/ResponsiveTable";
-import { Tooltip } from "../../../../components/ui/tooltip/Tooltip";
-import { IconButton } from "../../../../components/ui/button/IconButton";
 import { Divider } from "../../../../components/dividers/Divider";
 import { QueryPagination } from "../../../../components/pagination/QueryPagination";
 import { DeleteEntityModal } from "../../../../components/modals/DeleteEntityModal";
 import { Entity } from "../../../../hooks/EntitiesName";
+import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 
 export const ModifierGroupsCard = () => {
     const { t } = useTranslation();
@@ -29,11 +27,6 @@ export const ModifierGroupsCard = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
 
     return <>
         <ComponentCard title={t("pages.modifierGroups.title")}>
@@ -55,34 +48,23 @@ export const ModifierGroupsCard = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={groupsQuery.isFirstLoading}
-                        columns={[
+                        name={{
+                            key: "name",
+                            label: t("common.name"),
+                            render: (d) => d.name,
+                        }}
+                        actions={[
                             {
-                                key: "name",
-                                label: t("common.name"),
-                                render: (d) => d.name,
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/businessProfile/menumanagement/modifiers/${d.id}/edit`)
                             },
                             {
-                                label: "",
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/businessProfile/menumanagement/modifiers/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d }))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                isActions: true,
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d }))
                             },
                         ]}
                         data={groupsQuery.data}

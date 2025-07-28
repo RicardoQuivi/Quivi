@@ -143,7 +143,7 @@ const AppSidebar = () => {
     const { t } = useTranslation();
     const user = useAuthenticatedUser();
 
-    const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+    const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar();
     const location = useLocation();
 
     const [openSubmenu, setOpenSubmenu] = useState<{
@@ -242,8 +242,8 @@ const AppSidebar = () => {
                                 nav.path && 
                                 <Link
                                     to={nav.path}
-                                    className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                                        }`}
+                                    className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"}`}
+                                    onClick={toggleMobileSidebar}
                                 >
                                     <span
                                         className={`menu-item-icon-size ${isActive(nav.path)
@@ -279,6 +279,7 @@ const AppSidebar = () => {
                                         subItems.map((subItem) => (
                                             <li key={subItem.name}>
                                                 <Link
+                                                    onClick={toggleMobileSidebar}
                                                     to={subItem.path}
                                                     className={`menu-dropdown-item ${isActive(subItem.path)
                                                             ? "menu-dropdown-item-active"

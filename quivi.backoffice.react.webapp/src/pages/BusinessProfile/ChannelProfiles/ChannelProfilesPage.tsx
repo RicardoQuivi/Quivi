@@ -4,7 +4,6 @@ import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../components/common/ComponentCard";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
 import { useMemo, useState } from "react";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import CurrencySpan from "../../../components/currency/CurrencySpan";
 import { usePosIntegrationsQuery } from "../../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { PosIntegration } from "../../../hooks/api/Dtos/posIntegrations/PosIntegration";
@@ -14,8 +13,6 @@ import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
 import { useNavigate } from "react-router";
 import { useIntegrationHelper } from "../../../utilities/useIntegrationHelper";
 import { ChannelModeName } from "../../../components/channels/ChannelModeName";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
-import { IconButton } from "../../../components/ui/button/IconButton";
 import Badge from "../../../components/ui/badge/Badge";
 import { DeleteEntityModal } from "../../../components/modals/DeleteEntityModal";
 import { Entity } from "../../../hooks/EntitiesName";
@@ -23,6 +20,7 @@ import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelP
 import { useChannelProfileMutator } from "../../../hooks/mutators/useChannelProfileMutator";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import { Divider } from "../../../components/dividers/Divider";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const ChannelProfilesPage = () => {
     const { t } = useTranslation();
@@ -54,11 +52,6 @@ export const ChannelProfilesPage = () => {
         return result;
     }, [integrationsQuery.data]);
 
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
-
     return <>
         <PageMeta
             title={t("pages.channelProfiles.title")}
@@ -86,12 +79,12 @@ export const ChannelProfilesPage = () => {
                 <div className="max-w-full overflow-x-auto">
                     <ResponsiveTable
                         isLoading={profilesQuery.isFirstLoading}
+                        name={{
+                            key: "name",
+                            render: (d) => d.name,
+                            label: t("common.name"),
+                        }}
                         columns={[
-                            {
-                                key: "name",
-                                render: (d) => d.name,
-                                label: t("common.name"),
-                            },
                             {
                                 render: d => <ChannelModeName features={d.features} />,
                                 label: t("common.mode"),
@@ -130,28 +123,19 @@ export const ChannelProfilesPage = () => {
                                 ),
                                 label: t("pages.channelProfiles.preparationTimer"),
                             },
+                        ]}
+                        actions={[
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/businessProfile/channelprofiles/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d}))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/businessProfile/channelprofiles/${d.id}/edit`)
+                            },
+                            {
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d}))
                             },
                         ]}
                         data={profilesQuery.data}

@@ -6,10 +6,7 @@ import ComponentCard from "../../../components/common/ComponentCard";
 import { useState } from "react";
 import Button from "../../../components/ui/button/Button";
 import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
-import ResponsiveTable from "../../../components/tables/ResponsiveTable";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
-import { IconButton } from "../../../components/ui/button/IconButton";
-import { Tooltip } from "../../../components/ui/tooltip/Tooltip";
 import { Divider } from "../../../components/dividers/Divider";
 import { useAcquirerConfigurationsQuery } from "../../../hooks/queries/implementations/useAcquirerConfigurationsQuery";
 import { AcquirerConfiguration } from "../../../hooks/api/Dtos/acquirerconfigurations/AcquirerConfiguration";
@@ -18,6 +15,7 @@ import { ChargePartner } from "../../../hooks/api/Dtos/acquirerconfigurations/Ch
 import { ChargeMethod } from "../../../hooks/api/Dtos/ChargeMethod";
 import { PartnerIcon } from "../../../icons/PartnerIcon";
 import { ChargeMethodIcon } from "../../../icons/ChargeMethodIcon";
+import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 
 export const AcquirerConfigurationsPage = () => {
     const { t } = useTranslation();
@@ -33,11 +31,6 @@ export const AcquirerConfigurationsPage = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-
-    const rowAction = (evt: React.MouseEvent<HTMLElement, MouseEvent>, action: () => any) => {
-        evt.stopPropagation();
-        action();
-    }
 
     const getPartnerName = (partner: ChargePartner) => {
         switch (partner) {
@@ -121,28 +114,19 @@ export const AcquirerConfigurationsPage = () => {
                                     )
                                 }
                             },
+                        ]}
+                        actions={[
                             {
-                                render: d => <>
-                                    <Tooltip message={t("common.edit")}>
-                                        <IconButton
-                                            onClick={(e) => rowAction(e, () => navigate(`/admin/acquirerConfigurations/${d.id}/edit`))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <PencilIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip message={t("common.delete")}>
-                                        <IconButton
-                                            onClick={() => setState(s => ({ ...s, deleteEntity: d}))}
-                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                        >
-                                            <TrashBinIcon className="size-5" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>,
-                                key: "actions",
-                                label: "",
-                                isActions: true,
+                                render: () => <PencilIcon className="size-5" />,
+                                key: "edit",
+                                label: t("common.edit"),
+                                onClick: d => navigate(`/admin/acquirerConfigurations/${d.id}/edit`),
+                            },
+                            {
+                                render: () => <TrashBinIcon className="size-5" />,
+                                key: "delete",
+                                label: t("common.delete"),
+                                onClick: d => setState(s => ({ ...s, deleteEntity: d}))
                             },
                         ]}
                         data={acquirersQuery.data}
