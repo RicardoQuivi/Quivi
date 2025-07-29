@@ -16,7 +16,7 @@ export const MenuCategoryFormPage = () => {
     const toast = useToast();
     const mutator = useMenuCategoryMutator();
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.menuCategory")
     });
 

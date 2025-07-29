@@ -16,7 +16,7 @@ export const EmployeeFormPage = () => {
     const toast = useToast();
     const mutator = useEmployeeMutator();
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.employee")
     });
 

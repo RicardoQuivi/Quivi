@@ -17,7 +17,7 @@ export const PosIntegrationFormPage = () => {
     const toast = useToast();
     const mutator = usePosIntegrationMutator();
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.posIntegration")
     });
 

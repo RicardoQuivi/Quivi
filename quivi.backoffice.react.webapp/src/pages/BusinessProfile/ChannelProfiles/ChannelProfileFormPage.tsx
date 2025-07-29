@@ -55,7 +55,7 @@ export const ChannelProfileFormPage = () => {
         navigate("/businessProfile/channelprofiles")
     }
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.channelProfile")
     });
 

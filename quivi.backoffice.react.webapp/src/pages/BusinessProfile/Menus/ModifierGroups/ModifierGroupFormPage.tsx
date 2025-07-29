@@ -18,7 +18,7 @@ export const ModifierGroupFormPage = () => {
     const { search } = useLocation();
     const params = new URLSearchParams(search);
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.modifierGroup")
     });
 

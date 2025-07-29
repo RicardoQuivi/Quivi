@@ -16,7 +16,7 @@ export const PrinterWorkerFormPage = () => {
     const toast = useToast();
     const mutator = usePrinterWorkerMutator();
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.printerWorker")
     });
 

@@ -53,9 +53,10 @@
         "confirm": "Confirmar",
         "close": "Fechar",
         "operations": {
-            "new": "Guardar {{name}}",
-            "edit": "Guardar {{name}}",
+            "new": "Novo {{name}}",
+            "edit": "Editar {{name}}",
             "delete": "Eliminar {{name}}",
+            "save": "Guardar {{name}}",
             "deleteDescription": "Tem a certeza que deseja eliminar o registo <b>{{name}}</b> de <b>{{entity}}</b>?",
             "deleteManyDescription": "Tem a certeza que deseja eliminar os <b>{{count}}</b> registos de <b>{{entity}}</b>?",
             "success": {

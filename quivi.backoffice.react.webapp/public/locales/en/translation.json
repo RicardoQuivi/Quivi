@@ -53,9 +53,10 @@
         "confirm": "Confirm",
         "close": "Close",
         "operations": {
-            "new": "Save {{name}}",
+            "new": "New {{name}}",
             "edit": "Save {{name}}",
             "delete": "Delete {{name}}",
+            "save": "Save {{name}}",
             "deleteDescription": "Are you sure you want to delete entry <b>{{name}}</b> of <b>{{entity}}</b>?",
             "deleteManyDescription": "Are you sure you want to delete <b>{{count}}</b> entries of <b>{{entity}}</b>?",
             "success": {

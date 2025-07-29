@@ -16,7 +16,7 @@ export const CustomChargeMethodFormPage = () => {
     const toast = useToast();
     const mutator = useCustomChargeMethodMutator();
 
-    const title = t(`common.operations.${id == undefined ? 'new' : 'edit'}`, {
+    const title = t(`common.operations.save`, {
         name: t("common.entities.customChargeMethod")
     });
 

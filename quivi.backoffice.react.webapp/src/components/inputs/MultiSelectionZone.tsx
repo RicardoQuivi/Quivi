@@ -22,7 +22,7 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
     const selectedBorder = "border-1";
     return (
         <div
-            className="grid grid-cols-12 gap-4 select-none"
+            className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:sm:grid-cols-2 xl:grid-cols-3 gap-4 select-none"
         >
             {
                 props.options.map(o => {
@@ -31,7 +31,7 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
                     return (
                     <div
                         key={id}
-                        className={`${selected ? selectedBorder : unselectedBorder} col-span-4 sm:col-span-6 md:col-span-4 lg:col-span-3 flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] cursor-pointer`}
+                        className={`${selected ? selectedBorder : unselectedBorder} flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] cursor-pointer`}
                         onClick={() => {
                             props.onChange(props.options.filter(o => {
                                 const thisId = props.getId(o);
