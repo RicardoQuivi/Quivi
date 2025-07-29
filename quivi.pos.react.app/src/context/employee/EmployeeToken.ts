@@ -46,6 +46,6 @@ export class EmployeeTokenData {
         this.subMerchantId = decoded.sub_merchant_id;
         this.employeeId = decoded.employee_id;
         this.isActivated = decoded.activated_at != undefined;
-        this.isAdmin = decoded.role.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
+        this.isAdmin = decoded.role?.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
     }
 }
