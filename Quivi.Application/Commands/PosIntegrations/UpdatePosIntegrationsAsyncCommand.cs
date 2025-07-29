@@ -14,6 +14,7 @@ namespace Quivi.Application.Commands.PosIntegrations
         int Id { get; }
         int MerchantId { get; }
         SyncState SyncState { get; set; }
+        string ConnectionString { get; set; }
     }
 
     public class UpdatePosIntegrationsAsyncCommand : AUpdateAsyncCommand<IEnumerable<PosIntegration>, IUpdatablePosIntegration>
@@ -79,11 +80,13 @@ namespace Quivi.Application.Commands.PosIntegrations
         {
             public PosIntegration Model { get; }
             private readonly SyncState originalSyncState;
+            private readonly string originalConnectionString;
 
             public UpdatablePosIntegration(PosIntegration model)
             {
                 Model = model;
                 originalSyncState = model.SyncState;
+                originalConnectionString = model.ConnectionString;
             }
 
             public int Id => this.Model.Id;
@@ -94,8 +97,26 @@ namespace Quivi.Application.Commands.PosIntegrations
                 set => Model.SyncState = value;
             }
 
+            public string ConnectionString
+            {
+                get => Model.ConnectionString;
+                set => Model.ConnectionString = value;
+            }
+
             public bool SyncStateChanged => originalSyncState != Model.SyncState;
-            public bool HasChanges => SyncStateChanged;
+            public bool HasChanges
+            {
+                get
+                {
+                    if (SyncStateChanged)
+                        return true;
+
+                    if (originalConnectionString != Model.ConnectionString)
+                        return true;
+
+                    return false;
+                }
+            }
         }
     }
 }

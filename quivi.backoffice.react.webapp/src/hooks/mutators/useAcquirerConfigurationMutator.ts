@@ -9,7 +9,7 @@ export const useAcquirerConfigurationMutator = () => {
     const api = useAcquirerConfigurationsApi();
     
     const upsertCash = useMutator({
-        entityType: getEntityType(Entity.Locals),
+        entityType: getEntityType(Entity.AcquirerConfigurations),
         getKey: (e: AcquirerConfiguration) => e.id,
         updateCall: async (request: UpsertCashAcquirerConfigurationRequest) => {
             const response = await api.upsertCash(request);

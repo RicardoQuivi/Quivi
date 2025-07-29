@@ -14,10 +14,10 @@ namespace Quivi.Backoffice.Api.Dtos
     {
         public required string Id { get; init; }
         public IntegrationType Type { get; init; }
-        public object? ConnectionStringParams { get; init; }
         public bool IsActive { get; init; }
         public SyncState SyncState { get; init; }
         public bool IsDianosticErrorsMuted { get; init; }
+        public required IReadOnlyDictionary<IntegrationType, object> Settings { get; init; }
         public required IntegrationFeatures Features { get; init; }
     }
 }

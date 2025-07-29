@@ -175,7 +175,7 @@ namespace Quivi.Guests.Api.Controllers
             var order = orders.Single();
             var orderIds = orders.Select(s => s.Id).ToList();
             string? jobId = null;
-            if(order.State == OrderState.Draft)
+            if (order.State == OrderState.Draft)
                 jobId = await posSyncService.ProcessOrders(orderIds, order.MerchantId, OrderState.Draft, false);
 
             return new SubmitOrderResponse

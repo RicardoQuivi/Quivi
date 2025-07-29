@@ -22,6 +22,7 @@
             "Duplicate": "A entry with this value already exists"
         },
         "back": "Back",
+        "type": "Type",
         "id": "Id",
         "date": "Date",
         "subTotal": "Subtotal",
@@ -550,6 +551,15 @@
             "syncingError": "Syncing error",
             "noDocumentAvailable": "There are no documents available for this transaction",
             "downloadDocument": "Download documents"
+        },
+        "posIntegrations": {
+            "title": "PoS Integrations",
+            "quiviViaFacturaLusa": {
+                "accessToken": "Access Token",
+                "invoicePrefix": "Invoice prefix",
+                "invoicingEnabled": "Issuance of tax documents",
+                "includeTipInInvoice": "Include tip in invoice"
+            }
         }
     }
 }

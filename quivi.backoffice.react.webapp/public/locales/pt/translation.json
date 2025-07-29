@@ -22,6 +22,7 @@
             "Duplicate": "Já existe um registo com este valor"
         },
         "back": "Voltar",
+        "type": "Tipo",
         "id": "Id",
         "date": "Data",
         "subTotal": "Subtotal",
@@ -75,8 +76,8 @@
             "channelProfile": "Perfil de canal",
             "channelProfiles": "Perfis de canal",
 
-            "posIntegration": "Integração do PoS",
-            "posIntegrations": "Integrações do PoS",
+            "posIntegration": "Integração de PoS",
+            "posIntegrations": "Integrações de PoS",
 
             "channel": "Canal",
             "channels": "Canais",
@@ -550,6 +551,15 @@
             "syncingError": "Erro ao sincronizar",
             "noDocumentAvailable": "Não existem documentos disponíveis para esta transação",
             "downloadDocument": "Descarregar documentos"
+        },
+        "posIntegrations": {
+            "title": "Integrações de PoS",
+            "quiviViaFacturaLusa": {
+                "accessToken": "Access Token",
+                "invoicePrefix": "Prefixo da série",
+                "invoicingEnabled": "Emissão de documentos fiscais",
+                "includeTipInInvoice": "Incluir gratificação em documentos fiscais"
+            }
         }
     }
 }

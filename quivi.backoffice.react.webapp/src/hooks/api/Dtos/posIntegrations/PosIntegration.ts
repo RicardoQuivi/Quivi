@@ -20,10 +20,10 @@ export enum PosSyncState {
 export interface PosIntegration {
     readonly id: string;
     readonly type: IntegrationType;
-    readonly connectionStringParams: any;
     readonly isActive: boolean;
     readonly isDianosticErrorsMuted: boolean;
     readonly syncState: PosSyncState;
     readonly features: IntegrationFeatures;
+    readonly settings: Record<string, any>;
 }
 

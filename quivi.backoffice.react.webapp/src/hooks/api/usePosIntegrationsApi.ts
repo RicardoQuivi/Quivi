@@ -2,6 +2,9 @@ import { useMemo } from "react";
 import { GetPosIntegrationsRequest } from "./Dtos/posIntegrations/GetPosIntegrationsRequest";
 import { GetPosIntegrationsResponse } from "./Dtos/posIntegrations/GetPosIntegrationsResponse";
 import { useAuthenticatedHttpClient } from "../../context/AuthContext";
+import { CreatePosIntegrationResponse } from "./Dtos/posIntegrations/CreatePosIntegrationResponse";
+import { CreateQuiviViaFacturalusaPosIntegrationRequest } from "./Dtos/posIntegrations/CreateQuiviViaFacturalusaPosIntegrationRequest";
+import { PutQuiviViaFacturalusaPosIntegrationRequest } from "./Dtos/posIntegrations/PutQuiviViaFacturalusaPosIntegrationRequest";
 
 export const usePosIntegrationsApi = () => {
     const client = useAuthenticatedHttpClient();
@@ -27,8 +30,21 @@ export const usePosIntegrationsApi = () => {
         return client.get<GetPosIntegrationsResponse>(url, {});
     }
 
+    const createQuiviViaFacturaLusa = (request: CreateQuiviViaFacturalusaPosIntegrationRequest) => {
+        const url = new URL(`api/posintegrations/QuiviViaFacturalusa`, import.meta.env.VITE_API_URL).toString();
+        return client.post<CreatePosIntegrationResponse>(url, request, {});
+    }
+
+    const putQuiviViaFacturaLusa = (request: PutQuiviViaFacturalusaPosIntegrationRequest) => {
+        const url = new URL(`api/posintegrations/${request.id}/QuiviViaFacturalusa`, import.meta.env.VITE_API_URL).toString();
+        return client.put<CreatePosIntegrationResponse>(url, request, {});
+    }
+
     const state = useMemo(() => ({
         get,
+        
+        createQuiviViaFacturaLusa,
+        putQuiviViaFacturaLusa,
     }), [client]);
 
     return state;

@@ -19,7 +19,6 @@ namespace Quivi.Application.Pos.SyncStrategies
         public bool IncludeTipInInvoice { get; set; }
         public string InvoicePrefix { get; set; }
 
-        public bool IsDefault => string.IsNullOrWhiteSpace(AccessToken);
         public int MerchantId { get; }
 
         #region ISyncSettings

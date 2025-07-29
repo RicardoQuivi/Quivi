@@ -33,6 +33,8 @@ import { PrinterFormPage } from "./pages/Settings/Printers/Printers/PrinterFormP
 import { AcquirerConfigurationsPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationsPage";
 import { AcquirerConfigurationFormPage } from "./pages/Admin/AcquirerConfigurations/AcquirerConfigurationFormPage";
 import { TransactionsPage } from "./pages/Transactions/TransactionsPage";
+import { PosIntegrationsPage } from "./pages/Admin/PosIntegrations/PosIntegrationsPage";
+import { PosIntegrationFormPage } from "./pages/Admin/PosIntegrations/PosIntegrationFormPage";
 
 export const App = () => {
     return <>
@@ -51,23 +53,32 @@ export const App = () => {
                     <Route path="/" element={<DashboardPage />} />
 
                     {/* Admin */}
+                    <Route path="/admin/integrations" element={<PosIntegrationsPage />} />
+                    <Route path="/admin/integrations/add" element={<PosIntegrationFormPage />} />
+                    <Route path="/admin/integrations/:id/edit" element={<PosIntegrationFormPage />} />
+
                     <Route path="/admin/acquirerConfigurations" element={<AcquirerConfigurationsPage />} />
                     <Route path="/admin/acquirerConfigurations/add" element={<AcquirerConfigurationFormPage />} />
                     <Route path="/admin/acquirerConfigurations/:id/edit" element={<AcquirerConfigurationFormPage />} />
+
                     <Route path="/admin/transactions" element={<TransactionsPage isAdmin />} />
                     <Route path="/admin/transactions/:id" element={<TransactionsPage isAdmin />} />
+
 
                     {/* Merchant */}
                     <Route path="/businessProfile/merchant/setup" element={<SetUpNewMerchantPage />} />
                     <Route path="/businessProfile/merchant" element={<MerchantProfileInfo />} />
+
 
                     {/* Channel Profile */}
                     <Route path="/businessProfile/channelprofiles" element={<ChannelProfilesPage />} />
                     <Route path="/businessProfile/channelprofiles/add" element={<ChannelProfileFormPage />} />
                     <Route path="/businessProfile/channelprofiles/:id/edit" element={<ChannelProfileFormPage />} />
 
+
                     {/* Channel */}
                     <Route path="/businessProfile/channels" element={<ChannelsPage />} />
+
 
                     {/* Menu Management */}
                     <Route path="/businessProfile/menumanagement" element={<MenuManagementPage categories="All" />} />
@@ -80,24 +91,29 @@ export const App = () => {
                     <Route path="/businessProfile/menumanagement/modifiers/add" element={<ModifierGroupFormPage />} />
                     <Route path="/businessProfile/menumanagement/modifiers/:id/edit" element={<ModifierGroupFormPage />} />
 
+
                     {/* Transactions */}
                     <Route path="/transactions" element={<TransactionsPage />} />
                     <Route path="/transactions/:id" element={<TransactionsPage />} />
+
 
                     {/* Locals */}
                     <Route path="/settings/locals" element={<LocalsPage />} />
                     <Route path="/settings/locals/add" element={<LocalFormPage />} />
                     <Route path="/settings/locals/:id/edit" element={<LocalFormPage />} />
 
+
                     {/* Custom Charge Methods */}
                     <Route path="/settings/chargemethods" element={<CustomChargeMethodsPage />} />
                     <Route path="/settings/chargemethods/add" element={<CustomChargeMethodFormPage />} />
                     <Route path="/settings/chargemethods/:id/edit" element={<CustomChargeMethodFormPage />} />
 
+
                     {/* Employees */}
                     <Route path="/settings/employees" element={<EmployeesPage />} />
                     <Route path="/settings/employees/add" element={<EmployeeFormPage />} />
                     <Route path="/settings/employees/:id/edit" element={<EmployeeFormPage />} />
+
 
                     {/* Printers */}
                     <Route path="/settings/printersmanagement" element={<PrinterPage />} />
@@ -106,6 +122,7 @@ export const App = () => {
                     <Route path="/settings/printersmanagement/workers/:id/edit" element={<PrinterWorkerFormPage />} />
                     <Route path="/settings/printersmanagement/printers/add" element={<PrinterFormPage />} />
                     <Route path="/settings/printersmanagement/printers/:id/edit" element={<PrinterFormPage />} />
+
 
                     {/* Terms And Conditions */}
                     <Route path="/termsAndConditions" element={<TermsAndConditionsPage />} />
