@@ -44,32 +44,32 @@ const GoToPosModal = (props: Props) => {
     const auth = useAuth();
     const user = useAuthenticatedUser();
 
-    const merchantsQuery = useMerchantsQuery({
+    const merchantsQuery = useMerchantsQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
 
-    const channelProfilesQuery = useChannelProfilesQuery({
+    const channelProfilesQuery = useChannelProfilesQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
 
-    const channelsQuery = useChannelsQuery({
+    const channelsQuery = useChannelsQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
     
-    const customChargeMethodsQuery = useCustomChargeMethodsQuery({
+    const customChargeMethodsQuery = useCustomChargeMethodsQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
 
-    const employeesQuery = useEmployeesQuery({
+    const employeesQuery = useEmployeesQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
 
-    const menuItemsQuery = useMenuItemsQuery({
+    const menuItemsQuery = useMenuItemsQuery(props.isOpen == false ? undefined : {
         page: 0,
         pageSize: 0,
     })
@@ -131,6 +131,7 @@ const GoToPosModal = (props: Props) => {
             />,
             content: <div className="flex flex-col gap-2">
                 <Skeleton />
+                <br/>
                 <Skeleton />
                 <Skeleton />
             </div>
