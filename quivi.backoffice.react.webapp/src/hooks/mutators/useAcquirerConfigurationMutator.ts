@@ -4,6 +4,7 @@ import { useMutator } from "./useMutator";
 import { useAcquirerConfigurationsApi } from "../api/useAcquirerConfigurationsApi";
 import { UpsertCashAcquirerConfigurationRequest } from "../api/Dtos/acquirerconfigurations/UpsertCashAcquirerConfigurationRequest";
 import { AcquirerConfiguration } from "../api/Dtos/acquirerconfigurations/AcquirerConfiguration";
+import { UpsertPaybyrdAcquirerConfigurationRequest } from "../api/Dtos/acquirerconfigurations/UpsertPaybyrdAcquirerConfigurationRequest";
 
 export const useAcquirerConfigurationMutator = () => {
     const api = useAcquirerConfigurationsApi();
@@ -17,9 +18,22 @@ export const useAcquirerConfigurationMutator = () => {
         }
     })
 
+    const upsertPaybyrd = useMutator({
+        entityType: getEntityType(Entity.AcquirerConfigurations),
+        getKey: (e: AcquirerConfiguration) => e.id,
+        updateCall: async (request: UpsertPaybyrdAcquirerConfigurationRequest) => {
+            const response = await api.upsertPaybyrd(request);
+            return [response.data];
+        }
+    })
+
     const result = useMemo(() => ({
         upsertCash: async (request: UpsertCashAcquirerConfigurationRequest) => {
             const result = await upsertCash.mutate([], request);
+            return result.response;
+        },
+        upsertPaybyrd: async (request: UpsertPaybyrdAcquirerConfigurationRequest) => {
+            const result = await upsertPaybyrd.mutate([], request);
             return result.response;
         },
     }), [api]);

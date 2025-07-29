@@ -95,7 +95,7 @@ export const PosIntegrationForm = (props: Props) => {
 
                     <QuiviFiaFacturaLusaForm 
                         type={state.type}
-                        state={state.states[state.type] as QuiviViaFacturaLusaState}
+                        state={state.states[IntegrationType.QuiviViaFacturalusa] as QuiviViaFacturaLusaState}
                         onChange={state => setState(s => {
                             const result = {...s};
                             result.states[IntegrationType.QuiviViaFacturalusa] = state;

@@ -8,5 +8,6 @@ namespace Quivi.Backoffice.Api.Dtos
         public ChargeMethod Method { get; init; }
         public ChargePartner Partner { get; init; }
         public bool IsActive { get; init; }
+        public required IReadOnlyDictionary<ChargePartner, IReadOnlyDictionary<ChargeMethod, object>> Settings { get; init; }
     }
 }

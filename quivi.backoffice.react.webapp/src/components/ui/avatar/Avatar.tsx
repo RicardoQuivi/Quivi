@@ -56,22 +56,28 @@ const Avatar: React.FC<AvatarProps> = ({
             className={`relative flex items-center justify-center text-white font-medium rounded-full ${sizeClasses[size]}`}
             style={{ backgroundColor: showFallback ? backgroundColor : undefined }}
         >
-            {showFallback ? (
-                <span>{firstLetter}</span>
-            ) : isStringSrc ? (
-                <img src={src as string} alt={alt} className="object-cover w-full h-full rounded-full" />
-            ) : (
-                // ReactComponent (like an imported SVG)
-                <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                    {src}
-                </div>
-            )}
+            {
+                showFallback 
+                ?
+                    <span>{firstLetter}</span>
+                : 
+                (
+                    isStringSrc 
+                    ?
+                    <img src={src as string} alt={alt} className="object-cover w-full h-full rounded-full" />
+                    : // ReactComponent (like an imported SVG)
+                    <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+                        {src}
+                    </div>
+                )
+            }
 
-            {status !== "none" && (
+            {
+                status !== "none" &&
                 <span
                     className={`absolute bottom-0 right-0 rounded-full border-[1.5px] border-white dark:border-gray-900 ${statusSizeClasses[size]} ${statusColorClasses[status] || ""}`}
                 />
-            )}
+            }
         </div>
     );
 };

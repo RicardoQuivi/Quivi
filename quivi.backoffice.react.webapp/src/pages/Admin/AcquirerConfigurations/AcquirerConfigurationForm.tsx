@@ -1,23 +1,64 @@
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
 import { useToast } from '../../../layout/ToastProvider';
 import { AcquirerConfiguration } from '../../../hooks/api/Dtos/acquirerconfigurations/AcquirerConfiguration';
 import { ToggleSwitch } from '../../../components/inputs/ToggleSwitch';
 import { Spinner } from '../../../components/spinners/Spinner';
+import { ChargePartner } from '../../../hooks/api/Dtos/acquirerconfigurations/ChargePartner';
+import { TextField } from '../../../components/inputs/TextField';
+import { ChargeMethod } from '../../../hooks/api/Dtos/ChargeMethod';
+import { SingleSelect } from '../../../components/inputs/SingleSelect';
 
 const schema = yup.object<AcquirerConfigurationFormState>({
 });
 
+export interface PaybyrdState {
+    readonly apiKey: string;
+}
+
+type States = PaybyrdState;
+
 export interface AcquirerConfigurationFormState {
     readonly isActive: boolean;
+    readonly states: Record<ChargePartner, Record<ChargeMethod, States>>;
+    readonly partner: ChargePartner;
+    readonly method: ChargeMethod;
 }
 const getState = (model: AcquirerConfiguration | undefined) => {
+    const states = {} as Record<ChargePartner, Record<ChargeMethod, States>>;
+    const partner = model?.partner ?? ChargePartner.Quivi;
+    if(partner == ChargePartner.Quivi) {
+        
+    } else if(partner == ChargePartner.Paybyrd) {
+        let partnerSettings = model?.settings[ChargePartner[ChargePartner.Paybyrd]];
+        let method = model?.method ?? ChargeMethod.MbWay;
+        let settings = partnerSettings?.[ChargeMethod[method]];
+        let state: PaybyrdState = {
+            apiKey: settings?.apiKey ?? "",
+        };
+        let result = {} as Record<ChargeMethod, States>;
+        result[method] = state;
+        states[partner] = result;
+    }
+
     return {
         isActive: model?.isActive ?? true,
+        partner: model?.partner ?? ChargePartner.Quivi,
+        method: model?.method ?? ChargeMethod.Cash,
+        states: states,
     }
+}
+
+const getOptions = (partner: ChargePartner) => {
+    switch(partner)
+    {
+        case ChargePartner.Quivi: return [ChargeMethod.Cash];
+        case ChargePartner.Paybyrd: return [ChargeMethod.MbWay, ChargeMethod.CreditCard];
+    }
+    throw new Error("Not implemented");
 }
 interface Props {
     readonly model?: AcquirerConfiguration;
@@ -38,23 +79,78 @@ export const AcquirerConfigurationForm = (props: Props) => {
         apiErrors: [],
     })), [props.model]);
 
+    const availableMethods = useMemo(() => getOptions(state.partner), [state.partner]);
+    
     const form = useQuiviForm(state, schema);
 
     const save = () => form.submit(async () => {
         await props.onSubmit({
             isActive: state.isActive,
+            partner: state.partner,
+            method: state.method,
+            states: state.states,
         })
     }, () => toast.error(t("common.operations.failure.generic")))
 
     return <>
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             <div className="col-span-1 lg:col-span-1">
-                <ToggleSwitch
-                    label={t("common.active")}
-                    value={state.isActive}
-                    onChange={v => setState(s => ({ ...s, isActive: v }))}
-                    errorMessage={form.touchedErrors.get("isActive")?.message}
-                />
+                <div
+                    className="grid grid-cols-1 gap-4"
+                >
+                    <div
+                        className="grid grid-cols-2 gap-4"
+                    >
+                        <SingleSelect
+                            label={t("pages.acquirerConfigurations.chargePartner")}
+                            value={state.partner}
+                            options={[
+                                ChargePartner.Quivi,
+                                ChargePartner.Paybyrd,
+                            ]}
+                            getId={e => e.toString()}
+                            render={e => ChargePartner[e]}
+                            onChange={e => {
+                                debugger;
+                                let method = state.method;
+                                const availableOptions = getOptions(e);
+                                if(availableOptions.includes(method) == false) {
+                                    method = availableOptions[0];
+                                }
+                                setState(s => ({ ...s, partner: e, method: method, }));
+                            }}
+                            disabled={props.model != undefined}
+                        />
+
+                        <SingleSelect
+                            label={t("pages.acquirerConfigurations.chargePartner")}
+                            value={state.method}
+                            options={availableMethods}
+                            getId={e => e.toString()}
+                            render={e => ChargeMethod[e]}
+                            onChange={e => setState(s => ({ ...s, method: e}))}
+                            disabled={props.model != undefined}
+                        />
+                    </div>
+                   
+                    <PaybyrdForm 
+                        partner={state.partner} 
+                        method={state.method}
+                        state={state.states[ChargePartner.Paybyrd]} 
+                        onChange={state => setState(s => {
+                            const result = {...s};
+                            result.states[ChargePartner.Paybyrd] = state;
+                            return result;
+                        })}
+                    />
+
+                    <ToggleSwitch
+                        label={t("common.active")}
+                        value={state.isActive}
+                        onChange={v => setState(s => ({ ...s, isActive: v }))}
+                        errorMessage={form.touchedErrors.get("isActive")?.message}
+                    />
+                </div>
             </div>
         </div>
 
@@ -73,4 +169,39 @@ export const AcquirerConfigurationForm = (props: Props) => {
             }
         </Button>
     </>
+}
+
+interface PaybyrdFormProps {
+    readonly partner: ChargePartner;
+    readonly method: ChargeMethod;
+    readonly state?: Record<ChargeMethod, PaybyrdState>;
+    readonly onChange: (state: Record<ChargeMethod, PaybyrdState>) => any;
+
+}
+const PaybyrdForm = (props: PaybyrdFormProps) => {
+    const { t } = useTranslation();
+    
+    const state = useMemo(() => props.state?.[props.method] ?? {
+        apiKey: "",
+    }, [props.method, props.state])
+
+    if(props.partner != ChargePartner.Paybyrd) {
+        return <></>
+    }
+
+    return <div className="flex flex-col gap-4 flex-1">
+        <TextField
+            label={t("pages.acquirerConfigurations.paybyrd.apiKey")}
+            type="text"
+            value={state.apiKey ?? ""}
+            onChange={(e) => {
+                const result = { ...(props.state ?? {}) } as Record<ChargeMethod, PaybyrdState>;
+                result[props.method] = {
+                    ...state,
+                    apiKey: e,
+                }
+                props.onChange(result);
+            }}
+        />
+    </div>
 }

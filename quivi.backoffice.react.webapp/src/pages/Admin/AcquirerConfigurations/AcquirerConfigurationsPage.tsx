@@ -80,7 +80,7 @@ export const AcquirerConfigurationsPage = () => {
                                     return (
                                         <div className="flex items-center gap-3">
                                             <Avatar
-                                                src={<PartnerIcon partner={item.partner} className="size-full" />}
+                                                src={<PartnerIcon partner={item.partner} className="size-full bg-white" />}
                                                 alt={name}
                                                 size="large"
                                             />
@@ -101,7 +101,7 @@ export const AcquirerConfigurationsPage = () => {
                                     return (
                                         <div className="flex items-center gap-3">
                                             <Avatar
-                                                src={<ChargeMethodIcon chargeMethod={item.method} className="size-full" />}
+                                                src={<ChargeMethodIcon chargeMethod={item.method} className="size-full bg-white" />}
                                                 alt={name}
                                                 size="large"
                                             />

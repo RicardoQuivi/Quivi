@@ -59,7 +59,7 @@ namespace Quivi.Backoffice.Api.Controllers
             };
         }
 
-
+        [Authorize]
         [HttpPost("QuiviViaFacturalusa")]
         public async Task<CreatePosIntegrationResponse> Create([FromBody] CreateQuiviViaFacturalusaPosIntegrationRequest request)
         {
@@ -83,6 +83,7 @@ namespace Quivi.Backoffice.Api.Controllers
             };
         }
 
+        [Authorize]
         [HttpPut("{id}/QuiviViaFacturalusa")]
         public async Task<CreatePosIntegrationResponse> Patch(string id, [FromBody] PutQuiviViaFacturalusaPosIntegrationRequest request)
         {

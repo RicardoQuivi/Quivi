@@ -6,4 +6,5 @@ export interface AcquirerConfiguration {
     readonly method: ChargeMethod;
     readonly partner: ChargePartner;
     readonly isActive: boolean;
+    readonly settings: Record<string, Record<string, any>>;
 }

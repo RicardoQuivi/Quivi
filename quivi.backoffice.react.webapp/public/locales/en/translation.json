@@ -53,9 +53,8 @@
         "confirm": "Confirm",
         "close": "Close",
         "operations": {
-            "new": "New {{name}}",
-            "create": "Create {{name}}",
-            "edit": "Edit {{name}}",
+            "new": "Save {{name}}",
+            "edit": "Save {{name}}",
             "delete": "Delete {{name}}",
             "deleteDescription": "Are you sure you want to delete entry <b>{{name}}</b> of <b>{{entity}}</b>?",
             "deleteManyDescription": "Are you sure you want to delete <b>{{count}}</b> entries of <b>{{entity}}</b>?",
@@ -192,7 +191,6 @@
             "someItems": "{{total}} entries selected",
             "selectAll": "To select all entries, other pages included, click here"
         },
-        "submit": "Submit",
         "accept": "Accept",
         "toast": {
             "success": "Success!",
@@ -544,7 +542,13 @@
             }
         },
         "acquirerConfigurations": {
-            "title": "Acquirer configurations"
+            "title": "Acquirer configurations",
+            "chargePartner": "Charge partner",
+            "chargeMethod": "Charge method",
+
+            "paybyrd": {
+                "apiKey": "Api Key"
+            }
         },
         "transactions": {
             "title": "Transactions",

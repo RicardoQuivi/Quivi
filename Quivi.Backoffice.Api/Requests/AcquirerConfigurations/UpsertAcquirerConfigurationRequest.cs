@@ -2,6 +2,6 @@
 {
     public abstract class UpsertAcquirerConfigurationRequest : ARequest
     {
-        public bool IsActive { get; init; }
+        public bool? IsActive { get; init; }
     }
 }

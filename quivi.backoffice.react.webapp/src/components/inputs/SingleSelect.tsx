@@ -31,6 +31,7 @@ export const SingleSelect = <T,>(props: Props<T>) => {
             onChange={e => props.onChange(itemsMap.get(e)!)}
             value={props.getId(props.value)}
             className={`bg-gray-50 dark:bg-gray-800 cursor-pointer ${props.className}`}
+            disabled={props.disabled}
         />
     </div>
 }

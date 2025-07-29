@@ -196,7 +196,7 @@ const CustomOption = <T,>(props: CustomOptionProps<T>) => {
                     ?
                     <span className="italic text-gray-500">
                         {
-                            t("common.operations.create", {
+                            t("common.operations.new", {
                                 name: props.data.value
                             })
                         }

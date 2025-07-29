@@ -3,6 +3,8 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Pos;
+using Quivi.Infrastructure.Extensions;
+using System.Security.Principal;
 
 namespace Quivi.Backoffice.Api.MapperHandlers
 {
@@ -10,12 +12,15 @@ namespace Quivi.Backoffice.Api.MapperHandlers
     {
         private readonly IIdConverter idConverter;
         private readonly IPosSyncService posSyncService;
+        private readonly IPrincipal principal;
 
         public PosIntegrationMapperHandler(IIdConverter idConverter,
-                                            IPosSyncService posSyncService)
+                                            IPosSyncService posSyncService,
+                                            IPrincipal principal)
         {
             this.idConverter = idConverter;
             this.posSyncService = posSyncService;
+            this.principal = principal;
         }
 
         public Dtos.PosIntegration Map(PosIntegration model)
@@ -40,9 +45,12 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             };
         }
 
-        private static IReadOnlyDictionary<IntegrationType, object> GetSettings(PosIntegration model, ISyncSettings? settings)
+        private IReadOnlyDictionary<IntegrationType, object> GetSettings(PosIntegration model, ISyncSettings? settings)
         {
             var result = new Dictionary<IntegrationType, object>();
+            if (principal.IsAdmin() == false)
+                return result;
+
             switch (model.IntegrationType)
             {
                 case IntegrationType.QuiviViaFacturalusa:

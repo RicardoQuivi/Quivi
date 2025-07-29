@@ -53,9 +53,8 @@
         "confirm": "Confirmar",
         "close": "Fechar",
         "operations": {
-            "new": "Adicionar {{name}}",
-            "create": "Criar {{name}}",
-            "edit": "Editar {{name}}",
+            "new": "Guardar {{name}}",
+            "edit": "Guardar {{name}}",
             "delete": "Eliminar {{name}}",
             "deleteDescription": "Tem a certeza que deseja eliminar o registo <b>{{name}}</b> de <b>{{entity}}</b>?",
             "deleteManyDescription": "Tem a certeza que deseja eliminar os <b>{{count}}</b> registos de <b>{{entity}}</b>?",
@@ -192,7 +191,6 @@
             "someItems": "{{total}} registos selecionados",
             "selectAll": "Para selecionar os registos todos, incluindo de outras páginas, clique aqui"
         },
-        "submit": "Submeter",
         "accept": "Aceitar",
         "toast": {
             "success": "Sucesso!",
@@ -544,7 +542,13 @@
             }
         },
         "acquirerConfigurations": {
-            "title": "Configuração de pagamentos"
+            "title": "Configuração de pagamentos",
+            "chargePartner": "Parceiro de pagamento",
+            "chargeMethod": "Método de pagamento",
+
+            "paybyrd": {
+                "apiKey": "Chave da Api"
+            }
         },
         "transactions": {
             "title": "Transações",

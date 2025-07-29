@@ -309,12 +309,15 @@ export const ChannelModeCard = (props: ChannelModeCardProps) => {
                     onClick={() => state.isActive == false && props.onClick?.(channelHelper.getDefaultFeatures(props.mode))}
                     className="w-full mt-auto"
                     size="md"
-                    variant="primary"
+                    variant="outline"
                 >
                     {
                         state.isActive
                         ?
-                        t("common.selected")
+                        <>
+                            <CheckLineIcon className="text-brand-500" />
+                            {t("common.selected")}
+                        </>
                         :
                         t("common.select")
                     }

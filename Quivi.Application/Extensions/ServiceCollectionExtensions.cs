@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,6 @@ using Quivi.Infrastructure.Configurations;
 using Quivi.Infrastructure.Converters;
 using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
-using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
 using Quivi.Infrastructure.Mailing.EmailEngine.Mjml;
@@ -49,7 +49,9 @@ using Quivi.Infrastructure.Storage;
 using Quivi.Infrastructure.Storage.Azure;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 
 namespace Quivi.Application.Extensions
 {
@@ -60,6 +62,12 @@ namespace Quivi.Application.Extensions
             LoadAllAssemblies();
 
             serviceCollection.AddHttpContextAccessor();
+            serviceCollection.AddScoped<IPrincipal>(provider =>
+            {
+                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+                return httpContextAccessor.HttpContext?.User ?? new ClaimsPrincipal();
+            });
+
             serviceCollection.RegisterSingleton<IAppHostsSettings>((p) => configuration.GetSection("AppHosts").Get<AppHostsSettings>()!);
             serviceCollection.AddDbContext<QuiviContext>(options =>
             {
@@ -97,7 +105,7 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterScoped<IEmailService>(p =>
             {
                 var settings = configuration.GetSection("Mailing").Get<MailingSettings>()!;
-                if(settings.Provider.Equals("SendGrid", StringComparison.OrdinalIgnoreCase))
+                if (settings.Provider.Equals("SendGrid", StringComparison.OrdinalIgnoreCase))
                 {
                     var sendgridSettings = p.GetService<SendGridSettings>()!;
                     return new SendGridEmailService

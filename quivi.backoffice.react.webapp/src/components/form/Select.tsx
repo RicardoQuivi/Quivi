@@ -1,16 +1,17 @@
 import { ReactNode } from "react";
 
 interface Option {
-    value: string;
-    label: ReactNode;
+    readonly value: string;
+    readonly label: ReactNode;
 }
 
 interface SelectProps {
-    options: Option[];
-    placeholder?: string;
-    onChange: (value: string) => void;
-    className?: string;
-    value?: string;
+    readonly options: Option[];
+    readonly placeholder?: string;
+    readonly onChange: (value: string) => void;
+    readonly className?: string;
+    readonly value?: string;
+    readonly disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -19,6 +20,7 @@ const Select: React.FC<SelectProps> = ({
     onChange,
     className = "",
     value: selectedValue = "",
+    disabled,
 }) => {
     // Manage the selected value
 
@@ -36,6 +38,7 @@ const Select: React.FC<SelectProps> = ({
                     } ${className}`}
                 value={selectedValue}
                 onChange={handleChange}
+                disabled={disabled}
             >
                 {/* Placeholder option */}
                 {

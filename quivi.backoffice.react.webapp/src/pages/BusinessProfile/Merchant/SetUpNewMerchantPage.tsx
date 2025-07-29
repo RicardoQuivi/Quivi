@@ -220,7 +220,9 @@ export const SetUpNewMerchantPage = () => {
                     ?
                     <Spinner />
                     :
-                    t("common.submit")
+                    t("common.operations.new", {
+                        name: t(`common.entities.merchant`),
+                    })
                 }
             </Button>
         </ComponentCard>

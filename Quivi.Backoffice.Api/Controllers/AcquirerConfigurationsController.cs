@@ -67,7 +67,35 @@ namespace Quivi.Backoffice.Api.Controllers
                 ChargePartner = ChargePartner.Quivi,
                 UpdateAction = r =>
                 {
-                    r.Inactive = request.IsActive == false;
+                    if (request.IsActive.HasValue)
+                        r.Inactive = request.IsActive.Value == false;
+
+                    return Task.CompletedTask;
+                }
+            });
+
+            return new UpsertAcquirerConfigurationResponse
+            {
+                Data = mapper.Map<Dtos.AcquirerConfiguration>(result),
+            };
+        }
+
+        [HttpPut("paybyrd/{name}")]
+        public async Task<UpsertAcquirerConfigurationResponse> UpsertPaybyrd(ChargeMethod name, [FromBody] UpsertPaybyrdAcquirerConfigurationRequest request)
+        {
+            var result = await commandProcessor.Execute(new UpsertMerchantAcquirerConfigurationAsyncCommand
+            {
+                MerchantId = User.SubMerchantId(idConverter)!.Value,
+                ChargeMethod = name,
+                ChargePartner = ChargePartner.Paybyrd,
+                UpdateAction = r =>
+                {
+                    if (string.IsNullOrWhiteSpace(request.ApiKey) == false)
+                        r.ApiKey = request.ApiKey;
+
+                    if (request.IsActive.HasValue)
+                        r.Inactive = request.IsActive.Value == false;
+
                     return Task.CompletedTask;
                 }
             });

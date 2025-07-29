@@ -199,7 +199,7 @@ export const MerchantProfileInfo = () => {
                                 value={getFeeValue(ChargeMethod.CreditCard)}
                                 onChange={(e) => setFeeValue(ChargeMethod.CreditCard, e)}
                                 errorMessage={form.touchedErrors.get("price")?.message}
-                                startElement={<ChargeMethodIcon chargeMethod={ChargeMethod.CreditCard} height="100%" style={{width: "auto", padding: "5px"}}/>}
+                                startElement={<ChargeMethodIcon chargeMethod={ChargeMethod.CreditCard} height="100%" style={{width: "auto", padding: "5px" }}/>}
                                 decimalPlaces={2}
                                 endElement={<SingleSelect
                                     className="rounded-none border-0 h-full"
@@ -218,7 +218,7 @@ export const MerchantProfileInfo = () => {
                                 value={getFeeValue(ChargeMethod.MbWay)}
                                 onChange={(e) => setFeeValue(ChargeMethod.MbWay, e)}
                                 errorMessage={form.touchedErrors.get("price")?.message}
-                                startElement={<ChargeMethodIcon chargeMethod={ChargeMethod.MbWay} height="100%" style={{width: "auto" }}/>}
+                                startElement={<ChargeMethodIcon chargeMethod={ChargeMethod.MbWay} height="100%" style={{width: "auto", padding: "8px", background: "white", }}/>}
                                 decimalPlaces={2}
                                 endElement={<SingleSelect
                                     className="rounded-none border-0 h-full"
@@ -249,7 +249,9 @@ export const MerchantProfileInfo = () => {
                     ?
                     <Spinner />
                     :
-                    t("common.submit")
+                     t("common.operations.edit", {
+                        name: t(`common.entities.merchant`),
+                    })
                 }
             </Button>
         </ComponentCard>
