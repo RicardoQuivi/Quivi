@@ -153,7 +153,7 @@ const AppSidebar = () => {
     const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
     const isActive = useCallback((path: string) => location.pathname.toLowerCase().startsWith(path.toLowerCase()), [location.pathname]);
-
+    
     useEffect(() => {
         let submenuMatched = false;
         items.forEach((nav, index) => {
@@ -197,6 +197,12 @@ const AppSidebar = () => {
             return { index };
         });
     };
+
+    const onLinkClick = () => {
+        if(isMobileOpen) {
+            toggleMobileSidebar();
+        }
+    }
 
     const renderMenuItems = (items: NavItem[]) => (
         <ul className="flex flex-col gap-4">
@@ -243,7 +249,7 @@ const AppSidebar = () => {
                                 <Link
                                     to={nav.path}
                                     className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"}`}
-                                    onClick={toggleMobileSidebar}
+                                    onClick={onLinkClick}
                                 >
                                     <span
                                         className={`menu-item-icon-size ${isActive(nav.path)
@@ -279,7 +285,7 @@ const AppSidebar = () => {
                                         subItems.map((subItem) => (
                                             <li key={subItem.name}>
                                                 <Link
-                                                    onClick={toggleMobileSidebar}
+                                                    onClick={onLinkClick}
                                                     to={subItem.path}
                                                     className={`menu-dropdown-item ${isActive(subItem.path)
                                                             ? "menu-dropdown-item-active"
@@ -321,7 +327,7 @@ const AppSidebar = () => {
             <div
                 className={`py-2 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
             >
-                <Link to="/" className="w-full flex justify-center">
+                <Link to="/" className="w-full flex justify-center hidden lg:flex">
                 {
                     isExpanded || isHovered || isMobileOpen 
                     ?
