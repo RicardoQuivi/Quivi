@@ -39,7 +39,7 @@ interface Props {
     readonly onClose: () => any;
 }
 const GoToPosModal = (props: Props) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const auth = useAuth();
     const user = useAuthenticatedUser();
@@ -82,6 +82,7 @@ const GoToPosModal = (props: Props) => {
 
             const queryParams = new URLSearchParams();
             queryParams.set("subjectToken", user.token);
+            queryParams.set("language", i18n.language);
 
             const url = new URL(`signIn?${queryParams}`, import.meta.env.VITE_POS_APP_URL).toString();
             window.open(url, keepSession ? '_blank' : '_self', 'noopener,noreferrer');
