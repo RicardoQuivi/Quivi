@@ -16,7 +16,7 @@ export const CustomChargeMethodFormPage = () => {
     const toast = useToast();
     const mutator = useCustomChargeMethodMutator();
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.customChargeMethod")
     });
 
@@ -70,7 +70,9 @@ export const CustomChargeMethodFormPage = () => {
             <CustomChargeMethodForm
                 model={customChargeMethod}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.customChargeMethod")
+                })}
             />
         </ComponentCard>
     </>

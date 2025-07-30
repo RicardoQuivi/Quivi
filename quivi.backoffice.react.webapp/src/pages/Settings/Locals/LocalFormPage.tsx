@@ -16,7 +16,7 @@ export const LocalFormPage = () => {
     const toast = useToast();
     const mutator = useLocalMutator();
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.local")
     });
 
@@ -70,7 +70,9 @@ export const LocalFormPage = () => {
             <LocalForm
                 model={local}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.local")
+                })}
             />
         </ComponentCard>
     </>

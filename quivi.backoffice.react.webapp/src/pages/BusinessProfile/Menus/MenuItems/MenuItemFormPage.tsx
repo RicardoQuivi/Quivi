@@ -18,7 +18,7 @@ export const MenuItemFormPage = () => {
     const { search } = useLocation();
     const params = new URLSearchParams(search);
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.menuItem")
     });
 
@@ -88,7 +88,9 @@ export const MenuItemFormPage = () => {
             <MenuItemForm
                 model={item}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.menuItem")
+                })}
                 categoryId={params.get("categoryId") ?? undefined}
             />
         </ComponentCard>

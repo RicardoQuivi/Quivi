@@ -249,7 +249,7 @@ export const MerchantProfileInfo = () => {
                     ?
                     <Spinner />
                     :
-                     t("common.operations.save", {
+                    t("common.operations.save", {
                         name: t(`common.entities.merchant`),
                     })
                 }

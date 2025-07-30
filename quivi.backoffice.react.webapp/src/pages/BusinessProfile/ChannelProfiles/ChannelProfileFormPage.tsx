@@ -55,7 +55,7 @@ export const ChannelProfileFormPage = () => {
         navigate("/businessProfile/channelprofiles")
     }
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.channelProfile")
     });
 
@@ -79,7 +79,9 @@ export const ChannelProfileFormPage = () => {
             <ChannelProfileForm
                 model={profile}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.channelProfile")
+                })}
             />
         </ComponentCard>
     </>

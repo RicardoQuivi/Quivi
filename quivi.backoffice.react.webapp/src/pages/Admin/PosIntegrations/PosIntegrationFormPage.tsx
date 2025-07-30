@@ -17,7 +17,7 @@ export const PosIntegrationFormPage = () => {
     const toast = useToast();
     const mutator = usePosIntegrationMutator();
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.posIntegration")
     });
 
@@ -97,7 +97,9 @@ export const PosIntegrationFormPage = () => {
             <PosIntegrationForm
                 model={integration}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.posIntegration")
+                })}
             />
         </ComponentCard>
     </>

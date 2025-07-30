@@ -18,7 +18,7 @@ export const ModifierGroupFormPage = () => {
     const { search } = useLocation();
     const params = new URLSearchParams(search);
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.modifierGroup")
     });
 
@@ -80,7 +80,9 @@ export const ModifierGroupFormPage = () => {
             <ModifierGroupForm
                 model={item}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.modifierGroup")
+                })}
                 categoryId={params.get("categoryId") ?? undefined}
             />
         </ComponentCard>

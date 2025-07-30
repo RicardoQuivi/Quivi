@@ -16,7 +16,7 @@ export const MenuCategoryFormPage = () => {
     const toast = useToast();
     const mutator = useMenuCategoryMutator();
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.menuCategory")
     });
 
@@ -74,7 +74,9 @@ export const MenuCategoryFormPage = () => {
             <MenuCategoryForm
                 model={category}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.menuCategory")
+                })}
             />
         </ComponentCard>
     </>

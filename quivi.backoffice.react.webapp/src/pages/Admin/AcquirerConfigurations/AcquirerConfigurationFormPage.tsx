@@ -18,7 +18,7 @@ export const AcquirerConfigurationFormPage = () => {
     const toast = useToast();
     const mutator = useAcquirerConfigurationMutator();
 
-    const title = t(`common.operations.save`, {
+    const title = t(`common.operations.${id == undefined ? "new" : "edit"}`, {
         name: t("common.entities.acquirerConfiguration")
     });
 
@@ -84,7 +84,9 @@ export const AcquirerConfigurationFormPage = () => {
             <AcquirerConfigurationForm
                 model={acquirer}
                 onSubmit={submit}
-                submitText={title}
+                submitText={t(`common.operations.save`, {
+                    name: t("common.entities.acquirerConfiguration")
+                })}
             />
         </ComponentCard>
     </>
