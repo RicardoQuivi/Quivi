@@ -12,6 +12,8 @@ ARG SIGNALR_URL
 ARG GUESTS_URL
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY scripts/ scripts/
+COPY node_modules_patches/ node_modules_patches/
 RUN npm ci
 COPY . .
 ENV VITE_AUTH_URL="${OAUTH_URL}"
