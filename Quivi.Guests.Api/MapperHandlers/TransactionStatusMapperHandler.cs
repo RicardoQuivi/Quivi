@@ -11,7 +11,7 @@ namespace Quivi.Guests.Api.MapperHandlers
             {
                 ChargeStatus.Expired => Dtos.TransactionStatus.Expired,
                 ChargeStatus.Failed => Dtos.TransactionStatus.Failed,
-                ChargeStatus.Requested => Dtos.TransactionStatus.Processing,
+                ChargeStatus.Requested => Dtos.TransactionStatus.Requested,
                 ChargeStatus.Processing => Dtos.TransactionStatus.Processing,
                 ChargeStatus.Completed => Dtos.TransactionStatus.Success,
                 _ => throw new NotImplementedException(),

@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Paybyrd.Api\Paybyrd.Api.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions.Pos\Quivi.Infrastructure.Abstractions.Pos.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Abstractions.Repositories\Quivi.Infrastructure.Abstractions.Repositories.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Abstractions\Quivi.Infrastructure.Abstractions.csproj" />
   </ItemGroup>

@@ -1,6 +1,4 @@
 import { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '../ToastProvider';
 import { Employee } from '../../hooks/api/Dtos/employees/Employee';
 import { useAuth } from '../AuthContextProvider';
 import { AuthenticationError, useAuthApi } from '../../hooks/api/useAuthApi';
@@ -79,8 +77,6 @@ const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined
 export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     const auth = useAuth();
     const authApi = useAuthApi();
-    const { t } = useTranslation();
-    const toast = useToast();
 
     const [state, setState] = useState(getState);
 
@@ -98,13 +94,13 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
     }, [loggedEmployeeQuery.data])
     const activity = useUserInactivity({ timeout: getLogoutTimeout(loggedEmployeeQuery.data.length > 0 ? loggedEmployeeQuery.data[0] : undefined, 2 * 60 * 1000)});
 
-    const login = async (employeeId: string, pinCode: string) => {
+    const login = async (employeeId: string, pinCode: string) => auth.tokenProvider(async token => {
         if(auth.principal == undefined) {
             throw new Error("Cannot login an employee because no merchant is available");
         }
 
         try {
-            const response = await authApi.employeeLogin(auth.principal.token, employeeId, pinCode);
+            const response = await authApi.employeeLogin(token, employeeId, pinCode);
 
             saveTokens({
                 accessToken: response.access_token,
@@ -112,14 +108,17 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
             });
             setState(getState);
         } catch (e) {
-            signOut();
-            if(e instanceof AuthenticationError) {
-                toast.error(t("common.apiErrors.InvalidCredentials"));
-                return;
+            if(e instanceof UnauthorizedException) {
+                throw e;
             }
+            if(e instanceof AuthenticationError) {
+                throw e;
+            }
+            
+            signOut();
             throw e;
         }
-    }
+    });
 
     const signOut = () => {
         saveTokens(undefined);

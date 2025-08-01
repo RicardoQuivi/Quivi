@@ -4,5 +4,6 @@ namespace Quivi.Guests.Api.Dtos.Requests.Transactions
 {
     public class PutTransactionResponse : AResponse<Transaction?>
     {
+        public string? ThreeDsUrl { get; init; }
     }
 }

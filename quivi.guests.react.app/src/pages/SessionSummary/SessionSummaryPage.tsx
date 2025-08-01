@@ -227,34 +227,41 @@ export const SessionSummaryPage = () => {
         if(features.payAtTheTable.isActive == false) {
             return;
         }
-
         const hasConsumptions = features.payAtTheTable.isActive && isEmpty() == false;
         return <ButtonsSection>
             {
                 hasConsumptions && 
-                <button className="primary-button" onClick={() => {
-                    if(session != undefined && session.unpaid == 0) {
-                        toast.info(t("pay.onlyRequiringApprovalAmountAvailable"), {
-                            icon: <InfoIcon color={theme.primaryColor.hex} />,
-                        });
-                        return;
-                    }
-                    navigate(`/c/${channelContext.channelId}/session/pay/total`)
-                }}>
+                <button
+                    className="primary-button"
+                    onClick={() => {
+                        if(session != undefined && session.unpaid == 0) {
+                            toast.info(t("pay.onlyRequiringApprovalAmountAvailable"), {
+                                icon: <InfoIcon color={theme.primaryColor.hex} />,
+                            });
+                            return;
+                        }
+                        navigate(`/c/${channelContext.channelId}/session/pay/total`)
+                    }}
+                >
                     {t("pay.payTotalBill")}
                 </button>
             }
             {
-                hasConsumptions && hasPaymentDivision &&
-                <button className="secondary-button" type="button" onClick={() => {
-                    if(session != undefined && session.unpaid == 0) {
-                        toast.info(t("pay.onlyRequiringApprovalAmountAvailable"), {
-                            icon: <InfoIcon color={theme.primaryColor.hex} />,
-                        });
-                        return;
-                    }
-                    setPaySplitModalIsOpen(prevState => !prevState);
-                }}>
+                hasConsumptions &&
+                hasPaymentDivision &&
+                <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => {
+                        if(session != undefined && session.unpaid == 0) {
+                            toast.info(t("pay.onlyRequiringApprovalAmountAvailable"), {
+                                icon: <InfoIcon color={theme.primaryColor.hex} />,
+                            });
+                            return;
+                        }
+                        setPaySplitModalIsOpen(prevState => !prevState);
+                    }}
+                >
                     {t("pay.splitBill")}
                 </button>
             }

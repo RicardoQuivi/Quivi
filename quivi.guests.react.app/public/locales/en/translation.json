@@ -255,6 +255,10 @@
     "ok": "Ok",
     "expired": "The payment expired. Please try again.",
     "enterPhoneNumber": "Enter your phone number",
+    "processingPayment": "Your payment is being processed",
+    "processingPaymentDescription": "Some banks may require you to authorize the payment. If that's the case, a page will be open and you should:",
+    "openBankApp": "Access your bank mobile app",
+    "authorizeAppPayment": "Authorize the payment.",
     "acceptPayment": "Accept the payment",
     "acceptPaymentDescription": "To complete the payment, follow the steps below:",
     "accessApp": "Access your app",
@@ -287,12 +291,13 @@
   },
 
   "acquirer": {
+    "cardHolderPlaceholder": "Card name",
     "cardNumberPlaceholder": "Card number",
     "cvvPlaceholder": "CVV",
     "monthPlaceholder": "MM",
     "yearPlaceholder": "YY",
     "mustSpecifyCardNumber": "You must specify a valid card number.",
-    "mustSpecifyCVC": "You must specify a valid CVC.",
+    "mustSpecifyCVV": "You must specify a valid CVV.",
     "mustSpecifyExpiryDate": "You must specify a valid expiry date.",
     "invalidData": "The provided payment details are not valid."
   },
@@ -348,7 +353,7 @@
 
   "tutorial": {
     "acceptPayment": "Accept the payment",
-    "acceptPaymentDescription": "To complete the restaurant payment, follow the steps below:",
+    "acceptPaymentDescription": "To complete the payment, follow the steps below:",
     "accessApp": "Access your app {{paymentMethodName}}",
     "acceptNotification": "Accept payment request notification",
     "paymentExpired": "The time to complete the payment is over."

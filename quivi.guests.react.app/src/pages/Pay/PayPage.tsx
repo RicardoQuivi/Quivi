@@ -106,7 +106,6 @@ export const PayPage: React.FC<Props> = ({ paymentSplit }) => {
             browserStorageService.savePaymentDivision(paymentDivision);
             browserStorageService.savePaymentDetails(newPaymentDetails);
 
-            setSessionPending(0);
             if(paymentSplit == "freepayment") {
                 navigate(`/c/${channelContext.channelId}/session/pay/methods/free`)
             } else {
@@ -120,11 +119,11 @@ export const PayPage: React.FC<Props> = ({ paymentSplit }) => {
         if(sessionQuery.isFirstLoading) {
             return;
         }
-
-        if(sessionPending == null) {
-            setSessionPending(Calculations.roundUp(sessionQuery.data?.unpaid ?? 0))
+        if(sessionPending != null) {
+            return;
         }
-
+        
+        setSessionPending(Calculations.roundUp(sessionQuery.data?.unpaid ?? 0))
     }, [sessionQuery.isFirstLoading, sessionQuery.data]);
 
     const submitForm = () => {

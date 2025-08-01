@@ -6,6 +6,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Backoffice.Api.Controllers
@@ -17,14 +18,17 @@ namespace Quivi.Backoffice.Api.Controllers
         private readonly IQueryProcessor queryProcessor;
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
+        private readonly IChargeProcessor chargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                         IMapper mapper,
-                                        IIdConverter idConverter)
+                                        IIdConverter idConverter,
+                                        IChargeProcessor chargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.mapper = mapper;
             this.idConverter = idConverter;
+            this.chargeProcessor = chargeProcessor;
         }
 
         [HttpGet]
@@ -71,6 +75,22 @@ namespace Quivi.Backoffice.Api.Controllers
                 TotalPages = result.NumberOfPages,
                 TotalItems = result.TotalItems,
                 Data = mapper.Map<Dtos.Transaction>(result),
+            };
+        }
+
+        [HttpPost("{id}/refund")]
+        public async Task<object> Refund(string id)
+        {
+            await chargeProcessor.Refund(new RefundParameters
+            {
+                Amount = null,
+                ChargeId = idConverter.FromPublicId(id),
+                MerchantId = User.IsAdmin() ? null : User.SubMerchantId(idConverter)!.Value,
+                IsCancellation = false,
+            });
+            return new
+            {
+
             };
         }
 

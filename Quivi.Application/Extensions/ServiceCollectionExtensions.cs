@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Paybyrd.Api;
 using Quivi.Application.Configurations;
 using Quivi.Application.Pos;
 using Quivi.Application.Pos.Invoicing;
 using Quivi.Application.Services;
+using Quivi.Application.Services.Acquirers;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Domain.Repositories.EntityFramework.Identity;
 using Quivi.Infrastructure;
@@ -44,7 +46,6 @@ using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
 using Quivi.Infrastructure.Pos.Facturalusa.Configurations;
 using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
-using Quivi.Infrastructure.Services.Charges;
 using Quivi.Infrastructure.Storage;
 using Quivi.Infrastructure.Storage.Azure;
 using System.IdentityModel.Tokens.Jwt;
@@ -99,9 +100,10 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterScoped<IMapper, Mapper>();
             serviceCollection.RegisterMappersHandlers();
 
-            serviceCollection.RegisterSingleton<IDefaultSettings>((p) => configuration.GetSection("DefaultSettings").Get<DefaultSettings>()!);
-            serviceCollection.RegisterSingleton((p) => configuration.GetSection("Smtp").Get<SmtpSettings>()!);
-            serviceCollection.RegisterSingleton((p) => configuration.GetSection("SendGrid").Get<SendGridSettings>()!);
+            serviceCollection.RegisterSingleton<IDefaultSettings>(p => configuration.GetSection("DefaultSettings").Get<DefaultSettings>()!);
+            serviceCollection.RegisterSingleton(p => configuration.GetSection("Smtp").Get<SmtpSettings>()!);
+            serviceCollection.RegisterSingleton(p => configuration.GetSection("SendGrid").Get<SendGridSettings>()!);
+
             serviceCollection.RegisterScoped<IEmailService>(p =>
             {
                 var settings = configuration.GetSection("Mailing").Get<MailingSettings>()!;
@@ -175,9 +177,22 @@ namespace Quivi.Application.Extensions
             });
 
             serviceCollection.RegisterChargeMethods();
+            serviceCollection.RegisterScoped<IChargeProcessor, ChargeProcessor>();
+
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
             serviceCollection.RegisterSingleton<IEmailEngine, MjmlEmailEngine>();
 
+            serviceCollection.RegisterSingleton<IPaybyrdSettings>(p => configuration.GetSection("Paybyrd").Get<PaybyrdSettings>()!);
+            serviceCollection.RegisterSingleton<IPaybyrdApi>(p =>
+            {
+                var settings = p.GetService<IPaybyrdSettings>()!;
+                return new PaybyrdApi(settings.Host, settings.WebHooksHost);
+            });
+            serviceCollection.RegisterSingleton<IPaybyrdWebhooksApi>(p =>
+            {
+                var settings = p.GetService<IPaybyrdSettings>()!;
+                return new PaybyrdApi(settings.Host, settings.WebHooksHost);
+            });
             return serviceCollection;
         }
 
@@ -368,9 +383,11 @@ namespace Quivi.Application.Extensions
 
         private static IServiceCollection RegisterChargeMethods(this IServiceCollection serviceCollection)
         {
-            serviceCollection.RegisterSingleton<CashChargeProcessingStrategy>();
-            serviceCollection.RegisterScoped<IEnumerable<IChargeProcessingStrategy>>(p => [
-                p.GetService<CashChargeProcessingStrategy>()!,
+            serviceCollection.RegisterSingleton<CashAcquirerProcessingStrategy>();
+            serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessingStrategy>();
+            serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessingStrategy>>(p => [
+                p.GetService<CashAcquirerProcessingStrategy>()!,
+                p.GetService<PaybyrdCreditCardAcquirerProcessingStrategy>()!,
             ]);
             return serviceCollection;
         }

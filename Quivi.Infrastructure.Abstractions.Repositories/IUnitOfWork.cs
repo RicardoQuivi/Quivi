@@ -31,7 +31,8 @@
         IChargesRepository Charges { get; }
         IJournalsRepository Journals { get; }
         IReviewsRepository Reviews { get; }
-        IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments { get;  }
+        IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments { get; }
+        IPostingsRepository Postings { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

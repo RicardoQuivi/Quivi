@@ -128,5 +128,10 @@
         "employeeLockPage": {
             "backToEmployee": "Voltar a escolher funcionário"
         }
+    },
+    "common": {
+        "apiErrors": {
+            "InvalidCredentials": "Pin inválido. Tente novamente."
+        }
     }
 }

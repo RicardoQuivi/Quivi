@@ -19,6 +19,7 @@ import { Spinner } from "../../components/spinners/Spinner";
 import Avatar from "../../components/ui/avatar/Avatar";
 import { useMerchantDocumentsQuery } from "../../hooks/queries/implementations/useMerchantDocumentsQuery";
 import { Files } from "../../utilities/files";
+import { useTransactionApi } from "../../hooks/api/useTransactionsApi";
 
 interface Props {
     readonly id?: string;
@@ -27,6 +28,7 @@ interface Props {
 export const TransactionModal = (props: Props) => {
     const { t } = useTranslation();
     const user = useAuthenticatedUser();
+    const api = useTransactionApi();
 
     const transactionQuery = useTransactionsQuery(props.id == undefined ? undefined : {
         ids: [props.id],
@@ -67,7 +69,7 @@ export const TransactionModal = (props: Props) => {
         transactionIds: [props.id],
         page: 0,
     })
-
+    
     const {
         total,
         discounts,
@@ -106,6 +108,15 @@ export const TransactionModal = (props: Props) => {
             </>}
         >
             <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
+                {
+                    transaction != undefined &&
+                    transaction.refundedAmount == 0 &&
+                    <Button
+                        onClick={() => api.refund({ id: transaction.id, })}
+                    >
+                        {t("common.refund")}
+                    </Button>
+                }
                 <Button>
                     <PrinterIcon />
                     {t("common.print")}

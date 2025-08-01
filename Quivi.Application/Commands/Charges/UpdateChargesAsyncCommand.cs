@@ -1,6 +1,9 @@
 ﻿using Quivi.Domain.Entities.Charges;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Events;
+using Quivi.Infrastructure.Abstractions.Events.Data;
+using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 
@@ -58,17 +61,23 @@ namespace Quivi.Application.Commands.Charges
 
         private readonly IChargesRepository repository;
         private readonly IDateTimeProvider dateTimeProvider;
+        private readonly IEventService eventService;
 
         public UpdateChargesAsyncCommandHandler(IChargesRepository repository,
-                                                IDateTimeProvider dateTimeProvider)
+                                                IDateTimeProvider dateTimeProvider,
+                                                IEventService eventService)
         {
             this.repository = repository;
             this.dateTimeProvider = dateTimeProvider;
+            this.eventService = eventService;
         }
 
         public async Task<IEnumerable<Charge>> Handle(UpdateChargesAsyncCommand command)
         {
-            var entities = await repository.GetAsync(command.Criteria);
+            var entities = await repository.GetAsync(command.Criteria with
+            {
+                IncludePosCharge = true,
+            });
             if (entities.Any() == false)
                 return [];
 
@@ -79,12 +88,25 @@ namespace Quivi.Application.Commands.Charges
                 var initialStatus = entity.Status;
                 var updatableEntity = new UpdatableCharge(entity);
                 await command.UpdateAction(updatableEntity);
-                if (updatableEntity.HasChanges == false)
+                if (updatableEntity.HasChanges)
                 {
                     entity.ModifiedDate = now;
                     changedEntities.Add(updatableEntity);
                 }
             }
+
+            if (changedEntities.Any() == false)
+                return entities;
+
+            await repository.SaveChangesAsync();
+            foreach (var updatableCharge in changedEntities)
+                await eventService.Publish(new OnPosChargeOperationEvent
+                {
+                    Id = updatableCharge.Id,
+                    MerchantId = updatableCharge.Model.PosCharge!.MerchantId,
+                    ChannelId = updatableCharge.Model.PosCharge!.ChannelId,
+                    Operation = EntityOperation.Update,
+                });
             return entities;
         }
     }

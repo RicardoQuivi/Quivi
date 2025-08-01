@@ -1,4 +1,5 @@
-﻿using Quivi.Domain.Entities.Pos;
+﻿using Quivi.Domain.Entities.Merchants;
+using Quivi.Domain.Entities.Pos;
 
 namespace Quivi.Domain.Entities.Charges
 {
@@ -13,6 +14,9 @@ namespace Quivi.Domain.Entities.Charges
         public DateTime ModifiedDate { get; set; }
 
         #region Relationships
+        public int? MerchantAcquirerConfigurationId { get; set; }
+        public MerchantAcquirerConfiguration? MerchantAcquirerConfiguration { get; set; }
+
         public int? ChainedChargeId { get; set; }
         public Charge? ChainedCharge { get; set; }
 

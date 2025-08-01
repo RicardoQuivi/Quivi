@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { GetTransactionsRequest } from "./Dtos/transactions/GetTransactionsRequest";
 import { GetTransactionsResponse } from "./Dtos/transactions/GetTransactionsResponse";
 import { useAuthenticatedHttpClient } from "../../context/AuthContext";
+import { RefundTransactionResquest } from "./Dtos/transactions/RefundTransactionResquest";
+import { RefundTransactionResponse } from "./Dtos/transactions/RefundTransactionResponse";
 
 export const useTransactionApi = () => {
     const client = useAuthenticatedHttpClient();
@@ -62,8 +64,14 @@ export const useTransactionApi = () => {
         return client.get<GetTransactionsResponse>(url);
     }
 
+    const refund = (request: RefundTransactionResquest) => {
+        const url = new URL(`api/transactions/${request.id}/refund`, import.meta.env.VITE_API_URL).toString();
+        return client.post<RefundTransactionResponse>(url, request);
+    }
+
     const state = useMemo(() => ({
         get,
+        refund,
     }), [client]);
 
     return state;

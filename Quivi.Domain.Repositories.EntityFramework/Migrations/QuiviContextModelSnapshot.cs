@@ -108,6 +108,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("MerchantAcquirerConfigurationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
@@ -117,6 +120,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChainedChargeId");
+
+                    b.HasIndex("MerchantAcquirerConfigurationId");
 
                     b.ToTable("Charges");
                 });
@@ -3025,7 +3030,13 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("ChainedChargeId");
 
+                    b.HasOne("Quivi.Domain.Entities.Merchants.MerchantAcquirerConfiguration", "MerchantAcquirerConfiguration")
+                        .WithMany()
+                        .HasForeignKey("MerchantAcquirerConfigurationId");
+
                     b.Navigation("ChainedCharge");
+
+                    b.Navigation("MerchantAcquirerConfiguration");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Charges.Deposit", b =>

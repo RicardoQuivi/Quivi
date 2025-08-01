@@ -78,6 +78,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quivi.Guests.Api", "Quivi.G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quivi.Infrastructure.Mailing.EmailEngine.Mjml", "Quivi.Infrastructure.Mailing.EmailEngine.Mjml\Quivi.Infrastructure.Mailing.EmailEngine.Mjml.csproj", "{459DA548-B1C7-4515-8683-A12F438ADF6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paybyrd.Api", "Paybyrd.Api\Paybyrd.Api.csproj", "{0EB10FE9-A291-4385-9B2B-B80F35A44BAB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{C5432B6C-8637-427E-B4F6-1EC03E7FB153}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -208,6 +212,10 @@ Global
 		{459DA548-B1C7-4515-8683-A12F438ADF6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{459DA548-B1C7-4515-8683-A12F438ADF6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{459DA548-B1C7-4515-8683-A12F438ADF6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EB10FE9-A291-4385-9B2B-B80F35A44BAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EB10FE9-A291-4385-9B2B-B80F35A44BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EB10FE9-A291-4385-9B2B-B80F35A44BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EB10FE9-A291-4385-9B2B-B80F35A44BAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,6 +248,7 @@ Global
 		{7CF38339-56C2-49BA-90CE-1C4AABBCB7A6} = {F3C5466D-C19F-4127-BD68-94F83A27598E}
 		{078899B5-E9A5-4196-BCE9-EEB147800B01} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{459DA548-B1C7-4515-8683-A12F438ADF6B} = {F3C5466D-C19F-4127-BD68-94F83A27598E}
+		{0EB10FE9-A291-4385-9B2B-B80F35A44BAB} = {C5432B6C-8637-427E-B4F6-1EC03E7FB153}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9686DAD0-297E-4107-BE1F-7EA51F1657A2}

@@ -14,6 +14,7 @@ namespace Quivi.Application.Queries.MerchantAcquirerConfigurations
         public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<ChargeMethod>? ChargeMethods { get; init; }
         public IEnumerable<ChargePartner>? ChargePartners { get; init; }
+        public IEnumerable<string>? ApiKeys { get; init; }
         public bool? IsDeleted { get; init; }
     }
 
@@ -35,6 +36,7 @@ namespace Quivi.Application.Queries.MerchantAcquirerConfigurations
                 ChannelIds = query.ChannelIds,
                 ChargeMethods = query.ChargeMethods,
                 ChargePartners = query.ChargePartners,
+                ApiKeys = query.ApiKeys,
                 IsDeleted = query.IsDeleted,
 
                 PageIndex = query.PageIndex,

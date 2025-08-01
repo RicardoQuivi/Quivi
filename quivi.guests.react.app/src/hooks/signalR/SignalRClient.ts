@@ -53,7 +53,7 @@ export class SignalRClient implements IWebClient {
     
     private async start(): Promise<void> {
         try {
-            await navigator.locks.request("SignalRClient.Start.Lock", async () => {    
+            await navigator.locks.request("SignalRClient.Start.Lock", async () => {
                 if (this.connection.state == HubConnectionState.Connecting) {
                     return;
                 }

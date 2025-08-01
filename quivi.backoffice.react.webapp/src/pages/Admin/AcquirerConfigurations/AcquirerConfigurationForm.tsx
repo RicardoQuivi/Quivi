@@ -111,7 +111,6 @@ export const AcquirerConfigurationForm = (props: Props) => {
                             getId={e => e.toString()}
                             render={e => ChargePartner[e]}
                             onChange={e => {
-                                debugger;
                                 let method = state.method;
                                 const availableOptions = getOptions(e);
                                 if(availableOptions.includes(method) == false) {

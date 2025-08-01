@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "(patch-package || echo 'No patches to apply') && node scripts/postinstall-fix.cjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -16,6 +17,7 @@
     "@mui/material": "^7.2.0",
     "@mui/styles": "^6.4.12",
     "@mui/x-date-pickers": "^8.6.0",
+    "@paybyrd/card-collect": "^3.2.1",
     "@tanstack/react-query": "^5.77.2",
     "bignumber.js": "^9.3.0",
     "date-fns": "^4.1.0",
@@ -46,9 +48,11 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
+    "patch-package": "^8.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.34.1",
     "vite": "^7.0.0",
+    "vite-plugin-commonjs": "^0.10.4",
     "vite-plugin-svgr": "^4.3.0"
   }
 }

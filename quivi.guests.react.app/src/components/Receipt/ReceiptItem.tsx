@@ -1,4 +1,4 @@
-﻿import { Chip, Skeleton, Typography } from "@mui/material";
+﻿import { Chip, Skeleton, Stack, Typography } from "@mui/material";
 import { ItemsHelper } from "../../helpers/ItemsHelper";
 import { useQuiviTheme } from "../../hooks/theme/useQuiviTheme";
 import type { BaseReceiptLine, ReceiptLine } from "./ReceiptLine";
@@ -36,16 +36,16 @@ const ReceiptItemLine: React.FC<ReceiptItemLineProps> = ({
                 {
                     item != undefined 
                     ?
-                    <>
+                    <Stack
+                        direction="row"
+                        gap={2}
+                    >
                         {item.name}
                         {
                             item.info != undefined &&
-                            <>
-                                &nbsp;&nbsp;
-                                <Chip label={<span>{item.info}</span>} variant="outlined" size="small" avatar={<>&nbsp;<InfoIcon color={theme.primaryColor.hex} /></>}/>
-                            </>
+                            <Chip label={<span>{item.info}</span>} variant="outlined" size="small" avatar={<>&nbsp;<InfoIcon color={theme.primaryColor.hex} /></>}/>
                         }
-                    </>
+                    </Stack>
                     :
                         <Skeleton variant="text" animation="wave" height="1.5rem" width="70%"/>
                 }

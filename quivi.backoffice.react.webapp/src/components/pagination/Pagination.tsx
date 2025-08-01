@@ -103,14 +103,14 @@ export const Pagination = (props: Props) => {
                         {
                             props.totalItems == 0
                             ?
-                            t("common.noDataAvailable")
+                            t("common.paginationNoData")
                             :
                             <Trans
                                 i18nKey={"common.paginationDescription"}
                                 values={{
                                     start: startIndex + 1,
                                     end: endIndex,
-                                    total: props.totalItems
+                                    total: props.totalItems,
                                 }}
                                 components={{
                                     b: <b />,

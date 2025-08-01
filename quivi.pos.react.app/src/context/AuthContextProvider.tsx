@@ -49,6 +49,7 @@ interface AuthContextType {
     readonly signIn: (token: string) => Promise<void>;
     readonly principal: Principal | undefined;
     readonly client: HttpClient;
+    readonly tokenProvider: <TResponse = void>(call: (token: string) => Promise<TResponse>) => Promise<TResponse>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -138,6 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 isAdmin: state.isAdmin ?? false,
             },
             client: httpClient,
+            tokenProvider: guard,
         }}>
             {children}
         </AuthContext.Provider>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Quivi.Application.Commands.Charges;
 using Quivi.Application.Commands.PosCharges;
 using Quivi.Application.Queries.MerchantInvoiceDocuments;
 using Quivi.Application.Queries.PosCharges;
@@ -8,9 +7,11 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Guests.Api.Dtos.Requests.Transactions;
 using Quivi.Guests.Api.Dtos.Responses.Transactions;
 using Quivi.Guests.Api.Validations;
+using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Guests.Api.Controllers
@@ -22,17 +23,23 @@ namespace Quivi.Guests.Api.Controllers
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
         private readonly IMapper mapper;
+        private readonly IDateTimeProvider dateTimeProvider;
         private readonly IIdConverter idConverter;
+        private readonly IChargeProcessor chargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                        IMapper mapper,
                                        IIdConverter idConverter,
-                                       ICommandProcessor commandProcessor)
+                                       ICommandProcessor commandProcessor,
+                                       IDateTimeProvider dateTimeProvider,
+                                       IChargeProcessor chargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.idConverter = idConverter;
             this.mapper = mapper;
             this.commandProcessor = commandProcessor;
+            this.dateTimeProvider = dateTimeProvider;
+            this.chargeProcessor = chargeProcessor;
         }
 
         [HttpGet]
@@ -141,14 +148,6 @@ namespace Quivi.Guests.Api.Controllers
             if (posCharge == null)
                 throw validator.Exception;
 
-            if (posCharge.Charge!.ChargeMethod == ChargeMethod.CreditCard)
-            {
-                //TODO: Uncomment when credit card charge is implemented
-                //var startCreditCardChargeResult = await _commandHandlerProcessor.Execute(new StartCreditCardChargeAsyncCommand(posCharge.Data.ChargeGuid));
-                //if (startCreditCardChargeResult.Success == false) 
-                //    throw startCreditCardChargeResult.Exception;
-            }
-
             return new CreateTransactionResponse
             {
                 Data = mapper.Map<Dtos.Transaction>(posCharge),
@@ -156,50 +155,37 @@ namespace Quivi.Guests.Api.Controllers
         }
 
         [HttpPut("{id}/" + nameof(ChargeMethod.Cash))]
-        public async Task<PutTransactionResponse> Cash(string id, [FromBody] PutCashTransactionRequest request)
+        public Task<PutTransactionResponse> Cash(string id, [FromBody] PutCashTransactionRequest request) => StartCharge(id);
+
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/{method}")]
+        public Task<PutTransactionResponse> Paybyrd(string id, ChargeMethod method, [FromBody] PutPaybyrdTransactionRequest request) => StartCharge(id, charge =>
         {
-            request = request ?? new PutCashTransactionRequest();
-            return await StartCharge(id, request, charge => commandProcessor.Execute(new ProcessChargeAsyncCommand
-            {
-                Id = charge.Id,
-            }));
-        }
+            if (charge.CardCharge != null)
+                return;
 
-        private async Task<PutTransactionResponse> StartCharge<T>(string id, T request, Func<Charge, Task<Charge?>> func) where T : PutTransactionRequest
+            var now = dateTimeProvider.GetUtcNow();
+            charge.CardCharge = new CardCharge
+            {
+                FormContext = request.RedirectUrl ?? string.Empty,
+                AuthorizationToken = request.TokenId,
+                TransactionId = string.Empty,
+
+                Charge = charge,
+                ChargeId = charge.Id,
+
+                CreatedDate = now,
+                ModifiedDate = now,
+            };
+        });
+
+        private async Task<PutTransactionResponse> StartCharge(string publicId, Action<Charge>? beforeProcessing = null)
         {
-            var charges = await commandProcessor.Execute(new StartChargesProcessingAsyncCommand
-            {
-                Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetChargesCriteria
-                {
-                    Ids = [idConverter.FromPublicId(id)],
-                },
-            });
-            var charge = charges.SingleOrDefault();
-
-            if(charge == null)
-                return new PutTransactionResponse
-                {
-                    Data = null,
-                };
-
-            charge = await func(charge);
-            if (charge == null)
-                return new PutTransactionResponse
-                {
-                    Data = null,
-                };
-
-            var query = await queryProcessor.Execute(new GetPosChargesAsyncQuery
-            {
-                Ids = [charge.Id],
-                IncludePosChargeSyncAttempts = true,
-                IncludeCharge = true,
-                PageIndex = 0,
-                PageSize = 1,
-            });
+            Action<Charge> defaultAction = c => { };
+            var result = await chargeProcessor.StartProcessing(idConverter.FromPublicId(publicId), beforeProcessing ?? defaultAction);
             return new PutTransactionResponse
             {
-                Data = mapper.Map<Dtos.Transaction>(query.SingleOrDefault()),
+                Data = mapper.Map<Dtos.Transaction>(result.Charge?.PosCharge),
+                ThreeDsUrl = result.ChallengeUrl,
             };
         }
     }

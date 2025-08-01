@@ -255,6 +255,10 @@
     "ok": "Ok",
     "expired": "O pagamento expirou. Por favor tente novamente.",
     "enterPhoneNumber": "Introduza o seu Nº de telemóvel",
+    "processingPayment": "Estamos a processar pagamento",
+    "processingPaymentDescription": "Alguns bancos poderão requerer que autorize o pagamento. Se for o caso será aberta uma página e deverá:",
+    "openBankApp": "Acedar à aplicação do seu banco.",
+    "authorizeAppPayment": "Autorizar o pagamento.",
     "acceptPayment": "Aceite o pagamento",
     "acceptPaymentDescription": "Para finalizar o pagamento, siga os passos abaixo:",
     "accessApp": "Aceda à sua app",
@@ -287,12 +291,13 @@
   },
 
   "acquirer": {
+    "cardHolderPlaceholder": "Nome no cartão",
     "cardNumberPlaceholder": "Número do cartão",
     "cvvPlaceholder": "CVV",
     "monthPlaceholder": "MM",
     "yearPlaceholder": "AA",
     "mustSpecifyCardNumber": "Insira um número de cartão válido.",
-    "mustSpecifyCVC": "Insira um CVC válido.",
+    "mustSpecifyCVV": "Insira um CVV válido.",
     "mustSpecifyExpiryDate": "Insira uma data de validade válida.",
     "invalidData": "Os detalhes de pagamento não são válidos"
   },
@@ -348,7 +353,7 @@
 
   "tutorial": {
     "acceptPayment": "Aceite o pagamento",
-    "acceptPaymentDescription": "Para finalizar o pagamento ao restaurante, siga os passos abaixo:",
+    "acceptPaymentDescription": "Para finalizar o pagamento, siga os passos abaixo:",
     "accessApp": "Aceda à sua app {{paymentMethodName}}",
     "acceptNotification": "Aceite a notificação de pedido de pagamento",
     "paymentExpired": "O tempo para realizar o pagamento acabou."

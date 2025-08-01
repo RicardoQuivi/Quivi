@@ -1,12 +1,12 @@
 ﻿using Quivi.Application.Commands.Charges;
 using Quivi.Application.Commands.PosPosCharges;
 using Quivi.Application.Extensions;
-using Quivi.Application.Queries.MerchantAcquirerConfigurations;
 using Quivi.Application.Queries.Orders;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Events.Data;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Pos;
@@ -43,35 +43,33 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
             });
             var posCharge = posChargesQuery.Single();
 
-            if(posCharge.CaptureDate.HasValue)
+            if (posCharge.CaptureDate.HasValue)
             {
                 await ProcessCaptured(posCharge);
                 ProcessChainedCharge(posCharge);
                 return;
             }
 
-            await commandProcessor.Execute(new UpdateChargesAsyncCommand
+            if (message.Operation == EntityOperation.Create && posCharge.CaptureDate.HasValue == false)
             {
-                Criteria = new GetChargesCriteria
-                {
-                    Ids = [posCharge.Charge!.Id],
-                    Statuses = [ChargeStatus.Requested],
-                    PageSize = 1,
-                },
-                UpdateAction = async e =>
-                {
-                    e.Status = ChargeStatus.Processing;
-                    this.backgroundJobHandler.Schedule(() => ExpireCharge(message.Id), new DateTimeOffset(posCharge.CreatedDate.AddMinutes(10), TimeSpan.Zero));
+                this.backgroundJobHandler.Schedule(() => ExpireCharge(message.Id), new DateTimeOffset(posCharge.CreatedDate.AddMinutes(10), TimeSpan.Zero));
+                return;
+            }
+        }
 
-                    if (e.Method == ChargeMethod.CreditCard && e.Partner.HasValue)
-                        await AcquirePayment(posCharge.ChargeId, e.Method.Value, e.Partner.Value);
-                }
-            });
+        private async Task ProcessCaptured(PosCharge posCharge)
+        {
+            switch (posCharge.GetPosChargeType())
+            {
+                case PosChargeType.FreePayment: return;
+                case PosChargeType.PayAtTheTable: ValidateAndSyncCharge(posCharge); break;
+                case PosChargeType.OrderAndPay: await ValidateAndSyncOrder(posCharge); break;
+            }
         }
 
         private void ProcessChainedCharge(PosCharge posCharge)
         {
-            if(posCharge.Charge!.ChainedChargeId.HasValue == false)
+            if (posCharge.Charge!.ChainedChargeId.HasValue == false)
                 return;
 
             //TODO: Implement the logic to process the chained charge
@@ -79,19 +77,6 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
             //{
             //    ChargeId = posCharge.Charge.ChainedChargeId.Value,
             //});
-        }
-
-        private async Task ProcessCaptured(PosCharge posCharge)
-        {
-            if (posCharge.CaptureDate.HasValue == false)
-                return;
-
-            switch (posCharge.GetPosChargeType())
-            {
-                case PosChargeType.FreePayment: return;
-                case PosChargeType.PayAtTheTable: ValidateAndSyncCharge(posCharge); break;
-                case PosChargeType.OrderAndPay: await ValidateAndSyncOrder(posCharge); break;
-            }
         }
 
         private void ValidateAndSyncCharge(PosCharge posCharge)
@@ -125,8 +110,6 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
             var orderIds = orderQuery.Select(o => o.Id).ToList();
             var orderId = orderIds.Single();
             var jobId = backgroundJobHandler.Enqueue(() => posSyncService.ProcessOrders(orderIds, posCharge.MerchantId, OrderState.Draft, false));
-            //var assignmentJobId = backgroundJobHandler.ContinueJobWith(jobId, () => AssignPosChargeToSession(posCharge.Id, orderId));
-            //backgroundJobHandler.ContinueJobWith(assignmentJobId, () => posSyncService.ProcessCharge(posCharge.Id));
         }
 
         public Task AssignPosChargeToSession(int id, int orderId) => commandProcessor.Execute(new UpdatePosChargesAsyncCommand
@@ -157,7 +140,7 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
             Criteria = new GetChargesCriteria
             {
                 Ids = [chargeId],
-                Statuses = [ChargeStatus.Requested],
+                Statuses = [ChargeStatus.Requested, ChargeStatus.Processing],
                 PageSize = 1,
             },
             UpdateAction = e =>
@@ -166,31 +149,5 @@ namespace Quivi.Hangfire.EventHandlers.PosCharges
                 return Task.CompletedTask;
             }
         });
-
-        private async Task AcquirePayment(int channelId, ChargeMethod method, ChargePartner partner)
-        {
-            var configurationQuery = await queryProcessor.Execute(new GetMerchantAcquirerConfigurationsAsyncQuery
-            {
-                ChannelIds = [channelId],
-                ChargeMethods = [method],
-                ChargePartners = [partner],
-                PageSize = 1,
-                PageIndex = 0,
-            });
-
-            var configuration = configurationQuery.SingleOrDefault();
-            if (configuration == null)
-                return;
-
-            //TODO: Implement the actual payment acquisition logic based on the configuration
-            //if (configuration.ChargePartner == ChargePartner.SibsPaymentGateway)
-            //    return await commandProcessor.Execute(new StartSpgCreditCardChargeAsyncCommand(charge));
-
-            //if (configuration.ChargePartner == ChargePartner.Stripe)
-            //    return await commandProcessor.Execute(new StartStripeCreditCardChargeAsyncCommand(charge));
-
-            //if (configuration.ChargePartner == ChargePartner.Checkout)
-            //    return await commandProcessor.Execute(new StartCheckoutCreditCardChargeAsyncCommand(charge));
-        }
     }
 }

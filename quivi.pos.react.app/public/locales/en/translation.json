@@ -128,5 +128,10 @@
         "employeeLockPage": {
             "backToEmployee": "Back to select employee"
         }
+    },
+    "common": {
+        "apiErrors": {
+            "InvalidCredentials": "Invalid pin. Please try again"
+        }
     }
 }

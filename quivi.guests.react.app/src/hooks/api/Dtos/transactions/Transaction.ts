@@ -24,4 +24,5 @@ export interface Transaction {
     readonly topUpData?: TopUpData;
     readonly paymentAdditionalData: undefined;
     readonly refundData?: RefundData;
+    readonly lastModified: string;
 }

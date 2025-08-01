@@ -35,7 +35,10 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.ChargeMethods != null)
                 query = query.Where(q => criteria.ChargeMethods.Contains(q.ChargeMethod));
 
-            if(criteria.IsDeleted.HasValue)
+            if (criteria.ApiKeys != null)
+                query = query.Where(q => criteria.ApiKeys.Contains(q.ApiKey));
+
+            if (criteria.IsDeleted.HasValue)
                 query = query.Where(q => q.DeletedDate.HasValue == criteria.IsDeleted.Value);
 
             return query.OrderByDescending(q => q.CreatedDate);

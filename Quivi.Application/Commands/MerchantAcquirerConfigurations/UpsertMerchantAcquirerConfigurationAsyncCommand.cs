@@ -72,6 +72,7 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
                 this.originalWebhookSecret = model.WebhookSecret;
                 this.originalPublicKey = model.PublicKey;
                 this.originalExternallySettled = model.ExternallySettled;
+                this.originalDeleted = model.DeletedDate.HasValue;
             }
 
             public int MerchantId => Model.MerchantId;
@@ -79,7 +80,7 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
             public ChargeMethod ChargeMethod => Model.ChargeMethod;
 
             public string? ApiKey
-            { 
+            {
                 get => Model.ApiKey;
                 set => Model.ApiKey = value;
             }
@@ -115,30 +116,31 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
             }
 
             public bool WasDeleted => originalDeleted == false && Model.DeletedDate.HasValue;
+            public bool WasRestored => originalDeleted && Model.DeletedDate.HasValue == false;
 
             public bool HasChanges
             {
                 get
                 {
-                    if(ApiKey != originalApiKey)
+                    if (ApiKey != originalApiKey)
                         return true;
 
-                    if(EntityId != originalEntityId)
+                    if (EntityId != originalEntityId)
                         return true;
 
-                    if(TerminalId != originalTerminalId)
+                    if (TerminalId != originalTerminalId)
                         return true;
 
-                    if(WebhookSecret != originalWebhookSecret)
+                    if (WebhookSecret != originalWebhookSecret)
                         return true;
 
-                    if(PublicKey != originalPublicKey)
+                    if (PublicKey != originalPublicKey)
                         return true;
 
-                    if(ExternallySettled != originalExternallySettled)
+                    if (ExternallySettled != originalExternallySettled)
                         return true;
 
-                    if (WasDeleted)
+                    if (originalDeleted != Model.DeletedDate.HasValue)
                         return true;
 
                     return false;
@@ -160,7 +162,7 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
             var entity = entities.SingleOrDefault();
             bool hasChanges = false;
 
-            if(entity == null)
+            if (entity == null)
             {
                 entity = new MerchantAcquirerConfiguration
                 {
@@ -173,8 +175,8 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
                 repository.Add(entity);
                 hasChanges = true;
             }
-
             var updatableEntity = new UpdatableMerchantAcquirerConfiguration(entity, now);
+            updatableEntity.Inactive = false;
             await command.UpdateAction.Invoke(updatableEntity);
 
             if (updatableEntity.HasChanges)
@@ -191,7 +193,7 @@ namespace Quivi.Application.Commands.MerchantAcquirerConfigurations
             {
                 Id = updatableEntity.Model.Id,
                 MerchantId = updatableEntity.Model.MerchantId,
-                Operation = updatableEntity.WasDeleted ? EntityOperation.Delete : (entity.CreatedDate == now ? EntityOperation.Create : EntityOperation.Update),
+                Operation = updatableEntity.WasDeleted ? EntityOperation.Delete : (entity.CreatedDate == now || updatableEntity.WasRestored ? EntityOperation.Create : EntityOperation.Update),
             });
 
             return updatableEntity.Model;

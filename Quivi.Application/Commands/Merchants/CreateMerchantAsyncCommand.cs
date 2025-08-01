@@ -1,5 +1,8 @@
 ﻿using Quivi.Application.Commands.CustomChargeMethods;
+using Quivi.Application.Commands.MerchantAcquirerConfigurations;
 using Quivi.Application.Commands.PosIntegrations;
+using Quivi.Application.Configurations;
+using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
@@ -39,18 +42,21 @@ namespace Quivi.Application.Commands.Merchants
         private readonly ICommandProcessor commandProcessor;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
+        private readonly IPaybyrdSettings paybyrdSettings;
 
         public CreateMerchantAsyncCommandHandler(IUnitOfWork unitOfWork,
                                                     IAppHostsSettings appHostsSettings,
                                                     ICommandProcessor commandProcessor,
                                                     IDateTimeProvider dateTimeProvider,
-                                                    IEventService eventService)
+                                                    IEventService eventService,
+                                                    IPaybyrdSettings paybyrdSettings)
         {
             this.unitOfWork = unitOfWork;
             this.appHostsSettings = appHostsSettings;
             this.dateTimeProvider = dateTimeProvider;
             this.commandProcessor = commandProcessor;
             this.eventService = eventService;
+            this.paybyrdSettings = paybyrdSettings;
         }
 
         public async Task<Merchant?> Handle(CreateMerchantAsyncCommand command)
@@ -60,7 +66,7 @@ namespace Quivi.Application.Commands.Merchants
             if (string.IsNullOrWhiteSpace(command.Name))
             {
                 command.OnInvalidMerchantName();
-                hasErrors = true;    
+                hasErrors = true;
             }
 
             if (string.IsNullOrWhiteSpace(command.Iban) || command.Iban.IsValidIban() == false)
@@ -78,7 +84,7 @@ namespace Quivi.Application.Commands.Merchants
 
             var merchantRepo = unitOfWork.Merchants;
             var exists = await VatNumberExists(command, merchantRepo);
-            if(exists)
+            if (exists)
             {
                 command.OnVatNumberAlreadyExists();
                 hasErrors = true;
@@ -114,53 +120,88 @@ namespace Quivi.Application.Commands.Merchants
                     DiagnosticErrorsMuted = false,
                     IntegrationType = IntegrationType.QuiviViaFacturalusa,
                 });
-                await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
-                {
-                    MerchantId = subMerchant.Id,
-                    Name = "Dinheiro",
-                    LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/cash.svg"),
-                    OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
-                    OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
-                });
-                await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
-                {
-                    MerchantId = subMerchant.Id,
-                    Name = "Cartão Refeição Ticket",
-                    LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/ticket-restaurant.svg"),
-                    OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
-                    OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
-                });
-                await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
-                {
-                    MerchantId = subMerchant.Id,
-                    Name = "MB Way",
-                    LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/mb-way.svg"),
-                    OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
-                    OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
-                });
-                await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
-                {
-                    MerchantId = subMerchant.Id,
-                    Name = "Cartão de Crédito/Débito",
-                    LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/credit-card.svg"),
-                    OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
-                    OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
-                });
+                await CreateCustomChargeMethods(subMerchant);
+                await CreateAcquirerConfigurations(subMerchant);
 
                 await commandProcessor.Execute(new AddUserToMerchantsAsyncCommand
                 {
                     UserId = command.UserId,
-                    MerchantIds = [ merchant.Id, subMerchant.Id ], 
+                    MerchantIds = [merchant.Id, subMerchant.Id],
                 });
 
                 await transaction.CommitAsync();
                 return subMerchant;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        private async Task CreateCustomChargeMethods(Merchant subMerchant)
+        {
+            await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                Name = "Dinheiro",
+                LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/cash.svg"),
+                OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
+                OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
+            });
+            await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                Name = "Cartão Refeição Ticket",
+                LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/ticket-restaurant.svg"),
+                OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
+                OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
+            });
+            await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                Name = "MB Way",
+                LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/mb-way.svg"),
+                OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
+                OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
+            });
+            await commandProcessor.Execute(new AddCustomChargeMethodAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                Name = "Cartão de Crédito/Débito",
+                LogoUrl = appHostsSettings.BackofficeApi.CombineUrl("/Images/chargemethods/credit-card.svg"),
+                OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
+                OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
+            });
+        }
+
+        private async Task CreateAcquirerConfigurations(Merchant subMerchant)
+        {
+            await commandProcessor.Execute(new UpsertMerchantAcquirerConfigurationAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                ChargeMethod = ChargeMethod.MbWay,
+                ChargePartner = ChargePartner.Paybyrd,
+                UpdateAction = r =>
+                {
+                    r.ApiKey = paybyrdSettings.ApiKey;
+                    r.Inactive = false;
+                    return Task.CompletedTask;
+                }
+            });
+
+            await commandProcessor.Execute(new UpsertMerchantAcquirerConfigurationAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                ChargeMethod = ChargeMethod.CreditCard,
+                ChargePartner = ChargePartner.Paybyrd,
+                UpdateAction = r =>
+                {
+                    r.ApiKey = paybyrdSettings.ApiKey;
+                    r.Inactive = false;
+                    return Task.CompletedTask;
+                }
+            });
         }
 
         private async Task<Merchant> AddMerchant(CreateMerchantAsyncCommand command, IMerchantsRepository merchantRepo)

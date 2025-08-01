@@ -46,6 +46,7 @@ namespace Quivi.Infrastructure.Repositories
         public IJournalsRepository Journals => unitOfWork.Journals;
         public IReviewsRepository Reviews => unitOfWork.Reviews;
         public IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments => unitOfWork.MerchantInvoiceDocuments;
+        public IPostingsRepository Postings => unitOfWork.Postings;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {
@@ -89,7 +90,7 @@ namespace Quivi.Infrastructure.Repositories
 
         public async ValueTask DisposeAsync()
         {
-            if(isTransaction == false)
+            if (isTransaction == false)
                 await RunAll();
 
             unitOfWork.Dispose();

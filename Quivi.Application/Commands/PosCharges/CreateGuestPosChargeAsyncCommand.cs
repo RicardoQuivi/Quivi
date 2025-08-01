@@ -60,6 +60,7 @@ namespace Quivi.Application.Commands.PosCharges
     public class CreateGuestPosChargeAsyncCommandHandler : ICommandHandler<CreateGuestPosChargeAsyncCommand, Task<PosCharge?>>
     {
         private readonly IQueryProcessor queryProcessor;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IPosChargesRepository repository;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly ICommandProcessor commandProcessor;
@@ -67,14 +68,15 @@ namespace Quivi.Application.Commands.PosCharges
         private readonly IEventService eventService;
 
         public CreateGuestPosChargeAsyncCommandHandler(IQueryProcessor queryProcessor,
-                                                        IPosChargesRepository repository,
+                                                        IUnitOfWork unitOfWork,
                                                         IDateTimeProvider dateTimeProvider,
                                                         ICommandProcessor commandProcessor,
                                                         IRandomGenerator randomGenerator,
                                                         IEventService eventService)
         {
             this.queryProcessor = queryProcessor;
-            this.repository = repository;
+            this.unitOfWork = unitOfWork;
+            this.repository = unitOfWork.PosCharges;
             this.dateTimeProvider = dateTimeProvider;
             this.commandProcessor = commandProcessor;
             this.randomGenerator = randomGenerator;
@@ -123,9 +125,18 @@ namespace Quivi.Application.Commands.PosCharges
                 return null;
             }
 
-            var posCharge = await Process(command);
+            var transactionInfo = await GetTransactionInfo(command);
+            if (transactionInfo == null)
+                return null;
+
+            await using var transaction = await unitOfWork.StartTransactionAsync();
+            var posCharge = await Process(transactionInfo, command);
             if (posCharge == null)
                 return null;
+
+            await StartAcquiring(transactionInfo, posCharge);
+            await unitOfWork.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             await eventService.Publish(new OnPosChargeOperationEvent
             {
@@ -138,12 +149,8 @@ namespace Quivi.Application.Commands.PosCharges
             return posCharge;
         }
 
-        private async Task<PosCharge?> Process(CreateGuestPosChargeAsyncCommand command)
+        private async Task<PosCharge?> Process(TransactionInfo transactionInfo, CreateGuestPosChargeAsyncCommand command)
         {
-            var transactionInfo = await GetTransactionInfo(command);
-            if(transactionInfo == null)
-                return null;
-
             int? sessionId = null;
             DateTime now = dateTimeProvider.GetUtcNow();
 
@@ -173,6 +180,10 @@ namespace Quivi.Application.Commands.PosCharges
                 {
                     ChargePartner = transactionInfo.MerchantAcquirerConfiguration.ChargePartner,
                     ChargeMethod = transactionInfo.MerchantAcquirerConfiguration.ChargeMethod,
+
+                    MerchantAcquirerConfigurationId = transactionInfo.MerchantAcquirerConfiguration.Id,
+                    MerchantAcquirerConfiguration = transactionInfo.MerchantAcquirerConfiguration,
+
                     ChainedChargeId = null,
                     Status = ChargeStatus.Requested,
                     Deposit = new Deposit
@@ -204,9 +215,10 @@ namespace Quivi.Application.Commands.PosCharges
             if (await AddPaymentTypeInformation(command, posCharge, now) == false)
                 return null;
 
-            repository.Add(posCharge);
-            await repository.SaveChangesAsync();
+            if (posCharge.Payment + posCharge.Tip + posCharge.SurchargeFeeAmount != posCharge.Total)
+                throw new Exception("If this happens it should mean the amount the user is trying to pay is no longer valid");
 
+            repository.Add(posCharge);
             return posCharge;
         }
 
@@ -240,13 +252,11 @@ namespace Quivi.Application.Commands.PosCharges
                 posCharge.SessionId = session.Id;
                 if (command.PayAtTheTableData.Items?.Any() != true)
                 {
-                    posCharge.Total = command.Amount;
                     posCharge.Payment = command.Amount;
                     return true;
                 }
 
                 var totalPrice = command.PayAtTheTableData.Items.Sum(CalculateItemAmount);
-                posCharge.Total = totalPrice;
                 posCharge.Payment = totalPrice;
 
                 var comparer = new SessionItemComparer();
@@ -290,7 +300,7 @@ namespace Quivi.Application.Commands.PosCharges
                 return true;
             }
 
-            if(command.OrderAndPayData != null)
+            if (command.OrderAndPayData != null)
             {
                 var orderQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery
                 {
@@ -425,7 +435,7 @@ namespace Quivi.Application.Commands.PosCharges
                 PageSize = 1,
             });
             var acquirerConfiguration = merchantAcquirerConfigurationQuery.SingleOrDefault();
-            if(acquirerConfiguration == null)
+            if (acquirerConfiguration == null)
             {
                 command.OnInvalidMerchantAcquirerConfiguration();
                 return null;
@@ -531,6 +541,17 @@ namespace Quivi.Application.Commands.PosCharges
                 });
                 return query.Single();
             }
+        }
+
+        private Task StartAcquiring(TransactionInfo transactionInfo, PosCharge posCharge)
+        {
+            switch (transactionInfo.MerchantAcquirerConfiguration.ChargePartner)
+            {
+                case ChargePartner.Quivi: break;
+                case ChargePartner.Paybyrd: break;
+                default: throw new NotImplementedException();
+            }
+            return Task.CompletedTask;
         }
     }
 }

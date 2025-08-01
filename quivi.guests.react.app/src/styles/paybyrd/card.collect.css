@@ -1,0 +1,29 @@
+body {
+    font-family: Poppins, sans-serif;
+    font-weight: 400;
+}
+
+span#error {
+    color: rgb(214, 145, 41);
+    background: rgb(251, 244, 234);
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    height: 33px;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+span#error:empty {
+    display: none;
+}
+
+.input-wrapper {
+    height: 55px;
+}
+
+:not(.input-wrapper) input {
+    height: 55px;
+}

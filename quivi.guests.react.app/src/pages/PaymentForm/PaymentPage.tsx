@@ -8,6 +8,7 @@ import { LoadingAnimation } from "../../components/LoadingAnimation/LoadingAnima
 import { ChargeMethod } from "../../hooks/api/Dtos/ChargeMethod";
 import { TransactionStatus } from "../../hooks/api/Dtos/transactions/TransactionStatus";
 import { CashPaymentPage } from "./Methods/CashPaymentPage";
+import { PaybyrdCreditCardPaymentPage } from "./Methods/Paybyrd/PaybyrdCreditCardPaymentPage";
 
 interface Props {
     readonly onSuccess?: (c: Transaction) => any;
@@ -97,9 +98,14 @@ export const PaymentPage = (props: Props) => {
     //     return <MbWayPaymentPage chargeData={transactionsQuery.data} />;
     // }
 
-    // if(transaction.method == ChargeMethod.CreditCard) {
-    //     return <CheckoutPaymentPage chargeData={transactionsQuery.data} onSuccess={onInternalSuccess} onFail={onInternalFail}/>
-    // } 
+    if(transaction.method == ChargeMethod.CreditCard) {
+         return <PaybyrdCreditCardPaymentPage
+            transaction={transaction}
+            nextTransaction={nextTransaction}
+            onSuccess={onInternalSuccess}
+            onFail={onInternalFail}
+        />
+    } 
     
     // if(transaction.method == ChargeMethod.PaymentTerminal) {
     //     return <TerminalPaymentPage chargeData={transactionsQuery.data} />;

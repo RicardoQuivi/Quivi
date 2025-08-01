@@ -16,6 +16,7 @@ namespace Quivi.Hangfire
 
             builder.Services.RegisterAll(builder.Configuration);
             builder.Services.AddHangfireServer();
+            builder.Services.AddControllers();
 
             builder.Services.RegisterSingleton((p) => builder.Configuration.GetSection("PrinterConnector").Get<PrinterConnectorSettings>()!);
             builder.Services.ConfigurePrinterConnector<PrinterConnectorSettings>();
@@ -23,7 +24,11 @@ namespace Quivi.Hangfire
 
             var app = builder.Build();
             app.UseMiddleware<AuthenticateMiddleware>();
-            app.UseHttpsRedirection();
+            if (app.Environment.IsDevelopment() == false)
+                app.UseHttpsRedirection();
+
+            app.UseRouting();
+            app.MapControllers();
 
             var authenticationfilters = new[]
             {
@@ -33,7 +38,7 @@ namespace Quivi.Hangfire
                     Pass = "supersecret"
                 },
             };
-            app.UseHangfireDashboard("", new DashboardOptions
+            app.MapHangfireDashboard("", new DashboardOptions
             {
                 Authorization = authenticationfilters,
                 AsyncAuthorization = authenticationfilters,

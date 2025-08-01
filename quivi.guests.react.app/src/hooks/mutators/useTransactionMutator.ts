@@ -6,6 +6,15 @@ import { useTransactionsApi } from "../api/useTransactionsApi";
 import type { CreateTransactionRequest } from "../api/Dtos/transactions/CreateTransactionRequest";
 import { ChargeMethod } from "../api/Dtos/ChargeMethod";
 
+interface PaybyrdProcessMutator {
+    readonly tokenId: string;
+    readonly redirectUrl?: string;
+}
+
+interface ExtendedTransaction extends Transaction {
+    readonly threeDsUrl?: string | undefined;
+}
+
 export const useTransactionMutator = () => {
     const api = useTransactionsApi();
 
@@ -35,6 +44,29 @@ export const useTransactionMutator = () => {
         }
     })
 
+    const processPaybyrdMutator = useMutator({
+        entityType: getEntityType(Entity.Transactions),
+        getKey: (e: ExtendedTransaction) => e.id,
+        updateCall: async (mutator: PaybyrdProcessMutator, entities: ExtendedTransaction[]) => {
+            const result = [] as ExtendedTransaction[];
+            for(const entity of entities) {
+                if(entity.method != ChargeMethod.CreditCard) {
+                    throw new Error();
+                }
+
+                const response = await api.processPaybyrd(entity.id, {
+                    ...mutator,
+                    method: entity.method,
+                });
+                result.push({
+                    ...response.data,
+                    threeDsUrl: response.threeDsUrl as string | undefined,
+                });
+            }
+            return result;
+        }
+    })
+
     const result = useMemo(() => ({
         create: async (request: CreateTransactionRequest) => {
             const result = await createMutator.mutate([], request);
@@ -43,6 +75,14 @@ export const useTransactionMutator = () => {
         processCash: async (entity: Transaction) => {
             const result = await processCashMutator.mutate([entity], {});
             return result.response[0];
+        },
+        processPaybyrd: async (entity: Transaction, data: PaybyrdProcessMutator) => {
+            const result = await processPaybyrdMutator.mutate([entity], data);
+            const rEntity = result.response[0];
+            return {
+                entity: rEntity as Transaction,
+                threeDsUrl: rEntity.threeDsUrl,
+            };
         }
     }), [api]);
     

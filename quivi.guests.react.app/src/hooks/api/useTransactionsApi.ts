@@ -7,6 +7,8 @@ import type { CreateTransactionRequest } from "./Dtos/transactions/CreateTransac
 import type { CreateTransactionResponse } from "./Dtos/transactions/CreateTransactionResponse";
 import type { ProcessTransactionResponse } from "./Dtos/transactions/ProcessTransactionResponse";
 import type { GetTransactionInvoicesResponse } from "./Dtos/transactions/GetTransactionInvoicesResponse";
+import type { ProcessPaybyrdChargeRequest } from "./Dtos/transactions/ProcessPaybyrdChargeRequest";
+import { ChargeMethod } from "./Dtos/ChargeMethod";
 
 export const useTransactionsApi = () => {
     const httpClient = useHttpClient();
@@ -58,11 +60,19 @@ export const useTransactionsApi = () => {
         });
     }
 
+    const processPaybyrd = (id: string, request: ProcessPaybyrdChargeRequest) => {
+        const url = new URL(`api/transactions/${id}/Paybyrd/${ChargeMethod[request.method]}`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.httpPut<ProcessTransactionResponse>(url, request, {
+            'Accept-Language': i18n.language,
+        });
+    }
+
     const state = useMemo(() => ({
         get,
         getInvoice,
         create,
         processCash,
+        processPaybyrd,
     }), [httpClient, i18n, i18n.language]);
 
     return state;
