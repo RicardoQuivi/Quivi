@@ -45,6 +45,7 @@ env:
   IdConverter__Salt: ${{ secrets.IDCONVERTER__SALT }}
   
   # AppHosts
+  AppHosts__Background: ${{ vars.APPHOSTS__BACKGROUND }}
   AppHosts__OAuth: ${{ vars.APPHOSTS__OAUTH }}
   AppHosts__Backoffice: ${{ vars.APPHOSTS__BACKOFFICE }}
   AppHosts__BackofficeApi: ${{ vars.APPHOSTS__BACKOFFICEAPI }}
@@ -81,6 +82,11 @@ env:
   Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
   Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
   Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
+
+  # Paybyrd
+  Paybyrd__Host: ${{ vars.PAYBYRD__HOST }}
+  Paybyrd__WebHooksHost: ${{ vars.PAYBYRD__WEBHOOKSHOST }}
+  Paybyrd__ApiKey: ${{ secrets.PAYBYRD__APIKEY }}
 
 jobs:
   quivi-migrator:
