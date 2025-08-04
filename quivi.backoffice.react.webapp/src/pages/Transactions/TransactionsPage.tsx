@@ -275,8 +275,22 @@ export const TransactionsPage = (props: Props) => {
                                     const review = reviewsMap.get(d.id);
                                     return (
                                         <div
-                                            className="flex items-center gap-3"
+                                            className="flex items-center gap-3 xsm:justify-end sm:justify-start"
                                         >
+                                            &nbsp;
+                                            {
+                                                d.refundedAmount > 0 &&
+                                                <>
+                                                    <Tooltip message={t("common.refunded")}>
+                                                        <Badge 
+                                                            variant="solid"
+                                                            color="error"
+                                                        >
+                                                            {t("common.refunded")}
+                                                        </Badge>
+                                                    </Tooltip>
+                                                </>
+                                            }
                                             {
                                                 review != null &&
                                                 <>
@@ -341,6 +355,12 @@ export const TransactionsPage = (props: Props) => {
                                 return;
                             }
                             navigate(`/transactions/${d.id}`);
+                        }}
+                        rowClasses={(d) => {
+                            if(d.refundedAmount > 0) {
+                                return `dark:bg-[var(--color-error-900)!important] bg-[var(--color-error-200)!important]`
+                            }
+                            return undefined;
                         }}
                     />
                     <Divider />

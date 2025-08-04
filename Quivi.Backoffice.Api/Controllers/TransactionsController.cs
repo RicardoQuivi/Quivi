@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Queries.PosCharges;
+using Quivi.Application.Services.Exceptions;
 using Quivi.Backoffice.Api.Requests.Transactions;
 using Quivi.Backoffice.Api.Responses.Transactions;
+using Quivi.Backoffice.Api.Validations;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Extensions;
+using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Backoffice.Api.Controllers
 {
@@ -44,6 +47,7 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 ParentMerchantIds = adminView ? null : [merchantId!.Value],
                 MerchantIds = adminView || subMerchantId.HasValue == false ? null : [subMerchantId.Value],
+                Ids = request.Ids?.Select(idConverter.FromPublicId),
 
                 //TODO: implement search
                 //Search = request.Search,
@@ -79,19 +83,48 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPost("{id}/refund")]
-        public async Task<object> Refund(string id)
+        public async Task<RefundTransactionResponse> Refund(string id, [FromBody] RefundTransactionRequest request)
         {
-            await chargeProcessor.Refund(new RefundParameters
+            try
             {
-                Amount = null,
-                ChargeId = idConverter.FromPublicId(id),
-                MerchantId = User.IsAdmin() ? null : User.SubMerchantId(idConverter)!.Value,
-                IsCancellation = false,
-            });
-            return new
-            {
+                await chargeProcessor.Refund(new RefundParameters
+                {
+                    Amount = null,
+                    ChargeId = idConverter.FromPublicId(id),
+                    MerchantId = User.IsAdmin() ? null : User.SubMerchantId(idConverter)!.Value,
+                    IsCancellation = false,
+                });
 
-            };
+                var result = await queryProcessor.Execute(new GetPosChargesAsyncQuery
+                {
+                    ParentMerchantIds = User.IsAdmin() ? null : [User.MerchantId(idConverter)!.Value],
+                    MerchantIds = User.IsAdmin() ? null : [User.SubMerchantId(idConverter)!.Value],
+                    Ids = [idConverter.FromPublicId(id)],
+
+                    IncludePosChargeInvoiceItemsOrderMenuItems = true,
+                    IncludeMerchantCustomCharge = true,
+                    IncludePosChargeSyncAttempts = true,
+
+                    PageIndex = 0,
+                    PageSize = 1,
+                });
+
+                return new RefundTransactionResponse
+                {
+                    Data = mapper.Map<Dtos.Transaction>(result.SingleOrDefault()),
+                };
+            }
+            catch (Exception ex)
+            {
+                if (ex is NoBalanceException e)
+                {
+                    using var validator = new ModelStateValidator<string, ValidationError>(id);
+                    validator.AddError(e => e, ValidationError.NoBalance);
+                    throw validator.Exception;
+                }
+
+                throw;
+            }
         }
 
         private SyncAttemptState? Convert(Dtos.SynchronizationState? synchronizationState)

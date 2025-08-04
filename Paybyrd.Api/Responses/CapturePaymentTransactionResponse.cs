@@ -1,17 +1,11 @@
-﻿namespace Paybyrd.Api.Responses
+﻿using Paybyrd.Api.Models;
+
+namespace Paybyrd.Api.Responses
 {
-    public class SourceTransaction
+    public class CapturedSourceTransaction : ASourceTransaction
     {
-        public required string TransactionId { get; init; }
-
-        public required decimal Amount { get; init; }
-        public required int IsoAmount { get; init; }
-
         public required decimal CapturedAmount { get; init; }
         public required int IsoCapturedAmount { get; init; }
-
-        public required decimal RemainingAmount { get; init; }
-        public required int IsoRemainingAmount { get; init; }
     }
 
     public class CapturePaymentTransactionResponse
@@ -21,6 +15,6 @@
         public required int IsoAmount { get; init; }
         public required string Code { get; init; }
         public required string Description { get; init; }
-        public required SourceTransaction SourceTransaction { get; init; }
+        public required CapturedSourceTransaction SourceTransaction { get; init; }
     }
 }

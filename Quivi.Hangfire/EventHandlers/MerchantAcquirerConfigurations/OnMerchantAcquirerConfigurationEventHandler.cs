@@ -10,9 +10,9 @@ namespace Quivi.Hangfire.EventHandlers.MerchantAcquirerConfigurations
     public class OnMerchantAcquirerConfigurationEventHandler : BackgroundEventHandler<OnMerchantAcquirerConfigurationEvent>
     {
         private readonly IQueryProcessor queryProcessor;
-        private readonly IEnumerable<IAcquirerProcessingStrategy> acquirerStrategies;
+        private readonly IEnumerable<IAcquirerProcessor> acquirerStrategies;
 
-        public OnMerchantAcquirerConfigurationEventHandler(IEnumerable<IAcquirerProcessingStrategy> acquirerStrategies,
+        public OnMerchantAcquirerConfigurationEventHandler(IEnumerable<IAcquirerProcessor> acquirerStrategies,
                                                             IQueryProcessor queryProcessor,
                                                             IBackgroundJobHandler backgroundJobHandler) : base(backgroundJobHandler)
         {

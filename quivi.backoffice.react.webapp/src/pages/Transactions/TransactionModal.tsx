@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { PublicId } from "../../components/publicids/PublicId";
 import Button from "../../components/ui/button/Button";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DownloadIcon, FeesIcon, PrinterIcon, QuiviIcon } from "../../icons";
 import { Skeleton } from "../../components/ui/skeleton/Skeleton";
 import { DateUtils } from "../../utilities/dateutils";
@@ -19,7 +19,15 @@ import { Spinner } from "../../components/spinners/Spinner";
 import Avatar from "../../components/ui/avatar/Avatar";
 import { useMerchantDocumentsQuery } from "../../hooks/queries/implementations/useMerchantDocumentsQuery";
 import { Files } from "../../utilities/files";
-import { useTransactionApi } from "../../hooks/api/useTransactionsApi";
+import { useTransactionMutator } from "../../hooks/mutators/useTransactionMutator";
+import { useToast } from "../../layout/ToastProvider";
+import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/usePosIntegrationsQuery";
+import { useQuiviForm } from "../../hooks/api/exceptions/useQuiviForm";
+import * as yup from 'yup';
+
+const refundSchema = yup.object({
+    id: yup.string().required(),
+});
 
 interface Props {
     readonly id?: string;
@@ -28,7 +36,15 @@ interface Props {
 export const TransactionModal = (props: Props) => {
     const { t } = useTranslation();
     const user = useAuthenticatedUser();
-    const api = useTransactionApi();
+    const mutator = useTransactionMutator();
+    const toast = useToast();
+
+    const refundState = useMemo(() => ({
+        id: props.id,
+    }), [props.id])
+
+    const [isRefunding, setIsRefunding] = useState(false);
+    const refundForm = useQuiviForm(refundState, refundSchema);
 
     const transactionQuery = useTransactionsQuery(props.id == undefined ? undefined : {
         ids: [props.id],
@@ -70,6 +86,13 @@ export const TransactionModal = (props: Props) => {
         page: 0,
     })
     
+    const posIntegrationQuery = usePosIntegrationsQuery(transaction == undefined ? undefined : {
+        channelId: transaction.channelId,
+        page: 0,
+        pageSize: 1,
+    })
+    const posIntegration = useMemo(() => posIntegrationQuery.data.length == 0 ? undefined : posIntegrationQuery.data[0], [posIntegrationQuery.data]);
+
     const {
         total,
         discounts,
@@ -98,6 +121,59 @@ export const TransactionModal = (props: Props) => {
         return <Avatar src={customChargeMethod.logoUrl} size="medium" alt={customChargeMethod.name} />
     }
 
+    useEffect(() => {
+        if(refundForm.errors.size == 0) {
+            return;
+        }
+
+        toast.error(t("pages.transactions.refundFailed", {
+            reason: refundForm.touchedErrors.get("")?.message
+        }));
+    }, [refundForm.errors])
+
+    const getRefundButton = () => {
+        if(transaction == undefined) {
+            return undefined;
+        }
+
+        if(transaction.refundedAmount != 0) {
+            return undefined;
+        }
+        
+        const isRefundAvailable = posIntegration?.features.allowsRefunds != false;
+        const baseButton = (
+        <Button
+            onClick={() => refundForm.submit(async () => {
+                setIsRefunding(true)
+                try {
+                    await mutator.refund(transaction);
+                    toast.success(t("pages.transactions.refundSuccess"));
+                } finally {
+                    setIsRefunding(false);
+                }
+            }, () => toast.error(t("common.operations.failure.generic")))}
+            disabled={isRefundAvailable == false}
+        >
+        {
+            isRefunding || posIntegrationQuery.isFirstLoading
+            ?
+            <Spinner />
+            :
+            t("common.refund")
+        }
+        </Button>
+        )
+
+        if(isRefundAvailable) {
+            return baseButton;
+        }
+
+        return <Tooltip
+            message={t("pages.transactions.refundNotSupported")}
+        >
+            {baseButton}
+        </Tooltip>
+    }
     return (
         <Modal
             isOpen={props.id != undefined}
@@ -108,15 +184,7 @@ export const TransactionModal = (props: Props) => {
             </>}
         >
             <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
-                {
-                    transaction != undefined &&
-                    transaction.refundedAmount == 0 &&
-                    <Button
-                        onClick={() => api.refund({ id: transaction.id, })}
-                    >
-                        {t("common.refund")}
-                    </Button>
-                }
+                {getRefundButton()}
                 <Button>
                     <PrinterIcon />
                     {t("common.print")}
@@ -195,11 +263,11 @@ export const TransactionModal = (props: Props) => {
             </div>
 
             <div className="my-7.5 grid grid-cols-1 border border-stroke dark:border-strokedark xsm:grid-cols-2 sm:grid-cols-4">
-                <div className="border-b border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark sm:border-b-0 sm:border-r">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white">
+                <div className="border-b border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark sm:border-b-0 sm:border-r xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
+                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
                         {t("common.date")}
                     </h5>
-                    <span className="text-sm font-medium dark:text-white">
+                    <span className="text-sm font-medium dark:text-white xsm:text-center">
                     {
                         transaction == undefined
                         ?
@@ -210,11 +278,11 @@ export const TransactionModal = (props: Props) => {
                     </span>
                 </div>
 
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white">
+                <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
+                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
                         {t("common.currencyAmount")}:
                     </h5>
-                    <span className="text-sm font-medium dark:text-white">
+                    <span className="text-sm font-medium dark:text-white xsm:text-center">
                     {
                         transaction == undefined
                         ?
@@ -225,11 +293,11 @@ export const TransactionModal = (props: Props) => {
                     </span>
                 </div>
 
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white">
+                <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
+                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
                         {t("common.tip")}:
                     </h5>
-                    <span className="text-sm font-medium dark:text-white">
+                    <span className="text-sm font-medium dark:text-white xsm:text-center">
                     {
                         transaction == undefined
                         ?
@@ -240,11 +308,11 @@ export const TransactionModal = (props: Props) => {
                     </span>
                 </div>
 
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white">
+                <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
+                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
                         {t("common.total")}:
                     </h5>
-                    <span className="text-sm font-medium dark:text-white flex items-center gap-3">
+                    <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
                     {
                         transaction == undefined
                         ?
@@ -268,6 +336,18 @@ export const TransactionModal = (props: Props) => {
                     }
                     </span>
                 </div>
+
+                {
+                    transaction != undefined && transaction.refundedAmount > 0 &&
+                    <div className="border-r border-stroke px-5 py-4 last:border-r-0 border-t dark:border-strokedark xsm:col-span-2 sm:col-span-4 xsm:justify-center flex flex-col flex-wrap content-center dark:bg-[var(--color-error-900)!important] bg-[var(--color-error-200)!important]">
+                        <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                            {t("common.refunded")}:
+                        </h5>
+                        <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
+                            <CurrencySpan value={transaction.refundedAmount} />
+                        </span>
+                    </div>
+                }
             </div>
 
             <div className="border border-stroke dark:border-strokedark">

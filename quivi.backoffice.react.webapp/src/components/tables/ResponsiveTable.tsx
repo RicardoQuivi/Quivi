@@ -34,6 +34,7 @@ interface Props<T> {
     readonly getChildren?: (row: T) => T[];
     readonly hasInnerRows?: (item: T) => boolean;
     readonly onRowClick?: (item: T) => any;
+    readonly rowClasses?: (item: T) => string | undefined;
 
     readonly isLoading?: boolean;
     readonly loadingItemsCount?: number;
@@ -63,8 +64,13 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
         {
             props.data.map(d => {
                 return (
-                <React.Fragment key={props.getKey(d)}>
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] grid grid-cols-[1fr_auto] gap-2">
+                <React.Fragment
+                    key={props.getKey(d)}
+                >
+                    <div
+                        className={`rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] grid grid-cols-[1fr_auto] gap-2 ${props.rowClasses?.(d) ?? ""}`}
+                        onClick={() => props.onRowClick?.(d)}
+                    >
                         <div
                             className="grid grid-cols-1 gap-2"
                         >
@@ -324,7 +330,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                 :
                                 props.data.map(d => (
                                     <TableRow key={props.getKey(d)} 
-                                        className="justify-content-start animated fadeInDown" 
+                                        className={`justify-content-start animated fadeInDown ${props.rowClasses?.(d) ?? ""}`}
                                         style={{cursor: isClickableRow(d) ? "pointer" : "unset"}}
                                         onClick={() => props.onRowClick?.(d)}
                                     >

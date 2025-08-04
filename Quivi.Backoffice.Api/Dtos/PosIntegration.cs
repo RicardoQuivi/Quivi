@@ -8,6 +8,7 @@ namespace Quivi.Backoffice.Api.Dtos
         public bool AllowsOpeningSessions { get; init; }
         public bool AllowsAddingItemsToSession { get; init; }
         public bool AllowsRemovingItemsFromSession { get; init; }
+        public bool AllowsRefunds { get; init; }
     }
 
     public class PosIntegration

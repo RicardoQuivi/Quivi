@@ -1,4 +1,5 @@
 ﻿using Quivi.Application.Queries.Postings;
+using Quivi.Application.Services.Exceptions;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Financing;
 using Quivi.Domain.Entities.Merchants;
@@ -25,7 +26,7 @@ namespace Quivi.Application.Services
         private readonly IJournalsRepository journalsRepository;
 
         private readonly IDateTimeProvider dateTimeProvider;
-        private readonly IEnumerable<IAcquirerProcessingStrategy> acquirerStrategies;
+        private readonly IEnumerable<IAcquirerProcessor> acquirerStrategies;
         private readonly IEventService eventService;
         private readonly IBackgroundJobHandler backgroundJobHandler;
         private readonly IIdConverter idConverter;
@@ -33,7 +34,7 @@ namespace Quivi.Application.Services
         private readonly IQueryProcessor queryProcessor;
 
         public ChargeProcessor(IUnitOfWork unitOfWork,
-                                    IEnumerable<IAcquirerProcessingStrategy> acquirerStrategies,
+                                    IEnumerable<IAcquirerProcessor> acquirerStrategies,
                                     IDateTimeProvider dateTimeProvider,
                                     IEventService eventService,
                                     IBackgroundJobHandler backgroundJobHandler,
@@ -517,6 +518,7 @@ namespace Quivi.Application.Services
                 IncludeDepositCaptureJournalChanges = true,
                 IncludeDepositDepositCapture = true,
                 IncludeMerchantAcquirerConfiguration = true,
+                IncludeCardCharge = true,
             });
 
             var charge = chargesQuery.SingleOrDefault();
@@ -533,8 +535,16 @@ namespace Quivi.Application.Services
             var availableAmount = capturedAmount;
             var refundAmount = parameters.Amount ?? availableAmount;
 
-            if (charge.ChargeMethod != ChargeMethod.Custom && await GetChannelBalanceSinceLastSettlement(charge.Deposit!.DepositCapture!.PersonId, charge.PosCharge.Merchant!) < refundAmount)
-                throw new Exception(); //TODO: Throw a catchable Exception
+            if (charge.ChargeMethod != ChargeMethod.Custom)
+            {
+                var balance = await GetChannelBalanceSinceLastSettlement(charge.Deposit!.DepositCapture!.PersonId, charge.PosCharge.Merchant!);
+                if (balance < refundAmount)
+                    throw new NoBalanceException
+                    {
+                        CurrentBalance = balance,
+                        RequiredBalance = refundAmount,
+                    };
+            }
 
             if (parameters.IsCancellation)
             {

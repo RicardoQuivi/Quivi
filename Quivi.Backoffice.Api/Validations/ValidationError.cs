@@ -10,5 +10,6 @@
         InvalidCredentials,
         Duplicate,
         UnableToDeleteDueToAssociatedEntities,
+        NoBalance,
     }
 }

@@ -74,6 +74,7 @@ namespace Paybyrd.Api
         public Task<CreatePaymentResponse> CreatePayment(string apiKey, CreatePaymentRequest request) => Post<CreatePaymentResponse>(apiAdress, "/api/v2/payment", apiKey, request);
         public Task<CapturePaymentTransactionResponse> CapturePayment(string apiKey, CapturePaymentTransactionRequest request) => Post<CapturePaymentTransactionResponse>(apiAdress, $"/api/v2/capture/{request.TransactionId}", apiKey, request);
         public Task<GetPaymentResponse> GetPayment(string apiKey, GetPaymentRequest request) => Get<GetPaymentResponse>(apiAdress, $"api/v2/transactions/{request.TransactionId}", apiKey);
+        public Task<RefundPaymentResponse> RefundPayment(string apiKey, RefundPaymentRequest request) => Post<RefundPaymentResponse>(apiAdress, $"/api/v2/refund/{request.TransactionId}", apiKey, request);
         #endregion
 
         #region IPaybyrdWebhooksApi

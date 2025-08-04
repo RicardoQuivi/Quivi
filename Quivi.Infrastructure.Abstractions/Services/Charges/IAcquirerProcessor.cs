@@ -3,7 +3,7 @@ using Quivi.Domain.Entities.Merchants;
 
 namespace Quivi.Infrastructure.Abstractions.Services.Charges
 {
-    public interface IAcquirerProcessingStrategy
+    public interface IAcquirerProcessor
     {
         ChargePartner ChargePartner { get; }
         ChargeMethod ChargeMethod { get; }

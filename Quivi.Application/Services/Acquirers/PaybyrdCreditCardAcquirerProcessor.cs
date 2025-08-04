@@ -12,7 +12,7 @@ using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Services.Acquirers
 {
-    public class PaybyrdCreditCardAcquirerProcessingStrategy : IAcquirerProcessingStrategy
+    public class PaybyrdCreditCardAcquirerProcessor : IAcquirerProcessor
     {
         private static readonly TransactionStatus[] ErrorsStatuses = [TransactionStatus.Denied, TransactionStatus.Error, TransactionStatus.Canceled];
 
@@ -22,7 +22,7 @@ namespace Quivi.Application.Services.Acquirers
         private readonly IQueryProcessor queryProcessor;
         private readonly IAppHostsSettings appHostsSettings;
 
-        public PaybyrdCreditCardAcquirerProcessingStrategy(IPaybyrdApi paybyrdApi,
+        public PaybyrdCreditCardAcquirerProcessor(IPaybyrdApi paybyrdApi,
                                                             IPaybyrdWebhooksApi paybyrdWebhooksApi,
                                                             IIdConverter idConverter,
                                                             IQueryProcessor queryProcessor,
@@ -86,9 +86,15 @@ namespace Quivi.Application.Services.Acquirers
             };
         }
 
-        public Task Refund(Charge charge, decimal amount)
+        public async Task Refund(Charge charge, decimal amount)
         {
-            throw new NotImplementedException("Refund functionality is not implemented for Paybyrd credit card charges.");
+            string apiKey = GetApiKey(charge);
+            var response = await paybyrdApi.RefundPayment(apiKey, new RefundPaymentRequest
+            {
+                TransactionId = charge.CardCharge!.TransactionId,
+                Amount = amount,
+                IsoAmount = (int)(amount * 100),
+            });
         }
 
         public async Task OnSetup(MerchantAcquirerConfiguration configuration)

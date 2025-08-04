@@ -19,8 +19,10 @@
             "InvalidEmail": "Email is invalid",
             "InvalidPassword": "The password is invalid.\nMinimum Lenght: {{requiredLength}} characters",
             "InvalidCredentials": "The provided credentials are invalid",
-            "Duplicate": "A entry with this value already exists"
+            "Duplicate": "A entry with this value already exists",
+            "NoBalance": "Your current balance is not enough to perform this refund."
         },
+        "refunded": "Refunded",
         "back": "Back",
         "type": "Type",
         "id": "Id",
@@ -557,7 +559,10 @@
             "title": "Transactions",
             "syncingError": "Syncing error",
             "noDocumentAvailable": "There are no documents available for this transaction",
-            "downloadDocument": "Download documents"
+            "downloadDocument": "Download documents",
+            "refundNotSupported": "Refund not supported by integration",
+            "refundSuccess": "Refund issued successfully!",
+            "refundFailed": "Refund failed: {{reason}}"
         },
         "posIntegrations": {
             "title": "PoS Integrations",

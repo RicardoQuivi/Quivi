@@ -6,12 +6,12 @@ using Quivi.Infrastructure.Abstractions.Services.Charges;
 
 namespace Quivi.Application.Services.Acquirers
 {
-    public class CashAcquirerProcessingStrategy : IAcquirerProcessingStrategy
+    public class CashAcquirerProcessor : IAcquirerProcessor
     {
         private readonly IHostEnvironment hostEnvironment;
         private readonly IIdConverter idConverter;
 
-        public CashAcquirerProcessingStrategy(IHostEnvironment hostEnvironment, IIdConverter idConverter)
+        public CashAcquirerProcessor(IHostEnvironment hostEnvironment, IIdConverter idConverter)
         {
             this.hostEnvironment = hostEnvironment;
             this.idConverter = idConverter;

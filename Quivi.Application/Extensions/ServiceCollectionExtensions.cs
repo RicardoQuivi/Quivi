@@ -383,11 +383,11 @@ namespace Quivi.Application.Extensions
 
         private static IServiceCollection RegisterChargeMethods(this IServiceCollection serviceCollection)
         {
-            serviceCollection.RegisterSingleton<CashAcquirerProcessingStrategy>();
-            serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessingStrategy>();
-            serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessingStrategy>>(p => [
-                p.GetService<CashAcquirerProcessingStrategy>()!,
-                p.GetService<PaybyrdCreditCardAcquirerProcessingStrategy>()!,
+            serviceCollection.RegisterSingleton<CashAcquirerProcessor>();
+            serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessor>();
+            serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessor>>(p => [
+                p.GetService<CashAcquirerProcessor>()!,
+                p.GetService<PaybyrdCreditCardAcquirerProcessor>()!,
             ]);
             return serviceCollection;
         }

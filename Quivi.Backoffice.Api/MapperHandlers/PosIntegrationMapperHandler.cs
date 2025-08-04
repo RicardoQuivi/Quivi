@@ -41,6 +41,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                     AllowsEscPosInvoices = settings?.AllowsEscPosInvoices ?? false,
                     AllowsAddingItemsToSession = settings?.AllowsAddingItemsToSession ?? false,
                     AllowsRemovingItemsFromSession = settings?.AllowsRemovingItemsFromSession ?? false,
+                    AllowsRefunds = true,
                 },
             };
         }

@@ -19,8 +19,10 @@
             "InvalidEmail": "O email é inválido",
             "InvalidPassword": "A password é inválida.\nTamanho mínimo: {{requiredLength}} caractéres",
             "InvalidCredentials": "As credenciais introduzidas são inválidas",
-            "Duplicate": "Já existe um registo com este valor"
+            "Duplicate": "Já existe um registo com este valor",
+            "NoBalance": "O seu balanço atual não é suficiente para proceder a esta operação."
         },
+        "refunded": "Reembolso",
         "back": "Voltar",
         "type": "Tipo",
         "id": "Id",
@@ -557,7 +559,10 @@
             "title": "Transações",
             "syncingError": "Erro ao sincronizar",
             "noDocumentAvailable": "Não existem documentos disponíveis para esta transação",
-            "downloadDocument": "Descarregar documentos"
+            "downloadDocument": "Descarregar documentos",
+            "refundNotSupported": "A devolução não é suportada pela integração",
+            "refundSuccess": "Devolução efetuada com sucesso!",
+            "refundFailed": "Devolução falhou: {{reason}}"
         },
         "posIntegrations": {
             "title": "Integrações de PoS",

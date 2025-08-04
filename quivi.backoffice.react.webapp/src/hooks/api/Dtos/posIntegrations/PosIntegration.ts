@@ -3,6 +3,7 @@ export interface IntegrationFeatures {
     readonly allowsOpeningSessions: boolean;
     readonly allowsAddingItemsToSession: boolean;
     readonly allowsRemovingItemsFromSession: boolean;
+    readonly allowsRefunds: boolean;
 }
 
 export enum IntegrationType {
