@@ -3,6 +3,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Guests.Api.Dtos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using System.Text.Json;
 
 namespace Quivi.Guests.Api.MapperHandlers
 {
@@ -47,7 +48,17 @@ namespace Quivi.Guests.Api.MapperHandlers
                 CapturedDate = model.CaptureDate.HasValue ? new DateTimeOffset(model.CaptureDate.Value, TimeSpan.Zero) : null,
                 LastModified = new DateTimeOffset(model.ModifiedDate, TimeSpan.Zero),
                 SyncStatus = state,
+                AdditionalData = Map(model.Charge!.AcquirerCharge!),
             };
+        }
+
+        private object? Map(AcquirerCharge acquirerCharge)
+        {
+            if (string.IsNullOrWhiteSpace(acquirerCharge.AdditionalJsonContext))
+                return null;
+
+            var dict = JsonSerializer.Deserialize<object>(acquirerCharge.AdditionalJsonContext);
+            return dict;
         }
     }
 }

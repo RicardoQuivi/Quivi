@@ -1,5 +1,6 @@
 ﻿using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Merchants;
+using Quivi.Infrastructure.Abstractions.Services.Charges.Results;
 
 namespace Quivi.Infrastructure.Abstractions.Services.Charges
 {
@@ -8,11 +9,11 @@ namespace Quivi.Infrastructure.Abstractions.Services.Charges
         ChargePartner ChargePartner { get; }
         ChargeMethod ChargeMethod { get; }
 
-        bool IsPassthrough { get; }
+        Task<IInitiateResult> Initiate(Charge charge);
+        Task<IProcessResult> Process(Charge charge);
+        Task<IStatusResult> GetStatus(Charge charge);
 
         Task Refund(Charge charge, decimal amount);
-        Task<ProcessResult> Process(Charge charge);
-        Task<PaymentStatus> GetStatus(Charge charge);
 
         Task OnSetup(MerchantAcquirerConfiguration configuration);
         Task OnTearDown(MerchantAcquirerConfiguration configuration);

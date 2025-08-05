@@ -1,4 +1,4 @@
-﻿namespace Quivi.Application.Pos.Items
+﻿namespace Quivi.Infrastructure.Abstractions.Pos
 {
     public record BaseSessionItem
     {

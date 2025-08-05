@@ -1,6 +1,5 @@
 ﻿using Quivi.Application.Commands.Sessions;
 using Quivi.Application.Extensions.Pos;
-using Quivi.Application.Pos.Items;
 using Quivi.Application.Queries.PosIntegrations;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
@@ -62,20 +61,20 @@ namespace Quivi.Application.Commands.PosCharges
                 return null;
             }
             var session = await GetAndValidatePaymentWithSession(command);
-            if(session == null)
+            if (session == null)
             {
                 command.OnNoActiveSession();
                 return null;
             }
 
-            if(ValidateSessionItems(command, session) == false)
+            if (ValidateSessionItems(command, session) == false)
             {
                 command.OnInvalidItems();
                 return null;
             }
 
             var posCharge = await CreatePosCharge(command, session);
-            if(posCharge == null)
+            if (posCharge == null)
             {
                 command.OnInvalidItems();
                 return null;
@@ -115,7 +114,7 @@ namespace Quivi.Application.Commands.PosCharges
             var settings = strategy?.ParseSyncSettings(integration);
             if (settings?.AllowsPayments != true)
                 return null;
-            
+
             return integration;
         }
 
@@ -213,7 +212,7 @@ namespace Quivi.Application.Commands.PosCharges
                 ModifiedDate = now,
             };
 
-            if(AddPaymentTypeInformation(command, session, posCharge, now) == false)
+            if (AddPaymentTypeInformation(command, session, posCharge, now) == false)
                 return null;
 
             repository.Add(posCharge);
@@ -245,13 +244,13 @@ namespace Quivi.Application.Commands.PosCharges
                                                                         .ToDictionary(s => s.Key, s => s.AsEnumerable(), comparer);
 
             posCharge.PosChargeSelectedMenuItems = new List<PosChargeSelectedMenuItem>();
-            foreach(var payingItem in command.Items)
+            foreach (var payingItem in command.Items)
             {
                 var quantity = payingItem.Quantity;
                 if (allAvailableItems.TryGetValue(payingItem, out var availableItems) == false)
                     return false;
 
-                foreach(var availableItem in availableItems)
+                foreach (var availableItem in availableItems)
                 {
                     var availableQuantity = availableItem.OrderMenuItem.Quantity - availableItem.PaidQuantity;
                     decimal quantityToTake = quantity - availableQuantity >= 0 ? availableQuantity : quantity;

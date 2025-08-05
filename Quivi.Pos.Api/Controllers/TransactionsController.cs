@@ -6,6 +6,7 @@ using Quivi.Application.Queries.PosCharges;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Validations;
 using Quivi.Pos.Api.Dtos.Requests.Transactions;
@@ -75,13 +76,13 @@ namespace Quivi.Pos.Api.Controllers
                 Observations = request.Observations,
                 Amount = request.Amount,
                 Tip = request.Tip,
-                Items = request.Items?.Select(s => new Application.Pos.Items.SessionItem
+                Items = request.Items?.Select(s => new SessionItem
                 {
                     MenuItemId = idConverter.FromPublicId(s.MenuItemId),
                     Discount = s.DiscountPercentage,
                     Price = s.OriginalPrice,
                     Quantity = s.Quantity,
-                    Extras = s.Extras.Select(e => new Application.Pos.Items.BaseSessionItem
+                    Extras = s.Extras.Select(e => new BaseSessionItem
                     {
                         MenuItemId = idConverter.FromPublicId(e.MenuItemId),
                         Price = e.OriginalPrice,

@@ -9,7 +9,6 @@ using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
 using Quivi.Infrastructure.Abstractions.Services;
 using Quivi.Infrastructure.Extensions;
-using Quivi.Infrastructure.Pos.Facturalusa.Models.Items;
 using gatewayInvoiving = Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using gatewayModels = Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
 
@@ -104,21 +103,21 @@ namespace Quivi.Application.Commands.Pos.Invoicing
         private async Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
         {
             var groupedItem = command.InvoiceItems.GroupBy(i => new
-                                                                {
-                                                                    i.MenuItemId,
-                                                                    i.Name,
-                                                                    i.UnitPrice,
-                                                                    i.VatRate,
-                                                                    i.DiscountPercentage,
-                                                                }).Select(g => new AQuiviSyncStrategy.InvoiceItem
-                                                                {
-                                                                    MenuItemId = g.Key.MenuItemId,
-                                                                    Name = g.Key.Name,
-                                                                    UnitPrice = g.Key.UnitPrice,
-                                                                    VatRate = g.Key.VatRate,
-                                                                    DiscountPercentage = g.Key.DiscountPercentage,
-                                                                    Quantity = g.Sum(x => x.Quantity),
-                                                                })
+            {
+                i.MenuItemId,
+                i.Name,
+                i.UnitPrice,
+                i.VatRate,
+                i.DiscountPercentage,
+            }).Select(g => new AQuiviSyncStrategy.InvoiceItem
+            {
+                MenuItemId = g.Key.MenuItemId,
+                Name = g.Key.Name,
+                UnitPrice = g.Key.UnitPrice,
+                VatRate = g.Key.VatRate,
+                DiscountPercentage = g.Key.DiscountPercentage,
+                Quantity = g.Sum(x => x.Quantity),
+            })
                                                                 .ToList();
 
             var invoiceItems = groupedItem.Select(g => new InvoiceItem(g.Type)

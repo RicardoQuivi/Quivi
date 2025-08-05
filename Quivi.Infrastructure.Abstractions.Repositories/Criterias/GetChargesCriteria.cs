@@ -23,7 +23,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public bool IncludeDepositConsumer { get; init; }
         public bool IncludeChainedCharge { get; init; }
         public bool IncludeDepositDepositCapturePerson { get; init; }
-        public bool IncludeCardCharge { get; init; }
+        public bool IncludeAcquirerCharge { get; init; }
         public bool IncludeMerchantAcquirerConfiguration { get; init; }
 
         public int PageIndex { get; init; }

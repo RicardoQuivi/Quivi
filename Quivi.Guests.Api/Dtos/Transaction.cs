@@ -15,5 +15,6 @@ namespace Quivi.Guests.Api.Dtos
         public TransactionStatus Status { get; init; }
         public ChargeMethod Method { get; init; }
         public SyncStatus SyncStatus { get; init; }
+        public object? AdditionalData { get; init; }
     }
 }

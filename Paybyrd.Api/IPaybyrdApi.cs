@@ -9,5 +9,8 @@ namespace Paybyrd.Api
         Task<CapturePaymentTransactionResponse> CapturePayment(string apiKey, CapturePaymentTransactionRequest request);
         Task<GetPaymentResponse> GetPayment(string apiKey, GetPaymentRequest request);
         Task<RefundPaymentResponse> RefundPayment(string apiKey, RefundPaymentRequest request);
+
+        Task<CreateOrderResponse> CreateOrder(string apiKey, CreateOrderRequest request);
+        Task<GetOrderResponse> GetOrder(string apiKey, GetOrderRequest request);
     }
 }

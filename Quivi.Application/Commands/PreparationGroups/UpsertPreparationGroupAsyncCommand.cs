@@ -1,6 +1,4 @@
-﻿using Hangfire.Server;
-using Quivi.Application.Extensions.Pos;
-using Quivi.Application.Pos.Items;
+﻿using Quivi.Application.Extensions.Pos;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
@@ -8,6 +6,7 @@ using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data;
 using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
 using Quivi.Infrastructure.Abstractions.Events.Data.PreparationGroups;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 

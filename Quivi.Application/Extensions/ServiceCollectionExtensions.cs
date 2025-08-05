@@ -12,6 +12,8 @@ using Quivi.Application.Pos;
 using Quivi.Application.Pos.Invoicing;
 using Quivi.Application.Services;
 using Quivi.Application.Services.Acquirers;
+using Quivi.Application.Services.Acquirers.Cash;
+using Quivi.Application.Services.Acquirers.Paybyrd;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Domain.Repositories.EntityFramework.Identity;
 using Quivi.Infrastructure;
@@ -177,7 +179,12 @@ namespace Quivi.Application.Extensions
             });
 
             serviceCollection.RegisterChargeMethods();
-            serviceCollection.RegisterScoped<IChargeProcessor, ChargeProcessor>();
+
+            //Register Acquirer Charge Processor and dependencies
+            serviceCollection.RegisterScoped<AcquirerCreateChargeProcessor>();
+            serviceCollection.RegisterScoped<AcquirerChargeStatusProcessor>();
+            serviceCollection.RegisterScoped<AcquirerRefundChargeProcessor>();
+            serviceCollection.RegisterScoped<IAcquirerChargeProcessor, AcquirerChargeProcessor>();
 
             serviceCollection.RegisterScoped<IEscPosPrinterService, EscPosPrinterService>();
             serviceCollection.RegisterSingleton<IEmailEngine, MjmlEmailEngine>();
@@ -385,9 +392,11 @@ namespace Quivi.Application.Extensions
         {
             serviceCollection.RegisterSingleton<CashAcquirerProcessor>();
             serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessor>();
+            serviceCollection.RegisterScoped<PaybyrdMbWayAcquirerProcessor>();
             serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessor>>(p => [
                 p.GetService<CashAcquirerProcessor>()!,
                 p.GetService<PaybyrdCreditCardAcquirerProcessor>()!,
+                p.GetService<PaybyrdMbWayAcquirerProcessor>()!,
             ]);
             return serviceCollection;
         }

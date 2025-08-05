@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Quivi.Application.Commands.PosCharges;
 using Quivi.Application.Queries.MerchantInvoiceDocuments;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Charges;
@@ -12,6 +11,7 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Services.Charges;
+using Quivi.Infrastructure.Abstractions.Services.Charges.Parameters;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Guests.Api.Controllers
@@ -25,14 +25,14 @@ namespace Quivi.Guests.Api.Controllers
         private readonly IMapper mapper;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IIdConverter idConverter;
-        private readonly IChargeProcessor chargeProcessor;
+        private readonly IAcquirerChargeProcessor chargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                        IMapper mapper,
                                        IIdConverter idConverter,
                                        ICommandProcessor commandProcessor,
                                        IDateTimeProvider dateTimeProvider,
-                                       IChargeProcessor chargeProcessor)
+                                       IAcquirerChargeProcessor chargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.idConverter = idConverter;
@@ -63,6 +63,7 @@ namespace Quivi.Guests.Api.Controllers
                 IsCaptured = string.IsNullOrWhiteSpace(request.SessionId) == false || string.IsNullOrWhiteSpace(request.OrderId) == false ? true : null,
                 IncludePosChargeSyncAttempts = true,
                 IncludeCharge = true,
+                IncludeAcquirerCharge = true,
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
             });
@@ -102,7 +103,7 @@ namespace Quivi.Guests.Api.Controllers
             var language = Request.Headers.AcceptLanguage.ToString();
 
             using var validator = new ModelStateValidator<CreateTransactionRequest, ValidationError>(request);
-            var posCharge = await commandProcessor.Execute(new CreateGuestPosChargeAsyncCommand
+            var posCharge = await chargeProcessor.Create(new CreateParameters
             {
                 ChannelId = idConverter.FromPublicId(request.ChannelId),
                 MerchantAcquirerConfigurationId = idConverter.FromPublicId(request.MerchantAcquirerConfigurationId),
@@ -112,15 +113,15 @@ namespace Quivi.Guests.Api.Controllers
                 Email = request.Email,
                 VatNumber = request.VatNumber,
                 SurchargeFeeOverride = null,
-                PayAtTheTableData = request.PayAtTheTableData != null ? new CreateGuestPosChargeAsyncCommand.PayAtTheTable
+                PayAtTheTableData = request.PayAtTheTableData != null ? new CreateParameters.PayAtTheTable
                 {
-                    Items = request.PayAtTheTableData.Items?.Select(s => new Application.Pos.Items.SessionItem
+                    Items = request.PayAtTheTableData.Items?.Select(s => new Infrastructure.Abstractions.Pos.SessionItem
                     {
                         MenuItemId = idConverter.FromPublicId(s.MenuItemId),
                         Discount = s.DiscountPercentage,
                         Price = s.OriginalPrice,
                         Quantity = s.Quantity,
-                        Extras = s.Extras.Select(e => new Application.Pos.Items.BaseSessionItem
+                        Extras = s.Extras.Select(e => new Infrastructure.Abstractions.Pos.BaseSessionItem
                         {
                             MenuItemId = idConverter.FromPublicId(e.MenuItemId),
                             Price = e.OriginalPrice,
@@ -128,12 +129,11 @@ namespace Quivi.Guests.Api.Controllers
                         }),
                     }),
                 } : null,
-                OrderAndPayData = request.OrderAndPayData != null ? new CreateGuestPosChargeAsyncCommand.OrderAndPay
+                OrderAndPayData = request.OrderAndPayData != null ? new CreateParameters.OrderAndPay
                 {
                     OrderId = idConverter.FromPublicId(request.OrderAndPayData.OrderId),
                 } : null,
                 UserLanguageIso = string.IsNullOrWhiteSpace(language) ? "pt-PT" : language,
-
                 OnInvalidAdditionalData = () =>
                 {
                     validator.AddError(m => m.PayAtTheTableData, ValidationError.Invalid);
@@ -157,31 +157,23 @@ namespace Quivi.Guests.Api.Controllers
         [HttpPut("{id}/" + nameof(ChargeMethod.Cash))]
         public Task<PutTransactionResponse> Cash(string id, [FromBody] PutCashTransactionRequest request) => StartCharge(id);
 
-        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/{method}")]
-        public Task<PutTransactionResponse> Paybyrd(string id, ChargeMethod method, [FromBody] PutPaybyrdTransactionRequest request) => StartCharge(id, charge =>
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/CreditCard")]
+        public Task<PutTransactionResponse> Paybyrd(string id, ChargeMethod method, [FromBody] PutPaybyrdCreditCardTransactionRequest request) => StartCharge(id, () => new
         {
-            if (charge.CardCharge != null)
-                return;
-
-            var now = dateTimeProvider.GetUtcNow();
-            charge.CardCharge = new CardCharge
-            {
-                FormContext = request.RedirectUrl ?? string.Empty,
-                AuthorizationToken = request.TokenId,
-                TransactionId = string.Empty,
-
-                Charge = charge,
-                ChargeId = charge.Id,
-
-                CreatedDate = now,
-                ModifiedDate = now,
-            };
+            RedirectUrl = request.RedirectUrl,
+            TokenId = request.TokenId,
         });
 
-        private async Task<PutTransactionResponse> StartCharge(string publicId, Action<Charge>? beforeProcessing = null)
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/MbWay")]
+        public Task<PutTransactionResponse> PaybyrdMbWay(string id, ChargeMethod method, [FromBody] PutPaybyrdMbWayTransactionRequest request) => StartCharge(id, () =>
         {
-            Action<Charge> defaultAction = c => { };
-            var result = await chargeProcessor.StartProcessing(idConverter.FromPublicId(publicId), beforeProcessing ?? defaultAction);
+            return null;
+        });
+
+        private async Task<PutTransactionResponse> StartCharge(string publicId, Func<object?>? beforeProcessing = null)
+        {
+            Func<object?> defaultAction = () => null;
+            var result = await chargeProcessor.Process(idConverter.FromPublicId(publicId), beforeProcessing ?? defaultAction);
             return new PutTransactionResponse
             {
                 Data = mapper.Map<Dtos.Transaction>(result.Charge?.PosCharge),

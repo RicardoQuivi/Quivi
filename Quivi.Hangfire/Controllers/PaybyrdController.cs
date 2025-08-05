@@ -9,10 +9,10 @@ namespace Quivi.Hangfire.Controllers
     [ApiController]
     public class PaybyrdController : ControllerBase
     {
-        private readonly IChargeProcessor chargeProcessor;
+        private readonly IAcquirerChargeProcessor chargeProcessor;
         private readonly IIdConverter idConverter;
 
-        public PaybyrdController(IIdConverter idConverter, IChargeProcessor chargeProcessor)
+        public PaybyrdController(IIdConverter idConverter, IAcquirerChargeProcessor chargeProcessor)
         {
             this.idConverter = idConverter;
             this.chargeProcessor = chargeProcessor;
@@ -28,13 +28,17 @@ namespace Quivi.Hangfire.Controllers
                 EventType.Transaction.Payment.Pending,
                 EventType.Transaction.Payment.Canceled,
                 EventType.Transaction.Payment.Error,
+
+                EventType.Order.Paid,
+                EventType.Order.Canceled,
+                EventType.Order.Expired,
+                EventType.Order.TemporaryFailed,
             };
             if (allowedEvents.Contains(request.Event) && request.Content is Payment p)
             {
                 var chargeId = idConverter.FromPublicId(p.OrderRef);
                 await chargeProcessor.CheckAndUpdateState(chargeId);
             }
-
             return Ok();
         }
     }

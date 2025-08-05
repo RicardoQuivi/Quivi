@@ -1,4 +1,4 @@
-﻿namespace Quivi.Infrastructure.Abstractions.Services.Charges
+﻿namespace Quivi.Infrastructure.Abstractions.Services.Charges.Parameters
 {
     public class RefundParameters
     {

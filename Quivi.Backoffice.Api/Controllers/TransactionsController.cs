@@ -9,6 +9,7 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Services.Charges;
+using Quivi.Infrastructure.Abstractions.Services.Charges.Parameters;
 using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Validations;
 
@@ -21,12 +22,12 @@ namespace Quivi.Backoffice.Api.Controllers
         private readonly IQueryProcessor queryProcessor;
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
-        private readonly IChargeProcessor chargeProcessor;
+        private readonly IAcquirerChargeProcessor chargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                         IMapper mapper,
                                         IIdConverter idConverter,
-                                        IChargeProcessor chargeProcessor)
+                                        IAcquirerChargeProcessor chargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.mapper = mapper;

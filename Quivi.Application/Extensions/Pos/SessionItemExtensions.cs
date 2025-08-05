@@ -1,5 +1,5 @@
-﻿using Quivi.Application.Pos.Items;
-using Quivi.Domain.Entities.Pos;
+﻿using Quivi.Domain.Entities.Pos;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Extensions.Pos
@@ -9,7 +9,8 @@ namespace Quivi.Application.Extensions.Pos
         public static List<SessionItem> Compress(IEnumerable<SessionItem> items)
         {
             var compressor = new SessionItemComparer();
-            return items.GroupBy(g => g, compressor).Select(t => {
+            return items.GroupBy(g => g, compressor).Select(t =>
+            {
                 var first = t.First();
                 return new SessionItem
                 {
@@ -101,7 +102,8 @@ namespace Quivi.Application.Extensions.Pos
             {
                 SessionItem = converter(s),
                 Item = s,
-            }).GroupBy(g => g, compressor).Select(t => {
+            }).GroupBy(g => g, compressor).Select(t =>
+            {
                 var first = t.First();
                 var firstSessionItem = first.SessionItem;
                 var firstItem = first.Item;

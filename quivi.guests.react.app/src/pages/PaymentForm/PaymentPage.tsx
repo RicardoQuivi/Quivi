@@ -9,6 +9,7 @@ import { ChargeMethod } from "../../hooks/api/Dtos/ChargeMethod";
 import { TransactionStatus } from "../../hooks/api/Dtos/transactions/TransactionStatus";
 import { CashPaymentPage } from "./Methods/CashPaymentPage";
 import { PaybyrdCreditCardPaymentPage } from "./Methods/Paybyrd/PaybyrdCreditCardPaymentPage";
+import { PaybyrdMbWayPaymentPage } from "./Methods/Paybyrd/PaybyrdMbWayPaymentPage";
 
 interface Props {
     readonly onSuccess?: (c: Transaction) => any;
@@ -77,10 +78,6 @@ export const PaymentPage = (props: Props) => {
         </Page>
     }
 
-    // if(transaction.method == ChargeMethod.Wallet) {
-    //     return <WalletPaymentPage chargeData={transactionsQuery.data} onSuccess={onInternalSuccess} onFail={onInternalFail}/>;
-    // }
-
     if(transaction.method == ChargeMethod.Cash) {
         return <CashPaymentPage
             transaction={transaction}
@@ -90,25 +87,23 @@ export const PaymentPage = (props: Props) => {
         />;
     }
 
-    // if(transaction.method == ChargeMethod.TicketRestaurantMobile) {
-    //     return <TicketRestaurantMobilePaymentPage chargeData={transactionsQuery.data} />;
-    // }
+    if(transaction.method == ChargeMethod.MbWay) {
+        return <PaybyrdMbWayPaymentPage
+            transaction={transaction}
+            nextTransaction={nextTransaction}
+            onSuccess={onInternalSuccess}
+            onFail={onInternalFail}
+        />
+    }
 
-    // if(transaction.method == ChargeMethod.MbWay) {
-    //     return <MbWayPaymentPage chargeData={transactionsQuery.data} />;
-    // }
-
-    if(transaction.method == ChargeMethod.CreditCard) {
+    if( transaction.method == ChargeMethod.CreditCard) {
          return <PaybyrdCreditCardPaymentPage
             transaction={transaction}
             nextTransaction={nextTransaction}
             onSuccess={onInternalSuccess}
             onFail={onInternalFail}
         />
-    } 
-    
-    // if(transaction.method == ChargeMethod.PaymentTerminal) {
-    //     return <TerminalPaymentPage chargeData={transactionsQuery.data} />;
-    // }
+    }
+
     return <></>
 }

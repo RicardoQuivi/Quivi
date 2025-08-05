@@ -21,12 +21,9 @@ namespace Quivi.Domain.Entities.Charges
         public Charge? ChainedCharge { get; set; }
 
         public Deposit? Deposit { get; set; }
-        public CardCharge? CardCharge { get; set; }
-        public TerminalCharge? TerminalCharge { get; set; }
         public PosCharge? PosCharge { get; set; }
-        public MbWayCharge? MbWayCharge { get; set; }
-        public TicketMobileCharge? TicketMobileCharge { get; set; }
         public MerchantCustomCharge? MerchantCustomCharge { get; set; }
+        public AcquirerCharge? AcquirerCharge { get; set; }
         public ICollection<MerchantInvoiceDocument>? InvoiceDocuments { get; set; }
         #endregion
     }

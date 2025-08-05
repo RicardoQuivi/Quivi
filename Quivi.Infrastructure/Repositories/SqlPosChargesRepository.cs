@@ -32,6 +32,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeCharge)
                 query = query.Include(q => q.Charge);
 
+            if (criteria.IncludeAcquirerCharge)
+                query = query.Include(q => q.Charge!).ThenInclude(q => q.AcquirerCharge);
+
             if (criteria.IncludePosChargeSyncAttempts)
                 query = query.Include(q => q.PosChargeSyncAttempts);
 
@@ -62,7 +65,7 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IsCaptured.HasValue)
                 query = query.Where(q => q.CaptureDate.HasValue == criteria.IsCaptured.Value);
 
-            if(criteria.OrderIds != null)
+            if (criteria.OrderIds != null)
             {
                 var sessionIds = Context.Orders.Where(o => criteria.OrderIds.Contains(o.Id))
                                                 .Where(o => o.SessionId.HasValue)

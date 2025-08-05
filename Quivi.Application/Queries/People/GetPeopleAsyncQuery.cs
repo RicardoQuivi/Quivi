@@ -15,6 +15,7 @@ namespace Quivi.Application.Queries.People
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Emails { get; init; }
         public IEnumerable<BasicAuthClientType>? ClientTypes { get; init; }
+        public IEnumerable<PersonType>? PersonTypes { get; init; }
         public bool? IsAnonymous { get; init; }
     }
 
@@ -33,6 +34,7 @@ namespace Quivi.Application.Queries.People
             {
                 MerchantIds = query.MerchantIds,
                 SubMerchantIds = query.SubMerchantIds,
+                PersonTypes = query.PersonTypes,
                 ChannelIds = query.ChannelIds,
                 Emails = query.Emails,
                 Ids = query.Ids,

@@ -2,13 +2,13 @@
 using Quivi.Application.Commands.Sessions;
 using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos;
-using Quivi.Application.Pos.Items;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Jobs;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories;
@@ -151,7 +151,7 @@ namespace Quivi.Application.Commands.Pos
 
             var orderMenuItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).ToDictionary(e => e.Id, e => e);
             posCharge.PosChargeInvoiceItems = new List<PosChargeInvoiceItem>();
-            foreach(var s in payingItems)
+            foreach (var s in payingItems)
             {
                 var item = new PosChargeInvoiceItem
                 {
@@ -162,7 +162,7 @@ namespace Quivi.Application.Commands.Pos
                     ModifiedDate = now,
                     ChildrenPosChargeInvoiceItems = new List<PosChargeInvoiceItem>(),
                 };
-                foreach(var e in s.PayingItem.Modifiers!)
+                foreach (var e in s.PayingItem.Modifiers!)
                 {
                     var extra = new PosChargeInvoiceItem
                     {
@@ -217,7 +217,7 @@ namespace Quivi.Application.Commands.Pos
             {
                 if (pendingItem.SessionItem.GetUnitPrice(maxDecimalPlaces) > 0)
                 {
-                    foreach(var item in pendingItem.Items)
+                    foreach (var item in pendingItem.Items)
                         availableItemsDictionary.Add(item.OrderMenuItem.Id, pendingItem);
                     continue;
                 }

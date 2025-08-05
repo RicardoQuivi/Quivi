@@ -55,8 +55,8 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeDepositDepositCapturePerson)
                 query = query.Include(q => q.Deposit!).ThenInclude(q => q.DepositCapture!).ThenInclude(q => q.Person);
 
-            if (criteria.IncludeCardCharge)
-                query = query.Include(q => q.CardCharge);
+            if (criteria.IncludeAcquirerCharge)
+                query = query.Include(q => q.AcquirerCharge);
 
             if (criteria.IncludeMerchantAcquirerConfiguration)
                 query = query.Include(q => q.MerchantAcquirerConfiguration);

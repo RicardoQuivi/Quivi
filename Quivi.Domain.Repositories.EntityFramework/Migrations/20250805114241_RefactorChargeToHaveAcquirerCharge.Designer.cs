@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Quivi.Domain.Repositories.EntityFramework;
 
@@ -11,9 +12,11 @@ using Quivi.Domain.Repositories.EntityFramework;
 namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 {
     [DbContext(typeof(QuiviContext))]
-    partial class QuiviContextModelSnapshot : ModelSnapshot
+    [Migration("20250805114241_RefactorChargeToHaveAcquirerCharge")]
+    partial class RefactorChargeToHaveAcquirerCharge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

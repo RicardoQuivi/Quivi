@@ -109,7 +109,7 @@ export const PaybyrdCreditCardPaymentPage : React.FC<Props> = ({
                 primaryButton={true}
                 onClick={submit}
                 style={{marginTop: "1rem"}}
-                isLoading={isProcessingPayment || cc == undefined}
+                isLoading={isProcessingPayment || cc == undefined || transaction.status == TransactionStatus.Processing}
             >
                 {t("paymentMethods.confirm")}
             </LoadingButton>
@@ -117,9 +117,10 @@ export const PaybyrdCreditCardPaymentPage : React.FC<Props> = ({
         </ButtonsSection>
     }
 
-    if(transaction.method != ChargeMethod.CreditCard)
+    if(transaction.method != ChargeMethod.CreditCard) {
         return <></>
-
+    }
+    
     return (
         <GenericPaymentPage 
             transaction={transaction}

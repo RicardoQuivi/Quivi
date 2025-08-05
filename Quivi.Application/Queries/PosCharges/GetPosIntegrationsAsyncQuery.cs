@@ -33,6 +33,7 @@ namespace Quivi.Application.Queries.PosCharges
         public bool IncludeMerchantCustomChargeCustomChargeMethod { get; init; }
         public bool IncludeMerchant { get; init; }
         public bool IncludeCharge { get; init; }
+        public bool IncludeAcquirerCharge { get; init; }
     }
 
     public class GetPosChargesAsyncQueryHandler : APagedQueryAsyncHandler<GetPosChargesAsyncQuery, PosCharge>
@@ -73,6 +74,7 @@ namespace Quivi.Application.Queries.PosCharges
                 IncludeMerchantCustomCharge = query.IncludeMerchantCustomCharge,
                 IncludeMerchantCustomChargeCustomChargeMethod = query.IncludeMerchantCustomChargeCustomChargeMethod,
                 IncludeCharge = query.IncludeCharge,
+                IncludeAcquirerCharge = query.IncludeAcquirerCharge,
 
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

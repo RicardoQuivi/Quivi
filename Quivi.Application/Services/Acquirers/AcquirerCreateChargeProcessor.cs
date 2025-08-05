@@ -2,7 +2,6 @@
 using Quivi.Application.Commands.Users;
 using Quivi.Application.Extensions;
 using Quivi.Application.Extensions.Pos;
-using Quivi.Application.Pos.Items;
 using Quivi.Application.Queries.Channels;
 using Quivi.Application.Queries.MerchantAcquirerConfigurations;
 using Quivi.Application.Queries.Merchants;
@@ -18,71 +17,17 @@ using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Repositories;
+using Quivi.Infrastructure.Abstractions.Services.Charges;
+using Quivi.Infrastructure.Abstractions.Services.Charges.Parameters;
 using System.Globalization;
+using System.Text.Json;
 
-namespace Quivi.Application.Commands.PosCharges
+namespace Quivi.Application.Services.Acquirers
 {
-    public class CreateGuestPosChargeAsyncCommand : ICommand<Task<PosCharge?>>
+    public class AcquirerCreateChargeProcessor
     {
-        public class PayAtTheTable
-        {
-            public IEnumerable<SessionItem>? Items { get; init; }
-        }
-
-        public class OrderAndPay
-        {
-            public int OrderId { get; init; }
-        }
-
-        public int ChannelId { get; init; }
-        public int MerchantAcquirerConfigurationId { get; init; }
-        public int? ConsumerPersonId { get; init; }
-        public string? VatNumber { get; init; }
-        public string? Email { get; init; }
-        public decimal Amount { get; init; }
-        public decimal Tip { get; init; }
-        public PayAtTheTable? PayAtTheTableData { get; init; }
-        public OrderAndPay? OrderAndPayData { get; init; }
-
-
-        public ChargeMethod? SurchargeFeeOverride { get; init; }
-        public required string UserLanguageIso { get; init; }
-
-        public required Action OnInvalidAdditionalData { get; init; }
-        public required Action OnInvalidTip { get; init; }
-        public required Action OnInvalidAmount { get; init; }
-        public required Action OnInvalidChannel { get; init; }
-        public required Action OnInvalidMerchantAcquirerConfiguration { get; init; }
-        public required Action OnNoOpenSession { get; init; }
-    }
-
-    public class CreateGuestPosChargeAsyncCommandHandler : ICommandHandler<CreateGuestPosChargeAsyncCommand, Task<PosCharge?>>
-    {
-        private readonly IQueryProcessor queryProcessor;
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IPosChargesRepository repository;
-        private readonly IDateTimeProvider dateTimeProvider;
-        private readonly ICommandProcessor commandProcessor;
-        private readonly IRandomGenerator randomGenerator;
-        private readonly IEventService eventService;
-
-        public CreateGuestPosChargeAsyncCommandHandler(IQueryProcessor queryProcessor,
-                                                        IUnitOfWork unitOfWork,
-                                                        IDateTimeProvider dateTimeProvider,
-                                                        ICommandProcessor commandProcessor,
-                                                        IRandomGenerator randomGenerator,
-                                                        IEventService eventService)
-        {
-            this.queryProcessor = queryProcessor;
-            this.unitOfWork = unitOfWork;
-            this.repository = unitOfWork.PosCharges;
-            this.dateTimeProvider = dateTimeProvider;
-            this.commandProcessor = commandProcessor;
-            this.randomGenerator = randomGenerator;
-            this.eventService = eventService;
-        }
-
         private record TransactionInfo
         {
             public required Merchant Merchant { get; init; }
@@ -98,7 +43,35 @@ namespace Quivi.Application.Commands.PosCharges
             public decimal TotalChargeAmount => Tip + BaseAmount + SurchargeAmount;
         }
 
-        public async Task<PosCharge?> Handle(CreateGuestPosChargeAsyncCommand command)
+        private readonly IQueryProcessor queryProcessor;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IPosChargesRepository repository;
+        private readonly IDateTimeProvider dateTimeProvider;
+        private readonly ICommandProcessor commandProcessor;
+        private readonly IEnumerable<IAcquirerProcessor> acquirerStrategies;
+        private readonly IRandomGenerator randomGenerator;
+        private readonly IEventService eventService;
+
+        public AcquirerCreateChargeProcessor(IQueryProcessor queryProcessor,
+                                                        IUnitOfWork unitOfWork,
+                                                        IDateTimeProvider dateTimeProvider,
+                                                        ICommandProcessor commandProcessor,
+                                                        IRandomGenerator randomGenerator,
+                                                        IEventService eventService,
+                                                        IEnumerable<IAcquirerProcessor> acquirerStrategies)
+        {
+            this.queryProcessor = queryProcessor;
+            this.unitOfWork = unitOfWork;
+            this.repository = unitOfWork.PosCharges;
+            this.dateTimeProvider = dateTimeProvider;
+            this.commandProcessor = commandProcessor;
+            this.randomGenerator = randomGenerator;
+            this.eventService = eventService;
+            this.acquirerStrategies = acquirerStrategies;
+        }
+
+
+        public async Task<PosCharge?> CreateAsync(CreateParameters command)
         {
             if (command.Tip < 0)
             {
@@ -134,7 +107,7 @@ namespace Quivi.Application.Commands.PosCharges
             if (posCharge == null)
                 return null;
 
-            await StartAcquiring(transactionInfo, posCharge);
+            await StartAcquiring(transactionInfo, posCharge.Charge!);
             await unitOfWork.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -149,7 +122,7 @@ namespace Quivi.Application.Commands.PosCharges
             return posCharge;
         }
 
-        private async Task<PosCharge?> Process(TransactionInfo transactionInfo, CreateGuestPosChargeAsyncCommand command)
+        private async Task<PosCharge?> Process(TransactionInfo transactionInfo, CreateParameters command)
         {
             int? sessionId = null;
             DateTime now = dateTimeProvider.GetUtcNow();
@@ -205,6 +178,13 @@ namespace Quivi.Application.Commands.PosCharges
                         CreatedDate = now,
                         ModifiedDate = now,
                     },
+                    AcquirerCharge = new AcquirerCharge
+                    {
+                        Culture = command.UserLanguageIso,
+
+                        CreatedDate = now,
+                        ModifiedDate = now,
+                    },
                     CreatedDate = now,
                     ModifiedDate = now,
                 },
@@ -224,7 +204,7 @@ namespace Quivi.Application.Commands.PosCharges
 
         private static decimal CalculateItemAmount(SessionItem item) => item.Quantity == 0 ? 0 : item.Quantity * item.GetUnitPrice();
 
-        private async Task<bool> AddPaymentTypeInformation(CreateGuestPosChargeAsyncCommand command, PosCharge posCharge, DateTime now)
+        private async Task<bool> AddPaymentTypeInformation(CreateParameters command, PosCharge posCharge, DateTime now)
         {
             if (command.OrderAndPayData == null && command.PayAtTheTableData == null) // Free payment, no check needed
                 return true;
@@ -334,7 +314,7 @@ namespace Quivi.Application.Commands.PosCharges
             return false;
         }
 
-        private static bool ValidateOrderAndPay(CreateGuestPosChargeAsyncCommand command, Order order)
+        private static bool ValidateOrderAndPay(CreateParameters command, Order order)
         {
             if (order.State != OrderState.Draft)
             {
@@ -358,7 +338,7 @@ namespace Quivi.Application.Commands.PosCharges
             return true;
         }
 
-        private bool ValidatePayAtTheTablePayment(CreateGuestPosChargeAsyncCommand command, Session session)
+        private bool ValidatePayAtTheTablePayment(CreateParameters command, Session session)
         {
             var items = session.Orders!.SelectMany(o => o.OrderMenuItems!).AsConvertedSessionItems();
             var totals = items.Aggregate((total: 0.0M, totalPaid: 0.0M), (r, item) =>
@@ -392,7 +372,7 @@ namespace Quivi.Application.Commands.PosCharges
             return true;
         }
 
-        private async Task<TransactionInfo?> GetTransactionInfo(CreateGuestPosChargeAsyncCommand command)
+        private async Task<TransactionInfo?> GetTransactionInfo(CreateParameters command)
         {
             var channelId = command.ChannelId;
             var tip = command.Tip;
@@ -475,14 +455,14 @@ namespace Quivi.Application.Commands.PosCharges
             };
         }
 
-        private bool SkipSurcharge(CreateGuestPosChargeAsyncCommand command, Merchant eatsMerchant)
+        private bool SkipSurcharge(CreateParameters command, Merchant eatsMerchant)
         {
             bool ignorePortuguese = eatsMerchant.DisabledFeatures.HasFlag(MerchantFeature.AllowSurchargeFeeForPT);
             bool userIsPortuguese = CultureInfo.GetCultureInfo(command.UserLanguageIso).TwoLetterISOLanguageName.Equals("pt", StringComparison.OrdinalIgnoreCase);
             return ignorePortuguese && userIsPortuguese;
         }
 
-        private async Task<Person> GetOrCreateConsumer(CreateGuestPosChargeAsyncCommand command)
+        private async Task<Person> GetOrCreateConsumer(CreateParameters command)
         {
             if (command.ConsumerPersonId.HasValue)
             {
@@ -543,15 +523,23 @@ namespace Quivi.Application.Commands.PosCharges
             }
         }
 
-        private Task StartAcquiring(TransactionInfo transactionInfo, PosCharge posCharge)
+        private async Task StartAcquiring(TransactionInfo transactionInfo, Charge charge)
         {
-            switch (transactionInfo.MerchantAcquirerConfiguration.ChargePartner)
+            var acquirerConfiguration = transactionInfo.MerchantAcquirerConfiguration;
+            var strategy = acquirerStrategies.FirstOrDefault(c => c.ChargePartner == acquirerConfiguration.ChargePartner && c.ChargeMethod == acquirerConfiguration.ChargeMethod);
+            if (strategy == null)
             {
-                case ChargePartner.Quivi: break;
-                case ChargePartner.Paybyrd: break;
-                default: throw new NotImplementedException();
+                charge!.Status = ChargeStatus.Failed;
+                return;
             }
-            return Task.CompletedTask;
+
+            var result = await strategy.Initiate(charge!);
+            if (string.IsNullOrWhiteSpace(result.GatewayId) == false)
+                charge.AcquirerCharge!.AcquirerId = result.GatewayId;
+            charge.AcquirerCharge!.AdditionalJsonContext = JsonSerializer.Serialize(result, result.GetType());
+
+            if (result.CaptureStarted)
+                charge.Status = ChargeStatus.Processing;
         }
     }
 }

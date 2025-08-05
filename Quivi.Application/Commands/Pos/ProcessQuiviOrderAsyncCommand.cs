@@ -1,7 +1,5 @@
 ﻿using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos;
-using Quivi.Application.Pos.Items;
-using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
@@ -11,6 +9,7 @@ using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
 using Quivi.Infrastructure.Abstractions.Events.Data.PosCharges;
 using Quivi.Infrastructure.Abstractions.Events.Data.Sessions;
 using Quivi.Infrastructure.Abstractions.Jobs;
+using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories;
@@ -85,29 +84,29 @@ namespace Quivi.Application.Commands.Pos
                         switch (fromState)
                         {
                             case OrderState.Draft:
-                            {
-                                if (order.ScheduledTo.HasValue)
-                                    return OrderState.ScheduledRequested;
+                                {
+                                    if (order.ScheduledTo.HasValue)
+                                        return OrderState.ScheduledRequested;
 
-                                if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoApproval))
-                                    return GetNextState(order, OrderState.Accepted);
+                                    if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoApproval))
+                                        return GetNextState(order, OrderState.Accepted);
 
-                                if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoApproval))
-                                    return GetNextState(order, OrderState.Accepted);
+                                    if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoApproval))
+                                        return GetNextState(order, OrderState.Accepted);
 
-                                return OrderState.PendingApproval;
-                            }
+                                    return OrderState.PendingApproval;
+                                }
                             case OrderState.PendingApproval:
                             case OrderState.Accepted:
-                            {
-                                if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoComplete))
-                                    return GetNextState(order, OrderState.Processing);
+                                {
+                                    if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PostPaidOrderingAutoComplete))
+                                        return GetNextState(order, OrderState.Processing);
 
-                                if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoComplete))
-                                    return GetNextState(order, OrderState.Processing);
+                                    if (order.PayLater == false && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.PrePaidOrderingAutoComplete))
+                                        return GetNextState(order, OrderState.Processing);
 
-                                return OrderState.Processing;
-                            }
+                                    return OrderState.Processing;
+                                }
                             case OrderState.Rejected: return OrderState.Rejected;
                             case OrderState.Processing: return OrderState.Completed;
                             case OrderState.Completed: return OrderState.Completed;
@@ -162,7 +161,7 @@ namespace Quivi.Application.Commands.Pos
         }
 
         protected override async Task Sync(ProcessQuiviOrderAsyncCommand command)
-        { 
+        {
             var orderDatas = await Initialize(command.OrderIds, command.ToFinalState ? ProcessingType.Complete : ProcessingType.Next, command.FromState);
             if (orderDatas.Any() == false)
                 return;
@@ -303,7 +302,7 @@ namespace Quivi.Application.Commands.Pos
                     MerchantId = o.MerchantId,
                 });
 
-            if(order.State == OrderState.PendingApproval)
+            if (order.State == OrderState.PendingApproval)
                 AddOrderEvent(order, o => new OnOrderPendingApprovalEvent
                 {
                     ChannelId = o.ChannelId,
@@ -328,7 +327,7 @@ namespace Quivi.Application.Commands.Pos
             }
 
             var items = order.OrderMenuItems!.AsSessionItems();
-            if(items.Any() == false)
+            if (items.Any() == false)
             {
                 order.State = OrderState.Completed;
                 return;

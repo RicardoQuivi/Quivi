@@ -80,7 +80,15 @@ export const GenericPaymentPage = ({
                     <p style={{marginBottom: "2rem"}}>{t("paymentMethods.expired")}</p>
                 </div>
             :
-                <section className="pay" style={{marginBottom: 0}}>
+                <section
+                    className="pay"
+                    style={{
+                        marginBottom: 0,
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
                     {children}
                 </section>
         }

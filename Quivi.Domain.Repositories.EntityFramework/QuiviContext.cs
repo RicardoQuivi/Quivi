@@ -284,27 +284,6 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .HasForeignKey<MerchantCustomCharge>(c => c.ChargeId); //TODO: Check
             });
 
-            modelBuilder.Entity<CardCharge>(entity =>
-            {
-                entity.HasKey(m => m.ChargeId);
-                entity.HasOne(m => m.Charge)
-                        .WithOne(m => m.CardCharge)
-                        .HasForeignKey<CardCharge>(m => m.ChargeId); //TODO: Check
-
-                entity.Property(m => m.AuthorizationToken).HasMaxLength(50).IsRequired();
-                entity.Property(m => m.TransactionId).HasMaxLength(50).IsRequired();
-                entity.Property(m => m.FormContext).IsRequired();
-            });
-
-            modelBuilder.Entity<TerminalCharge>(entity =>
-            {
-                entity.HasKey(m => m.ChargeId);
-                entity.HasOne(m => m.Charge)
-                        .WithOne(m => m.TerminalCharge)
-                        .HasForeignKey<TerminalCharge>(c => c.ChargeId);
-                entity.Property(m => m.TransactionId).HasMaxLength(50);
-            });
-
             modelBuilder.Entity<ApiClient>(entity =>
             {
                 entity.HasKey(m => m.ApiClientId);
@@ -1077,25 +1056,12 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.Property(m => m.AssetType).IsRequired();
             });
 
-            modelBuilder.Entity<MbWayCharge>(entity =>
+            modelBuilder.Entity<AcquirerCharge>(entity =>
             {
                 entity.HasKey(m => m.ChargeId);
                 entity.HasOne(m => m.Charge)
-                        .WithOne(m => m.MbWayCharge)
-                        .HasForeignKey<MbWayCharge>(m => m.ChargeId); //TODO: Check
-
-                entity.Property(m => m.PhoneNumber).HasMaxLength(50).IsRequired();
-                entity.Property(m => m.TransactionId).HasMaxLength(50).IsRequired();
-            });
-
-            modelBuilder.Entity<TicketMobileCharge>(entity =>
-            {
-                entity.HasKey(m => m.ChargeId);
-                entity.HasOne(m => m.Charge)
-                        .WithOne(m => m.TicketMobileCharge)
-                        .HasForeignKey<TicketMobileCharge>(m => m.ChargeId); //TODO: Check
-
-                entity.Property(m => m.PhoneNumber).HasMaxLength(50).IsRequired();
+                        .WithOne(m => m.AcquirerCharge)
+                        .HasForeignKey<AcquirerCharge>(m => m.ChargeId);
             });
         }
 
@@ -1111,9 +1077,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
         public DbSet<MerchantFee> MerchantFees { get; set; }
         public DbSet<ApiClient> ApiClients { get; set; }
         public DbSet<ApiClientRequest> ApiClientRequests { get; set; }
-        public DbSet<MbWayCharge> MbWayCharges { get; set; }
-        public DbSet<CardCharge> CardCharges { get; set; }
-        public DbSet<TicketMobileCharge> TicketMobileCharges { get; set; }
+        public DbSet<AcquirerCharge> AcquirerCharges { get; set; }
         public DbSet<Charge> Charges { get; set; }
         public DbSet<MerchantInvoiceDocument> MerchantInvoiceDocuments { get; set; }
         public DbSet<DepositCapture> DepositCaptures { get; set; }

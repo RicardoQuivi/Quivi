@@ -32,6 +32,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public bool IncludeMerchant { get; init; }
         public bool IncludeCharge { get; init; }
         public bool IncludeReview { get; init; }
+        public bool IncludeAcquirerCharge { get; init; }
 
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }
