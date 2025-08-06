@@ -23,6 +23,7 @@
             "NoBalance": "Your current balance is not enough to perform this refund."
         },
         "refunded": "Refunded",
+        "details": "Details",
         "back": "Back",
         "type": "Type",
         "id": "Id",
@@ -562,7 +563,11 @@
             "downloadDocument": "Download documents",
             "refundNotSupported": "Refund not supported by integration",
             "refundSuccess": "Refund issued successfully!",
-            "refundFailed": "Refund failed: {{reason}}"
+            "refundFailed": "Refund failed: {{reason}}",
+            "refundAmount": "Refund amount",
+            "creditNoteRefund": "Refund with credit note",
+            "cancelationRefund": "Refund with cancelation",
+            "alreadyRefunded": "Refund already performed"
         },
         "posIntegrations": {
             "title": "PoS Integrations",

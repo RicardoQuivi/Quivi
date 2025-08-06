@@ -23,6 +23,7 @@
             "NoBalance": "O seu balanço atual não é suficiente para proceder a esta operação."
         },
         "refunded": "Reembolso",
+        "details": "Detalhes",
         "back": "Voltar",
         "type": "Tipo",
         "id": "Id",
@@ -562,7 +563,11 @@
             "downloadDocument": "Descarregar documentos",
             "refundNotSupported": "A devolução não é suportada pela integração",
             "refundSuccess": "Devolução efetuada com sucesso!",
-            "refundFailed": "Devolução falhou: {{reason}}"
+            "refundFailed": "Devolução falhou: {{reason}}",
+            "refundAmount": "Montante a reembolsar",
+            "creditNoteRefund": "Reembolsar com nota de crédito",
+            "cancelationRefund": "Reembolsar como cancelamento",
+            "alreadyRefunded": "Já foi reembolsada"
         },
         "posIntegrations": {
             "title": "Integrações de PoS",

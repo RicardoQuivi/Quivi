@@ -24,10 +24,14 @@ import { useToast } from "../../layout/ToastProvider";
 import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { useQuiviForm } from "../../hooks/api/exceptions/useQuiviForm";
 import * as yup from 'yup';
+import { useSearchParams } from "react-router";
+import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
+import { CurrencyField } from "../../components/inputs/CurrencyField";
 
-const refundSchema = yup.object({
-    id: yup.string().required(),
-});
+enum Tabs {
+    Details = "Details",
+    Refunds = "Refunds",
+}
 
 interface Props {
     readonly id?: string;
@@ -35,16 +39,9 @@ interface Props {
 }
 export const TransactionModal = (props: Props) => {
     const { t } = useTranslation();
-    const user = useAuthenticatedUser();
-    const mutator = useTransactionMutator();
-    const toast = useToast();
 
-    const refundState = useMemo(() => ({
-        id: props.id,
-    }), [props.id])
-
-    const [isRefunding, setIsRefunding] = useState(false);
-    const refundForm = useQuiviForm(refundState, refundSchema);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const tab = searchParams.get("tab") ?? Tabs.Details;
 
     const transactionQuery = useTransactionsQuery(props.id == undefined ? undefined : {
         ids: [props.id],
@@ -52,6 +49,65 @@ export const TransactionModal = (props: Props) => {
         pageSize: 1,
     })
     const transaction = useMemo(() => transactionQuery.data.length == 0 ? undefined : transactionQuery.data[0], [transactionQuery.data]);
+
+    return (
+        <Modal
+            isOpen={props.id != undefined}
+            onClose={props.onClose}
+            size={ModalSize.Auto}
+            title={<>
+                {t("common.entities.transaction")}&nbsp;<PublicId id={props.id} />
+            </>}
+        >
+            <nav className="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-800 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600">
+                <button
+                    onClick={() => setSearchParams(s => ({
+                        ...s,
+                        tab: Tabs.Details, 
+                    }))}
+                    className={`inline-flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200 ease-in-out ${
+                        tab === Tabs.Details
+                        ? "bg-white text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white"
+                        : "bg-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    }`}
+                >
+                    {t("common.details")}
+                </button>
+                
+                <button
+                    onClick={() => setSearchParams(s => ({
+                        ...s,
+                        tab: Tabs.Refunds, 
+                    }))}
+                    className={`inline-flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200 ease-in-out ${
+                        tab === Tabs.Refunds
+                        ? "bg-white text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white"
+                        : "bg-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    }`}
+                >
+                    {t("common.refund")}
+                </button>
+            </nav>
+
+            {
+                tab == Tabs.Details
+                ?
+                <Details transaction={transaction} />
+                :
+                <Refund transaction={transaction} />
+            }
+        </Modal>
+    )
+}
+
+interface PageProps {
+    readonly transaction?: Transaction
+}
+const Details = ({
+    transaction
+}: PageProps) => {
+    const { t } = useTranslation();
+    const user = useAuthenticatedUser();
 
     const customChargeMethodQuery = useCustomChargeMethodsQuery(transaction?.customChargeMethodId == undefined ? undefined : {
         ids: [transaction.customChargeMethodId],
@@ -81,20 +137,14 @@ export const TransactionModal = (props: Props) => {
     })
     const profile = useMemo(() => profileQuery.data.length == 0 ? undefined : profileQuery.data[0], [profileQuery.data]);
 
-    const documentsQuery = useMerchantDocumentsQuery(props.id == undefined ? undefined : {
-        transactionIds: [props.id],
+    const documentsQuery = useMerchantDocumentsQuery(transaction?.id == undefined ? undefined : {
+        transactionIds: [transaction.id],
         page: 0,
     })
-    
-    const posIntegrationQuery = usePosIntegrationsQuery(transaction == undefined ? undefined : {
-        channelId: transaction.channelId,
-        page: 0,
-        pageSize: 1,
-    })
-    const posIntegration = useMemo(() => posIntegrationQuery.data.length == 0 ? undefined : posIntegrationQuery.data[0], [posIntegrationQuery.data]);
 
     const {
         total,
+        totalAfterRefund,
         discounts,
     } = useMemo(() => {
         let totalOriginal = 0;
@@ -105,6 +155,7 @@ export const TransactionModal = (props: Props) => {
         }
         return {
             total: totalFinal,
+            totalAfterRefund: totalFinal - (transaction?.refundedAmount ?? 0),
             discounts: totalOriginal - totalFinal,
         }
     }, [transaction])
@@ -121,50 +172,454 @@ export const TransactionModal = (props: Props) => {
         return <Avatar src={customChargeMethod.logoUrl} size="medium" alt={customChargeMethod.name} />
     }
 
+    return <>
+        <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
+            <Button>
+                <PrinterIcon />
+                {t("common.print")}
+            </Button>
+        </div>
+
+        <div className="flex flex-wrap justify-between gap-5">
+            <div>
+                <p className="mb-1.5 font-medium text-black dark:text-white">
+                    {t("common.entities.merchant")}
+                </p>
+                <h4 className="mb-3 text-xl font-bold text-black dark:text-white">
+                {
+                    merchant == undefined
+                    ?
+                    <Skeleton />
+                    :
+                    merchant.name
+                }
+                </h4>
+                <span className="mt-1.5 block dark:text-white">
+                    <span className="font-medium text-black dark:text-white">
+                        {t("common.entities.channel")}:{' '}
+                    </span>
+                    {
+                        channel == undefined || profile == undefined
+                        ?
+                        <Skeleton />
+                        :
+                        `${profile.name} ${channel.name}`
+                    }
+                </span>
+            </div>
+
+            <div>
+                <p className="mb-1.5 font-medium text-black dark:text-white">
+                    {t("common.client")}
+                </p>
+                <span className="mt-1.5 block dark:text-white">
+                    <span className="font-medium text-black dark:text-white">
+                        {t("common.email")}:{' '}
+                    </span>
+                    {
+                        transaction == undefined
+                        ?
+                        <Skeleton />
+                        :
+                        (
+                            transaction.email == undefined
+                            ?
+                            t("common.notSpecified")
+                            :
+                            transaction.email
+                        )
+                    }
+                </span>
+                <span className="mt-1.5 block dark:text-white">
+                    <span className="font-medium text-black dark:text-white">
+                    {t("common.vatNumber")}:{' '}
+                    </span>
+                    {
+                        transaction == undefined
+                        ?
+                        <Skeleton />
+                        :
+                        (
+                            transaction.vatNumber == undefined
+                            ?
+                            t("common.notSpecified")
+                            :
+                            transaction.vatNumber
+                        )
+                    }
+                </span>
+            </div>
+        </div>
+
+        <div className="my-7.5 grid grid-cols-1 border border-stroke dark:border-strokedark xsm:grid-cols-2 sm:grid-cols-4">
+            <div className="border-b border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark sm:border-b-0 sm:border-r xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
+                <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                    {t("common.date")}
+                </h5>
+                <span className="text-sm font-medium dark:text-white xsm:text-center">
+                {
+                    transaction == undefined
+                    ?
+                    <Skeleton />
+                    :
+                    DateUtils.toString(transaction.capturedDate)
+                }
+                </span>
+            </div>
+
+            <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
+                <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                    {t("common.currencyAmount")}:
+                </h5>
+                <span className="text-sm font-medium dark:text-white xsm:text-center">
+                {
+                    transaction == undefined
+                    ?
+                    <Skeleton />
+                    :
+                    <CurrencySpan value={transaction.payment} />
+                }
+                </span>
+            </div>
+
+            <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
+                <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                    {t("common.tip")}:
+                </h5>
+                <span className="text-sm font-medium dark:text-white xsm:text-center">
+                {
+                    transaction == undefined
+                    ?
+                    <Skeleton />
+                    :
+                    <CurrencySpan value={transaction.tip} />
+                }
+                </span>
+            </div>
+
+            <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
+                <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                    {t("common.total")}:
+                </h5>
+                <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
+                {
+                    transaction == undefined
+                    ?
+                    <Skeleton />
+                    :
+                    <>
+                        <CurrencySpan value={transaction.tip + transaction.payment} />
+                        {
+                            user.isAdmin && transaction.surcharge > 0 &&
+                            <Tooltip message={t("common.surcharge")}>
+                                <Badge 
+                                    variant="solid"
+                                    color="warning"
+                                    endIcon={<FeesIcon />}
+                                >
+                                    + <CurrencySpan value={transaction.surcharge}/>
+                                </Badge>
+                            </Tooltip>
+                        }
+                    </>
+                }
+                </span>
+            </div>
+
+            {
+                transaction != undefined && transaction.refundedAmount > 0 &&
+                <div className="border-r border-stroke px-5 py-4 last:border-r-0 border-t dark:border-strokedark xsm:col-span-2 sm:col-span-4 xsm:justify-center flex flex-col flex-wrap content-center dark:bg-[var(--color-error-900)!important] bg-[var(--color-error-200)!important]">
+                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
+                        {t("common.refunded")}:
+                    </h5>
+                    <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
+                        <CurrencySpan value={transaction.refundedAmount} />
+                    </span>
+                </div>
+            }
+        </div>
+
+        <div className="border border-stroke dark:border-strokedark">
+            <div className="max-w-full overflow-x-auto">
+                <div className="min-w-[670px]">
+                    <div className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
+                        <div className="col-span-7">
+                            <h5 className="font-medium text-black dark:text-white">
+                                {t("common.name")}
+                            </h5>
+                        </div>
+
+                        <div className="col-span-2">
+                            <h5 className="font-medium text-black dark:text-white">
+                                {t("common.quantity")}
+                            </h5>
+                        </div>
+
+                        <div className="col-span-2">
+                            <h5 className="font-medium text-black dark:text-white">
+                                {t("common.unitPrice")}
+                            </h5>
+                        </div>
+
+                        <div className="col-span-1">
+                            <h5 className="text-right font-medium text-black dark:text-white">
+                                {t("common.total")}
+                            </h5>
+                        </div>
+                    </div>
+
+                    {
+                        transaction == undefined
+                        ?
+                        [1, 2, 3, 4, 5].map((_, index) => (
+                            <div key={index} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
+                                <div className="col-span-7">
+                                    <p className="font-medium">
+                                        <Skeleton />
+                                    </p>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <p className="font-medium">
+                                        <Skeleton />
+                                    </p>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <p className="font-medium">
+                                        <Skeleton />
+                                    </p>
+                                </div>
+
+                                <div className="col-span-1">
+                                    <p className="font-medium">
+                                        <Skeleton />
+                                    </p>
+                                </div>
+                            </div>
+                        ))
+                        :
+                        transaction.items.map((item) => (
+                            <div key={item.id} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
+                                <div className="col-span-7">
+                                    <p className="font-medium dark:text-white">
+                                        {item.name}
+                                    </p>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <p className="font-medium dark:text-white">
+                                        {item.quantity}
+                                    </p>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <p className="font-medium dark:text-white">
+                                        <CurrencySpan value={item.finalPrice} />
+                                    </p>
+                                </div>
+
+                                <div className="col-span-1">
+                                    <p className="text-right font-medium dark:text-white">
+                                        <CurrencySpan value={item.finalPrice * item.quantity} />
+                                    </p>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <div className="-mx-4 flex flex-wrap p-6">
+                <div className="w-full px-4 sm:w-1/3 xl:w-3/12">
+                    <div className="mb-10 flex flex-col justify-center">
+                        <h4 className="mb-4 text-title-sm2 font-medium leading-[30px] text-black dark:text-white md:text-2xl">
+                            {t("common.paymentMethod")}
+                        </h4>
+                        <p className="font-medium dark:text-white">
+                            {getIcon()}
+                        </p>
+                    </div>
+                </div>
+                <div className="w-full px-4 sm:w-2/3 xl:w-9/12">
+                    <div className="mr-10 text-right md:ml-auto">
+                        <div className="ml-auto sm:w-1/2">
+                            <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
+                                <span>
+                                    {t("common.subTotal")}
+                                </span>
+                                <span>
+                                {
+                                    transaction == undefined
+                                    ?
+                                    <Skeleton />
+                                    :
+                                    <CurrencySpan value={total - discounts} />
+                                }
+                                </span>
+                            </p>
+                            <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
+                                <span> 
+                                    {t("common.discount")}
+                                </span>
+                                <span> 
+                                {
+                                    transaction == undefined
+                                    ?
+                                    <Skeleton />
+                                    :
+                                    <CurrencySpan value={discounts} />
+                                }
+                                </span>
+                            </p>
+                            {
+                                transaction != undefined && transaction.refundedAmount > 0 &&
+                                <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
+                                    <span> 
+                                        {t("common.refunded")}
+                                    </span>
+                                    <span> 
+                                        <CurrencySpan value={-transaction.refundedAmount} />
+                                    </span>
+                                </p>
+                            }
+                            <p className="mb-4 mt-2 flex justify-between border-t border-stroke pt-6 font-medium text-black dark:border-strokedark dark:text-white">
+                                <span>
+                                    {t("common.total")}
+                                </span>
+                                <span> 
+                                {
+                                    transaction == undefined
+                                    ?
+                                    <Skeleton />
+                                    :
+                                    <CurrencySpan value={totalAfterRefund} />
+                                }
+                                </span>
+                            </p>
+                        </div>
+
+                        <div className="mt-10 flex flex-col justify-end gap-4 sm:flex-row">
+                            <Tooltip
+                                message={(
+                                    documentsQuery.isFirstLoading == false && documentsQuery.data.length == 0
+                                    ?
+                                    t("pages.transactions.noDocumentAvailable")
+                                    :
+                                    t("pages.transactions.downloadDocument")
+                                )}
+                            >
+                                <Button
+                                    className="float-right mt-4"
+                                    disabled={documentsQuery.isFirstLoading || documentsQuery.data.length == 0}
+                                    onClick={() => documentsQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name))}
+                                >
+                                    {
+                                        documentsQuery.isFirstLoading
+                                        ?
+                                        <Spinner />
+                                        :
+                                        <>
+                                            {t("common.download")}
+                                            <DownloadIcon />
+                                        </>
+                                    }
+                                </Button>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </>
+}
+
+const refundSchema = yup.object({
+    id: yup.string().required(),
+    amount: yup.number().required(),
+});
+
+const Refund = ({
+    transaction
+}: PageProps) => {
+    const  { t } = useTranslation();
+    const toast = useToast();
+    const mutator = useTransactionMutator();
+
+    const [state, setState] = useState(() => ({
+        id: transaction?.id,
+        amount: (transaction?.payment ?? 0) + (transaction?.tip ?? 0),
+    }));
+
+    const [isRefunding, setIsRefunding] = useState(false);
+    const form = useQuiviForm(state, refundSchema);
+
+    const posIntegrationQuery = usePosIntegrationsQuery(transaction == undefined ? undefined : {
+        channelId: transaction.channelId,
+        page: 0,
+        pageSize: 1,
+    })
+    const posIntegration = useMemo(() => posIntegrationQuery.data.length == 0 ? undefined : posIntegrationQuery.data[0], [posIntegrationQuery.data]);
+
+    useEffect(() => setState(_ => ({
+        id: transaction?.id,
+        amount: (transaction?.payment ?? 0) + (transaction?.tip ?? 0),
+    })), [transaction?.id])
+
     useEffect(() => {
-        if(refundForm.errors.size == 0) {
+        if(form.errors.size == 0) {
             return;
         }
 
         toast.error(t("pages.transactions.refundFailed", {
-            reason: refundForm.touchedErrors.get("")?.message
+            reason: form.touchedErrors.get("")?.message
         }));
-    }, [refundForm.errors])
+    }, [form.errors])
 
-    const getRefundButton = () => {
-        if(transaction == undefined) {
-            return undefined;
-        }
+    
+    const getRefundButton = (isCancelation: boolean) => {
 
-        if(transaction.refundedAmount != 0) {
-            return undefined;
-        }
-        
         const isRefundAvailable = posIntegration?.features.allowsRefunds != false;
         const baseButton = (
-        <Button
-            onClick={() => refundForm.submit(async () => {
-                setIsRefunding(true)
-                try {
-                    await mutator.refund(transaction);
-                    toast.success(t("pages.transactions.refundSuccess"));
-                } finally {
-                    setIsRefunding(false);
-                }
-            }, () => toast.error(t("common.operations.failure.generic")))}
-            disabled={isRefundAvailable == false}
-        >
-        {
-            isRefunding || posIntegrationQuery.isFirstLoading
-            ?
-            <Spinner />
-            :
-            t("common.refund")
-        }
-        </Button>
+            <Button
+                onClick={() => form.submit(async () => {
+                    if(transaction == undefined) {
+                        return;
+                    }
+
+                    setIsRefunding(true)
+                    try {
+                        await mutator.refund(transaction, {
+                            amount: state.amount,
+                            cancelation: isCancelation,
+                        });
+                        toast.success(t("pages.transactions.refundSuccess"));
+                    } finally {
+                        setIsRefunding(false);
+                    }
+                }, () => toast.error(t("common.operations.failure.generic")))}
+                disabled={isRefundAvailable == false || (transaction?.refundedAmount ?? 0) > 0}
+                variant={isCancelation ? "outline" : "primary"}
+                className="w-full"
+            >
+            {
+                transaction == undefined || isRefunding || posIntegrationQuery.isFirstLoading
+                ?
+                <Spinner />
+                :
+                t(`pages.transactions.${isCancelation ? "cancelationRefund" : "creditNoteRefund"}`)
+            }
+            </Button>
         )
 
         if(isRefundAvailable) {
+            if((transaction?.refundedAmount ?? 0) > 0) {
+                return <Tooltip
+                    message={t("pages.transactions.alreadyRefunded")}
+                >
+                    {baseButton}
+                </Tooltip>
+            }
             return baseButton;
         }
 
@@ -174,363 +629,31 @@ export const TransactionModal = (props: Props) => {
             {baseButton}
         </Tooltip>
     }
-    return (
-        <Modal
-            isOpen={props.id != undefined}
-            onClose={props.onClose}
-            size={ModalSize.Auto}
-            title={<>
-                {t("common.entities.transaction")}&nbsp;<PublicId id={props.id} />
-            </>}
+
+    return <div
+        className="max-w-screen-md mx-auto"
+    >
+        <div
+            className="flex flex-col gap-4"
         >
-            <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
-                {getRefundButton()}
-                <Button>
-                    <PrinterIcon />
-                    {t("common.print")}
-                </Button>
+            <CurrencyField
+                label={t("pages.transactions.refundAmount")}
+                value={state.amount}
+                onChange={(e) => setState(s => ({ ...s, price: e }))}
+                errorMessage={form.touchedErrors.get("amount")?.message}
+                endElement={<span className="text-gray-700 dark:bg-gray-900 dark:text-gray-400 mx-4 h-full flex flex-wrap justify-center content-center">€</span>}
+                decimalPlaces={2}
+                minValue={0}
+                maxValue={(transaction?.payment ?? 0) + (transaction?.tip ?? 0)}
+                className="col-span-5 sm:col-span-7 md:col-span-7 lg:col-span-7 xl:col-span-5"
+            />
+
+            <div
+                className="grid grid-cols-2 gap-4"
+            >
+                {getRefundButton(true)}
+                {getRefundButton(false)}
             </div>
-
-            <div className="flex flex-wrap justify-between gap-5">
-                <div>
-                    <p className="mb-1.5 font-medium text-black dark:text-white">
-                        {t("common.entities.merchant")}
-                    </p>
-                    <h4 className="mb-3 text-xl font-bold text-black dark:text-white">
-                    {
-                        merchant == undefined
-                        ?
-                        <Skeleton />
-                        :
-                        merchant.name
-                    }
-                    </h4>
-                    <span className="mt-1.5 block dark:text-white">
-                        <span className="font-medium text-black dark:text-white">
-                            {t("common.entities.channel")}:{' '}
-                        </span>
-                        {
-                            channel == undefined || profile == undefined
-                            ?
-                            <Skeleton />
-                            :
-                            `${profile.name} ${channel.name}`
-                        }
-                    </span>
-                </div>
-
-                <div>
-                    <p className="mb-1.5 font-medium text-black dark:text-white">
-                        {t("common.client")}
-                    </p>
-                    <span className="mt-1.5 block dark:text-white">
-                        <span className="font-medium text-black dark:text-white">
-                            {t("common.email")}:{' '}
-                        </span>
-                        {
-                            transaction == undefined
-                            ?
-                            <Skeleton />
-                            :
-                            (
-                                transaction.email == undefined
-                                ?
-                                t("common.notSpecified")
-                                :
-                                transaction.email
-                            )
-                        }
-                    </span>
-                    <span className="mt-1.5 block dark:text-white">
-                        <span className="font-medium text-black dark:text-white">
-                        {t("common.vatNumber")}:{' '}
-                        </span>
-                        {
-                            transaction == undefined
-                            ?
-                            <Skeleton />
-                            :
-                            (
-                                transaction.vatNumber == undefined
-                                ?
-                                t("common.notSpecified")
-                                :
-                                transaction.vatNumber
-                            )
-                        }
-                    </span>
-                </div>
-            </div>
-
-            <div className="my-7.5 grid grid-cols-1 border border-stroke dark:border-strokedark xsm:grid-cols-2 sm:grid-cols-4">
-                <div className="border-b border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark sm:border-b-0 sm:border-r xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
-                        {t("common.date")}
-                    </h5>
-                    <span className="text-sm font-medium dark:text-white xsm:text-center">
-                    {
-                        transaction == undefined
-                        ?
-                        <Skeleton />
-                        :
-                        DateUtils.toString(transaction.capturedDate)
-                    }
-                    </span>
-                </div>
-
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
-                        {t("common.currencyAmount")}:
-                    </h5>
-                    <span className="text-sm font-medium dark:text-white xsm:text-center">
-                    {
-                        transaction == undefined
-                        ?
-                        <Skeleton />
-                        :
-                        <CurrencySpan value={transaction.payment} />
-                    }
-                    </span>
-                </div>
-
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 xsm:border-b sm:border-b-0 dark:border-strokedark xsm:justify-center flex flex-col flex-wrap content-center">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
-                        {t("common.tip")}:
-                    </h5>
-                    <span className="text-sm font-medium dark:text-white xsm:text-center">
-                    {
-                        transaction == undefined
-                        ?
-                        <Skeleton />
-                        :
-                        <CurrencySpan value={transaction.tip} />
-                    }
-                    </span>
-                </div>
-
-                <div className="border-r border-stroke px-5 py-4 last:border-r-0 dark:border-strokedark xsm:col-span-2 sm:col-span-1 xsm:justify-center flex flex-col flex-wrap content-center">
-                    <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
-                        {t("common.total")}:
-                    </h5>
-                    <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
-                    {
-                        transaction == undefined
-                        ?
-                        <Skeleton />
-                        :
-                        <>
-                            <CurrencySpan value={transaction.tip + transaction.payment} />
-                            {
-                                user.isAdmin && transaction.surcharge > 0 &&
-                                <Tooltip message={t("common.surcharge")}>
-                                    <Badge 
-                                        variant="solid"
-                                        color="warning"
-                                        endIcon={<FeesIcon />}
-                                    >
-                                        + <CurrencySpan value={transaction.surcharge}/>
-                                    </Badge>
-                                </Tooltip>
-                            }
-                        </>
-                    }
-                    </span>
-                </div>
-
-                {
-                    transaction != undefined && transaction.refundedAmount > 0 &&
-                    <div className="border-r border-stroke px-5 py-4 last:border-r-0 border-t dark:border-strokedark xsm:col-span-2 sm:col-span-4 xsm:justify-center flex flex-col flex-wrap content-center dark:bg-[var(--color-error-900)!important] bg-[var(--color-error-200)!important]">
-                        <h5 className="mb-1.5 font-bold text-black dark:text-white xsm:text-center">
-                            {t("common.refunded")}:
-                        </h5>
-                        <span className="text-sm font-medium dark:text-white flex items-center gap-3 xsm:text-center">
-                            <CurrencySpan value={transaction.refundedAmount} />
-                        </span>
-                    </div>
-                }
-            </div>
-
-            <div className="border border-stroke dark:border-strokedark">
-                <div className="max-w-full overflow-x-auto">
-                    <div className="min-w-[670px]">
-                        <div className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
-                            <div className="col-span-7">
-                                <h5 className="font-medium text-black dark:text-white">
-                                    {t("common.name")}
-                                </h5>
-                            </div>
-
-                            <div className="col-span-2">
-                                <h5 className="font-medium text-black dark:text-white">
-                                    {t("common.quantity")}
-                                </h5>
-                            </div>
-
-                            <div className="col-span-2">
-                                <h5 className="font-medium text-black dark:text-white">
-                                    {t("common.unitPrice")}
-                                </h5>
-                            </div>
-
-                            <div className="col-span-1">
-                                <h5 className="text-right font-medium text-black dark:text-white">
-                                    {t("common.total")}
-                                </h5>
-                            </div>
-                        </div>
-
-                        {
-                            transaction == undefined
-                            ?
-                            [1, 2, 3, 4, 5].map((_, index) => (
-                                <div key={index} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
-                                    <div className="col-span-7">
-                                        <p className="font-medium">
-                                            <Skeleton />
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-2">
-                                        <p className="font-medium">
-                                            <Skeleton />
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-2">
-                                        <p className="font-medium">
-                                            <Skeleton />
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-1">
-                                        <p className="font-medium">
-                                            <Skeleton />
-                                        </p>
-                                    </div>
-                                </div>
-                            ))
-                            :
-                            transaction.items.map((item) => (
-                                <div key={item.id} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
-                                    <div className="col-span-7">
-                                        <p className="font-medium dark:text-white">
-                                            {item.name}
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-2">
-                                        <p className="font-medium dark:text-white">
-                                            {item.quantity}
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-2">
-                                        <p className="font-medium dark:text-white">
-                                            <CurrencySpan value={item.finalPrice} />
-                                        </p>
-                                    </div>
-
-                                    <div className="col-span-1">
-                                        <p className="text-right font-medium dark:text-white">
-                                            <CurrencySpan value={item.finalPrice * item.quantity} />
-                                        </p>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-
-                <div className="-mx-4 flex flex-wrap p-6">
-                    <div className="w-full px-4 sm:w-1/3 xl:w-3/12">
-                        <div className="mb-10 flex flex-col justify-center">
-                            <h4 className="mb-4 text-title-sm2 font-medium leading-[30px] text-black dark:text-white md:text-2xl">
-                                {t("common.paymentMethod")}
-                            </h4>
-                            <p className="font-medium dark:text-white">
-                                {getIcon()}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="w-full px-4 sm:w-2/3 xl:w-9/12">
-                        <div className="mr-10 text-right md:ml-auto">
-                            <div className="ml-auto sm:w-1/2">
-                                <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
-                                    <span>
-                                        {t("common.subTotal")}
-                                    </span>
-                                    <span>
-                                    {
-                                        transaction == undefined
-                                        ?
-                                        <Skeleton />
-                                        :
-                                        <CurrencySpan value={total - discounts} />
-                                    }
-                                    </span>
-                                </p>
-                                <p className="mb-4 flex justify-between font-medium text-black dark:text-white">
-                                    <span> 
-                                        {t("common.discount")}
-                                    </span>
-                                    <span> 
-                                    {
-                                        transaction == undefined
-                                        ?
-                                        <Skeleton />
-                                        :
-                                        <CurrencySpan value={discounts} />
-                                    }
-                                    </span>
-                                </p>
-                                <p className="mb-4 mt-2 flex justify-between border-t border-stroke pt-6 font-medium text-black dark:border-strokedark dark:text-white">
-                                    <span>
-                                        {t("common.total")}
-                                    </span>
-                                    <span> 
-                                    {
-                                        transaction == undefined
-                                        ?
-                                        <Skeleton />
-                                        :
-                                        <CurrencySpan value={total} />
-                                    }
-                                    </span>
-                                </p>
-                            </div>
-
-                            <div className="mt-10 flex flex-col justify-end gap-4 sm:flex-row">
-                                <Tooltip
-                                    message={(
-                                        documentsQuery.isFirstLoading == false && documentsQuery.data.length == 0
-                                        ?
-                                        t("pages.transactions.noDocumentAvailable")
-                                        :
-                                        t("pages.transactions.downloadDocument")
-                                    )}
-                                >
-                                    <Button
-                                        className="float-right mt-4"
-                                        disabled={documentsQuery.isFirstLoading || documentsQuery.data.length == 0}
-                                        onClick={() => documentsQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name))}
-                                    >
-                                        {
-                                            documentsQuery.isFirstLoading
-                                            ?
-                                            <Spinner />
-                                            :
-                                            <>
-                                                {t("common.download")}
-                                                <DownloadIcon />
-                                            </>
-                                        }
-                                    </Button>
-                                </Tooltip>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Modal>
-    )
+        </div>
+    </div>
 }

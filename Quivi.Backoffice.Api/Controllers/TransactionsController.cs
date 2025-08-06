@@ -90,10 +90,10 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 await chargeProcessor.Refund(new RefundParameters
                 {
-                    Amount = null,
+                    Amount = request.Amount,
                     ChargeId = idConverter.FromPublicId(id),
                     MerchantId = User.IsAdmin() ? null : User.SubMerchantId(idConverter)!.Value,
-                    IsCancellation = false,
+                    IsCancellation = request.Cancelation,
                 });
 
                 var result = await queryProcessor.Execute(new GetPosChargesAsyncQuery
