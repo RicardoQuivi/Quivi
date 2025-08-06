@@ -22,17 +22,17 @@ namespace Quivi.Backoffice.Api.Controllers
         private readonly IQueryProcessor queryProcessor;
         private readonly IMapper mapper;
         private readonly IIdConverter idConverter;
-        private readonly IAcquirerChargeProcessor chargeProcessor;
+        private readonly IAcquirerChargeProcessor acquirerChargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                         IMapper mapper,
                                         IIdConverter idConverter,
-                                        IAcquirerChargeProcessor chargeProcessor)
+                                        IAcquirerChargeProcessor acquirerChargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.mapper = mapper;
             this.idConverter = idConverter;
-            this.chargeProcessor = chargeProcessor;
+            this.acquirerChargeProcessor = acquirerChargeProcessor;
         }
 
         [HttpGet]
@@ -88,7 +88,7 @@ namespace Quivi.Backoffice.Api.Controllers
         {
             try
             {
-                await chargeProcessor.Refund(new RefundParameters
+                await acquirerChargeProcessor.Refund(new RefundParameters
                 {
                     Amount = request.Amount,
                     ChargeId = idConverter.FromPublicId(id),

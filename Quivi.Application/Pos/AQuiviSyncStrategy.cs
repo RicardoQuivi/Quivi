@@ -228,22 +228,23 @@ namespace Quivi.Application.Pos
             });
         }
 
-        public virtual Task<decimal> RefundChargeAsCreditNote(PosIntegration integration, int chargeId, decimal amountToRefund)
+        public virtual async Task<decimal> RefundChargeAsCreditNote(PosIntegration integration, int chargeId, decimal amountToRefund)
         {
             var settings = ParseSyncSettings(integration);
             if (settings.SkipInvoice)
-                return Task.FromResult(amountToRefund);
+                return amountToRefund;
 
             var gateway = GetInvoiceGateway(settings);
-            //await CommandProcessor.Execute(new CreateCreditNoteFromChargeAsyncCommand(gateway)
-            //{
-            //    ChargeId = chargeId,
-            //    RefundAmount = amountToRefund,
-            //    InvoicePrefix = settings.InvoicePrefix,
-            //    IncludeTipInInvoice = settings.IncludeTipInInvoice,
-            //});
+            await CommandProcessor.Execute(new CreateCreditNoteFromChargeAsyncCommand
+            {
+                InvoiceGateway = gateway,
+                PosChargeId = chargeId,
+                RefundAmount = amountToRefund,
+                InvoicePrefix = settings.InvoicePrefix,
+                IncludeTipInInvoice = settings.IncludeTipInInvoice,
+            });
 
-            return Task.FromResult(amountToRefund);
+            return amountToRefund;
         }
 
         public virtual Task<decimal> RefundChargeAsCancellation(PosIntegration integration, int chargeId, decimal amountToRefund, string reason)
