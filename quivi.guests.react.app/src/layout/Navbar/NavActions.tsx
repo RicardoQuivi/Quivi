@@ -47,11 +47,13 @@ const svgToDataUrl = (svgElement: JSX.Element) => {
 
 interface Props {
     readonly hideOrder?: boolean;
-    readonly hideCart?: boolean
+    readonly hideCart?: boolean;
+    readonly hideFlag?: boolean;
 }
 export const NavActions: React.FC<Props> = ({
     hideOrder,
     hideCart,
+    hideFlag,
 }) => {
     const theme = useQuiviTheme();
     const location = useLocation();
@@ -150,12 +152,20 @@ export const NavActions: React.FC<Props> = ({
                     </StyledBadge>
                 </button>
             }
-            <button type="button" className="nav__menu nav__menu--not-auth" onClick={() => setLanguageDialogOpen(true)} style={{
-                backgroundImage: currentFlagBackground,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center'
-            }}/>
+            {
+                hideFlag != false &&
+                <button
+                    type="button"
+                    className="nav__menu nav__menu--not-auth"
+                    onClick={() => setLanguageDialogOpen(true)}
+                    style={{
+                        backgroundImage: currentFlagBackground,
+                        backgroundSize: 'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center'
+                    }}
+                />
+            }
             {
                 features.physicalKiosk == false &&
                 <>
@@ -192,38 +202,40 @@ export const NavActions: React.FC<Props> = ({
                         <CloseIcon />
                     </div>
                 </div>
-                <Grid container spacing={2} className="mb-8" style={{}}>
-                    {
-                        languages.map(l =>
-                            <Grid
-                                key={l.id}
-                                size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 6 }}
-                                onClick={() => { 
-                                    i18n.changeLanguage(l.id);
-                                    setLanguageDialogOpen(false);
-                                }}
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "flex-start",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <CountryIcon
-                                    language={l.id}
-                                    style={{
-                                        height: "48px",
-                                        width: "64px",
-                                        borderRadius: "3rem",
+                {
+                    <Grid container spacing={2} className="mb-8" style={{}}>
+                        {
+                            languages.map(l =>
+                                <Grid
+                                    key={l.id}
+                                    size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 6 }}
+                                    onClick={() => { 
+                                        i18n.changeLanguage(l.id);
+                                        setLanguageDialogOpen(false);
                                     }}
-                                />
-                                <div className="ml-3" style={{display: "flex", alignContent: "center", flexWrap: "wrap"}}>
-                                    <p>{l.name}</p>
-                                </div>
-                            </Grid>
-                        )
-                    }
-                </Grid>
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <CountryIcon
+                                        language={l.id}
+                                        style={{
+                                            height: "48px",
+                                            width: "64px",
+                                            borderRadius: "3rem",
+                                        }}
+                                    />
+                                    <div className="ml-3" style={{display: "flex", alignContent: "center", flexWrap: "wrap"}}>
+                                        <p>{l.name}</p>
+                                    </div>
+                                </Grid>
+                            )
+                        }
+                    </Grid>
+                }
                 <ButtonsSection>
                     <LoadingButton isLoading={false} primaryButton={false} onClick={() => setLanguageDialogOpen(false)}>
                         {t("cancel")}

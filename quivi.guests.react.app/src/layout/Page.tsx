@@ -5,6 +5,7 @@ import { TableNav } from "./Navbar/TableNav";
 interface HeaderProps {
     readonly hideCart?: boolean;
     readonly hideOrder?: boolean;
+    readonly hideFlag?: boolean;
 }
 
 interface PageProps {
@@ -23,7 +24,12 @@ export const Page = ({
 }: PageProps) => {
     return <motion.div initial='initial' animate='in' exit='out' transition={pageTransition} variants={pageVariants}>
         <div className="body" style={{display: "flex", height: "100dvh", flexWrap: "nowrap", justifyContent: "space-between", flexDirection: "column",}}>
-            <TableNav title={title} hideCart={headerProps?.hideCart} hideOrder={headerProps?.hideOrder}/>
+            <TableNav
+                title={title}
+                hideCart={headerProps?.hideCart}
+                hideOrder={headerProps?.hideOrder}
+                hideFlag={headerProps?.hideFlag}
+            />
             <div className="container" style={{display: "flex", flexDirection: "column", paddingBottom: 0, flexGrow: 1}}>
                 {children}
             </div>
@@ -38,6 +44,7 @@ export const Page = ({
                     left: 0,
                     right: 0,
                     margin: 0,
+                    paddingBottom: "1.5rem",
                     width: "100%",
                 }}>
                     <div className="container">

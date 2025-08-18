@@ -304,7 +304,7 @@ export const CartPage = () => {
                             label={<p>{getDate(cart.scheduledDate)}</p>} 
                             variant="outlined"
                             size="medium"
-                            style={{width: "100%", cursor: "pointer", fontFamily: "Poppins, sans-serif"}}
+                            style={{width: "100%", cursor: "pointer", fontFamily: "Montserrat, sans-serif"}}
                         />                     
                     }
                 </div>
