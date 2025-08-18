@@ -18,6 +18,6 @@ export const fromHex = (hex: string): IColor => {
 
 export const useQuiviTheme = () => {
     return ({
-        primaryColor: fromHex("#FF3F01"),
+        primaryColor: fromHex("#4C9A2A"),
     });
 };
