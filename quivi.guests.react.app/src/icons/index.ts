@@ -6,6 +6,7 @@ import { ReactComponent as ProfileIcon } from "./profile.svg?react";
 import { ReactComponent as ArrowLeftIcon } from "./arrowleft.svg?react";
 import { ReactComponent as HomeIcon } from "./home.svg?react";
 import { ReactComponent as QuiviFullIcon } from "./quivifull.svg?react";
+import { ReactComponent as QuiviIcon } from "./quivi.svg?react";
 import { ReactComponent as SecureIcon } from "./secure.svg?react";
 import { ReactComponent as MethodsIcon } from "./methods.svg?react";
 import { ReactComponent as SettingsIcon } from "./settings.svg?react";
@@ -36,6 +37,7 @@ export {
     ArrowLeftIcon,
     HomeIcon,
     QuiviFullIcon,
+    QuiviIcon,
     SecureIcon,
     MethodsIcon,
     SettingsIcon,

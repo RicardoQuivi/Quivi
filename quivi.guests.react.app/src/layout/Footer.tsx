@@ -1,6 +1,6 @@
 ﻿import { useAppContext } from "../context/AppContextProvider";
 import { useQuiviTheme } from "../hooks/theme/useQuiviTheme";
-import { QuiviFullIcon } from "../icons";
+import { QuiviIcon } from "../icons";
 
 const Footer = () => {
     const theme = useQuiviTheme();
@@ -13,7 +13,7 @@ const Footer = () => {
                 <p>{appContext.channelFullName}</p>
             }
             <a href="https://www.quivi.com" className="footer__powered">
-                <QuiviFullIcon fill={theme.primaryColor.hex} />
+                <QuiviIcon fill={theme.primaryColor.hex} height="100%" style={{ height: "50px", width: "auto" }} />
             </a>
         </div>
     );
