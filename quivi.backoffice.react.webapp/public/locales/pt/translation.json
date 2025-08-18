@@ -55,6 +55,7 @@
         "confirmPasswordMismatch": "As passwords não coincidem",
         "confirm": "Confirmar",
         "close": "Fechar",
+        "openLink": "Abrir ligação",
         "operations": {
             "new": "Novo {{name}}",
             "edit": "Editar {{name}}",

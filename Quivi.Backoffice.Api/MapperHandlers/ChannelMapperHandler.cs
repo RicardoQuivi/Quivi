@@ -23,7 +23,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             return new Dtos.Channel
             {
                 Id = id,
-                Url = hostsSettings.GuestsApp.CombineUrl($"/{id}"),
+                Url = hostsSettings.GuestsApp.CombineUrl($"/c/{id}"),
                 ChannelProfileId = idConverter.ToPublicId(model.ChannelProfileId),
                 Name = model.Identifier,
                 IsActive = model.DeletedDate.HasValue == false,

@@ -94,7 +94,7 @@ export const PaymentMethodsPage = (props: Props) => {
                 orderAndPayData: isOrderAndPay(paymentDetails.additionalData) ? {
                     orderId: orderAndPayData.orderId,
                 } : undefined,
-                payAtTheTableData: isPayAtTheTable(paymentDetails.additionalData) ? {
+                payAtTheTableData: props.isFreePayment == false && isPayAtTheTable(paymentDetails.additionalData) ? {
                     items: payAtTheTableData.items,
                 } : undefined,
             });

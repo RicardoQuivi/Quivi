@@ -25,7 +25,10 @@ export const ChannelProfilePage = () => {
                 <MenuSelector /> 
                 {
                     channelContext.features.freePayments.isActive &&
-                    <Link className={`${channelContext.features.freePayments.isTipOnly ? "secondary-button" : "primary-button"} w-100`} to="/pay/FreePayment">
+                    <Link 
+                        className={`${channelContext.features.freePayments.isTipOnly ? "secondary-button" : "primary-button"} w-100`}
+                        to={`/c/${channelContext.channelId}/session/pay/free`}
+                    >
                     {
                         channelContext.features.freePayments.isTipOnly
                         ?

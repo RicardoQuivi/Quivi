@@ -55,6 +55,7 @@
         "confirmPasswordMismatch": "Passwords do not match",
         "confirm": "Confirm",
         "close": "Close",
+        "openLink": "Open link",
         "operations": {
             "new": "New {{name}}",
             "edit": "Save {{name}}",
