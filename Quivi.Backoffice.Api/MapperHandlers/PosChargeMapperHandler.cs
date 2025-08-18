@@ -68,7 +68,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
         private SynchronizationState GetSyncingState(PosCharge model)
         {
             if (model.PosChargeSyncAttempts?.Any() != true)
-                return SynchronizationState.Syncing;
+                return IsFreePayment(model) ? SynchronizationState.Succeeded : SynchronizationState.Syncing;
 
             if (model.PosChargeSyncAttempts.Any(c => c.State == SyncAttemptState.Synced))
                 return SynchronizationState.Succeeded;
@@ -78,5 +78,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
 
             return SynchronizationState.Syncing;
         }
+
+        private static bool IsFreePayment(PosCharge model) => model.SessionId.HasValue == false && model.PosChargeInvoiceItems?.Any() == false;
     }
 }

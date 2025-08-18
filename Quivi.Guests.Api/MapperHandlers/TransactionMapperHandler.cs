@@ -22,17 +22,25 @@ namespace Quivi.Guests.Api.MapperHandlers
         {
             SyncStatus state = model.PosChargeSyncAttempts?.Any() != true ? SyncStatus.Syncing : SyncStatus.Failed;
             decimal syncedAmount = 0.0m;
-            foreach (var syncAttempt in model.PosChargeSyncAttempts ?? [])
+            if (IsFreePayment(model))
             {
-                if (syncAttempt.State == SyncAttemptState.Synced)
+                state = SyncStatus.Synced;
+                syncedAmount = model.Payment;
+            }
+            else
+            {
+                foreach (var syncAttempt in model.PosChargeSyncAttempts ?? [])
                 {
-                    state = SyncStatus.Synced;
-                    syncedAmount = syncAttempt.SyncedAmount;
-                    break;
-                }
+                    if (syncAttempt.State == SyncAttemptState.Synced)
+                    {
+                        state = SyncStatus.Synced;
+                        syncedAmount = syncAttempt.SyncedAmount;
+                        break;
+                    }
 
-                if (syncAttempt.State == SyncAttemptState.Syncing)
-                    state = SyncStatus.Syncing;
+                    if (syncAttempt.State == SyncAttemptState.Syncing)
+                        state = SyncStatus.Syncing;
+                }
             }
 
             return new Transaction
@@ -51,6 +59,8 @@ namespace Quivi.Guests.Api.MapperHandlers
                 AdditionalData = Map(model.Charge!.AcquirerCharge!),
             };
         }
+
+        private static bool IsFreePayment(PosCharge model) => model.SessionId.HasValue == false && (model.PosChargeInvoiceItems?.Any() ?? false) == false;
 
         private object? Map(AcquirerCharge acquirerCharge)
         {
