@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using FacturaLusa.v2;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,9 +44,9 @@ using Quivi.Infrastructure.Mailing.SendGrid;
 using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
 using Quivi.Infrastructure.Pos.ESCPOS_NET;
-using Quivi.Infrastructure.Pos.Facturalusa;
-using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
-using Quivi.Infrastructure.Pos.Facturalusa.Configurations;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2.Abstractions;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2.Configurations;
 using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
 using Quivi.Infrastructure.Storage;
@@ -167,8 +168,8 @@ namespace Quivi.Application.Extensions
                 var settings = configuration.GetSection("Invoicing").Get<InvoicingSettings>();
                 if (settings?.Provider?.Equals("FacturaLusa", StringComparison.OrdinalIgnoreCase) == true)
                 {
-                    var facturalusaSettings = p.GetService<IFacturalusaSettings>()!;
-                    return new FacturalusaGateway(p.GetService<IFacturalusaServiceFactory>()!, facturalusaSettings.AccessToken, "Default")
+                    var facturalusaSettings = p.GetService<IFacturaLusaSettings>()!;
+                    return new FacturaLusaInvoiceGateway(p.GetService<IFacturaLusaServiceFactory>()!, facturalusaSettings.AccessToken, "Default")
                     {
                         CommandProcessor = p.GetService<ICommandProcessor>()!,
                         QueryProcessor = p.GetService<IQueryProcessor>()!
@@ -205,13 +206,16 @@ namespace Quivi.Application.Extensions
 
         private static IServiceCollection RegisterFacturalusa(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            serviceCollection.RegisterSingleton<IFacturalusaSettings>((p) => configuration.GetSection("Facturalusa").Get<FacturalusaSettings>()!);
-            serviceCollection.RegisterSingleton<IFacturalusaCacheProvider, FacturalusaCacheProvider>();
+            serviceCollection.RegisterSingleton<IFacturaLusaSettings>((p) => configuration.GetSection("Facturalusa").Get<FacturaLusaSettings>()!);
             serviceCollection.RegisterSingleton<ICacheProvider, MemoryCacheProvider>();
             serviceCollection.RegisterScoped<IInvoiceGatewayFactory, InvoiceGatewayFactory>();
-            serviceCollection.RegisterSingleton<IFacturalusaServiceFactory, FacturalusaServiceFactory>();
-            serviceCollection.RegisterSingleton<IFacturalusaCacheProvider, FacturalusaCacheProvider>();
-
+            serviceCollection.RegisterSingleton<IFacturaLusaApi>(p =>
+            {
+                var settings = p.GetService<IFacturaLusaSettings>()!;
+                return new FacturaLusaApi(settings.Host);
+            });
+            serviceCollection.RegisterSingleton<IFacturaLusaServiceFactory, FacturaLusaServiceFactory>();
+            serviceCollection.RegisterSingleton<IFacturaLusaCacheProvider, FacturaLusaCacheProvider>();
             return serviceCollection;
         }
 

@@ -54,10 +54,11 @@ export const TransactionModal = (props: Props) => {
         <Modal
             isOpen={props.id != undefined}
             onClose={props.onClose}
-            size={ModalSize.Auto}
+            size={tab == Tabs.Details ? ModalSize.Auto : ModalSize.Small}
             title={<>
                 {t("common.entities.transaction")}&nbsp;<PublicId id={props.id} />
             </>}
+            className="transition-all duration-500 ease-in-out"
         >
             <nav className="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-800 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600">
                 <button
@@ -94,7 +95,13 @@ export const TransactionModal = (props: Props) => {
                 ?
                 <Details transaction={transaction} />
                 :
-                <Refund transaction={transaction} />
+                <Refund
+                    transaction={transaction}
+                    onRefunded={() => setSearchParams(s => ({
+                        ...s,
+                        tab: Tabs.Details, 
+                    }))}
+                />
             }
         </Modal>
     )
@@ -539,9 +546,13 @@ const refundSchema = yup.object({
     amount: yup.number().required(),
 });
 
+interface RefundProps extends PageProps {
+    readonly onRefunded?: () => any;
+}
 const Refund = ({
-    transaction
-}: PageProps) => {
+    transaction,
+    onRefunded,
+}: RefundProps) => {
     const  { t } = useTranslation();
     const toast = useToast();
     const mutator = useTransactionMutator();
@@ -594,6 +605,7 @@ const Refund = ({
                             cancelation: isCancelation,
                         });
                         toast.success(t("pages.transactions.refundSuccess"));
+                        onRefunded?.();
                     } finally {
                         setIsRefunding(false);
                     }

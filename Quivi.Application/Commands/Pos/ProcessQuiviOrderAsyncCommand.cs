@@ -406,7 +406,7 @@ namespace Quivi.Application.Commands.Pos
                 Id = posCharge.Id,
             });
 
-            //TODO: Most of the code bellow is equal or very simiar to ProcessQuiviSyncChargeAsyncCommandHandler. Maybe a refactor would be a good idea
+            //TODO: Most of the code bellow is equal or very similar to ProcessQuiviSyncChargeAsyncCommandHandler. Maybe a refactor would be a good idea
             decimal paymentAmount = ProcessPayment(syncStrategy, session, posCharge);
             posCharge.PosChargeSyncAttempts = new List<PosChargeSyncAttempt>
             {
@@ -416,6 +416,7 @@ namespace Quivi.Application.Commands.Pos
                     PosChargeId = posCharge.Id,
                     SyncedAmount = paymentAmount,
                     State = SyncAttemptState.Synced,
+                    Type = SyncAttemptType.Payment,
                     CreatedDate = dateTimeProvider.GetUtcNow(),
                     ModifiedDate = dateTimeProvider.GetUtcNow(),
                 },

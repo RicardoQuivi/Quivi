@@ -15,6 +15,7 @@ namespace Quivi.Application.Commands.PosChargeSyncAttempts
         int Id { get; }
         int PosChargeId { get; }
         SyncAttemptState State { get; set; }
+        SyncAttemptType Type { get; }
         decimal SyncedAmount { get; set; }
     }
 
@@ -22,8 +23,9 @@ namespace Quivi.Application.Commands.PosChargeSyncAttempts
     {
         public class OnCreateData
         {
-            public int PosChargeId { get; init; }
-            public int MerchantId { get; init; }
+            public required int PosChargeId { get; init; }
+            public required int MerchantId { get; init; }
+            public required SyncAttemptType Type { get; init; }
         }
 
         public required GetPosChargeSyncAttemptsCriteria Criteria { get; init; }
@@ -71,6 +73,7 @@ namespace Quivi.Application.Commands.PosChargeSyncAttempts
                 newEntity = new PosChargeSyncAttempt
                 {
                     State = SyncAttemptState.Syncing,
+                    Type = command.CreateData.Type,
                     SyncedAmount = 0.0m,
                     PosChargeId = command.CreateData.PosChargeId,
                     PosCharge = posCharge,
@@ -86,7 +89,7 @@ namespace Quivi.Application.Commands.PosChargeSyncAttempts
             {
                 var updatableEntity = new UpdatablePosChargeSyncAttempt(entity, entity == newEntity);
                 await command.UpdateAction.Invoke(updatableEntity);
-                if(updatableEntity.HasChanges)
+                if (updatableEntity.HasChanges)
                 {
                     entity.ModifiedDate = now;
                     changedEntities.Add(updatableEntity);
@@ -153,6 +156,7 @@ namespace Quivi.Application.Commands.PosChargeSyncAttempts
                     Model.SyncedAmount = value;
                 }
             }
+            public SyncAttemptType Type => Model.Type;
 
             public DateTime CreatedDate => Model.CreatedDate;
 

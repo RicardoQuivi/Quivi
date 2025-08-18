@@ -3,6 +3,7 @@ using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
+using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
@@ -20,16 +21,19 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
         private readonly IQueryProcessor queryProcessor;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IInvoiceGateway invoiceGateway;
+        private readonly IIdConverter idConverter;
 
         public CreateSurchageSimplifiedInvoiceAsyncCommandHandler(ICommandProcessor commandProcessor,
                                                                     IQueryProcessor queryProcessor,
                                                                     IDateTimeProvider dateTimeProvider,
-                                                                    IInvoiceGateway invoiceGateway)
+                                                                    IInvoiceGateway invoiceGateway,
+                                                                    IIdConverter idConverter)
         {
             this.commandProcessor = commandProcessor;
             this.queryProcessor = queryProcessor;
             this.dateTimeProvider = dateTimeProvider;
             this.invoiceGateway = invoiceGateway;
+            this.idConverter = idConverter;
         }
 
         public async Task Handle(CreateSurchageSimplifiedInvoiceAsyncCommand command)
@@ -73,6 +77,7 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
             string note = $"Taxa de conveniência incidente na refeição no estabelecimento \"{posCharge.Merchant!.Name}\"";
             var invoice = await invoiceGateway.CreateSimplifiedInvoice(new SimplifiedInvoice
             {
+                Reference = $"CF-SI-${idConverter.ToPublicId(posCharge.Id)}",
                 CreatedDateUtc = dateTimeProvider.GetUtcNow(),
                 Notes = note,
                 SerieCode = invoiceGateway.BuildCompleteSerieCode("QV-CF"),

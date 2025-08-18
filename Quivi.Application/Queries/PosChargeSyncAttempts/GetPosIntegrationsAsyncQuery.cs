@@ -11,6 +11,7 @@ namespace Quivi.Application.Queries.PosChargeSyncAttemptSyncAttempts
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? PosChargeIds { get; init; }
         public IEnumerable<SyncAttemptState>? States { get; init; }
+        public IEnumerable<SyncAttemptType>? Types { get; init; }
     }
 
     public class GetPosChargeSyncAttemptsAsyncQueryHandler : APagedQueryAsyncHandler<GetPosChargeSyncAttemptsAsyncQuery, PosChargeSyncAttempt>
@@ -29,6 +30,7 @@ namespace Quivi.Application.Queries.PosChargeSyncAttemptSyncAttempts
                 Ids = query.Ids,
                 PosChargeIds = query.PosChargeIds,
                 States = query.States,
+                Types = query.Types,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,
             });

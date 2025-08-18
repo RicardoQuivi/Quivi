@@ -21,7 +21,7 @@ namespace Paybyrd.Api
             jsonSerializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
+                WriteIndented = false,
             };
             jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             jsonSerializerOptions.Converters.Add(new DecimalAsStringConverter());

@@ -2,6 +2,6 @@
 {
     public class InvoiceCancellation : CreditNote
     {
-        public string? Reason { get; set; }
+        public required string Reason { get; set; }
     }
 }

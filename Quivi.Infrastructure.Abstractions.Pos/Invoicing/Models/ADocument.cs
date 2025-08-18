@@ -5,7 +5,7 @@
         public DateTime CreatedDateUtc { get; set; }
         public string? DocumentId { get; set; }
         public required string SerieCode { get; set; }
-        public required string PaymentMethodCode { get; set; }
+        public string? Reference { get; init; }
         public string? Notes { get; set; }
         public PriceType PricesType { get; set; }
         public required IEnumerable<InvoiceItem> Items { get; set; }

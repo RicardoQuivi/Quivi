@@ -100,7 +100,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             return posChargeQuery.Single();
         }
 
-        private async Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
+        private Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
         {
             var groupedItem = command.InvoiceItems.GroupBy(i => new
             {
@@ -117,11 +117,11 @@ namespace Quivi.Application.Commands.Pos.Invoicing
                 VatRate = g.Key.VatRate,
                 DiscountPercentage = g.Key.DiscountPercentage,
                 Quantity = g.Sum(x => x.Quantity),
-            })
-                                                                .ToList();
+            }).ToList();
 
             var invoiceItems = groupedItem.Select(g => new InvoiceItem(g.Type)
             {
+                Reference = idConverter.ToPublicId(g.MenuItemId),
                 CorrelationId = idConverter.ToPublicId(g.MenuItemId),
                 Name = g.Name,
                 Price = g.UnitPrice,
@@ -143,8 +143,9 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             }
 
             var charge = posCharge.Charge!;
-            return await command.InvoiceGateway.CreateInvoiceReceipt(new InvoiceReceipt
+            return command.InvoiceGateway.CreateInvoiceReceipt(new InvoiceReceipt
             {
+                Reference = $"IR-${idConverter.ToPublicId(charge.Id)}",
                 CreatedDateUtc = dateTimeProvider.GetUtcNow(),
                 PaymentMethodCode = charge.ChargeMethod == ChargeMethod.Custom ? charge.MerchantCustomCharge!.CustomChargeMethod!.Name : "Quivi",
                 SerieCode = command.InvoiceGateway.BuildCompleteSerieCode("QV", command.InvoicePrefix),

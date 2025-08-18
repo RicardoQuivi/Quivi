@@ -4,5 +4,6 @@
     {
         public required string RelatedDocumentId { get; set; }
         public required Customer Customer { get; set; }
+        public required string PaymentMethodCode { get; init; }
     }
 }

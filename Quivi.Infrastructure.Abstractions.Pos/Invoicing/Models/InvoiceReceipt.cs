@@ -2,6 +2,7 @@
 {
     public class InvoiceReceipt : ADocument
     {
+        public required string PaymentMethodCode { get; set; }
         public required Customer Customer { get; set; }
     }
 }

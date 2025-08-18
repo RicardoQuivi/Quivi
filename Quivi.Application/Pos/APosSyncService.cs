@@ -4,6 +4,8 @@ using Quivi.Application.Commands.PreparationGroups;
 using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Application.Commands.Sessions;
 using Quivi.Application.Queries.Orders;
+using Quivi.Application.Queries.PosCharges;
+using Quivi.Application.Queries.PosChargeSyncAttemptSyncAttempts;
 using Quivi.Application.Queries.PosIntegrations;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
@@ -15,6 +17,7 @@ using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using Quivi.Infrastructure.Abstractions.Services;
 using Quivi.Infrastructure.Abstractions.Storage;
 using Quivi.Infrastructure.Jobs.Hangfire.Context;
 using Quivi.Infrastructure.Jobs.Hangfire.Filters;
@@ -30,22 +33,25 @@ namespace Quivi.Application.Pos
         protected readonly IEventService eventService;
         protected readonly IIdConverter idConverter;
         protected readonly IStorageService storageService;
+        protected readonly ILogger logger;
 
-        public APosSyncService(IEnumerable<IPosSyncStrategy> dataSyncStrategies,
+        public APosSyncService(IEnumerable<IPosSyncStrategy> syncStrategies,
                                 IQueryProcessor queryProcessor,
                                 ICommandProcessor commandProcessor,
                                 IBackgroundJobHandler backgroundJobHandler,
                                 IEventService eventService,
                                 IStorageService storageService,
-                                IIdConverter idConverter)
+                                IIdConverter idConverter,
+                                ILogger logger)
         {
-            this.syncStrategies = dataSyncStrategies.ToDictionary(r => r.IntegrationType);
+            this.syncStrategies = syncStrategies.ToDictionary(r => r.IntegrationType);
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.backgroundJobHandler = backgroundJobHandler;
             this.eventService = eventService;
             this.storageService = storageService;
             this.idConverter = idConverter;
+            this.logger = logger;
         }
 
         public IPosSyncStrategy? Get(IntegrationType dataSyncStrategyType)
@@ -157,12 +163,14 @@ namespace Quivi.Application.Pos
                 Criteria = new GetPosChargeSyncAttemptsCriteria
                 {
                     PosChargeIds = [chargeId],
+                    Types = [SyncAttemptType.Payment],
                     PageSize = 1,
                 },
-                CreateData =new UpsertPosChargeSyncAttemptAsyncCommand.OnCreateData
+                CreateData = new UpsertPosChargeSyncAttemptAsyncCommand.OnCreateData
                 {
                     PosChargeId = chargeId,
                     MerchantId = integration.MerchantId,
+                    Type = SyncAttemptType.Payment,
                 },
                 UpdateAction = e =>
                 {
@@ -191,6 +199,7 @@ namespace Quivi.Application.Pos
                     Criteria = new GetPosChargeSyncAttemptsCriteria
                     {
                         Ids = [state.Id],
+                        Types = [SyncAttemptType.Payment],
                         PageSize = 1,
                     },
                     UpdateAction = e =>
@@ -207,7 +216,7 @@ namespace Quivi.Application.Pos
 
         public static bool ShouldFail(FailedState state)
         {
-            Type[] allowedExceptions = [ typeof(PosUnavailableException) ];
+            Type[] allowedExceptions = [typeof(PosUnavailableException)];
             return !allowedExceptions.Contains(state.Exception.GetType());
         }
         #endregion
@@ -250,9 +259,107 @@ namespace Quivi.Application.Pos
 
         [ContextualizeFilter(nameof(RefundChargeContextualizer))]
         [PerIntegrationDistributedLockFilter]
-        public Task RefundCharge(int chargeId, decimal amountToRefund)
+        public async Task RefundCharge(int chargeId, decimal amountToRefund)
         {
-            return Task.CompletedTask;
+            var syncAttemptsQuery = await queryProcessor.Execute(new GetPosChargeSyncAttemptsAsyncQuery
+            {
+                PosChargeIds = [chargeId],
+                States = [SyncAttemptState.Synced],
+                PageSize = null,
+            });
+            var syncAttemptsDictionary = syncAttemptsQuery.ToDictionary(s => s.Type, s => s);
+            if (syncAttemptsDictionary.ContainsKey(SyncAttemptType.Payment) == false)
+            {
+                logger.Log($"Pos Charge {chargeId} is not elligible to PoS refund as it was never synced", LogLevel.Warn);
+                return;
+            }
+
+            if (syncAttemptsDictionary.ContainsKey(SyncAttemptType.Refund))
+            {
+                logger.Log($"Pos Charge {chargeId} has already been refunded on the PoS and thus will not be sent again.", LogLevel.Warn);
+                return;
+            }
+
+            var integrationsQuery = await queryProcessor.Execute(new GetPosIntegrationsAsyncQuery
+            {
+                ChargeIds = [chargeId],
+                PageSize = 1,
+            });
+            var integration = integrationsQuery.Single();
+
+            var posChargeQuery = await queryProcessor.Execute(new GetPosChargesAsyncQuery
+            {
+                Ids = [chargeId],
+                PageSize = 1,
+            });
+            var posCharge = posChargeQuery.Single();
+
+            var states = await commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
+            {
+                Criteria = new GetPosChargeSyncAttemptsCriteria
+                {
+                    PosChargeIds = [chargeId],
+                    Types = [SyncAttemptType.Refund],
+                    PageSize = 1,
+                },
+                CreateData = new UpsertPosChargeSyncAttemptAsyncCommand.OnCreateData
+                {
+                    PosChargeId = chargeId,
+                    MerchantId = integration.MerchantId,
+                    Type = SyncAttemptType.Refund,
+                },
+                UpdateAction = e =>
+                {
+                    if (e.State == SyncAttemptState.Failed)
+                        e.State = SyncAttemptState.Syncing;
+
+                    return Task.CompletedTask;
+                },
+            });
+            var state = states.Single();
+            if (state.State == SyncAttemptState.Synced)
+                return;
+
+            Exception? exception = null;
+            decimal amountRefunded = 0.0m;
+            try
+            {
+                amountRefunded = posCharge.InvoiceRefundType == InvoiceRefundType.Cancellation
+                    ? await syncStrategies[integration.IntegrationType].RefundChargeAsCancellation(integration, chargeId, amountToRefund, string.IsNullOrWhiteSpace(posCharge.RefundReason) ? "Desconhecido" : posCharge.RefundReason)
+                    : await syncStrategies[integration.IntegrationType].RefundChargeAsCreditNote(integration, chargeId, amountToRefund);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            await commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
+            {
+                Criteria = new GetPosChargeSyncAttemptsCriteria
+                {
+                    Ids = [state.Id],
+                    Types = [SyncAttemptType.Refund],
+                    PageSize = 1,
+                },
+                UpdateAction = e =>
+                {
+                    if (e.State != SyncAttemptState.Syncing)
+                        return Task.CompletedTask;
+
+                    if (exception == null)
+                    {
+                        e.State = SyncAttemptState.Synced;
+                        e.SyncedAmount = amountRefunded;
+                        return Task.CompletedTask;
+                    }
+
+                    e.State = SyncAttemptState.Failed;
+                    return Task.CompletedTask;
+                },
+            });
+
+            if (exception != null)
+                throw exception;
         }
         #endregion
 
@@ -342,7 +449,7 @@ namespace Quivi.Application.Pos
                 var strategy = syncStrategies[integration.IntegrationType];
                 var events = await strategy.ProcessOrders(integration, orderIds, fromState, complete);
                 await commandProcessor.Execute(new DispatchEventsAsyncCommand
-                { 
+                {
                     Events = events,
                 });
                 if (new[] { OrderState.Draft, OrderState.Accepted, OrderState.Scheduled }.Contains(fromState))

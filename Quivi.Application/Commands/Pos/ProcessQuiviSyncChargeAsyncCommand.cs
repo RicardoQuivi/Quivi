@@ -63,14 +63,15 @@ namespace Quivi.Application.Commands.Pos
             this.posChargesRepository = posChargesRepository;
         }
 
-        protected override async Task Sync(ProcessQuiviSyncChargeAsyncCommand command)
+        protected override Task Sync(ProcessQuiviSyncChargeAsyncCommand command)
         {
-            await commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
+            return commandProcessor.Execute(new UpsertPosChargeSyncAttemptAsyncCommand
             {
                 Criteria = new GetPosChargeSyncAttemptsCriteria
                 {
                     PosChargeIds = [command.PosChargeId],
                     States = [SyncAttemptState.Syncing, SyncAttemptState.Synced],
+                    Types = [SyncAttemptType.Payment],
                     PageSize = 1,
                 },
                 UpdateAction = async e =>

@@ -2,6 +2,7 @@
 {
     public class SimplifiedInvoice : ADocument
     {
-        public string? CustomerVatNumber { get; set; }
+        public string? CustomerVatNumber { get; init; }
+        public required string PaymentMethodCode { get; init; }
     }
 }

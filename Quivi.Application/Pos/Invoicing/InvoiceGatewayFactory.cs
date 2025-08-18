@@ -2,8 +2,8 @@
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
-using Quivi.Infrastructure.Pos.Facturalusa;
-using Quivi.Infrastructure.Pos.Facturalusa.Abstractions;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2.Abstractions;
 using System.Collections.Concurrent;
 
 namespace Quivi.Application.Pos.Invoicing
@@ -12,10 +12,10 @@ namespace Quivi.Application.Pos.Invoicing
     {
         private readonly IQueryProcessor queryProcessor;
         private readonly ICommandProcessor commandProcessor;
-        private readonly IFacturalusaServiceFactory facturalusaServiceFactory;
+        private readonly IFacturaLusaServiceFactory facturalusaServiceFactory;
         private readonly ConcurrentDictionary<string, IInvoiceGateway> loadedFacturalusaGateways = new ConcurrentDictionary<string, IInvoiceGateway>();
 
-        public InvoiceGatewayFactory(IQueryProcessor queryProcessor, ICommandProcessor commandProcessor, IFacturalusaServiceFactory facturalusaServiceFactory)
+        public InvoiceGatewayFactory(IQueryProcessor queryProcessor, ICommandProcessor commandProcessor, IFacturaLusaServiceFactory facturalusaServiceFactory)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
@@ -35,7 +35,7 @@ namespace Quivi.Application.Pos.Invoicing
         {
             if (loadedFacturalusaGateways.TryGetValue(settings.AccessToken, out var gateway) == false)
             {
-                gateway = new FacturalusaGateway(facturalusaServiceFactory, settings.AccessToken, settings.MerchantId.ToString())
+                gateway = new FacturaLusaInvoiceGateway(facturalusaServiceFactory, settings.AccessToken, settings.MerchantId.ToString())
                 {
                     CommandProcessor = commandProcessor,
                     QueryProcessor = queryProcessor,

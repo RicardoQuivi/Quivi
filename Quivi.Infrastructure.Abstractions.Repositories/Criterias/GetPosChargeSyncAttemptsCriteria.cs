@@ -7,6 +7,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? PosChargeIds { get; init; }
         public IEnumerable<SyncAttemptState>? States { get; init; }
+        public IEnumerable<SyncAttemptType>? Types { get; init; }
         public bool IncludePosCharge { get; init; }
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }

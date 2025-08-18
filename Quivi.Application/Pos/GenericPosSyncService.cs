@@ -3,6 +3,7 @@ using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Pos;
+using Quivi.Infrastructure.Abstractions.Services;
 using Quivi.Infrastructure.Abstractions.Storage;
 
 namespace Quivi.Application.Pos
@@ -15,7 +16,8 @@ namespace Quivi.Application.Pos
                                 IBackgroundJobHandler backgroundJobHandler,
                                 IEventService eventService,
                                 IStorageService storageService,
-                                IIdConverter idConverter) : base(dataSyncStrategies, queryProcessor, commandProcessor, backgroundJobHandler, eventService, storageService, idConverter)
+                                IIdConverter idConverter,
+                                ILogger logger) : base(dataSyncStrategies, queryProcessor, commandProcessor, backgroundJobHandler, eventService, storageService, idConverter, logger)
         {
         }
     }

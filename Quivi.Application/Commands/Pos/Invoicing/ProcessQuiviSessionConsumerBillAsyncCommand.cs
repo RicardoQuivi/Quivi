@@ -55,21 +55,17 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             if (unpaidItems.Sum(r => r.SessionItem.GetUnitPrice() * r.SessionItem.Quantity) == 0)
                 return null;
 
-            var dateTime = unpaidItems.OrderByDescending(o => o.SessionItem.Source.Select(e => e.ModifiedDate).Max());
-            var id = $"QV-CM-{dateTime}";
-
             var bill = await command.InvoiceGateway.CreateConsumerBillReceipt(new ConsumerBill
             {
-                PaymentMethodCode = string.Empty,
-
                 CreatedDateUtc = dateTimeProvider.GetUtcNow(),
-                SerieCode = command.InvoiceGateway.BuildCompleteSerieCode("QVCM", command.InvoicePrefix),
-                PricesType = Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models.PriceType.IncludedTaxes,
+                SerieCode = command.InvoiceGateway.BuildCompleteSerieCode("QV", command.InvoicePrefix),
+                PricesType = PriceType.IncludedTaxes,
                 Items = unpaidItems.Select(o =>
                 {
                     var firstItem = o.SessionItem.Source.First();
                     return new InvoiceItem(InvoiceItemType.ProcessedProducts)
                     {
+                        Reference = idConverter.ToPublicId(o.SessionItem.MenuItemId),
                         CorrelationId = idConverter.ToPublicId(o.SessionItem.MenuItemId),
                         Name = firstItem.Name,
                         Price = o.SessionItem.Price,

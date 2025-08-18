@@ -16,7 +16,7 @@ namespace Quivi.Infrastructure.Repositories
         {
             IQueryable<PosChargeSyncAttempt> query = Set;
 
-            if(criteria.IncludePosCharge)
+            if (criteria.IncludePosCharge)
                 query = query.Include(q => q.PosCharge);
 
             if (criteria.Ids != null)
@@ -27,6 +27,9 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.States != null)
                 query = query.Where(q => criteria.States.Contains(q.State));
+
+            if (criteria.Types != null)
+                query = query.Where(q => criteria.Types.Contains(q.Type));
 
             return query.OrderBy(o => o.Id);
         }

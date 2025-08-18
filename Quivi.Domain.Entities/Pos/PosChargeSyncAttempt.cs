@@ -7,10 +7,17 @@
         Synced = 1,
     }
 
+    public enum SyncAttemptType
+    {
+        Payment = 0,
+        Refund = 1,
+    }
+
     public class PosChargeSyncAttempt : IEntity
     {
         public int Id { get; set; }
         public SyncAttemptState State { get; set; }
+        public SyncAttemptType Type { get; set; }
         public decimal SyncedAmount { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }

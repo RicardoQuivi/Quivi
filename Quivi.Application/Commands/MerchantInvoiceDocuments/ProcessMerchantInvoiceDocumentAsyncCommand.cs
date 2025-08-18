@@ -46,7 +46,7 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
             {
                 Ids = [command.MerchantInvoiceDocumentId],
                 Formats = [DocumentFormat.EscPos, DocumentFormat.Pdf],
-                Types = [InvoiceDocumentType.OrderInvoice, InvoiceDocumentType.SurchargeInvoice],
+                Types = [InvoiceDocumentType.OrderInvoice, InvoiceDocumentType.SurchargeInvoice, InvoiceDocumentType.CreditNote, InvoiceDocumentType.InvoiceCancellation],
                 HasDownloadPath = true,
                 HasPosCharge = true,
                 IncludePosCharge = true,
@@ -61,12 +61,12 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
 
             if (document.Format == DocumentFormat.EscPos)
             {
-                if (document.DocumentType == InvoiceDocumentType.OrderInvoice)
+                if (new[] { InvoiceDocumentType.OrderInvoice, InvoiceDocumentType.CreditNote, InvoiceDocumentType.InvoiceCancellation }.Contains(document.DocumentType))
                     this.backgroundJobHandler.Enqueue(() => PrintDocument(document.MerchantId, NotificationMessageType.NewConsumerInvoice, document.Path!));
                 return;
             }
 
-            if(document.Format == DocumentFormat.Pdf)
+            if (document.Format == DocumentFormat.Pdf)
             {
                 var email = document.Charge?.PosCharge?.Email;
                 if (string.IsNullOrWhiteSpace(email))

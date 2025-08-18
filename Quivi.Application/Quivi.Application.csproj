@@ -31,7 +31,7 @@
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.SendGrid\Quivi.Infrastructure.Mailing.SendGrid.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.Smtp\Quivi.Infrastructure.Mailing.Smtp.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.ESCPOS_NET\Quivi.Infrastructure.Pos.ESCPOS_NET.csproj" />
-    <ProjectReference Include="..\Quivi.Infrastructure.Pos.Facturalusa\Quivi.Infrastructure.Pos.Facturalusa.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Pos.FacturaLusa.v2\Quivi.Infrastructure.Pos.FacturaLusa.v2.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Storage.Azure\Quivi.Infrastructure.Storage.Azure.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure\Quivi.Infrastructure.csproj" />
   </ItemGroup>

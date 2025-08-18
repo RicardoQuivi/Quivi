@@ -2339,6 +2339,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<decimal>("SyncedAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PosChargeId");

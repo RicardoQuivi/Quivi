@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FacturaLusa.v2\FacturaLusa.v2.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Abstractions.Pos\Quivi.Infrastructure.Abstractions.Pos.csproj" />
+  </ItemGroup>
+
+</Project>
