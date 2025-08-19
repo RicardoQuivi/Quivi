@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Quivi.Application.OAuth2.Extensions;
 using Quivi.Application.Queries.Employees;
 using Quivi.Application.Queries.Merchants;
 using Quivi.Domain.Entities.Merchants;
@@ -15,7 +16,6 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Claims;
 using Quivi.Infrastructure.Extensions;
-using Quivi.Application.OAuth2.Extensions;
 using System.Data;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -54,7 +54,7 @@ namespace Quivi.OAuth2.Controllers
         public async Task<IActionResult> Exchange()
         {
             var request = HttpContext.GetOpenIddictServerRequest();
-            
+
             if (request == null)
                 throw new InvalidOperationException("No request provided");
 
@@ -142,7 +142,7 @@ namespace Quivi.OAuth2.Controllers
                 MerchantId = idConverter.FromPublicId(rawSubmerchantId),
                 PinCode = pinCode,
             });
-            if(employee == null)
+            if (employee == null)
                 return BadRequest();
 
             var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, QuiviClaims.Email, QuiviClaims.Role);
@@ -225,8 +225,6 @@ namespace Quivi.OAuth2.Controllers
             if (result.Principal.Identity?.IsAuthenticated != true)
             {
                 var tokenHandler = new JsonWebTokenHandler();
-                var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
-                var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
                 var tokenValidationResult = await tokenHandler.ValidateTokenAsync(token, new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -234,7 +232,7 @@ namespace Quivi.OAuth2.Controllers
                     ValidateLifetime = true,
                     ValidIssuer = new Uri(appHostsSettings.OAuth, UriKind.Absolute).ToString(),
                     ValidAudience = audience,
-                    IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
+                    IssuerSigningKey = new RsaSecurityKey(jwtSettings.SigningCertificate.GetRSAPublicKey()),
                 });
                 if (tokenValidationResult.IsValid == false)
                 {

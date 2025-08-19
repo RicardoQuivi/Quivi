@@ -59,8 +59,13 @@ env:
   JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
   JwtSettings__ExpireTimeSpan: ${{ vars.JWTSETTINGS__EXPIRETIMESPAN }}
   JwtSettings__RefreshTokenExpireTimeSpan: ${{ vars.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
-  JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
-  JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
+  JwtSettings__SigningCertificate__Base64: ${{ secrets.JWTSETTINGS__SIGNINGCERTIFICATE__BASE64 }}
+  JwtSettings__SigningCertificate__Password: ${{ secrets.JWTSETTINGS__SIGNINGCERTIFICATE__PASSWORD }}
+  JwtSettings__EncryptionCertificate__Base64: ${{ secrets.JWTSETTINGS__ENCRYPTIONCERTIFICATE__BASE64 }}
+  JwtSettings__EncryptionCertificate__Password: ${{ secrets.JWTSETTINGS__ENCRYPTIONCERTIFICATE__PASSWORD }}
+  JwtSettings__AzureCertificate__VaultUri: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__VAULTURI }}
+  JwtSettings__AzureCertificate__SigningName: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__SIGNINGNAME }}
+  JwtSettings__AzureCertificate__EncryptionName: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__ENCRYPTIONNAME }}
 
   # Defaults
   DefaultSettings__DefaultMerchantLogo: ${{ vars.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}

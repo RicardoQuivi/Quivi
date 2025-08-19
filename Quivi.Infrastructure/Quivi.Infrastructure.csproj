@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Security.KeyVault.Certificates" Version="4.8.0" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
   </ItemGroup>
 

@@ -5,7 +5,6 @@ using Quivi.Application.OAuth2.Database;
 using Quivi.Application.OAuth2.OpenIddict.Handlers;
 using Quivi.Infrastructure.Abstractions.Configurations;
 using Quivi.Infrastructure.Configurations;
-using System.Security.Cryptography.X509Certificates;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
 namespace Quivi.Application.OAuth2.Extensions
@@ -55,10 +54,8 @@ namespace Quivi.Application.OAuth2.Extensions
                                                 .SetOrder(900_000);
                                     });
 
-                                    var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
-                                    var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
-                                    options.AddSigningCertificate(cert);
-                                    options.AddEncryptionCertificate(cert);
+                                    options.AddSigningCertificate(jwtSettings.SigningCertificate);
+                                    options.AddEncryptionCertificate(jwtSettings.EncryptionCertificate);
 
                                     options.UseAspNetCore()
                                            .EnableTokenEndpointPassthrough()

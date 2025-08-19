@@ -1,5 +1,7 @@
-﻿
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
 using Quivi.Infrastructure.Abstractions.Configurations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Quivi.Infrastructure.Configurations
 {
@@ -8,20 +10,78 @@ namespace Quivi.Infrastructure.Configurations
         public required string Issuer { get; init; }
         public required IEnumerable<string> Audiences { get; init; }
         public required string Secret { get; init; }
-        public required JwtCertificate Certificate { get; init; }
         TimeSpan IJwtSettings.ExpireTimeSpan => TimeSpan.Parse(ExpireTimeSpan);
         TimeSpan IJwtSettings.RefreshTokenExpireTimeSpan => TimeSpan.Parse(RefreshTokenExpireTimeSpan);
-
         public required string ExpireTimeSpan { get; init; }
         public required string RefreshTokenExpireTimeSpan { get; init; }
 
-        IJwtCertificate IJwtSettings.Certificate => Certificate;
 
-        public class JwtCertificate : IJwtCertificate
+        X509Certificate2 IJwtSettings.SigningCertificate
+        {
+            get
+            {
+                if (signingCertificate != null)
+                    return signingCertificate;
+
+                if (AzureCertificate != null)
+                {
+                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), new DefaultAzureCredential());
+                    var cert = certClient.GetCertificate(AzureCertificate.SigningName).Value;
+                    signingCertificate = new X509Certificate2(cert.Cer);
+                    return signingCertificate;
+                }
+
+                if (SigningCertificate != null)
+                {
+                    signingCertificate = new X509Certificate2(Convert.FromBase64String(SigningCertificate.Base64), SigningCertificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+                    return signingCertificate;
+                }
+
+                throw new Exception("Invalid Jwt Certificate Configuration");
+            }
+        }
+        X509Certificate2 IJwtSettings.EncryptionCertificate
+        {
+            get
+            {
+                if (encryptionCertificate != null)
+                    return encryptionCertificate;
+
+                if (AzureCertificate != null)
+                {
+                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), new DefaultAzureCredential());
+                    var cert = certClient.GetCertificate(AzureCertificate.EncryptionName).Value;
+                    encryptionCertificate = new X509Certificate2(cert.Cer);
+                    return encryptionCertificate;
+                }
+
+                if (EncryptionCertificate != null)
+                {
+                    encryptionCertificate = new X509Certificate2(Convert.FromBase64String(EncryptionCertificate.Base64), EncryptionCertificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+                    return encryptionCertificate;
+                }
+
+                throw new Exception("Invalid Jwt Certificate Configuration");
+            }
+        }
+        private X509Certificate2? signingCertificate;
+        private X509Certificate2? encryptionCertificate;
+
+        public JwtCertificate? SigningCertificate { get; init; }
+        public JwtCertificate? EncryptionCertificate { get; init; }
+        public AzureCertificateSettings? AzureCertificate { get; init; }
+
+        public class JwtCertificate
         {
             public required string Base64 { get; init; }
-
             public required string Password { get; init; }
+        }
+
+        public class AzureCertificateSettings
+        {
+            public required string VaultUri { get; init; }
+            public required string SigningName { get; init; }
+            public required string EncryptionName { get; init; }
         }
     }
 }

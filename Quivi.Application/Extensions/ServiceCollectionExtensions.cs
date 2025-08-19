@@ -286,10 +286,8 @@ namespace Quivi.Application.Extensions
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+                IJwtSettings jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
                 var hostsSettings = configuration.GetSection("AppHosts").Get<AppHostsSettings>()!;
-                var certificateBytes = Convert.FromBase64String(jwtSettings.Certificate.Base64);
-                var cert = new X509Certificate2(certificateBytes, jwtSettings.Certificate.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
                 var authUri = new Uri(hostsSettings.OAuth, UriKind.Absolute).ToString();
                 var tokenParameters = new TokenValidationParameters
                 {
@@ -298,9 +296,8 @@ namespace Quivi.Application.Extensions
                     ValidateLifetime = true,
                     ValidIssuer = new Uri(authUri, UriKind.Absolute).ToString(),
                     ValidAudiences = jwtSettings.Audiences,
-                    IssuerSigningKey = new RsaSecurityKey(cert.GetRSAPublicKey()),
+                    IssuerSigningKey = new RsaSecurityKey(jwtSettings.SigningCertificate.GetRSAPublicKey()),
                     ClockSkew = TimeSpan.Zero,
-
                     RoleClaimType = "role",
                 };
 
