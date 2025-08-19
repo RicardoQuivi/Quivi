@@ -13,6 +13,9 @@ env:
   LOCATION: westeurope
   IMAGE_TAG: ${{ github.sha }}
 
+  # Azure Credentials
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
   # Connection Strings
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
   ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
@@ -107,10 +110,18 @@ jobs:
       - name: Log in to ACR
         run: az acr login --name $ACR_NAME
 
+      - name: Debug AZURE_CREDENTIALS Keys
+        run: echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r 'keys[]'
+
       - name: Create Environment file
         run: |
           printenv | grep '__' > github.env
-        
+          echo "AZURE_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> github.env
+          echo "AZURE_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> github.env
+          echo "AZURE_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')" >> github.env
+          echo "KEY_VAULT_NAME=<your-keyvault-name>" >> github.env
+          echo "CERTIFIER_NAME=<your-certificate-name>" >> github.env
+          
       - name: Run Quivi.Migrator
         run: |
           docker run --env-file github.env --rm ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:${{ env.IMAGE_TAG }}
