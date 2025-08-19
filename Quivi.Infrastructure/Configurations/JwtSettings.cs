@@ -25,9 +25,10 @@ namespace Quivi.Infrastructure.Configurations
 
                 if (AzureCertificate != null)
                 {
-                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), new DefaultAzureCredential());
-                    var cert = certClient.GetCertificate(AzureCertificate.SigningName).Value;
-                    signingCertificate = new X509Certificate2(cert.Cer);
+                    var credential = new ClientSecretCredential(AzureCertificate.TenantId, AzureCertificate.ClientId, AzureCertificate.ClientSecret);
+                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), credential);
+                    var cert = certClient.DownloadCertificate(AzureCertificate.EncryptionName).Value;
+                    signingCertificate = cert;
                     return signingCertificate;
                 }
 
@@ -49,9 +50,10 @@ namespace Quivi.Infrastructure.Configurations
 
                 if (AzureCertificate != null)
                 {
-                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), new DefaultAzureCredential());
-                    var cert = certClient.GetCertificate(AzureCertificate.EncryptionName).Value;
-                    encryptionCertificate = new X509Certificate2(cert.Cer);
+                    var credential = new ClientSecretCredential(AzureCertificate.TenantId, AzureCertificate.ClientId, AzureCertificate.ClientSecret);
+                    var certClient = new CertificateClient(new Uri(AzureCertificate.VaultUri), credential);
+                    var cert = certClient.DownloadCertificate(AzureCertificate.EncryptionName).Value;
+                    encryptionCertificate = cert;
                     return encryptionCertificate;
                 }
 
@@ -80,6 +82,9 @@ namespace Quivi.Infrastructure.Configurations
         public class AzureCertificateSettings
         {
             public required string VaultUri { get; init; }
+            public required string TenantId { get; init; }
+            public required string ClientId { get; init; }
+            public required string ClientSecret { get; init; }
             public required string SigningName { get; init; }
             public required string EncryptionName { get; init; }
         }

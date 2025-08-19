@@ -13,9 +13,6 @@ env:
   LOCATION: westeurope
   IMAGE_TAG: ${{ github.sha }}
 
-  # Azure Credentials
-  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-
   # Connection Strings
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
   ConnectionStrings__OAuth: ${{ secrets.CONNECTIONSTRINGS__OAUTH }}
@@ -67,6 +64,9 @@ env:
   JwtSettings__EncryptionCertificate__Base64: ${{ secrets.JWTSETTINGS__ENCRYPTIONCERTIFICATE__BASE64 }}
   JwtSettings__EncryptionCertificate__Password: ${{ secrets.JWTSETTINGS__ENCRYPTIONCERTIFICATE__PASSWORD }}
   JwtSettings__AzureCertificate__VaultUri: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__VAULTURI }}
+  JwtSettings__AzureCertificate__TenantId: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__TENANTID }}
+  JwtSettings__AzureCertificate__ClientId: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__CLIENTID }}
+  JwtSettings__AzureCertificate__ClientSecret: ${{ secrets.JWTSETTINGS__AZURECERTIFICATE__CLIENTSECRET }}
   JwtSettings__AzureCertificate__SigningName: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__SIGNINGNAME }}
   JwtSettings__AzureCertificate__EncryptionName: ${{ vars.JWTSETTINGS__AZURECERTIFICATE__ENCRYPTIONNAME }}
 
@@ -110,18 +110,10 @@ jobs:
       - name: Log in to ACR
         run: az acr login --name $ACR_NAME
 
-      - name: Debug AZURE_CREDENTIALS Keys
-        run: echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r 'keys[]'
-
       - name: Create Environment file
         run: |
           printenv | grep '__' > github.env
-          echo "AZURE_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')" >> github.env
-          echo "AZURE_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')" >> github.env
-          echo "AZURE_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')" >> github.env
-          echo "KEY_VAULT_NAME=<your-keyvault-name>" >> github.env
-          echo "CERTIFIER_NAME=<your-certificate-name>" >> github.env
-          
+
       - name: Run Quivi.Migrator
         run: |
           docker run --env-file github.env --rm ${{ env.ACR_NAME }}.azurecr.io/quivi.migrator:${{ env.IMAGE_TAG }}
