@@ -26,19 +26,19 @@ env:
   SendGrid__ApiKey: ${{ secrets.SENDGRID__APIKEY }}
   
   # Smtp
-  Smtp__Host: ${{ secrets.SMTP__HOST }}
-  Smtp__Port: ${{ secrets.SMTP__PORT }}
+  Smtp__Host: ${{ vars.SMTP__HOST }}
+  Smtp__Port: ${{ vars.SMTP__PORT }}
   Smtp__Username: ${{ secrets.SMTP__USERNAME }}
   Smtp__Password: ${{ secrets.SMTP__PASSWORD }}
 
   # RabbitMq
-  RabbitMq__Hosts__0: ${{ secrets.RABBITMQ__HOSTS__0 }}
+  RabbitMq__Hosts__0: ${{ vars.RABBITMQ__HOSTS__0 }}
   RabbitMq__Username: ${{ secrets.RABBITMQ__USERNAME }}
   RabbitMq__Password: ${{ secrets.RABBITMQ__PASSWORD }}
-
+  
   # Printer Connector RabbitMq
-  PrinterConnector__Host: ${{ secrets.PRINTERCONNECTOR__HOST }}
-  PrinterConnector__Port: ${{ secrets.PRINTERCONNECTOR__PORT }}
+  PrinterConnector__Host: ${{ vars.PRINTERCONNECTOR__HOST }}
+  PrinterConnector__Port: ${{ vars.PRINTERCONNECTOR__PORT }}
   PrinterConnector__Username: ${{ secrets.PRINTERCONNECTOR__USERNAME }}
   PrinterConnector__Password: ${{ secrets.PRINTERCONNECTOR__PASSWORD }}
 
@@ -54,34 +54,34 @@ env:
   AppHosts__Pos: ${{ vars.APPHOSTS__POS }}
 
   # JWT Settings
-  JwtSettings__Issuer: ${{ secrets.JWTSETTINGS__ISSUER }}
-  JwtSettings__Audiences__0: ${{ secrets.JWTSETTINGS__AUDIENCES__0 }}
+  JwtSettings__Issuer: ${{ vars.JWTSETTINGS__ISSUER }}
+  JwtSettings__Audiences__0: ${{ vars.JWTSETTINGS__AUDIENCES__0 }}
   JwtSettings__Secret: ${{ secrets.JWTSETTINGS__SECRET }}
-  JwtSettings__ExpireTimeSpan: ${{ secrets.JWTSETTINGS__EXPIRETIMESPAN }}
-  JwtSettings__RefreshTokenExpireTimeSpan: ${{ secrets.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
+  JwtSettings__ExpireTimeSpan: ${{ vars.JWTSETTINGS__EXPIRETIMESPAN }}
+  JwtSettings__RefreshTokenExpireTimeSpan: ${{ vars.JWTSETTINGS__REFRESHTOKENEXPIRETIMESPAN }}
   JwtSettings__Certificate__Base64: ${{ secrets.JWTSETTINGS__CERTIFICATE__BASE64 }}
   JwtSettings__Certificate__Password: ${{ secrets.JWTSETTINGS__CERTIFICATE__PASSWORD }}
 
   # Defaults
-  DefaultSettings__DefaultMerchantLogo: ${{ secrets.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
+  DefaultSettings__DefaultMerchantLogo: ${{ vars.DEFAULTSETTINGS__DEFAULTMERCHANTLOGO }}
 
   # Storage
   Storage__Provider: ${{ vars.STORAGE__PROVIDER }}
 
   # File System Storage
-  FileSystemStorage__Path: ${{ secrets.FILESYSTEMSTORAGE__PATH }}
+  FileSystemStorage__Path: ${{ vars.FILESYSTEMSTORAGE__PATH }}
 
   # Azure Blob Storage
   AzureBlobStorage__ConnectionString: ${{ secrets.AZUREBLOBSTORAGE__CONNECTIONSTRING }}
-  AzureBlobStorage__VirtualDirectory: ${{ secrets.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
+  AzureBlobStorage__VirtualDirectory: ${{ vars.AZUREBLOBSTORAGE__VIRTUALDIRECTORY }}
 
   # Invoicing
   Invoicing__Provider: ${{ vars.INVOICING__PROVIDER }}
 
   # Facturalusa invoicing
-  Facturalusa__Host: ${{ secrets.FACTURALUSA__HOST }}
+  Facturalusa__Host: ${{ vars.FACTURALUSA__HOST }}
   Facturalusa__AccessToken: ${{ secrets.FACTURALUSA__ACCESSTOKEN }}
-  Facturalusa__CommunicateSeries: ${{ secrets.FACTURALUSA__COMMUNICATESERIES }}
+  Facturalusa__CommunicateSeries: ${{ vars.FACTURALUSA__COMMUNICATESERIES }}
 
   # Paybyrd
   Paybyrd__Host: ${{ vars.PAYBYRD__HOST }}
@@ -91,6 +91,7 @@ env:
 jobs:
   quivi-migrator:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: Sandbox
     steps:
       - name: Log in to Azure
