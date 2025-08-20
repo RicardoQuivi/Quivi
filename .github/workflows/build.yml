@@ -10,7 +10,7 @@ permissions:
 
 env:
   ACR_NAME: quiviregistry
-  RESOURCE_GROUP: quivi-resourcegroup
+  RESOURCE_GROUP: sbx-quivi-resourcegroup
   LOCATION: westeurope
   IMAGE_TAG: ${{ github.sha }}
 
