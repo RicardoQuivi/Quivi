@@ -1,4 +1,4 @@
-name: "[PROD] Build Containers to Azure"
+name: "PROD - Build Containers to Azure"
 
 on:
   push:

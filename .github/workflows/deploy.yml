@@ -1,9 +1,9 @@
-name: "[SANDBOX] Deploy to Azure Containers"
+name: "SBX - Deploy to Azure Containers"
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["[SANDBOX] Build Containers to Azure"]
+    workflows: ["SBX - Build Containers to Azure"]
     types:
       - completed
 

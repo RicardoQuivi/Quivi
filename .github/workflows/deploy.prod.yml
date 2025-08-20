@@ -1,9 +1,9 @@
-name: "[PROD] Deploy to Azure Containers"
+name: "PROD - Deploy to Azure Containers"
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["[PROD] Build Containers to Azure"]
+    workflows: ["PROD - Build Containers to Azure"]
     types:
       - completed
 

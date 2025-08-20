@@ -1,4 +1,4 @@
-name: "[SANDBOX] Build Containers to Azure"
+name: "SBX - Build Containers to Azure"
 
 on:
   push:
