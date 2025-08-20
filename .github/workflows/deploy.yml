@@ -159,7 +159,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-oauth
+          containerAppName: oauth
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -204,7 +204,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-backoffice-api
+          containerAppName: backoffice-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -246,7 +246,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-background
+          containerAppName: background
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -295,7 +295,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-events
+          containerAppName: events
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -340,7 +340,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-pos-api
+          containerAppName: pos-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -386,7 +386,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-guests-api
+          containerAppName: guests-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -429,7 +429,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-backoffice
+          containerAppName: backoffice
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3010
@@ -471,7 +471,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-pos
+          containerAppName: pos
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3011
@@ -513,7 +513,7 @@ jobs:
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
           containerAppEnvironment: sandbox-quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-guests
+          containerAppName: guests
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3012
@@ -539,7 +539,7 @@ jobs:
 
       - name: Disable Azure platform CORS for all container apps
         run: |
-          APPS=("sbx-oauth" "sbx-backoffice-api" "sbx-background" "sbx-events" "sbx-pos-api" "sbx-backoffice" "sbx-pos" "sbx-guests-api" "sbx-guests")
+          APPS=("oauth" "backoffice-api" "background" "events" "pos-api" "backoffice" "pos" "guests-api" "guests")
           for APP in "${APPS[@]}"; do
             az containerapp ingress cors update \
               --name "$APP" \
