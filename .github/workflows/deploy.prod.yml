@@ -1,9 +1,9 @@
-name: "[SANDBOX] Deploy to Azure Containers"
+name: "[PROD] Deploy to Azure Containers"
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["[SANDBOX] Build Containers to Azure"]
+    workflows: ["[PROD] Build Containers to Azure"]
     types:
       - completed
 
@@ -11,7 +11,7 @@ env:
   ACR_NAME: quiviregistry
   RESOURCE_GROUP: quivi-resourcegroup
   LOCATION: westeurope
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_TAG: prod-${{ github.sha }}
 
   # Connection Strings
   ConnectionStrings__Quivi: ${{ secrets.CONNECTIONSTRINGS__QUIVI }}
@@ -100,7 +100,7 @@ jobs:
   quivi-migrator:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    environment: Sandbox
+    environment: Production
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -122,7 +122,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
       Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
@@ -157,9 +157,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.oauth2:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-oauth
+          containerAppName: oauth
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -168,7 +168,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
       JwtSettings__Audiences__0: backoffice
@@ -202,9 +202,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-backoffice-api
+          containerAppName: backoffice-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -213,7 +213,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -244,9 +244,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.hangfire:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-background
+          containerAppName: background
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -255,7 +255,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__BACKOFFICE }}
       Cors__AllowedOrigins__1: ${{ vars.APPHOSTS__POS }}
@@ -293,9 +293,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.signalr:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-events
+          containerAppName: events
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -304,7 +304,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__POS }}
       JwtSettings__Audiences__0: pos
@@ -338,9 +338,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-pos-api
+          containerAppName: pos-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -350,7 +350,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     env:
       Cors__AllowedOrigins__0: ${{ vars.APPHOSTS__GUESTSAPP }}
       JwtSettings__Audiences__0: guests
@@ -384,9 +384,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.api:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-guests-api
+          containerAppName: guests-api
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 8080
@@ -396,7 +396,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -427,9 +427,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.backoffice.react.webapp:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-backoffice
+          containerAppName: backoffice
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3010
@@ -438,7 +438,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -469,9 +469,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.pos.react.app:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-pos
+          containerAppName: pos
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3011
@@ -480,7 +480,7 @@ jobs:
     needs:
       - quivi-migrator
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
@@ -511,9 +511,9 @@ jobs:
           registryUrl: ${{ env.ACR_NAME }}.azurecr.io
           registryUsername: ${{ secrets.REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.REGISTRY_PASSWORD }}
-          containerAppEnvironment: sandbox-quivi-env
+          containerAppenvironment: quivi-env
           imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/quivi.guests.react.app:${{ env.IMAGE_TAG }}
-          containerAppName: sbx-guests
+          containerAppName: guests
           ingress: external
           environmentVariables: ${{ steps.load-env.outputs.env_vars }}
           targetPort: 3012
@@ -539,7 +539,7 @@ jobs:
 
       - name: Disable Azure platform CORS for all container apps
         run: |
-          APPS=("sbx-oauth" "sbx-backoffice-api" "sbx-background" "sbx-events" "sbx-pos-api" "sbx-backoffice" "sbx-pos" "sbx-guests-api" "sbx-guests")
+          APPS=("oauth" "backoffice-api" "background" "events" "pos-api" "backoffice" "pos" "guests-api" "guests")
           for APP in "${APPS[@]}"; do
             az containerapp ingress cors update \
               --name "$APP" \

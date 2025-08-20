@@ -1,9 +1,9 @@
-name: "[SANDBOX] Build Containers to Azure"
+name: "[PROD] Build Containers to Azure"
 
 on:
   push:
     branches:
-      - main
+      - production
 
 permissions:
   contents: write
@@ -12,12 +12,12 @@ env:
   ACR_NAME: quiviregistry
   RESOURCE_GROUP: quivi-resourcegroup
   LOCATION: westeurope
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_TAG: prod-${{ github.sha }}
 
 jobs:
   quivi-migrator:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -37,7 +37,7 @@ jobs:
 
   quivi-oauth:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -56,7 +56,7 @@ jobs:
 
   quivi-backoffice-api:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -76,7 +76,7 @@ jobs:
 
   quivi-hangfire:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -96,7 +96,7 @@ jobs:
 
   quivi-signalr:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -116,7 +116,7 @@ jobs:
 
   quivi-pos-api:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -136,7 +136,7 @@ jobs:
 
   quivi-guests-api:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -156,7 +156,7 @@ jobs:
 
   quivi-backoffice-app:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -181,7 +181,7 @@ jobs:
 
   quivi-pos-app:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -206,7 +206,7 @@ jobs:
 
   quivi-guests-app:
     runs-on: ubuntu-latest
-    environment: Sandbox
+    environment: Production
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -241,7 +241,7 @@ jobs:
   #     - quivi-pos-app
   #     - quivi-guests-app
   #   runs-on: ubuntu-latest
-  #   environment: Sandbox
+  #   environment: Production
   #   steps:
   #     - name: 'Checkout GitHub Action'
   #       uses: actions/checkout@main
