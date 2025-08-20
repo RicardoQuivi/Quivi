@@ -21,6 +21,7 @@ import { useTransactionMutator } from "../../hooks/mutators/useTransactionMutato
 import { PaymentAmountType } from "../../hooks/api/Dtos/payments/PaymentAmountType";
 import { TransactionSyncedPromise } from "../../hooks/signalR/promises/TransactionSyncedPromise";
 import { useTransactionsApi } from "../../hooks/api/useTransactionsApi";
+import { PreparationGroupDetailModal } from "../Orders/groups/PreparationGroupDetailModal";
 
 const getCheckedItems = (group: PreparationGroup | undefined) =>  {
     if(group == undefined) {
@@ -362,17 +363,17 @@ export const SessionButtons = ({
             items={pos.cartSession.items}
             onApplyDiscount={applyDiscount}
         />
-        {/*
         <PreparationGroupDetailModal 
             group={isPrepareModalOpen ? preparationGroup : undefined} 
             onClose={() => setIsPrepareModalOpen(false)}
-            locationsMap={localsMap}
-            currentLocationId={localId}
+            localsMap={localsMap}
+            currentLocalId={localId}
 
             checkedItems={isItemCheckedMap}
             onCheckedItemsChanged={setIsItemCheckedMap}
         />
-        <PaymentHistoryModal
+
+        {/* <PaymentHistoryModal
             isOpen={paymentHistoryModalOpen}
             onClose={() => setPaymentHistoryModalOpen(false)}
         /> */}
