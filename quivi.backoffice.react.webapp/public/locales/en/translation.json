@@ -487,7 +487,18 @@
             "defineCreateInterval": "Set range to create channels",
             "defineCreateIntervalDescription": "The range can have alfanumeric values but the start value and end value must have the same format.<br/>Example: 1 to 10 or A1 to A10.",
             "generate": "Generate",
-            "editMultipleWarning": "Changed will be applied to all previously selected channels"
+            "editMultipleWarning": "Changed will be applied to all previously selected channels",
+            "generateQrCode": "Generate QR Codes",
+            "qrCodeFormat": {
+                "rectangular": {
+                    "title": "Rectangular",
+                    "description": "8.5cm x 5.5cm"
+                }
+            },
+            "qrCode": {
+                "main": "Main text",
+                "secondary": "Secondary text"
+            }
         },
         "termsAndConditions": {
             "title": "Terms and conditions"

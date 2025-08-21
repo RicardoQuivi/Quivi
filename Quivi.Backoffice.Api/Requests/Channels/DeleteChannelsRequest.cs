@@ -1,4 +1,4 @@
-﻿namespace Quivi.Backoffice.Api.Responses.Channels
+﻿namespace Quivi.Backoffice.Api.Requests.Channels
 {
     public class DeleteChannelsRequest
     {

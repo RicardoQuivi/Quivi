@@ -8,6 +8,8 @@ import { DeleteChannelsResponse } from "./Dtos/channels/DeleteChannelsResponse";
 import { PatchChannelsRequest } from "./Dtos/channels/PatchChannelsRequest";
 import { PatchChannelsResponse } from "./Dtos/channels/PatchChannelsResponse";
 import { useAuthenticatedHttpClient } from "../../context/AuthContext";
+import { GenerateChannelsQrCodesRequest } from "./Dtos/channels/GenerateChannelsQrCodesRequest";
+import { GenerateChannelsQrCodesResponse } from "./Dtos/channels/GenerateChannelsQrCodesResponse";
 
 export const useChannelsApi = () => {
     const client = useAuthenticatedHttpClient();
@@ -38,12 +40,17 @@ export const useChannelsApi = () => {
         return client.delete<DeleteChannelsResponse>(url, request, {});
     }
 
+    const generateQrCodes = (request: GenerateChannelsQrCodesRequest) => {
+        const url = new URL(`api/channels/qrcodes`, import.meta.env.VITE_API_URL).toString();
+        return client.post<GenerateChannelsQrCodesResponse>(url, request, {});
+    }
 
     const state = useMemo(() => ({
         get,
         create,
         patch,
         delete: deleteChannel,
+        generateQrCodes,
     }), [client]);
 
     return state;

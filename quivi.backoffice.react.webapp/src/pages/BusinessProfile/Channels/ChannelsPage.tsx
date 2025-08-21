@@ -21,6 +21,7 @@ import { DeleteEntitiesModal } from "../../../components/modals/DeleteEntitiesMo
 import { EditChannelsModal } from "./EditChannelsModal";
 import { Divider } from "../../../components/dividers/Divider";
 import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
+import { PrintChannelsQrCodeModal } from "./PrintChannelsQrCodeModal";
 
 export const ChannelsPage = () => {
     const { t } = useTranslation();
@@ -34,6 +35,7 @@ export const ChannelsPage = () => {
     const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] = useState(false);
 
     const [channelsToEdit, setChannelsToEdit] = useState<Channel[]>([]);
+    const [channelsToPrint, setChannelsToPrint] = useState<Channel[]>([]);
 
     const [addChannelsModalOpen, setAddChannelsModalOpen] = useState(false);
     const [state, setState] = useState({
@@ -74,6 +76,11 @@ export const ChannelsPage = () => {
         return result;
     })
 
+    const onPrintSelectedItems = () => {
+        const checkedQrCodes = Array.from(checkedItems.values());
+        setChannelsToPrint(checkedQrCodes);
+    }
+
     const onEditSelectedItems = () => {
         const checkedQrCodes = Array.from(checkedItems.values());
         setChannelsToEdit(checkedQrCodes);
@@ -86,6 +93,11 @@ export const ChannelsPage = () => {
 
     const onEditChannelModalClose = () => {
         setChannelsToEdit([]);
+        setCheckedItems(new Set<Channel>());
+    }
+
+    const onPrintChannelModalClose = () => {
+        setChannelsToPrint([]);
         setCheckedItems(new Set<Channel>());
     }
 
@@ -130,6 +142,13 @@ export const ChannelsPage = () => {
                         actions={[
                             <Button
                                 variant="outline"
+                                onClick={onPrintSelectedItems}
+                                startIcon={<PrinterIcon className="size-5" />}
+                            >
+                                {t("common.print")}
+                            </Button>,
+                            <Button
+                                variant="outline"
                                 onClick={onEditSelectedItems}
                                 startIcon={<PencilIcon className="size-5" />}
                             >
@@ -140,7 +159,7 @@ export const ChannelsPage = () => {
                                 onClick={onDeleteSelectedItems}
                                 startIcon={<TrashBinIcon className="size-5" />}
                             >
-                                    {t("common.delete")}
+                                {t("common.delete")}
                             </Button>,
                         ]} 
                     />
@@ -209,7 +228,7 @@ export const ChannelsPage = () => {
                                 render: () => <PrinterIcon className="size-5" />,
                                 key: "print",
                                 label: t("common.print"),
-                                onClick: _d => { }, //TODO: Print
+                                onClick:  d => setChannelsToPrint([d]),
                             },
                             {
                                 render: () => <PencilIcon className="size-5" />,
@@ -264,6 +283,12 @@ export const ChannelsPage = () => {
             isOpen={channelsToEdit.length > 0}
             channelProfileId={channelsToEdit.length > 0 ? channelsToEdit[0].channelProfileId : undefined}
             onClose={onEditChannelModalClose}
+        />
+        <PrintChannelsQrCodeModal
+            applyToAll={allItemsChecked}
+            channelIds={allItemsChecked ? [] : channelsToPrint.map(q => q.id)}
+            isOpen={channelsToPrint.length > 0}
+            onClose={onPrintChannelModalClose}
         />
     </>
 }

@@ -53,7 +53,7 @@ namespace Quivi.Backoffice.Api.Controllers
 
             var result = await queryProcessor.Execute(new GetChannelsAsyncQuery
             {
-                MerchantIds = subMerchantId == null ? null : [ subMerchantId.Value ],
+                MerchantIds = subMerchantId == null ? null : [subMerchantId.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 Flags = features,
                 PageIndex = request.Page,
@@ -103,7 +103,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetChannelsCriteria
                 {
                     Ids = request.Ids.Select(idConverter.FromPublicId),
-                    MerchantIds = [ User.SubMerchantId(idConverter)!.Value ],
+                    MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                     IsDeleted = false,
                 },
                 UpdateAction = (e) =>
@@ -138,7 +138,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 Criteria = new Infrastructure.Abstractions.Repositories.Criterias.GetChannelsCriteria
                 {
                     Ids = request.Ids.Select(idConverter.FromPublicId),
-                    MerchantIds = [ User.SubMerchantId(idConverter)!.Value ],
+                    MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                     IsDeleted = false,
                 },
                 UpdateAction = (e) =>
@@ -149,6 +149,23 @@ namespace Quivi.Backoffice.Api.Controllers
             });
 
             return new DeleteChannelsResponse();
+        }
+
+        [HttpPost("qrcodes")]
+        public async Task<GenerateChannelQrCodesResponse> GenerateQrCode([FromBody] GenerateChannelQrCodesRequest request)
+        {
+            var pdf = await commandProcessor.Execute(new GenerateChannelsQrCodesAsyncCommand
+            {
+                MerchantId = User.SubMerchantId(idConverter)!.Value,
+                ChannelIds = request.ChannelIds?.Select(idConverter.FromPublicId),
+                MainText = request.MainText,
+                SecondaryText = request.SecondaryText,
+            });
+
+            return new GenerateChannelQrCodesResponse
+            {
+                Base64Content = Convert.ToBase64String(pdf),
+            };
         }
     }
 }

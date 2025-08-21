@@ -87,6 +87,7 @@ import { ReactComponent as ProfileIcon } from "./profile.svg?react";
 import { ReactComponent as SignOutIcon } from "./sign-out.svg?react";
 import { ReactComponent as ThreeDotsVertical } from "./3-dots-vertical.svg?react";
 import { ReactComponent as LinkIcon } from "./link.svg?react";
+import { ReactComponent as QrCodeRectangularFormat } from "./qrcode-format-rectangular.svg?react";
 
 export {
     ErrorHexaIcon,
@@ -178,4 +179,5 @@ export {
     SignOutIcon,
     ThreeDotsVertical,
     LinkIcon,
+    QrCodeRectangularFormat,
 };

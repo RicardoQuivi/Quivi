@@ -19,7 +19,7 @@ namespace Quivi.Infrastructure.Storage
         }
 
         public Task<Stream> GetFileAsync(string file) => fileStorages.First(s => s.IsMine(file) == true).GetFileAsync(file);
-        
+
         public async Task<Stream> GetFile(string name, params string[] folderHierarchy)
         {
             try

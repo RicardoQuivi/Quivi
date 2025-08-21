@@ -1,4 +1,4 @@
-﻿namespace Quivi.Backoffice.Api.Responses.Channels
+﻿namespace Quivi.Backoffice.Api.Requests.Channels
 {
     public class CreateChannelsRequest
     {
@@ -9,6 +9,5 @@
     public class AddChannel
     {
         public required string Name { get; init; } = string.Empty;
-
     }
 }

@@ -28,10 +28,15 @@ namespace Quivi.Infrastructure.Storage.Azure
 
         public async Task<Stream> GetFileAsync(string file)
         {
-            if (IsMine(file) == false)
+            BlobServiceClient blobServiceClient = new BlobServiceClient(ConnectionString);
+            var baseUri = blobServiceClient.Uri.AbsoluteUri.CombinePath(VirtualDirectory);
+            if (file.StartsWith(baseUri) == false)
                 throw new ArgumentException($"{file} is not a valid path");
 
-            var blobClient = await GetBlobClient(file);
+            var relativefilePath = file.Substring(baseUri.Length);
+            var aux = relativefilePath.Split("/");
+
+            var blobClient = await GetBlobClient(aux.Last(), aux.Take(aux.Length - 1).ToArray());
             if (await blobClient.ExistsAsync() == false)
                 throw new FileNotFoundException();
 

@@ -487,7 +487,18 @@
             "defineCreateInterval": "Definir intervalo para gerar",
             "defineCreateIntervalDescription": "O intervalo pode conter valores alfanuméricos desde que o valor inicial e o valor final estejam no mesmo formato.<br/>Por exemplo: de '1 até 10' ou de 'A1 até 'A10'.",
             "generate": "Gerar",
-            "editMultipleWarning": "As alterações serão aplicadas a todos os canais previamente selecionados."
+            "editMultipleWarning": "As alterações serão aplicadas a todos os canais previamente selecionados.",
+            "generateQrCode": "Gerar códigos QR",
+            "qrCodeFormat": {
+                "rectangular": {
+                    "title": "Retangular",
+                    "description": "8.5cm x 5.5cm"
+                }
+            },
+            "qrCode": {
+                "main": "Texto principal",
+                "secondary": "Texto secundário"
+            }
         },
         "termsAndConditions": {
             "title": "Termos e condições"
