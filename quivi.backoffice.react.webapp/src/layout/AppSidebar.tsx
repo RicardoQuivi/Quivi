@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
-import { ChevronDownIcon, GearIcon, GridIcon, HorizontaLDots, ListIcon, QuiviFullIcon, QuiviIcon, UserIcon } from "../icons";
+import { BankIcon, ChevronDownIcon, GearIcon, GraphIcon, GridIcon, HorizontaLDots, ListIcon, QuiviFullIcon, QuiviIcon, ShopIcon, TradeIcon, UserIcon } from "../icons";
 import { useTranslation } from "react-i18next";
 import { useAuthenticatedUser } from "../context/AuthContext";
 
@@ -57,7 +57,7 @@ const items: NavItem[] = [
         ],
     },
     {
-        icon: <></>,
+        icon: <ShopIcon />,
         name: "sidebar.businessProfile.",
         show: (u) => u.merchantActivated == true,
         subItems: [
@@ -89,13 +89,13 @@ const items: NavItem[] = [
         ],
     },
     {
-        icon: <></>,
+        icon: <TradeIcon />,
         name: "sidebar.transactions",
         path: "/transactions",
         show: (u) => u.merchantActivated == true,
     },
     {
-        icon: <></>,
+        icon: <BankIcon />,
         name: "sidebar.payouts",
         path: "/payouts",
         show: (u) => u.merchantActivated == true,
@@ -107,7 +107,7 @@ const items: NavItem[] = [
         show: (u) => u.merchantActivated == true,
     },
     {
-        icon: <></>,
+        icon: <GraphIcon />,
         name: "sidebar.reports.",
         show: (u) => u.merchantActivated == true,
         subItems: [
