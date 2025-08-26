@@ -81,6 +81,8 @@
     "paymentMethods": "Payment methods",
     "paymentSuccess": "Payment submitted successfully",
     "paymentError": "Error while trying to submit payment. Please try again later",
+    "sessionInformationUpdated": "Session information updated successfully",
+    "required": "Required",
     "amountErrors": {
         "required": "The amount is required",
         "invalid": "The amount is invalid",

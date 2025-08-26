@@ -111,6 +111,8 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onTransactionSyncAttemptOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.posChargeId),
             onReviewOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Reviews), evt.id),
             onMerchantDocumentOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.MerchantDocuments), evt.id),
+            onConfigurableFieldOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.ConfigurableFields), evt.id),
+            onConfigurableFieldAssociationOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.ConfigurableFieldAssociations), `${evt.channelProfileId}-${evt.configurableFieldId}`),
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);

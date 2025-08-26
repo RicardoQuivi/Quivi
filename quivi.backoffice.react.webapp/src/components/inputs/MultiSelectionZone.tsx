@@ -4,7 +4,7 @@ import { CheckLineIcon } from "../../icons";
 interface MultiSelectionZoneProps<T> {
     readonly options: T[];
     readonly selected: T[];
-    readonly onChange: (value: T[]) => any;
+    readonly onChange?: (value: T[], diff: T) => any;
     readonly getId: (o: T) => string;
     readonly render: (o: T) => React.ReactNode;
     readonly checkIcon?: ComponentType<SVGProps<SVGSVGElement>>;
@@ -33,14 +33,14 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
                         key={id}
                         className={`${selected ? selectedBorder : unselectedBorder} flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] cursor-pointer`}
                         onClick={() => {
-                            props.onChange(props.options.filter(o => {
+                            props.onChange?.(props.options.filter(o => {
                                 const thisId = props.getId(o);
                                 if(thisId == id) {
                                     return !selected;
                                 }
 
                                 return selectedIds.has(thisId);
-                            }));
+                            }), o);
                         }}
                     >
                         <div className="relative h-7 flex-none rounded-full text-success-500 p-1">

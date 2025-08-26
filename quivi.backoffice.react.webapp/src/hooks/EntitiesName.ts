@@ -16,6 +16,8 @@ export enum Entity {
     Transactions,
     Reviews,
     MerchantDocuments,
+    ConfigurableFields,
+    ConfigurableFieldAssociations,
 }
 
 export const getEntityType = (entity: Entity): string => {
@@ -37,5 +39,7 @@ export const getEntityType = (entity: Entity): string => {
         case Entity.Transactions: return "Transactions";
         case Entity.Reviews: return "Reviews";
         case Entity.MerchantDocuments: return "MerchantDocuments";
+        case Entity.ConfigurableFields: return "ConfigurableFields";
+        case Entity.ConfigurableFieldAssociations: return "ConfigurableFieldAssociations";
     }
 }

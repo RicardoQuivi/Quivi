@@ -107,9 +107,13 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.Property(m => m.Name).IsRequired();
                 entity.Property(m => m.DefaultValue).IsRequired(false);
 
-                entity.HasOne(m => m.ChannelProfile)
-                        .WithMany(m => m.OrderConfigurableFields)
+                entity.HasMany(m => m.AssociatedChannelProfiles)
+                        .WithOne(m => m.OrderConfigurableField)
                         .HasForeignKey(m => m.ChannelProfileId);
+
+                entity.HasOne(m => m.Merchant)
+                        .WithMany(m => m.OrderConfigurableFields)
+                        .HasForeignKey(m => m.MerchantId);
 
                 entity.HasDeletedIndex();
             });
@@ -129,7 +133,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.Ignore(m => m.SendToPreparationTimer);
 
-                entity.HasMany(m => m.OrderConfigurableFields)
+                entity.HasMany(m => m.AssociatedOrderConfigurableFields)
                         .WithOne(m => m.ChannelProfile)
                         .HasForeignKey(m => m.ChannelProfileId)
                         .OnDelete(DeleteBehavior.Cascade);
@@ -140,6 +144,21 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasDeletedIndex();
+            });
+
+            modelBuilder.Entity<OrderConfigurableFieldChannelProfileAssociation>(entity =>
+            {
+                entity.HasKey(m => new { m.OrderConfigurableFieldId, m.ChannelProfileId });
+
+                entity.HasOne(m => m.ChannelProfile)
+                        .WithMany(m => m.AssociatedOrderConfigurableFields)
+                        .HasForeignKey(m => m.ChannelProfileId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(m => m.OrderConfigurableField)
+                        .WithMany(m => m.AssociatedChannelProfiles)
+                        .HasForeignKey(m => m.OrderConfigurableFieldId)
+                        .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Location>(entity =>

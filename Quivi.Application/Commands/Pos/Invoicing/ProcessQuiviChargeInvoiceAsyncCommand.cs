@@ -51,7 +51,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             var posCharge = await GetPosCharge(command.PosChargeId);
 
             Lazy<Task<InvoiceReceipt>> receipt = new Lazy<Task<InvoiceReceipt>>(() => CreateInvoice(command, posCharge));
-            await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
+            await commandProcessor.Execute(new GetOrCreateMerchantInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge.MerchantId,
                 PosChargeId = command.PosChargeId,

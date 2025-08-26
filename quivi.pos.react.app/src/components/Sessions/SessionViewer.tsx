@@ -211,10 +211,11 @@ export const SessionViewer: React.FC<Props> = ({
                     <Box sx={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", mt: "-1rem", height: "48px"}}>
                         {
                             onSessionAdditionalInfoClicked != undefined &&
-                             pos.cartSession.closedAt == undefined &&
+                            !!pos.cartSession.sessionId &&
+                            pos.cartSession.closedAt == undefined &&
                             <Tooltip title={t("sessionInformation")}>
-                                <IconButton size="large" onClick={() => onSessionAdditionalInfoClicked?.()}>
-                                    <InfoIcon />
+                                <IconButton size="large" onClick={onSessionAdditionalInfoClicked}>
+                                    <InfoIcon height={18} width={18} />
                                 </IconButton>
                             </Tooltip>
                         }

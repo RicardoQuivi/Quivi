@@ -13,6 +13,7 @@
         public bool? IsDeleted { get; init; }
 
         public bool IncludeTranslations { get; init; }
+        public bool IncludeChannelProfileAssociations { get; init; }
 
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }

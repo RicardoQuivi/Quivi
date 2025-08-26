@@ -1,29 +1,36 @@
 ﻿using Quivi.Domain.Entities;
+using Quivi.Infrastructure.Abstractions.Events.Data;
 using System.Collections;
 
 namespace Quivi.Application.Commands
 {
+    public class ChangedEntity<TEntityRelationship>
+    {
+        public required TEntityRelationship Entity { get; init; }
+        public required EntityOperation Operation { get; init; }
+    }
+
     public class UpdatableRelationshipEntity<TEntityRelationship, TUpdatable, TKey> : IUpdatableRelationship<TUpdatable, TKey>
                                                                                                             where TEntityRelationship : IEntity
                                                                                                             where TUpdatable : IUpdatableEntity
                                                                                                             where TKey : notnull
     {
         private readonly ICollection<TEntityRelationship> relationships;
-        private readonly HashSet<TEntityRelationship> _originalRelationships;
+        private readonly HashSet<TEntityRelationship> originalRelationships;
         private readonly Dictionary<TKey, (TEntityRelationship Model, TUpdatable Updatable)> relationshipsDictionary;
         private readonly Func<TEntityRelationship, TUpdatable> converter;
         private readonly Func<TKey, TEntityRelationship> constructor;
 
         public UpdatableRelationshipEntity(ICollection<TEntityRelationship> relationships,
                                                 Func<TEntityRelationship, TKey> getKey,
-                                                Func<TEntityRelationship, TUpdatable> converter, 
+                                                Func<TEntityRelationship, TUpdatable> converter,
                                                 Func<TKey, TEntityRelationship> constructor)
         {
             this.relationships = relationships;
             this.converter = converter;
             this.constructor = constructor;
             relationshipsDictionary = relationships.ToDictionary(getKey, t => (t, converter(t)));
-            _originalRelationships = relationships.ToHashSet();
+            originalRelationships = relationships.ToHashSet();
         }
 
         public TUpdatable this[TKey key] => relationshipsDictionary[key].Updatable;
@@ -60,23 +67,37 @@ namespace Quivi.Application.Commands
 
         public IEnumerator<TUpdatable> GetEnumerator() => relationshipsDictionary.Values.Select(s => s.Updatable).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public virtual bool HasChanges => ChangedEntities.Any();
 
-        public virtual bool HasChanges
+        public IEnumerable<ChangedEntity<TEntityRelationship>> ChangedEntities
         {
             get
             {
-                if (relationshipsDictionary.Count != _originalRelationships.Count)
-                    return true;
-
-                foreach (var entry in relationshipsDictionary.Values)
+                var existentRelationships = new HashSet<TEntityRelationship>();
+                foreach (var e in relationshipsDictionary.Values)
                 {
-                    if (entry.Updatable.HasChanges)
-                        return true;
+                    existentRelationships.Add(e.Model);
 
-                    if (_originalRelationships.Contains(entry.Model) == false)
-                        return true;
+                    EntityOperation? state = null;
+                    if (e.Updatable.HasChanges)
+                        state = EntityOperation.Update;
+                    else if (originalRelationships.Contains(e.Model) == false)
+                        state = EntityOperation.Create;
+
+                    if (state.HasValue)
+                        yield return new ChangedEntity<TEntityRelationship>
+                        {
+                            Entity = e.Model,
+                            Operation = state.Value,
+                        };
                 }
-                return false;
+
+                foreach (var e in originalRelationships.Where(e => existentRelationships.Contains(e) == false))
+                    yield return new ChangedEntity<TEntityRelationship>
+                    {
+                        Entity = e,
+                        Operation = EntityOperation.Delete,
+                    };
             }
         }
     }

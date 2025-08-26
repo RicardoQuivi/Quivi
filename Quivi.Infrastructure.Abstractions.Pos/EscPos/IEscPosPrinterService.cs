@@ -6,5 +6,6 @@
         string Get(PreparationRequestParameters request);
         string Get(NewPendingOrderParameters request);
         string Get(OpenCashDrawerParameters request);
+        string Get(AppendToDocumentParameters request);
     }
 }

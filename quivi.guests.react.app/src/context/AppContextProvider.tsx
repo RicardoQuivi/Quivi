@@ -18,6 +18,9 @@ import { Entity } from "../hooks/EntitiesName";
 import type { OnOrderOperationEvent } from "../hooks/signalR/dtos/OnOrderOperationEvent";
 import type { OnPosChargeOperationEvent } from "../hooks/signalR/dtos/OnPosChargeOperationEvent";
 import { useParams } from "react-router";
+import type { MerchantListener } from "../hooks/signalR/MerchantListener";
+import type { OnConfigurableFieldOperation } from "../hooks/signalR/dtos/OnConfigurableFieldOperation";
+import type { OnConfigurableFieldAssociationOperation } from "../hooks/signalR/dtos/OnConfigurableFieldAssociationOperation";
 
 interface FreePaymentsFeatures {
     readonly isActive: boolean;
@@ -202,6 +205,21 @@ export const AppContextProvider = (props: {
         webEvents.client.addChannelListener(listener);
         return () => webEvents.client.removeChannelListener(listener);
     }, [webEvents.client, result?.channel.id])
+
+    
+    useEffect(() => {
+        if(result === undefined || result === null) {
+            return;
+        }
+
+        const listener: MerchantListener = {
+            merchantId: result.merchant.id,
+            onConfigurableFieldOperation: (evt: OnConfigurableFieldOperation) => invalidator.invalidate(Entity.OrderFields, evt.id),
+            onConfigurableFieldAssociationOperation: (evt: OnConfigurableFieldAssociationOperation) => invalidator.invalidate(Entity.OrderFields, evt.configurableFieldId),
+        }
+        webEvents.client.addMerchantListener(listener);
+        return () => webEvents.client.removeMerchantListener(listener);
+    }, [webEvents.client, result?.merchant.id])
 
     if(result == undefined) {
         return <SplashScreen />;

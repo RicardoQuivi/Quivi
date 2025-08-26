@@ -39,7 +39,7 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 PosChargeIds = request.TransactionIds?.Select(idConverter.FromPublicId),
-                Types = request.MonthlyInvoiceOnly ? [InvoiceDocumentType.MerchantMonthlyInvoice ] : null,
+                Types = request.MonthlyInvoiceOnly ? [InvoiceDocumentType.MerchantMonthlyInvoice] : null,
                 Formats = [DocumentFormat.Pdf],
                 HasDownloadPath = true,
 

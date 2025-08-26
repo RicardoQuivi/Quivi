@@ -9,14 +9,14 @@ using gatewayInvoicing = Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 
 namespace Quivi.Application.Commands.Pos.Invoicing
 {
-    public class ProcessQuiviSessionConsumerBillAsyncCommand : ICommand<Task<string?>>
+    public class ProcessQuiviSessionConsumerBillAsyncCommand : ICommand<Task<byte[]?>>
     {
         public required gatewayInvoicing.IInvoiceGateway InvoiceGateway { get; init; }
         public required int SessionId { get; set; }
         public required string InvoicePrefix { get; set; }
     }
 
-    public class ProcessQuiviSessionConsumerBillAsyncCommandHandler : ICommandHandler<ProcessQuiviSessionConsumerBillAsyncCommand, Task<string?>>
+    public class ProcessQuiviSessionConsumerBillAsyncCommandHandler : ICommandHandler<ProcessQuiviSessionConsumerBillAsyncCommand, Task<byte[]?>>
     {
         private readonly IQueryProcessor queryProcessor;
         private readonly IDateTimeProvider dateTimeProvider;
@@ -31,7 +31,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             this.idConverter = idConverter;
         }
 
-        public async Task<string?> Handle(ProcessQuiviSessionConsumerBillAsyncCommand command)
+        public async Task<byte[]?> Handle(ProcessQuiviSessionConsumerBillAsyncCommand command)
         {
             var ordersQuery = await queryProcessor.Execute(new GetOrdersAsyncQuery
             {
@@ -76,9 +76,10 @@ namespace Quivi.Application.Commands.Pos.Invoicing
                 }),
             });
 
-            var file = await command.InvoiceGateway.GetConsumerBillFile(bill.DocumentId!, DocumentFileFormat.EscPOS);
-            var base64Content = Encoding.UTF8.GetString(file);
-            return base64Content;
+            var base64ByteContent = await command.InvoiceGateway.GetConsumerBillFile(bill.DocumentId!, DocumentFileFormat.EscPOS);
+            var base64Content = Encoding.UTF8.GetString(base64ByteContent);
+            var decodedBytes = Convert.FromBase64String(base64Content);
+            return decodedBytes;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using Quivi.Application.Attributes;
 using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Application.Queries.PrinterMessageTargets;
@@ -69,14 +68,6 @@ namespace Quivi.Backoffice.Api.Controllers
         [HttpPost]
         public async Task<CreatePrinterMessageResponse> TestPrinter(CreatePrinterMessageRequest request)
         {
-            var document = escPosPrinterService.Get(new TestPrinterParameters
-            {
-                Title = request.Text,
-                Message = "This is a test perfomed via Quivi Backoffice",
-                PingOnly = request.PingOnly,
-                Timestamp = request.Timestamp ?? dateTimeProvider.GetUtcNow(),
-            });
-
             var result = await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
             {
                 MessageType = NotificationMessageType.Test,

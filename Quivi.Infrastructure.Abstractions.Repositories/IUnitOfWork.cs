@@ -33,6 +33,8 @@
         IReviewsRepository Reviews { get; }
         IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments { get; }
         IPostingsRepository Postings { get; }
+        IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations { get; }
+        IOrderAdditionalInfosRepository OrderAdditionalInfos { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

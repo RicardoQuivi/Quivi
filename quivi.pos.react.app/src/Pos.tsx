@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useToast } from "./context/ToastProvider";
 import useNoSleepMonitor from "./hooks/useNoSleepMonitor";
 import { PosAppBar } from "./components/PosAppBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActiveTab, PosTabs } from "./components/PosTabs";
 import useBrowserStorage, { BrowserStorageType } from "./hooks/useBrowserStorage";
 import { useStoredState } from "./hooks/useStoredState";
@@ -19,6 +19,8 @@ import { useConfigurableFieldsQuery } from "./hooks/queries/implementations/useC
 import { EditItemPriceModel } from "./components/Sessions/EditSessionItemModal";
 import { TransferSessionModal } from "./components/Sessions/TransferSessionModal";
 import { OrdersOverview } from "./components/Orders/OrdersOverview";
+import { SessionAdditionalFieldsModal } from "./components/SessionAdditionalFieldsModal";
+import { useSessionAdditionalInformationsQuery } from "./hooks/queries/implementations/useSessionAdditionalInformationsQuery";
 
 export const Pos = () => {
     const theme = useTheme();
@@ -45,8 +47,12 @@ export const Pos = () => {
 
     const configurableFieldsQuery = useConfigurableFieldsQuery(!pos.cartSession.channelId ? undefined : {
         channelIds: [pos.cartSession.channelId],
-        forPoSSessions: true,
+        forPosSessions: true,
+        page: 0,
     });
+    const sessionAdditionalInfoQuery = useSessionAdditionalInformationsQuery(!pos.cartSession.sessionId || pos.cartSession.closedAt != undefined ? undefined : {
+        sessionId: pos.cartSession.sessionId,
+    })
 
     const hasChannelsWithSessions = pos.permissions.data.canViewSessions == true;
     
@@ -72,6 +78,29 @@ export const Pos = () => {
         setSearchTxt("");
         pos.cartSession.addItem(item, 1);
     }
+
+    useEffect(() => console.log(configurableFieldsQuery.data), [configurableFieldsQuery.data])
+    useEffect(() => console.log(pos.cartSession.channelId ), [pos.cartSession.channelId])
+
+    useEffect(() => {
+        if(!pos.cartSession.sessionId) {
+            return;
+        }
+
+        if(pos.cartSession.closedAt != undefined) {
+            return;
+        }
+
+        if(sessionAdditionalInfoQuery.isLoading || sessionAdditionalInfoQuery.data.length > 0) {
+            return;
+        }
+
+        if(configurableFieldsQuery.isFirstLoading || configurableFieldsQuery.data.length == 0) {
+            return;
+        }
+
+        setAdditionalInfoModalOpen(true);
+    }, [pos.cartSession, sessionAdditionalInfoQuery, configurableFieldsQuery]);
 
     return (
         <Box style={{height: "100dvh", width: "100dvw", overflow: "hidden", display: "flex", flexDirection: "column"}}>
@@ -161,15 +190,12 @@ export const Pos = () => {
                 currentChannel={transferChannel}
                 onClose={() => setTransferChannel(undefined)}
             />
-            {/*
             <SessionAdditionalFieldsModal
                 fields={configurableFieldsQuery.data}
                 additionalInfo={sessionAdditionalInfoQuery.data}
                 isOpen={additionalInfoModalOpen}
-                currentSession={currentSession}
                 onClose={() => setAdditionalInfoModalOpen(false)}
             />
-            */}
             <NewOrderAudioPlayer />
             {/* <PrinterFailureManager /> */}
         </Box>

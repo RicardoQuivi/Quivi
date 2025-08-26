@@ -81,6 +81,8 @@
     "paymentMethods": "Métodos de pagamento",
     "paymentSuccess": "Pagamento registado com sucesso",
     "paymentError": "Não foi possível registar o pagamento. Tente novamente",
+    "required": "Obrigatório",
+    "sessionInformationUpdated": "Informação da sessão atualizada com sucesso",
     "amountErrors": {
         "required": "O montante é obrigatório",
         "invalid": "O montante inválido",

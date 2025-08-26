@@ -43,7 +43,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
             Lazy<Task<InvoiceCancellation>> receipt = new Lazy<Task<InvoiceCancellation>>(() => CreateInvoiceCancellation(command, posCharge));
 
-            await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
+            await commandProcessor.Execute(new GetOrCreateMerchantInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge.MerchantId,
                 PosChargeId = posCharge.Id,

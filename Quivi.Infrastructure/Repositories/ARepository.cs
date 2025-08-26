@@ -7,7 +7,7 @@ using Quivi.Infrastructure.Abstractions.Repositories.Data;
 
 namespace Quivi.Infrastructure.Repositories
 {
-    public abstract class ARepository<TEntity, TCriteria> : IRepository<TEntity, TCriteria> where TEntity : class, IEntity where TCriteria : IPagedCriteria
+    public abstract class ARepository<TEntity, TCriteria> : IRepository<TEntity, TCriteria> where TEntity : class, IBaseEntity where TCriteria : IPagedCriteria
     {
         protected QuiviContext Context { get; }
         protected DbSet<TEntity> Set { get; }

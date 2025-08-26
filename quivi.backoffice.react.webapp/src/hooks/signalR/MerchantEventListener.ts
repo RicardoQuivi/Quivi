@@ -14,6 +14,8 @@ import { OnPrinterWorkerEvent } from "./Dtos/OnPrinterWorkerEvent";
 import { OnReviewOperationEvent } from "./Dtos/OnReviewOperationEvent";
 import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSyncAttemptOperationEvent";
 import { OnMerchantDocumentOperation } from "./Dtos/OnMerchantDocumentOperation";
+import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
+import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
 
 export interface MerchantEventListener {
     readonly onChannelEvent?: (evt: OnChannelEvent) => any;
@@ -32,4 +34,6 @@ export interface MerchantEventListener {
     readonly onTransactionSyncAttemptOperation?: (evt: OnTransactionSyncAttemptOperationEvent) => any;
     readonly onReviewOperation?: (evt: OnReviewOperationEvent) => any;
     readonly onMerchantDocumentOperation?: (evt: OnMerchantDocumentOperation) => any;
+    readonly onConfigurableFieldOperation ?: (evt: OnConfigurableFieldOperation) => any;
+    readonly onConfigurableFieldAssociationOperation ?: (evt: OnConfigurableFieldAssociationOperation) => any;
 }

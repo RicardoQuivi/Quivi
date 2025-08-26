@@ -21,5 +21,7 @@ namespace Quivi.SignalR.Hubs.Backoffice
         Task OnAcquirerConfigurationOperation(OnAcquirerConfigurationOperation evt);
         Task OnReviewOperation(OnReviewOperation evt);
         Task OnMerchantDocumentOperation(OnMerchantDocumentOperation evt);
+        Task OnConfigurableFieldOperation(OnConfigurableFieldOperation evt);
+        Task OnConfigurableFieldAssociationOperation(OnConfigurableFieldAssociationOperation evt);
     }
 }

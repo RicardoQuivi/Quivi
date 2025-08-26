@@ -39,7 +39,7 @@ namespace Quivi.Application.Commands.MerchantInvoiceDocuments
         public async Task Handle(CreateSurchageSimplifiedInvoiceAsyncCommand command)
         {
             var posCharge = await GetPosCharge(command.PosChargeId);
-            await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
+            await commandProcessor.Execute(new GetOrCreateMerchantInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge.MerchantId,
                 PosChargeId = posCharge.Id,

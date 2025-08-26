@@ -26,7 +26,7 @@ namespace Quivi.Domain.Entities.Pos
         public int PosIntegrationId { get; set; }
         public PosIntegration? PosIntegration { get; set; }
 
-        public ICollection<OrderConfigurableField>? OrderConfigurableFields { get; set; }
+        public ICollection<OrderConfigurableFieldChannelProfileAssociation>? AssociatedOrderConfigurableFields { get; set; }
         public ICollection<Channel>? Channels { get; set; }
         #endregion
     }

@@ -22,6 +22,7 @@
             "Duplicate": "A entry with this value already exists",
             "NoBalance": "Your current balance is not enough to perform this refund."
         },
+        "settings": "Settings",
         "refunded": "Refunded",
         "details": "Details",
         "back": "Back",
@@ -123,7 +124,10 @@
             "reviews": "Reviews",
 
             "merchantDocument": "Fiscal document",
-            "merchantDocuments": "Fiscal documents"
+            "merchantDocuments": "Fiscal documents",
+
+            "configurableFields": "Configurable field",
+            "configurableField": "Configurable fields"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -293,7 +297,11 @@
             "PaymentTerminal": "Payment Terminal"
         },
         "partner": "Partner",
-        "refund": "Refund"
+        "refund": "Refund",
+        "autoFill": "Auto fill",
+        "defaultValue": "Default value",
+        "none": "None",
+        "linkEntities": "Link to {{name}}"
     },
     "imageEditor": {
         "edit": "Edit",
@@ -314,6 +322,7 @@
             "": "Business Profile",
             "basicInfo": "Basic Information",
             "menuManagement": "Menu Management",
+            "configurableFields": "Configurable fields",
             "channelProfiles": "Channel Profiles",
             "channels": "Channels"
         },
@@ -480,7 +489,8 @@
             "title": "Channel Profiles",
             "minimumPrePaidOrderAmount": "Minimum amount for pre-paid orders",
             "preparationTimer": "Automatic dispatch timer for preparation",
-            "integration": "Integration"
+            "integration": "Integration",
+            "linkToConfigurableFields": "Associar Configurable fields to {{name}}"
         },
         "channels": {
             "title": "Channels",
@@ -589,6 +599,38 @@
                 "invoicingEnabled": "Issuance of tax documents",
                 "includeTipInInvoice": "Include tip in invoice"
             }
+        },
+        "configurableFields": {
+            "title": "Configurable fields",
+            "printable": "Printed when",
+            "forPosSessions": "PoS Sessions",
+            "forOrdering": "Ordering",
+            "configurableFieldType": {
+                "text": "Text",
+                "longText": "Long text",
+                "check": "Check",
+                "number": "Number"
+            },
+            "printedOn": {
+                "none": "None",
+                "preparationRequest": "Preparation request",
+                "sessionBill": "Session bill"
+            },
+            "featuresTitle": "Behaviour",
+            "featuresDescription": "Setup the behaviour of this configurable field.",
+            "features": {
+                "IsRequired": "Required",
+                "IsAutoFill": "Auto filled",
+                "ForPoSSessions": "In PoS sessions",
+                "ForOrdering": "In guests ordering"
+            },
+            "featuresDescriptions": {
+                "IsRequired": "If this field is required",
+                "IsAutoFill": "Is this field, by default, is auto filled without intervention of the user",
+                "ForPoSSessions": "If this field will pop up on PoS",
+                "ForOrdering": "Is this field will pop up when guests are submitting an order"
+            },
+            "linkToChannelProfiles": "Link Channel profiles to {{name}}"
         }
     }
 }

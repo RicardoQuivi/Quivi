@@ -15,6 +15,9 @@ import { OnPosChargeEvent } from "./Dtos/OnPosChargeEvent";
 import { OnPosChargeSyncAttemptEvent } from "./Dtos/OnPosChargeSyncAttemptEvent";
 import { OnPreparationGroupOperationEvent } from "./Dtos/OnPreparationGroupOperationEvent";
 import { OnOrderOperationEvent } from "./Dtos/OnOrderOperationEvent";
+import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
+import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
+import { OnOrderAdditionalInfoOperation } from "./Dtos/OnOrderAdditionalInfoOperation";
 
 export interface IWebClient {
     addMerchantListener(listener: MerchantEventListener): void;
@@ -149,6 +152,15 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnPreparationGroupOperation');
         this.connection.on('OnPreparationGroupOperation', (evt: OnPreparationGroupOperationEvent) => this.merchantListeners.forEach(l => l.onPreparationGroupOperationEvent?.(evt)));
+
+        this.connection.off('OnConfigurableFieldOperation');
+        this.connection.on('OnConfigurableFieldOperation', (evt: OnConfigurableFieldOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldOperation?.(evt)));
+
+        this.connection.off('OnConfigurableFieldAssociationOperation');
+        this.connection.on('OnConfigurableFieldAssociationOperation', (evt: OnConfigurableFieldAssociationOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldAssociationOperation?.(evt)));
+
+        this.connection.off('OnOrderAdditionalInfoOperation');
+        this.connection.on('OnOrderAdditionalInfoOperation', (evt: OnOrderAdditionalInfoOperation) => this.merchantListeners.forEach(l => l.onOrderAdditionalInfoOperation?.(evt)));
     }
 
     private connectBackgroundJobToChannels() {

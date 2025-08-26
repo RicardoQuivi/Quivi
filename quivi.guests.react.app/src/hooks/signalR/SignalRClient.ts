@@ -8,8 +8,14 @@ import type { OnPosChargeOperationEvent } from "./dtos/OnPosChargeOperationEvent
 import type { TransactionListener } from "./TransactionListener";
 import type { JobChangedEvent } from "./dtos/JobChangedEvent";
 import type { OnTransactionInvoiceOperationEvent } from "./dtos/OnTransactionInvoiceOperationEvent";
+import type { MerchantListener } from "./MerchantListener";
+import type { OnConfigurableFieldOperation } from "./dtos/OnConfigurableFieldOperation";
+import type { OnConfigurableFieldAssociationOperation } from "./dtos/OnConfigurableFieldAssociationOperation";
 
 export interface IWebClient {
+    addMerchantListener(listener: MerchantListener): void;
+    removeMerchantListener(listener: MerchantListener): void;
+
     addUserListener(listener: UserEventListener): void;
     removeUserListener(listener: UserEventListener): void;
 
@@ -34,6 +40,7 @@ export class SignalRClient implements IWebClient {
     private signalRHost: string;
     private signalRListeners: Set<ISignalRListener> = new Set<ISignalRListener>();
 
+    public readonly merchantListeners: Set<MerchantListener> = new Set<MerchantListener>();
     public readonly channelListeners: Set<ChannelListener> = new Set<ChannelListener>();
     public readonly jobListeners: Set<JobListener> = new Set<JobListener>();
     public readonly transactionListeners: Set<TransactionListener> = new Set<TransactionListener>();
@@ -93,12 +100,23 @@ export class SignalRClient implements IWebClient {
 
     private async connect() {
         this.connectToUserEvents();
+        this.connectToMerchantEvents();
         this.connectToChannelEvents();
         this.connectToJobEvents();
         this.connectToTransactionEvents();
     }
 
     private connectToUserEvents() {
+    }
+
+    private connectToMerchantEvents() {
+        this.connection.off('OnConfigurableFieldOperation');
+        this.connection.on('OnConfigurableFieldOperation', (evt: OnConfigurableFieldOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldOperation?.(evt)));
+
+        this.connection.off('OnConfigurableFieldAssociationOperation');
+        this.connection.on('OnConfigurableFieldAssociationOperation', (evt: OnConfigurableFieldAssociationOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldAssociationOperation?.(evt)));
+
+        this.merchantListeners.forEach(l => this.connection.invoke('JoinMerchantEvents', l.merchantId));
     }
 
     private connectToChannelEvents() {
@@ -149,6 +167,28 @@ export class SignalRClient implements IWebClient {
     }
 
     removeUserListener(_: UserEventListener): void {
+    }
+
+    addMerchantListener(listener: MerchantListener): void {
+        let listeners = this.merchantListeners;
+        if(listeners.has(listener)) {
+            return;
+        }
+
+        listeners.add(listener);
+        if (this.connection.state == HubConnectionState.Connected) {
+            this.connection.invoke("JoinMerchantEvents", listener.merchantId);
+        }
+    }
+    removeMerchantListener(listener: MerchantListener): void {
+        let listeners = this.merchantListeners;
+        if (listeners.delete(listener) && this.connection.state == HubConnectionState.Connected) {
+            for (let item of listeners.values()) {
+                if (item.merchantId == listener.merchantId)
+                    return;
+            }
+            this.connection.invoke("LeaveMerchantEvents", listener.merchantId);
+        }
     }
 
     addChannelListener(listener: ChannelListener): void {

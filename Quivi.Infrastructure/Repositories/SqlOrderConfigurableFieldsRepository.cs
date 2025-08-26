@@ -19,17 +19,20 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeTranslations)
                 query = query.Include(q => q.Translations);
 
+            if (criteria.IncludeChannelProfileAssociations)
+                query = query.Include(q => q.AssociatedChannelProfiles);
+
             if (criteria.MerchantIds != null)
-                query = query.Where(q => criteria.MerchantIds.Contains(q.ChannelProfile.MerchantId));
+                query = query.Where(q => criteria.MerchantIds.Contains(q.MerchantId));
 
             if (criteria.ChannelsIds != null)
             {
                 var profileIds = Context.Channels.Where(q => criteria.ChannelsIds.Contains(q.Id)).Select(q => q.ChannelProfileId);
-                query = query.Where(q => profileIds.Contains(q.ChannelProfileId));
+                query = query.Where(q => q.AssociatedChannelProfiles!.Any(a => profileIds.Contains(a.ChannelProfileId)));
             }
 
             if (criteria.ChannelProfileIds != null)
-                query = query.Where(q => criteria.ChannelProfileIds.Contains(q.ChannelProfileId));
+                query = query.Where(q => q.AssociatedChannelProfiles!.Any(a => criteria.ChannelProfileIds.Contains(a.ChannelProfileId)));
 
             if (criteria.Ids != null)
                 query = query.Where(q => criteria.Ids.Contains(q.Id));

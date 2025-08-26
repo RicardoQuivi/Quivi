@@ -4,10 +4,11 @@ import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 import { GetConfigurableFieldsRequest } from "../../api/Dtos/configurablefields/GetConfigurableFieldsRequest";
 import { ConfigurableField } from "../../api/Dtos/configurablefields/ConfigurableField";
+import { useConfigurableFieldsApi } from "../../api/useConfigurableFieldsApi";
 
-export const useConfigurableFieldsQuery = (request: GetConfigurableFieldsRequest | undefined) : PagedQueryResult<ConfigurableField> => {      
-    //const posContext = useLoggedEmployee();
-
+export const useConfigurableFieldsQuery = (request: GetConfigurableFieldsRequest | undefined) : PagedQueryResult<ConfigurableField> => {
+    const api = useConfigurableFieldsApi();
+    
     const queryResult = useQueryable({
         queryName: "useConfigurableFieldsQuery",
         entityType: getEntityType(Entity.ConfigurableFields),
@@ -15,14 +16,7 @@ export const useConfigurableFieldsQuery = (request: GetConfigurableFieldsRequest
             ...request,
         },
         getId: (e: ConfigurableField) => e.id,
-        query: async () => {
-            return {
-                data: [],
-                page: 0,
-                totalPages: 0,
-                totalItems: 0,
-            }
-        },
+        query: r => api.get(r),
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,
@@ -33,7 +27,6 @@ export const useConfigurableFieldsQuery = (request: GetConfigurableFieldsRequest
             totalItems: 1,
         }),       
     })
-    
     
     const result = useMemo(() => ({
         isFirstLoading: queryResult.isFirstLoading,

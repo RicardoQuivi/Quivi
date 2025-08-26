@@ -58,22 +58,27 @@ const items: NavItem[] = [
         name: "sidebar.businessProfile.",
         show: (u) => u.merchantActivated == true,
         subItems: [
-            { 
+            {
                 name: "sidebar.businessProfile.basicInfo",
                 path: "/businessProfile/merchant",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
                 name: "sidebar.businessProfile.menuManagement",
                 path: "/businessProfile/menuManagement",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
+                name: "sidebar.businessProfile.configurableFields",
+                path: "/businessProfile/configurablefields",
+                show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
+            },
+            {
                 name: "sidebar.businessProfile.channelProfiles",
                 path: "/businessProfile/channelprofiles",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
                 name: "sidebar.businessProfile.channels",
                 path: "/businessProfile/channels",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,

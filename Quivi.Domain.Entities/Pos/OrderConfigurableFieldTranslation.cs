@@ -11,7 +11,7 @@
 
         #region Relationships
         public int OrderConfigurableFieldId { get; set; }
-        public required OrderConfigurableField OrderConfigurableField { get; set; }
+        public OrderConfigurableField? OrderConfigurableField { get; set; }
         #endregion
     }
 }

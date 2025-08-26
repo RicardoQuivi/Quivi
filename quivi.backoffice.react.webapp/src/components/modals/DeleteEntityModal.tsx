@@ -39,6 +39,8 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
             case Entity.Transactions: return t("common.entities.transaction");
             case Entity.Reviews: return t("common.entities.review");
             case Entity.MerchantDocuments: return t("common.entities.merchantDocument");
+            case Entity.ConfigurableFields: return t("common.entities.configurableField");
+            case Entity.ConfigurableFieldAssociations: return t("common.entities.configurableFieldAssociation");
         }
     }
 

@@ -22,6 +22,7 @@
             "Duplicate": "Já existe um registo com este valor",
             "NoBalance": "O seu balanço atual não é suficiente para proceder a esta operação."
         },
+        "settings": "Definições",
         "refunded": "Reembolso",
         "details": "Detalhes",
         "back": "Voltar",
@@ -123,7 +124,10 @@
             "reviews": "Avaliações",
 
             "merchantDocument": "Documento fiscal",
-            "merchantDocuments": "Documentos fiscais"
+            "merchantDocuments": "Documentos fiscais",
+
+            "configurableFields": "Campo configurável",
+            "configurableField": "Campos configuráveis"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -293,7 +297,11 @@
             "PaymentTerminal": "Terminal de pagamento"
         },
         "partner": "Parceiro",
-        "refund": "Reembolsar"
+        "refund": "Reembolsar",
+        "autoFill": "Auto preenchimento",
+        "defaultValue": "Valor pré-definido",
+        "none": "Nenhum",
+        "linkEntities": "Associar a {{name}}"
     },
     "imageEditor": {
         "edit": "Editar",
@@ -314,6 +322,7 @@
             "": "Perfil de Negócio",
             "basicInfo": "Informação Básica",
             "menuManagement": "Gestão de Menus",
+            "configurableFields": "Campos configuráveis",
             "channelProfiles": "Perfis de Canal",
             "channels": "Canais"
         },
@@ -480,7 +489,8 @@
             "title": "Perfis de canais",
             "minimumPrePaidOrderAmount": "Montante mínimo para pedidos pré-pagos",
             "preparationTimer": "Temporizador de envio automático para preparação",
-            "integration": "Integração"
+            "integration": "Integração",
+            "linkToConfigurableFields": "Associar Campos configuráveis a {{name}}"
         },
         "channels": {
             "title": "Canais",
@@ -589,6 +599,38 @@
                 "invoicingEnabled": "Emissão de documentos fiscais",
                 "includeTipInInvoice": "Incluir gratificação em documentos fiscais"
             }
+        },
+        "configurableFields": {
+            "title": "Campos configuráveis",
+            "printable": "Impresso quando",
+            "forPosSessions": "Em sessões",
+            "forOrdering": "Em pedidos",
+            "configurableFieldType": {
+                "text": "Texto",
+                "longText": "Texto longo",
+                "check": "Seleção",
+                "number": "Número"
+            },
+            "printedOn": {
+                "none": "Nunca",
+                "preparationRequest": "Pedido de preparação",
+                "sessionBill": "Consulta de mesa"
+            },
+            "featuresTitle": "Comportamento",
+            "featuresDescription": "Defina o comportamento deste campo configurável.",
+            "features": {
+                "IsRequired": "Obrigatório",
+                "IsAutoFill": "Auto preenchimento",
+                "ForPoSSessions": "Em sessões PoS",
+                "ForOrdering": "Em pedidos mobile"
+            },
+            "featuresDescriptions": {
+                "IsRequired": "Se o campo deverá ser de preenchimento obrigatório",
+                "IsAutoFill": "Se o campo virá, por defeito, auto preenchido sem intervenção do utilizador",
+                "ForPoSSessions": "Se o campo aparecerá para preenchimento no PoS",
+                "ForOrdering": "Se o campo aparecerá para preenchimento em pedidos mobile"
+            },
+            "linkToChannelProfiles": "Associar Perfis de canal a {{name}}"
         }
     }
 }

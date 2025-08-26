@@ -10,14 +10,13 @@ namespace Quivi.Infrastructure.Pos.ESCPOS_NET
 
         public string Get(TestPrinterParameters request)
         {
-            using(var printer = new CharacterSafeCommandEmitter())
+            using (var printer = new CharacterSafeCommandEmitter())
             {
                 return printer
                     .StartConcat(
                         printer.Clear(),
                         printer.Initialize()
-                        )
-                    .ConcatIf(!request.PingOnly, () => [
+                    ).ConcatIf(!request.PingOnly, () => [
                         printer.PrintLine(""),
                         printer.AlignToSides(request.Timestamp.ToString("yyyy-MM-dd"), request.Timestamp.ToString("HH:mm:ss")),
                         printer.PrintLine(""),
@@ -27,8 +26,7 @@ namespace Quivi.Infrastructure.Pos.ESCPOS_NET
                         printer.PrintLine(request.Message),
                         printer.FeedLines(FeedLineEnd),
                         printer.FullCut()
-                    ])
-                    .Encode();
+                    ]).Encode();
             }
         }
 
@@ -174,6 +172,42 @@ namespace Quivi.Infrastructure.Pos.ESCPOS_NET
                         printer.CashDrawerOpenPin5()
                     )
                     .Encode();
+            }
+        }
+
+        public string Get(AppendToDocumentParameters request)
+        {
+            using (var printer = new CharacterSafeCommandEmitter())
+            {
+                var result = printer.StartConcat(
+                                printer.Clear(),
+                                printer.Initialize(),
+                                request.EscPosContent
+                            ).ConcatWith(
+                                printer.SetStyles(PrintStyle.None),
+                                printer.CenterAlign(),
+                                printer.PrintLine(""),
+                                printer.PrintLine("")
+                            );
+
+                foreach (var item in request.AdditionalInfo ?? Enumerable.Empty<string>())
+                {
+                    result = result.ConcatIf(!string.IsNullOrEmpty(item), () =>
+                    [
+                        printer.Print(item),
+                        printer.PrintLine(""),
+                        printer.PrintLine(""),
+                    ]);
+                }
+
+                result = result.ConcatWith(
+                    printer.PrintLine(""),
+                    printer.PrintLine(request.ChannelName),
+                    printer.FeedLines(FeedLineEnd),
+                    printer.FullCut()
+                );
+
+                return result.Encode();
             }
         }
 

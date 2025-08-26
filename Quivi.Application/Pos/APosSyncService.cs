@@ -3,6 +3,8 @@ using Quivi.Application.Commands.PosChargeSyncAttempts;
 using Quivi.Application.Commands.PreparationGroups;
 using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Application.Commands.Sessions;
+using Quivi.Application.Queries.Channels;
+using Quivi.Application.Queries.OrderAdditionalInfos;
 using Quivi.Application.Queries.Orders;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Application.Queries.PosChargeSyncAttemptSyncAttempts;
@@ -15,12 +17,14 @@ using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
+using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 using Quivi.Infrastructure.Abstractions.Services;
 using Quivi.Infrastructure.Abstractions.Storage;
 using Quivi.Infrastructure.Jobs.Hangfire.Context;
 using Quivi.Infrastructure.Jobs.Hangfire.Filters;
+using System.Text;
 
 namespace Quivi.Application.Pos
 {
@@ -34,6 +38,7 @@ namespace Quivi.Application.Pos
         protected readonly IIdConverter idConverter;
         protected readonly IStorageService storageService;
         protected readonly ILogger logger;
+        private readonly IEscPosPrinterService escPosPrinterService;
 
         public APosSyncService(IEnumerable<IPosSyncStrategy> syncStrategies,
                                 IQueryProcessor queryProcessor,
@@ -42,6 +47,7 @@ namespace Quivi.Application.Pos
                                 IEventService eventService,
                                 IStorageService storageService,
                                 IIdConverter idConverter,
+                                IEscPosPrinterService escPosPrinterService,
                                 ILogger logger)
         {
             this.syncStrategies = syncStrategies.ToDictionary(r => r.IntegrationType);
@@ -52,6 +58,7 @@ namespace Quivi.Application.Pos
             this.storageService = storageService;
             this.idConverter = idConverter;
             this.logger = logger;
+            this.escPosPrinterService = escPosPrinterService;
         }
 
         public IPosSyncStrategy? Get(IntegrationType dataSyncStrategyType)
@@ -75,7 +82,38 @@ namespace Quivi.Application.Pos
             await commandProcessor.Execute(new CreatePrinterNotificationMessageAsyncCommand
             {
                 MessageType = NotificationMessageType.ConsumerBill,
-                GetContent = () => syncStrategies[integration.IntegrationType].NewConsumerBill(integration, sessionId),
+                GetContent = async () =>
+                {
+                    var escPosResult = await syncStrategies[integration.IntegrationType].NewConsumerBill(integration, sessionId);
+                    if (escPosResult == null)
+                        return null;
+
+                    var channelQuery = await queryProcessor.Execute(new GetChannelsAsyncQuery
+                    {
+                        SessionIds = [sessionId],
+                        IncludeChannelProfile = true,
+                        IsDeleted = null,
+                        PageSize = 1,
+                    });
+                    var channel = channelQuery.Single();
+
+                    var additionalInfos = await queryProcessor.Execute(new GetOrderAdditionalInfosAsyncQuery
+                    {
+                        SessionIds = [sessionId],
+                        PrintedOn = [PrintedOn.SessionBill],
+                        IncludeOrderConfigurableField = true,
+                        PageSize = null,
+                    });
+
+                    var partToDelete = Encoding.GetEncoding("ISO-8859-1").GetBytes("\u001bd\u0003\u001dVA\u0003\u001bp0<x");
+                    byte[] result = escPosResult.Take(escPosResult.Length - partToDelete.Length).ToArray();
+                    return escPosPrinterService.Get(new AppendToDocumentParameters
+                    {
+                        EscPosContent = result,
+                        ChannelName = $"{channel.ChannelProfile!.Name} {channel.Identifier}",
+                        AdditionalInfo = additionalInfos.Select(a => $"{a.OrderConfigurableField!.Name}: {a.Value}"),
+                    });
+                },
                 Criteria = new GetPrinterNotificationsContactsCriteria
                 {
                     MerchantIds = [integration.MerchantId],

@@ -18,5 +18,8 @@ namespace Quivi.SignalR.Hubs.Pos
         Task OnPosChargeSyncAttemptOperation(OnPosChargeSyncAttemptOperation evt);
         Task OnOrderOperation(OnOrderOperation evt);
         Task OnPreparationGroupOperation(OnPreparationGroupOperation evt);
+        Task OnConfigurableFieldOperation(OnConfigurableFieldOperation evt);
+        Task OnConfigurableFieldAssociationOperation(OnConfigurableFieldAssociationOperation evt);
+        Task OnOrderAdditionalInfoOperation(OnOrderAdditionalInfoOperation evt);
     }
 }

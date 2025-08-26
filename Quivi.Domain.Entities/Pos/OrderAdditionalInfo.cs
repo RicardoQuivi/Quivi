@@ -1,6 +1,7 @@
-﻿namespace Quivi.Domain.Entities.Pos
+﻿
+namespace Quivi.Domain.Entities.Pos
 {
-    public class OrderAdditionalInfo
+    public class OrderAdditionalInfo : IBaseEntity
     {
         public required string Value { get; set; }
 

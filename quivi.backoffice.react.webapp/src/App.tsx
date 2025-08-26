@@ -35,6 +35,8 @@ import { AcquirerConfigurationFormPage } from "./pages/Admin/AcquirerConfigurati
 import { TransactionsPage } from "./pages/Transactions/TransactionsPage";
 import { PosIntegrationsPage } from "./pages/Admin/PosIntegrations/PosIntegrationsPage";
 import { PosIntegrationFormPage } from "./pages/Admin/PosIntegrations/PosIntegrationFormPage";
+import { ConfigurableFieldsPage } from "./pages/BusinessProfile/ConfigurableFields/ConfigurableFieldsPage";
+import { ConfigurableFieldFormPage } from "./pages/BusinessProfile/ConfigurableFields/ConfigurableFieldFormPage";
 
 export const App = () => {
     return <>
@@ -75,6 +77,10 @@ export const App = () => {
                     <Route path="/businessProfile/channelprofiles/add" element={<ChannelProfileFormPage />} />
                     <Route path="/businessProfile/channelprofiles/:id/edit" element={<ChannelProfileFormPage />} />
 
+                    {/* Configurable Fields*/}
+                    <Route path="/businessProfile/configurablefields" element={<ConfigurableFieldsPage />} />
+                    <Route path="/businessProfile/configurablefields/add" element={<ConfigurableFieldFormPage />} />
+                    <Route path="/businessProfile/configurablefields/:id/edit" element={<ConfigurableFieldFormPage />} />
 
                     {/* Channel */}
                     <Route path="/businessProfile/channels" element={<ChannelsPage />} />

@@ -1,6 +1,5 @@
 ﻿using FacturaLusa.v2.Dtos;
 using Quivi.Infrastructure.Abstractions.Cqrs;
-using Quivi.Infrastructure.Pos.FacturaLusa.v2.Commands;
 
 namespace Quivi.Infrastructure.Pos.FacturaLusa.v2.Queries
 {

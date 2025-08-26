@@ -47,6 +47,8 @@ namespace Quivi.Infrastructure.Repositories
         public IReviewsRepository Reviews => unitOfWork.Reviews;
         public IMerchantInvoiceDocumentsRepository MerchantInvoiceDocuments => unitOfWork.MerchantInvoiceDocuments;
         public IPostingsRepository Postings => unitOfWork.Postings;
+        public IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations => unitOfWork.OrderConfigurableFieldChannelProfileAssociations;
+        public IOrderAdditionalInfosRepository OrderAdditionalInfos => unitOfWork.OrderAdditionalInfos;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

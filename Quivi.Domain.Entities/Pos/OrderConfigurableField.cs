@@ -1,4 +1,6 @@
-﻿namespace Quivi.Domain.Entities.Pos
+﻿using Quivi.Domain.Entities.Merchants;
+
+namespace Quivi.Domain.Entities.Pos
 {
     public enum FieldType
     {
@@ -21,7 +23,7 @@
     {
         None = 0,
         PreparationRequest = 1 << 1,
-        TableBill = 1 << 2,
+        SessionBill = 1 << 2,
     }
 
     public class OrderConfigurableField : IDeletableEntity
@@ -36,17 +38,18 @@
         public FieldType Type { get; set; }
         public string? DefaultValue { get; set; }
 
-
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public DateTime? DeletedDate { get; set; }
 
         #region Relationships
-        public int ChannelProfileId { get; set; }
-        public required ChannelProfile ChannelProfile { get; set; }
+        public int MerchantId { get; set; }
+        public Merchant? Merchant { get; set; }
 
-        public ICollection<OrderConfigurableFieldTranslation> Translations { get; set; }
-        public ICollection<OrderAdditionalInfo> OrderAdditionalInfos { get; set; }
+        public ICollection<OrderConfigurableFieldChannelProfileAssociation>? AssociatedChannelProfiles { get; set; }
+
+        public ICollection<OrderConfigurableFieldTranslation>? Translations { get; set; }
+        public ICollection<OrderAdditionalInfo>? OrderAdditionalInfos { get; set; }
         #endregion
     }
 }

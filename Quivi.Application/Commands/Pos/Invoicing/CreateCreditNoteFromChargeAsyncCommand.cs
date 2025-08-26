@@ -44,7 +44,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
                 throw new Exception($"Trying to process a credit note for an incompleted charge with ChargeId {posCharge.Id}");
 
             Lazy<Task<CreditNote>> receipt = new Lazy<Task<CreditNote>>(() => CreateCreditNote(command, posCharge));
-            await commandProcessor.Execute(new GetOrCreateInvoiceDocumentIdAsyncCommand
+            await commandProcessor.Execute(new GetOrCreateMerchantInvoiceDocumentIdAsyncCommand
             {
                 MerchantId = posCharge!.MerchantId,
                 PosChargeId = posCharge.Id,

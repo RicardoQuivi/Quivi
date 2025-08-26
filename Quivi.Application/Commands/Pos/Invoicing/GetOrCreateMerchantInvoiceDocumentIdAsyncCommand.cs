@@ -14,7 +14,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
         public byte[]? FileData { get; init; }
     }
 
-    public class GetOrCreateInvoiceDocumentIdAsyncCommand : ICommand<Task>
+    public class GetOrCreateMerchantInvoiceDocumentIdAsyncCommand : ICommand<Task>
     {
         public required int MerchantId { get; init; }
         public required int PosChargeId { get; init; }
@@ -26,7 +26,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
     public delegate Task<CreateDocumentResponse> CreateDocumentAction();
 
-    public class GetOrCreateInvoiceDocumentIdAsyncCommandHandler : ICommandHandler<GetOrCreateInvoiceDocumentIdAsyncCommand, Task>
+    public class GetOrCreateInvoiceDocumentIdAsyncCommandHandler : ICommandHandler<GetOrCreateMerchantInvoiceDocumentIdAsyncCommand, Task>
     {
         private readonly ICommandProcessor commandProcessor;
         private readonly IBackgroundJobHandler backgroundJobHandler;
@@ -47,7 +47,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             this.storageService = storageService;
         }
 
-        public async Task Handle(GetOrCreateInvoiceDocumentIdAsyncCommand command)
+        public async Task Handle(GetOrCreateMerchantInvoiceDocumentIdAsyncCommand command)
         {
             Dictionary<DocumentFormat, CreateDocumentAction> formats = new Dictionary<DocumentFormat, CreateDocumentAction>();
 
@@ -100,7 +100,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
             using (var stream = new MemoryStream(fileData))
             {
-                var url = await storageService.SaveFile(stream, $"{documentId}.{(format == DocumentFormat.Pdf ? "pdf" : string.Empty)}", idConverter.ToPublicId(merchantId));
+                var url = await storageService.SaveFile(stream, $"{documentId}.{(format == DocumentFormat.Pdf ? "pdf" : "pos")}", idConverter.ToPublicId(merchantId));
                 return url;
             }
         }

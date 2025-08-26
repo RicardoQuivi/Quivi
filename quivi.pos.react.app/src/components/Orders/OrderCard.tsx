@@ -83,6 +83,7 @@ export const OrderCard = (props: OrderCardProps) => {
 
     const fieldsQuery = useConfigurableFieldsQuery(props.order == undefined  || props.order.fields.length == 0 ? undefined : {
         ids: props.order.fields.map(f => f.id),
+        page: 0,
     })
     const fieldsMap = useMemo(() => {
         const map = new Map<string, ConfigurableField>();

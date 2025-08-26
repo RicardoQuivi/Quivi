@@ -18,6 +18,8 @@ import { OnReviewOperationEvent } from "./Dtos/OnReviewOperationEvent";
 import { OnTransactionOperationEvent } from "./Dtos/OnTransactionOperationEvent";
 import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSyncAttemptOperationEvent";
 import { OnMerchantDocumentOperation } from "./Dtos/OnMerchantDocumentOperation";
+import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
+import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -162,6 +164,12 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnMerchantDocumentOperation');
         this.connection.on('OnMerchantDocumentOperation', (evt: OnMerchantDocumentOperation) => this.merchantListeners.forEach(l => l.onMerchantDocumentOperation?.(evt)));
+
+        this.connection.off('OnConfigurableFieldOperation');
+        this.connection.on('OnConfigurableFieldOperation', (evt: OnConfigurableFieldOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldOperation?.(evt)));
+
+        this.connection.off('OnConfigurableFieldAssociationOperation');
+        this.connection.on('OnConfigurableFieldAssociationOperation', (evt: OnConfigurableFieldAssociationOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldAssociationOperation?.(evt)));
     }
 
     addUserListener(listener: UserEventListener): void {

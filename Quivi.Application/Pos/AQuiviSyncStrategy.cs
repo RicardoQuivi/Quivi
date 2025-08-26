@@ -84,7 +84,7 @@ namespace Quivi.Application.Pos
             return escPosContentBase64;
         }
 
-        public Task<string?> NewConsumerBill(PosIntegration integration, int sessionId)
+        public Task<byte[]?> NewConsumerBill(PosIntegration integration, int sessionId)
         {
             var settings = ParseSyncSettings(integration);
             var gateway = GetInvoiceGateway(settings);

@@ -9,7 +9,7 @@ import { usePosIntegrationsQuery } from "../../../hooks/queries/implementations/
 import { PosIntegration } from "../../../hooks/api/Dtos/posIntegrations/PosIntegration";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import Button from "../../../components/ui/button/Button";
-import { PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
+import { LinkIcon, PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
 import { useNavigate } from "react-router";
 import { useIntegrationHelper } from "../../../utilities/useIntegrationHelper";
 import { ChannelModeName } from "../../../components/channels/ChannelModeName";
@@ -21,6 +21,7 @@ import { useChannelProfileMutator } from "../../../hooks/mutators/useChannelProf
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import { Divider } from "../../../components/dividers/Divider";
 import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
+import { LinkToConfigurableFIeldsModal } from "./LinkToConfigurableFIeldsModal";
 
 export const ChannelProfilesPage = () => {
     const { t } = useTranslation();
@@ -32,6 +33,7 @@ export const ChannelProfilesPage = () => {
         page: 0,
         pageSize: 25,
         deleteEntity: undefined as ChannelProfile | undefined,
+        linkEntity: undefined as ChannelProfile | undefined,
     })
     const profilesQuery = useChannelProfilesQuery({
         page: state.page,
@@ -126,6 +128,14 @@ export const ChannelProfilesPage = () => {
                         ]}
                         actions={[
                             {
+                                render: () => <LinkIcon className="size-5" />,
+                                key: "link",
+                                label: t("common.linkEntities", {
+                                    name: t("common.entities.configurableFields")
+                                }),
+                                onClick: d => setState(s => ({ ...s, linkEntity: d}))
+                            },
+                            {
                                 render: () => <PencilIcon className="size-5" />,
                                 key: "edit",
                                 label: t("common.edit"),
@@ -156,6 +166,10 @@ export const ChannelProfilesPage = () => {
             action={s => mutator.delete(s)}
             getName={s => s.name}
             onClose={() => setState(s => ({ ...s, deleteEntity: undefined}))}
+        />
+        <LinkToConfigurableFIeldsModal
+            model={state.linkEntity}
+            onClose={() => setState(s => ({ ...s, linkEntity: undefined}))}
         />
     </>
 }

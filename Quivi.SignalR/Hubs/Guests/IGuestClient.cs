@@ -11,5 +11,7 @@ namespace Quivi.SignalR.Hubs.Guests
         Task OnPosChargeOperation(OnPosChargeOperation evt);
         Task OnBackgroundJobUpdated(OnBackgroundJobUpdated evt);
         Task OnTransactionInvoiceOperation(OnTransactionInvoiceOperation evt);
+        Task OnConfigurableFieldOperation(OnConfigurableFieldOperation evt);
+        Task OnConfigurableFieldAssociationOperation(OnConfigurableFieldAssociationOperation evt);
     }
 }

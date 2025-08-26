@@ -5,6 +5,16 @@ namespace Quivi.SignalR.Hubs.Guests
 {
     public class GuestsHub : Hub<IGuestClient>
     {
+        public Task JoinMerchantEvents(string merchantId) => this.WithMerchantId(merchantId, async group =>
+        {
+            await group.AddAsync(Context.ConnectionId);
+        });
+
+        public Task LeaveMerchantEvents(string channelId) => this.WithMerchantId(channelId, async group =>
+        {
+            await group.RemoveAsync(Context.ConnectionId);
+        });
+
         public Task JoinChannelEvents(string channelId) => this.WithChannelId(channelId, async group =>
         {
             await group.AddAsync(Context.ConnectionId);

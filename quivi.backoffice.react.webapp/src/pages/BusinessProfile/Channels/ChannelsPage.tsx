@@ -10,7 +10,7 @@ import ComponentCard from "../../../components/common/ComponentCard";
 import PageMeta from "../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import Button from "../../../components/ui/button/Button";
-import { LinkIcon, PencilIcon, PlusIcon, PrinterIcon, TrashBinIcon } from "../../../icons";
+import { OpenLink, PencilIcon, PlusIcon, PrinterIcon, TrashBinIcon } from "../../../icons";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import Checkbox from "../../../components/form/input/Checkbox";
@@ -219,7 +219,7 @@ export const ChannelsPage = () => {
                         ]}
                         actions={[
                             {
-                                render: () => <LinkIcon className="size-5" />,
+                                render: () => <OpenLink className="size-5" />,
                                 key: "url",
                                 label: t("common.openLink"),
                                 onClick: d => window.open(d.url, '_blank')

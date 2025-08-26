@@ -94,6 +94,7 @@ export const useQuiviForm = <TModel extends Yup.Maybe<Yup.AnyObject>, TTransform
             case "required": return t("common.errors.required", error.params);
             case "min": return t("common.errors.minLength", error.params);
             case "email": return t("common.errors.notAnEmail", error.params);
+            case "nullable": return "";
         }
         throw new Error(`Unkown type ${error.type}! Implement me!`);
     }

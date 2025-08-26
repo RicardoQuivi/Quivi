@@ -1,12 +1,15 @@
 import { OnBackgroundJobChangedEvent } from "./Dtos/OnBackgroundJobChangedEvent";
 import { OnChannelEvent } from "./Dtos/OnChannelEvent";
 import { OnChannelProfileEvent } from "./Dtos/OnChannelProfileEvent";
+import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
+import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
 import { OnCustomChargeMethodEvent } from "./Dtos/OnCustomChargeMethodEvent";
 import { OnEmployeeEvent } from "./Dtos/OnEmployeeEvent";
 import { OnItemCategoryEvent } from "./Dtos/OnItemCategoryEvent";
 import { OnItemsModifierGroupEvent } from "./Dtos/OnItemsModifierGroupEvent";
 import { OnLocalEvent } from "./Dtos/OnLocalEvent";
 import { OnMenuItemEvent } from "./Dtos/OnMenuItemEvent";
+import { OnOrderAdditionalInfoOperation } from "./Dtos/OnOrderAdditionalInfoOperation";
 import { OnOrderOperationEvent } from "./Dtos/OnOrderOperationEvent";
 import { OnPosChargeEvent } from "./Dtos/OnPosChargeEvent";
 import { OnPosChargeSyncAttemptEvent } from "./Dtos/OnPosChargeSyncAttemptEvent";
@@ -28,4 +31,7 @@ export interface MerchantEventListener {
     readonly onPosChargeSyncAttemptEvent?: (event: OnPosChargeSyncAttemptEvent) => any;
     readonly onOrderOperationEvent?: (event: OnOrderOperationEvent) => any;
     readonly onPreparationGroupOperationEvent?: (event: OnPreparationGroupOperationEvent) => any;
+    readonly onConfigurableFieldOperation?: (event: OnConfigurableFieldOperation) => any;
+    readonly onConfigurableFieldAssociationOperation?: (event: OnConfigurableFieldAssociationOperation) => any;
+    readonly onOrderAdditionalInfoOperation?: (event: OnOrderAdditionalInfoOperation) => any;
 }

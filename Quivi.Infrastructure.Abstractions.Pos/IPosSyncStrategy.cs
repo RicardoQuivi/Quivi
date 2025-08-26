@@ -26,7 +26,7 @@ namespace Quivi.Infrastructure.Abstractions.Pos
 
         Task<byte[]> GetInvoice(PosIntegration integration, int chargeId);
         Task<string?> NewEscPosInvoice(PosIntegration integration, int chargeId);
-        Task<string?> NewConsumerBill(PosIntegration integration, int sessionId);
+        Task<byte[]?> NewConsumerBill(PosIntegration integration, int sessionId);
 
         Task OnIntegrationSetUp(PosIntegration integration);
         Task OnIntegrationTearDown(PosIntegration integration);

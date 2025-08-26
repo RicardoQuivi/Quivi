@@ -41,7 +41,7 @@ export const NumberField = (props: NumberFieldProps) => {
     }
 
     const step = useMemo(() => props.decimalPlaces == undefined ? undefined : Math.pow(10, -props.decimalPlaces), [props.decimalPlaces])
-    const value = useMemo(() => (props.value ?? 0).toFixed(2), [props.value]);
+    const value = useMemo(() => (props.value ?? 0).toFixed(props.decimalPlaces), [props.value]);
 
     return (
     <div className={`flex flex-col ${props.className ?? ""}`}>

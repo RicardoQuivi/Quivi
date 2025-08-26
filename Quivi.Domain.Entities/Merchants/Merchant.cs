@@ -41,7 +41,7 @@ namespace Quivi.Domain.Entities.Merchants
         public int? SetUpFeeId { get; set; }
         public MerchantService? SetUpFee { get; set; }
 
-        public ICollection<MerchantService> ?MerchantServices { get; set; }
+        public ICollection<MerchantService>? MerchantServices { get; set; }
         public ICollection<ApiClient>? ApiClients { get; set; }
         public ICollection<Person>? People { get; set; }
         public ICollection<Merchant>? ChildMerchants { get; set; }
@@ -54,13 +54,14 @@ namespace Quivi.Domain.Entities.Merchants
         public ICollection<NotificationsContact>? NotificationContacts { get; set; }
         public ICollection<MerchantInvoiceDocument>? InvoiceDocuments { get; set; }
         public ICollection<MerchantAcquirerConfiguration>? AcquirerConfigurations { get; set; }
+        public ICollection<OrderConfigurableField>? OrderConfigurableFields { get; set; }
         #endregion
 
         #region PoS Merchant Relationships
         public ICollection<PosIntegration>? PosIntegrations { get; set; }
         public ICollection<MenuItem>? MenuItems { get; set; }
         public ICollection<Channel>? Channels { get; set; }
-        
+
         //TODO: Keep the following?
         //public ICollection<PostCheckoutLink> PostCheckoutLinks { get; set; }
         //public ICollection<PostCheckoutText> PostCheckoutTexts { get; set; }

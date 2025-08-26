@@ -2011,9 +2011,6 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<int>("AssignedOn")
                         .HasColumnType("int");
 
-                    b.Property<int>("ChannelProfileId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -2028,6 +2025,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
                     b.Property<bool>("IsRequired")
                         .HasColumnType("bit");
+
+                    b.Property<int>("MerchantId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
@@ -2044,13 +2044,34 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelProfileId");
-
                     b.HasIndex("DeletedDate")
                         .HasDatabaseName("IX_T_DeletedDate_NotDeleted")
                         .HasFilter("[DeletedDate] IS NULL");
 
+                    b.HasIndex("MerchantId");
+
                     b.ToTable("OrderConfigurableField");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableFieldChannelProfileAssociation", b =>
+                {
+                    b.Property<int>("OrderConfigurableFieldId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChannelProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrderConfigurableFieldId", "ChannelProfileId");
+
+                    b.HasIndex("ChannelProfileId");
+
+                    b.ToTable("OrderConfigurableFieldChannelProfileAssociation");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableFieldTranslation", b =>
@@ -3773,13 +3794,32 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableField", b =>
                 {
-                    b.HasOne("Quivi.Domain.Entities.Pos.ChannelProfile", "ChannelProfile")
+                    b.HasOne("Quivi.Domain.Entities.Merchants.Merchant", "Merchant")
                         .WithMany("OrderConfigurableFields")
-                        .HasForeignKey("ChannelProfileId")
+                        .HasForeignKey("MerchantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Merchant");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableFieldChannelProfileAssociation", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Pos.ChannelProfile", "ChannelProfile")
+                        .WithMany("AssociatedOrderConfigurableFields")
+                        .HasForeignKey("ChannelProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Quivi.Domain.Entities.Pos.OrderConfigurableField", "OrderConfigurableField")
+                        .WithMany("AssociatedChannelProfiles")
+                        .HasForeignKey("OrderConfigurableFieldId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("ChannelProfile");
+
+                    b.Navigation("OrderConfigurableField");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableFieldTranslation", b =>
@@ -4231,6 +4271,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
                     b.Navigation("NotificationContacts");
 
+                    b.Navigation("OrderConfigurableFields");
+
                     b.Navigation("Orders");
 
                     b.Navigation("People");
@@ -4281,9 +4323,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.ChannelProfile", b =>
                 {
-                    b.Navigation("Channels");
+                    b.Navigation("AssociatedOrderConfigurableFields");
 
-                    b.Navigation("OrderConfigurableFields");
+                    b.Navigation("Channels");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.Employee", b =>
@@ -4346,6 +4388,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.OrderConfigurableField", b =>
                 {
+                    b.Navigation("AssociatedChannelProfiles");
+
                     b.Navigation("OrderAdditionalInfos");
 
                     b.Navigation("Translations");
