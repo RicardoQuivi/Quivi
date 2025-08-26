@@ -12,16 +12,26 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const getPreferredTheme = () => {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  return 'light';
+};
+
+const userPreferedTheme = getPreferredTheme();
+console.log(userPreferedTheme);
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>(userPreferedTheme);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // This code will only run on the client side
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const initialTheme = savedTheme || "dark"; // Default to dark theme
+    const initialTheme = savedTheme || userPreferedTheme; // Default to user prefered theme
 
     setTheme(initialTheme);
     setIsInitialized(true);
