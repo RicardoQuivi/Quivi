@@ -83,7 +83,7 @@ export const AppHeader: React.FC = () => {
                         </svg>
                     </button>
 
-                    <div className="hidden lg:block">
+                    {/* <div className="hidden lg:block">
                         <form>
                             <div className="relative">
                                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
@@ -116,7 +116,7 @@ export const AppHeader: React.FC = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </div> */}
                 </div>
                 <div
                     className={`${isApplicationMenuOpen ? "flex" : "hidden"} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}

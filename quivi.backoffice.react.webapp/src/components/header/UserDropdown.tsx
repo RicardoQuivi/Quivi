@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 import { useAuth, useAuthenticatedUser } from "../../context/AuthContext";
-import { ChevronDownIcon, InfoIcon, SignOutIcon } from "../../icons";
+import { ChevronDownIcon, SignOutIcon } from "../../icons";
 import Avatar from "../ui/avatar/Avatar";
 import { useTranslation } from "react-i18next";
 
@@ -88,7 +87,7 @@ export const UserDropdown = () => {
                             />
                             {t("appHeader.accountSettings")}
                         </DropdownItem>
-                    </li> */}
+                    </li> 
                     <li>
                         <DropdownItem
                             onItemClick={closeDropdown}
@@ -101,7 +100,7 @@ export const UserDropdown = () => {
                             />
                             {t("appHeader.support")}
                         </DropdownItem>
-                    </li>
+                    </li> */}
                 </ul>
                 <Link
                     to="/signin"
