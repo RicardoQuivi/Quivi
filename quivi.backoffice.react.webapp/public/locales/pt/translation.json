@@ -528,9 +528,7 @@
         },
         "menuItems": {
             "title": "Item",
-            "locationDescription": "Defina o local onde o item será enviado e impresso quando enviado para preparação. Caso o item não tenha um local definido terá de definir um local a cada pedido de preparação.",
-            "availabilityPeriods": "Periodos de disponibilidade",
-            "availabilityPeriodsDescription": "Defina periodos ao longo da semana onde o item está disponível"
+            "locationDescription": "Defina o local onde o item será enviado e impresso quando enviado para preparação. Caso o item não tenha um local definido terá de definir um local a cada pedido de preparação."
         },
         "locals": {
             "title": "Locais"

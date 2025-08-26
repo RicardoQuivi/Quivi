@@ -528,9 +528,7 @@
         },
         "menuItems": {
             "title": "Item",
-            "locationDescription": "Set the location where this item will be printed and sent for preparation. In case the item doesn't have a location, you will need to set it at each preparation request.",
-            "availabilityPeriods": "Availability Periods",
-            "availabilityPeriodsDescription": "Define time periods throughout the week when the item is available"
+            "locationDescription": "Set the location where this item will be printed and sent for preparation. In case the item doesn't have a location, you will need to set it at each preparation request."
         },
         "locals": {
             "title": "Locals"
