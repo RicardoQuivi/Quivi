@@ -16,10 +16,12 @@ interface NavItem {
     readonly name: string;
     readonly icon: React.ReactNode;
     readonly path?: string;
+    readonly exactPath?: boolean;
     readonly show: (user: User) => boolean;
     readonly subItems?: { 
         readonly name: string; 
         readonly path: string;
+        readonly exactPath?: boolean;
         readonly show: (user: User) => boolean;
     }[];
 };
@@ -29,6 +31,7 @@ const items: NavItem[] = [
         icon: <GridIcon />,
         name: "sidebar.home",
         path: "/",
+        exactPath: true,
         show: () => true,
     },
     {
@@ -157,14 +160,21 @@ const AppSidebar = () => {
     const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
     const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-    const isActive = useCallback((path: string) => location.pathname.toLowerCase().startsWith(path.toLowerCase()), [location.pathname]);
+    const isActive = useCallback((path: string, exactPath?: boolean) => {
+        const locationLowerCase = location.pathname.toLowerCase();
+        const pathLowerCase = path.toLowerCase();
+        if(exactPath != true) {
+            return locationLowerCase.startsWith(pathLowerCase);
+        }
+        return locationLowerCase.localeCompare(pathLowerCase) == 0;
+    }, [location.pathname]);
     
     useEffect(() => {
         let submenuMatched = false;
         items.forEach((nav, index) => {
             if (nav.subItems) {
                 nav.subItems.forEach((subItem) => {
-                    if (isActive(subItem.path)) {
+                    if (isActive(subItem.path, subItem.exactPath)) {
                         setOpenSubmenu({
                             index,
                         });
@@ -214,14 +224,16 @@ const AppSidebar = () => {
             {
                 items.filter(i => i.show(user) == true).map((nav, index) => {
                     const subItems = nav.subItems?.filter(s => s.show(user));
+                    const isNavActive = ((nav.path !== undefined && isActive(nav.path, nav.exactPath)) || subItems?.find(s => isActive(s.path, s.exactPath)) != undefined);
+
                     return <li key={nav.name}>
                         {
                             subItems 
                             ?
                             <button
                                 onClick={() => handleSubmenuToggle(index)}
-                                className={`menu-item group ${openSubmenu?.index === index
-                                        ? "menu-item-active"
+                                className={`menu-item group ${isNavActive
+                                       ? "menu-item-active"
                                         : "menu-item-inactive"
                                     } cursor-pointer ${!isExpanded && !isHovered
                                         ? "lg:justify-center"
@@ -229,7 +241,7 @@ const AppSidebar = () => {
                                     }`}
                             >
                                 <span
-                                    className={`menu-item-icon-size ${openSubmenu?.index === index
+                                    className={`menu-item-icon-size ${isNavActive
                                             ? "menu-item-icon-active"
                                             : "menu-item-icon-inactive"
                                         }`}
@@ -250,17 +262,14 @@ const AppSidebar = () => {
                             </button>
                             : 
                             (
-                                nav.path && 
+                                nav.path != undefined && 
                                 <Link
                                     to={nav.path}
-                                    className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"}`}
+                                    className={`menu-item group ${isNavActive ? "menu-item-active" : "menu-item-inactive"}`}
                                     onClick={onLinkClick}
                                 >
                                     <span
-                                        className={`menu-item-icon-size ${isActive(nav.path)
-                                                ? "menu-item-icon-active"
-                                                : "menu-item-icon-inactive"
-                                            }`}
+                                        className={`menu-item-icon-size ${isNavActive ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                                     >
                                         {nav.icon}
                                     </span>
@@ -292,10 +301,7 @@ const AppSidebar = () => {
                                                 <Link
                                                     onClick={onLinkClick}
                                                     to={subItem.path}
-                                                    className={`menu-dropdown-item ${isActive(subItem.path)
-                                                            ? "menu-dropdown-item-active"
-                                                            : "menu-dropdown-item-inactive"
-                                                        }`}
+                                                    className={`menu-dropdown-item ${isActive(subItem.path, subItem.exactPath) ? "menu-dropdown-item-active" : "menu-dropdown-item-inactive"}`}
                                                 >
                                                     {t(subItem.name)}
                                                     <span className="flex items-center gap-1 ml-auto">

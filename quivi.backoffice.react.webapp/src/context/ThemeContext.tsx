@@ -20,7 +20,6 @@ const getPreferredTheme = () => {
 };
 
 const userPreferedTheme = getPreferredTheme();
-console.log(userPreferedTheme);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
