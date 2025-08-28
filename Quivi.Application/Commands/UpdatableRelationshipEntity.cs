@@ -11,7 +11,7 @@ namespace Quivi.Application.Commands
     }
 
     public class UpdatableRelationshipEntity<TEntityRelationship, TUpdatable, TKey> : IUpdatableRelationship<TUpdatable, TKey>
-                                                                                                            where TEntityRelationship : IEntity
+                                                                                                            where TEntityRelationship : IBaseEntity
                                                                                                             where TUpdatable : IUpdatableEntity
                                                                                                             where TKey : notnull
     {

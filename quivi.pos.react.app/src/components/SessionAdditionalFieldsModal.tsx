@@ -131,6 +131,7 @@ export const SessionAdditionalFieldsModal = (props: Props) => {
             title={getTitle()}
             onClose={props.onClose}
             hideClose={props.additionalInfo.length == 0}
+            disableCloseOutsideModal={props.additionalInfo.length == 0}
             size={ModalSize.Small}
             footer={
                 <Grid container sx={{width: "100%", margin: "1rem 0.25rem"}} spacing={1}>

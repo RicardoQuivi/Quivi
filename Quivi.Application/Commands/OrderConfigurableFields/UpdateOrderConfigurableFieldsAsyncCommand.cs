@@ -145,6 +145,7 @@ namespace Quivi.Application.Commands.OrderConfigurableFields
                 this.UpdatableAssociations = new UpdatableRelationshipEntity<OrderConfigurableFieldChannelProfileAssociation, IUpdatableChannelProfileAssociation, int>(model.AssociatedChannelProfiles!, m => m.ChannelProfileId, t => new UpdatableChannelProfileAssociation(t), (id) => new OrderConfigurableFieldChannelProfileAssociation
                 {
                     ChannelProfileId = id,
+
                     OrderConfigurableField = this.model,
                     OrderConfigurableFieldId = this.model.Id,
 

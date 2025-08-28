@@ -79,9 +79,6 @@ export const Pos = () => {
         pos.cartSession.addItem(item, 1);
     }
 
-    useEffect(() => console.log(configurableFieldsQuery.data), [configurableFieldsQuery.data])
-    useEffect(() => console.log(pos.cartSession.channelId ), [pos.cartSession.channelId])
-
     useEffect(() => {
         if(!pos.cartSession.sessionId) {
             return;
@@ -100,7 +97,11 @@ export const Pos = () => {
         }
 
         setAdditionalInfoModalOpen(true);
-    }, [pos.cartSession, sessionAdditionalInfoQuery, configurableFieldsQuery]);
+    }, [
+        pos.cartSession.sessionId, pos.cartSession.closedAt,
+        sessionAdditionalInfoQuery.isLoading, sessionAdditionalInfoQuery.data.length, 
+        configurableFieldsQuery.isFirstLoading, configurableFieldsQuery.data.length,
+    ]);
 
     return (
         <Box style={{height: "100dvh", width: "100dvw", overflow: "hidden", display: "flex", flexDirection: "column"}}>

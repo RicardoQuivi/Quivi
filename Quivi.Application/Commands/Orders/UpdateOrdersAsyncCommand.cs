@@ -3,6 +3,7 @@ using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data;
+using Quivi.Infrastructure.Abstractions.Events.Data.OrderAdditionalFields;
 using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Repositories;
@@ -13,15 +14,6 @@ namespace Quivi.Application.Commands.Orders
     public interface IUpdatableOrderField : IUpdatableEntity
     {
         string Value { get; set; }
-    }
-
-    public interface IUpdatableOrderFields : IUpdatableEntity
-    {
-        IUpdatableOrderField this[int id] { get; }
-        bool ContainsKey(int id);
-        bool Remove(int id);
-        void Clear();
-        void Upsert(int id, Action<IUpdatableOrderField> t);
     }
 
     public interface IUpdatableOrder : IUpdatableEntity
@@ -35,7 +27,7 @@ namespace Quivi.Application.Commands.Orders
         bool PayLater { get; set; }
         OrderState State { get; set; }
 
-        IUpdatableOrderFields Fields { get; }
+        IUpdatableRelationship<IUpdatableOrderField, int> Fields { get; }
     }
 
     public class UpdateOrdersAsyncCommand : AUpdateAsyncCommand<IEnumerable<Order>, IUpdatableOrder>
@@ -61,27 +53,27 @@ namespace Quivi.Application.Commands.Orders
             this.backgroundJobHandler = backgroundJobHandler;
         }
 
-        private class UpdatableOrder : IUpdatableOrder, IUpdatableOrderFields
+        private class UpdatableOrder : IUpdatableOrder
         {
             private class UpdatableOrderField : IUpdatableOrderField
             {
                 public readonly OrderAdditionalInfo Model;
-                private readonly bool isNew;
                 private readonly string originalValue;
 
-                public UpdatableOrderField(OrderAdditionalInfo model, bool isNew)
+                public UpdatableOrderField(OrderAdditionalInfo model)
                 {
                     Model = model;
-                    this.isNew = isNew;
                     originalValue = model.Value;
                 }
 
                 public string Value { get => Model.Value; set => Model.Value = value; }
 
-                public bool HasChanges => isNew || originalValue != Model.Value;
+                public bool HasChanges => originalValue != Model.Value;
             }
 
             public readonly Order Model;
+            public readonly UpdatableRelationshipEntity<OrderAdditionalInfo, IUpdatableOrderField, int> UpdatableFields;
+
             public DateTime? OriginalScheduledTo { get; }
             public OrderState OriginalState { get; }
             public bool OriginalPayLater { get; }
@@ -123,22 +115,22 @@ namespace Quivi.Application.Commands.Orders
                 }
             }
 
-            #region IUpdatableOrderFields
-            private readonly ICollection<OrderAdditionalInfo> _additionalFields;
-            private readonly HashSet<OrderAdditionalInfo> _originalAdditionalFields;
-            private readonly Dictionary<int, (OrderAdditionalInfo Model, UpdatableOrderField Value)> _fieldsDictionary;
-            #endregion
-
             public UpdatableOrder(Order model)
             {
                 this.Model = model;
+                this.UpdatableFields = new UpdatableRelationshipEntity<OrderAdditionalInfo, IUpdatableOrderField, int>(model.OrderAdditionalInfos!, m => m.OrderConfigurableFieldId, t => new UpdatableOrderField(t), (id) => new OrderAdditionalInfo
+                {
+                    OrderConfigurableFieldId = id,
+
+                    Value = string.Empty,
+
+                    Order = this.Model,
+                    OrderId = this.Model.Id,
+                });
+
                 OriginalScheduledTo = this.Model.ScheduledTo;
                 OriginalState = this.Model.State;
                 OriginalPayLater = this.Model.PayLater;
-
-                _additionalFields = model.OrderAdditionalInfos ?? [];
-                _fieldsDictionary = model.OrderAdditionalInfos?.ToDictionary(t => t.OrderConfigurableFieldId, t => (t, new UpdatableOrderField(t, false))) ?? [];
-                _originalAdditionalFields = model.OrderAdditionalInfos?.ToHashSet() ?? [];
             }
 
             public int MerchantId => Model.MerchantId;
@@ -157,7 +149,7 @@ namespace Quivi.Application.Commands.Orders
                 }
             }
 
-            public bool PayLater 
+            public bool PayLater
             {
                 get => Model.PayLater;
                 set
@@ -168,7 +160,7 @@ namespace Quivi.Application.Commands.Orders
                 }
             }
 
-            public OrderState State 
+            public OrderState State
             {
                 get => Model.State;
                 set
@@ -192,72 +184,14 @@ namespace Quivi.Application.Commands.Orders
                     if (OriginalPayLater != Model.PayLater)
                         return true;
 
-                    if(IUpdatableOrderFieldsHasChanges)
+                    if (UpdatableFields.HasChanges)
                         return true;
 
                     return false;
                 }
             }
 
-            public IUpdatableOrderFields Fields => this;
-
-            #region IUpdatableOrderFields
-            public IUpdatableOrderField this[int id] => _fieldsDictionary[id].Value;
-
-            public bool ContainsKey(int id) => _fieldsDictionary.ContainsKey(id);
-
-            public bool Remove(int id)
-            {
-                if (_fieldsDictionary.TryGetValue(id, out var exists))
-                    _additionalFields.Remove(exists.Model);
-                return _fieldsDictionary.Remove(id);
-            }
-
-            public void Clear()
-            {
-                _fieldsDictionary.Clear();
-                _additionalFields.Clear();
-            }
-
-            public void Upsert(int id, Action<IUpdatableOrderField> t)
-            {
-                if (_fieldsDictionary.TryGetValue(id, out var exists))
-                {
-                    t(exists.Value);
-                    return;
-                }
-
-                var newEntry = new OrderAdditionalInfo
-                {
-                    Value = string.Empty,
-                    OrderId = Model.Id,
-                    OrderConfigurableFieldId = id
-                };
-                var entry = (newEntry, new UpdatableOrderField(newEntry, true));
-                _additionalFields.Add(entry.newEntry);
-                _fieldsDictionary[id] = entry;
-                t(entry.Item2);
-            }
-
-            bool IUpdatableOrderFieldsHasChanges
-            {
-                get
-                {
-                    if (_fieldsDictionary.Count != _originalAdditionalFields.Count)
-                        return true;
-
-                    foreach (var entry in _fieldsDictionary.Values)
-                    {
-                        if (entry.Value.HasChanges)
-                            return true;
-
-                        if (_originalAdditionalFields.Contains(entry.Model) == false)
-                            return true;
-                    }
-                    return false;
-                }
-            }
-            #endregion
+            public IUpdatableRelationship<IUpdatableOrderField, int> Fields => UpdatableFields;
         }
 
         public async Task<IEnumerable<Order>> Handle(UpdateOrdersAsyncCommand command)
@@ -307,6 +241,15 @@ namespace Quivi.Application.Commands.Orders
 
                 if (updatableEntity.OriginalState != entity.State && entity.State == OrderState.Scheduled && entity.ScheduledTo.HasValue)
                     ScheduledJob(entity.Id, entity.ScheduledTo.Value);
+
+                foreach (var changedFieldEntity in updatableEntity.UpdatableFields.ChangedEntities)
+                    await eventService.Publish(new OnOrderAdditionalInfoOperationEvent
+                    {
+                        MerchantId = entity.MerchantId,
+                        OrderConfigurableFieldId = changedFieldEntity.Entity.OrderConfigurableFieldId,
+                        OrderId = entity.Id,
+                        Operation = EntityOperation.Update,
+                    });
             }
 
             return entities;
@@ -330,7 +273,7 @@ namespace Quivi.Application.Commands.Orders
             });
             var entity = orderQuery.SingleOrDefault();
 
-            if (entity == null) 
+            if (entity == null)
                 return;
 
             await Process((IUpdatableOrder order) =>
