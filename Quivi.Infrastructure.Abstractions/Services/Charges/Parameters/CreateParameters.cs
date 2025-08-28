@@ -7,6 +7,7 @@ namespace Quivi.Infrastructure.Abstractions.Services.Charges.Parameters
     {
         public class PayAtTheTable
         {
+            public int SessionId { get; init; }
             public IEnumerable<SessionItem>? Items { get; init; }
         }
 
@@ -33,6 +34,7 @@ namespace Quivi.Infrastructure.Abstractions.Services.Charges.Parameters
         public required Action OnInvalidTip { get; init; }
         public required Action OnInvalidAmount { get; init; }
         public required Action OnInvalidChannel { get; init; }
+        public required Action OnInvalidSession { get; init; }
         public required Action OnInvalidMerchantAcquirerConfiguration { get; init; }
         public required Action OnNoOpenSession { get; init; }
     }

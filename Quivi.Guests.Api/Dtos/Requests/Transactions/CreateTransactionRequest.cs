@@ -2,6 +2,7 @@
 {
     public class PayAtTheTableData
     {
+        public required string SessionId { get; init; }
         public IEnumerable<SessionItem>? Items { get; set; }
     }
 

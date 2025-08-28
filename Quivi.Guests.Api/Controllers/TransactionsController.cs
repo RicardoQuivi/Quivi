@@ -115,6 +115,7 @@ namespace Quivi.Guests.Api.Controllers
                 SurchargeFeeOverride = null,
                 PayAtTheTableData = request.PayAtTheTableData != null ? new CreateParameters.PayAtTheTable
                 {
+                    SessionId = idConverter.FromPublicId(request.PayAtTheTableData.SessionId),
                     Items = request.PayAtTheTableData.Items?.Select(s => new Infrastructure.Abstractions.Pos.SessionItem
                     {
                         MenuItemId = idConverter.FromPublicId(s.MenuItemId),
@@ -140,6 +141,7 @@ namespace Quivi.Guests.Api.Controllers
                     validator.AddError(m => m.OrderAndPayData, ValidationError.Invalid);
                 },
                 OnInvalidChannel = () => validator.AddError(m => m.ChannelId, ValidationError.Invalid),
+                OnInvalidSession = () => validator.AddError(m => m.PayAtTheTableData!.SessionId, ValidationError.Invalid),
                 OnInvalidMerchantAcquirerConfiguration = () => validator.AddError(m => m.MerchantAcquirerConfigurationId, ValidationError.Invalid),
                 OnInvalidAmount = () => validator.AddError(m => m.Amount, ValidationError.Invalid),
                 OnInvalidTip = () => validator.AddError(m => m.Tip, ValidationError.Invalid),

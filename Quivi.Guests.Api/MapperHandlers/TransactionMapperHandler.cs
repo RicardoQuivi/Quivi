@@ -56,15 +56,15 @@ namespace Quivi.Guests.Api.MapperHandlers
                 CapturedDate = model.CaptureDate.HasValue ? new DateTimeOffset(model.CaptureDate.Value, TimeSpan.Zero) : null,
                 LastModified = new DateTimeOffset(model.ModifiedDate, TimeSpan.Zero),
                 SyncStatus = state,
-                AdditionalData = Map(model.Charge!.AcquirerCharge!),
+                AdditionalData = Map(model.Charge!.AcquirerCharge),
             };
         }
 
         private static bool IsFreePayment(PosCharge model) => model.SessionId.HasValue == false && (model.PosChargeInvoiceItems?.Any() ?? false) == false;
 
-        private object? Map(AcquirerCharge acquirerCharge)
+        private object? Map(AcquirerCharge? acquirerCharge)
         {
-            if (string.IsNullOrWhiteSpace(acquirerCharge.AdditionalJsonContext))
+            if (string.IsNullOrWhiteSpace(acquirerCharge?.AdditionalJsonContext))
                 return null;
 
             var dict = JsonSerializer.Deserialize<object>(acquirerCharge.AdditionalJsonContext);

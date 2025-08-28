@@ -1,6 +1,7 @@
 import type { SessionItem } from "../sessions/SessionItem";
 
 interface PayAtTheTableData {
+    readonly sessionId: string;
     readonly items?: SessionItem[];
 }
 

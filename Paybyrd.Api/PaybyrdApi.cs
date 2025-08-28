@@ -65,6 +65,9 @@ namespace Paybyrd.Api
             httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
 
             var response = await httpClient.PostAsync(endpoint, content);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw new Exception("Paybyrd is not available");
+
             var rawResponse = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<TResponse>(rawResponse, jsonSerializerOptions) ?? throw new InvalidOperationException("Failed to deserialize response from Paybyrd API.");
             return result;

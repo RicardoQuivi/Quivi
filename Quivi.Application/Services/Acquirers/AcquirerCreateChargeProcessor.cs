@@ -34,6 +34,7 @@ namespace Quivi.Application.Services.Acquirers
             public required Channel Channel { get; init; }
             public required MerchantAcquirerConfiguration MerchantAcquirerConfiguration { get; init; }
             public required Person Consumer { get; init; }
+            public required Session? Session { get; init; }
             public decimal Tip { get; init; }
             public decimal BaseAmount { get; init; }
             public decimal MerchantCaptureAmount => Tip + BaseAmount;
@@ -124,7 +125,6 @@ namespace Quivi.Application.Services.Acquirers
 
         private async Task<PosCharge?> Process(TransactionInfo transactionInfo, CreateParameters command)
         {
-            int? sessionId = null;
             DateTime now = dateTimeProvider.GetUtcNow();
 
             var depositPersonQuery = await queryProcessor.Execute(new GetPeopleAsyncQuery
@@ -143,7 +143,7 @@ namespace Quivi.Application.Services.Acquirers
                 Payment = transactionInfo.BaseAmount,
                 Tip = transactionInfo.Tip,
                 SurchargeFeeAmount = transactionInfo.SurchargeAmount,
-                SessionId = sessionId,
+                SessionId = transactionInfo.Session?.Id,
                 LocationId = null,
                 Email = command.Email,
                 VatNumber = command.VatNumber,
@@ -421,6 +421,23 @@ namespace Quivi.Application.Services.Acquirers
                 return null;
             }
 
+            Session? session = null;
+            if (command.PayAtTheTableData?.SessionId != null)
+            {
+                var sessionQuery = await queryProcessor.Execute(new GetSessionsAsyncQuery
+                {
+                    Ids = [command.PayAtTheTableData.SessionId],
+                    ChannelIds = [command.ChannelId],
+                    Statuses = [SessionStatus.Ordering],
+                    PageSize = 1,
+                });
+                session = sessionQuery.FirstOrDefault();
+                if (session == null)
+                {
+                    command.OnInvalidSession();
+                    return null;
+                }
+            }
             decimal surchargeAmount = 0;
             decimal appliedFeeValue = 0;
             FeeUnit appliedFeeUnit = default;
@@ -445,6 +462,7 @@ namespace Quivi.Application.Services.Acquirers
             {
                 Merchant = merchant,
                 Channel = channel,
+                Session = session,
                 MerchantAcquirerConfiguration = acquirerConfiguration,
                 Consumer = consumer,
                 Tip = tip,

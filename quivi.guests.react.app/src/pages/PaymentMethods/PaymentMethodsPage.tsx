@@ -84,6 +84,11 @@ export const PaymentMethodsPage = (props: Props) => {
         const orderAndPayData = paymentDetails.additionalData as OrderAndPayData;
         setIsSubmitting(true);
         try {
+            const isPayAtTheTablePayment = props.isFreePayment != true && isPayAtTheTable(paymentDetails.additionalData);
+            if(isPayAtTheTablePayment && sessionQuery.data?.id == undefined) {
+                throw new Error();
+            }
+
             const charge = await transactionMutator.create({
                 channelId: channelContext.channelId,
                 amount: paymentDetails.amount,
@@ -94,7 +99,8 @@ export const PaymentMethodsPage = (props: Props) => {
                 orderAndPayData: isOrderAndPay(paymentDetails.additionalData) ? {
                     orderId: orderAndPayData.orderId,
                 } : undefined,
-                payAtTheTableData: props.isFreePayment == false && isPayAtTheTable(paymentDetails.additionalData) ? {
+                payAtTheTableData: isPayAtTheTablePayment ? {
+                    sessionId: sessionQuery.data!.id ?? "",
                     items: payAtTheTableData.items,
                 } : undefined,
             });
