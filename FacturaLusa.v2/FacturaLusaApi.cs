@@ -27,16 +27,32 @@ using System.Text.Json.Serialization;
 
 namespace FacturaLusa.v2
 {
+    public class FacturaLusaApiCall
+    {
+        public required string Url { get; init; }
+        public required string Method { get; init; }
+
+        public required string RawRequest { get; init; }
+        public required object RequestObject { get; init; }
+
+        public required string? RawResponse { get; init; }
+        public required object? ResponseObject { get; init; }
+
+        public required System.Net.HttpStatusCode StatusCode { get; init; }
+    }
+
     public class FacturaLusaApi : IFacturaLusaApi
     {
         private static readonly TimeZoneInfo LisbonTZ = TimeZoneInfo.FindSystemTimeZoneById(OperatingSystem.IsWindows() ? "GMT Standard Time" : "Europe/Lisbon");
 
-        private readonly Uri apiAdress;
+        private readonly Lazy<Uri> apiAdress;
         private readonly JsonSerializerOptions jsonSerializerOptions;
+        private readonly Action<FacturaLusaApiCall>? logAction;
 
-        public FacturaLusaApi(string apiAddress)
+        public FacturaLusaApi(string apiAddress, Action<FacturaLusaApiCall>? logAction = null)
         {
-            this.apiAdress = new Uri(apiAddress);
+            this.apiAdress = new Lazy<Uri>(() => new Uri(apiAddress));
+            this.logAction = logAction;
 
             jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -62,30 +78,123 @@ namespace FacturaLusa.v2
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var httpClient = new HttpClient();
-            httpClient.BaseAddress = apiAdress;
+            httpClient.BaseAddress = apiAdress.Value;
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
             var response = await action(httpClient, content);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
+
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = null,
+                    ResponseObject = null,
+
+                    StatusCode = response.StatusCode,
+                });
                 throw new NotAuthorizedException();
+            }
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
+
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = null,
+                    ResponseObject = null,
+
+                    StatusCode = response.StatusCode,
+                });
                 throw new FacturaLusaException("Entity Not Found", ErrorType.EntityXNotExists);
+            }
 
             var rawResponse = await response.Content.ReadAsStringAsync();
             if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 var message = JsonSerializer.Deserialize<string>(rawResponse, jsonSerializerOptions)!;
                 var errorType = ErrorTypeMapper.FromMessage(message);
+
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
+
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = rawResponse,
+                    ResponseObject = message,
+
+                    StatusCode = response.StatusCode,
+                });
                 throw new FacturaLusaException(message, errorType);
             }
 
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                throw new HttpRequestException(rawResponse, null, response.StatusCode);
+            {
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
 
-            var result = JsonSerializer.Deserialize<TResponse>(rawResponse, jsonSerializerOptions) ?? throw new InvalidOperationException("Failed to deserialize response from FacturaLusa API.");
-            return result;
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = null,
+                    ResponseObject = null,
+
+                    StatusCode = response.StatusCode,
+                });
+                throw new HttpRequestException(rawResponse, null);
+            }
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<TResponse>(rawResponse, jsonSerializerOptions) ?? throw new InvalidOperationException("Failed to deserialize response from FacturaLusa API.");
+
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
+
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = rawResponse,
+                    ResponseObject = result,
+
+                    StatusCode = response.StatusCode,
+                });
+                return result;
+            }
+            catch
+            {
+                logAction?.Invoke(new FacturaLusaApiCall
+                {
+                    Url = response.RequestMessage?.RequestUri?.AbsoluteUri ?? endpoint,
+                    Method = response.RequestMessage?.Method.Method ?? string.Empty,
+
+                    RawRequest = json,
+                    RequestObject = request,
+
+                    RawResponse = rawResponse,
+                    ResponseObject = null,
+
+                    StatusCode = response.StatusCode,
+                });
+                throw;
+            }
         }
 
         private Task<TResponse> Put<TResponse>(string endpoint, string apiKey, object request) => Submit<TResponse>(endpoint, apiKey, request, (httpClient, content) => httpClient.PutAsync(endpoint, content));
@@ -161,7 +270,7 @@ namespace FacturaLusa.v2
                 Description = result.Description,
                 Type = result.Type,
                 SaftRegion = result.Saft_region,
-                TaxPercentage = decimal.Parse(result.Tax),
+                TaxPercentage = decimal.Parse(result.Tax, CultureInfo.InvariantCulture),
             };
         }
 
@@ -188,7 +297,7 @@ namespace FacturaLusa.v2
                 Description = result.Description,
                 Type = result.Type,
                 SaftRegion = result.Saft_region,
-                TaxPercentage = decimal.Parse(result.Tax),
+                TaxPercentage = decimal.Parse(result.Tax, CultureInfo.InvariantCulture),
             };
         }
         #endregion
@@ -246,7 +355,7 @@ namespace FacturaLusa.v2
                     Description = result.Vat.Description,
                     Type = result.Vat.Type,
                     SaftRegion = result.Vat.Saft_region,
-                    TaxPercentage = decimal.Parse(result.Vat.Tax),
+                    TaxPercentage = decimal.Parse(result.Vat.Tax, CultureInfo.InvariantCulture),
                 },
                 Type = result.Type,
                 Details = result.Details,
@@ -311,7 +420,7 @@ namespace FacturaLusa.v2
                     Description = result.Vat.Description,
                     Type = result.Vat.Type,
                     SaftRegion = result.Vat.Saft_region,
-                    TaxPercentage = decimal.Parse(result.Vat.Tax),
+                    TaxPercentage = decimal.Parse(result.Vat.Tax, CultureInfo.InvariantCulture),
                 },
                 Type = result.Type,
                 Details = result.Details,
@@ -345,7 +454,7 @@ namespace FacturaLusa.v2
                 Description = result.Description,
                 Symbol = result.Symbol,
                 IsoCode = result.Code_iso,
-                ExchangeRate = decimal.Parse(result.Exchange_sale),
+                ExchangeRate = decimal.Parse(result.Exchange_sale, CultureInfo.InvariantCulture),
                 IsDefault = result.Is_default == 1,
                 CreatedAt = result.Created_at,
                 UpdatedAt = result.Updated_at,
@@ -379,7 +488,7 @@ namespace FacturaLusa.v2
                 Description = result.Description,
                 Symbol = result.Symbol,
                 IsoCode = result.Code_iso,
-                ExchangeRate = decimal.Parse(result.Exchange_sale),
+                ExchangeRate = decimal.Parse(result.Exchange_sale, CultureInfo.InvariantCulture),
                 IsDefault = result.Is_default == 1,
                 CreatedAt = result.Created_at,
                 UpdatedAt = result.Updated_at,
@@ -458,7 +567,7 @@ namespace FacturaLusa.v2
             {
                 Id = result.Id,
                 Description = result.Description,
-                ValidUntilYear = long.Parse(result.Valid_until),
+                ValidUntilYear = long.Parse(result.Valid_until, CultureInfo.InvariantCulture),
                 CreatedAt = result.Created_at,
                 UpdatedAt = result.Updated_at,
             };
@@ -483,7 +592,7 @@ namespace FacturaLusa.v2
             {
                 Id = result.Id,
                 Description = result.Description,
-                ValidUntilYear = long.Parse(result.Valid_until),
+                ValidUntilYear = long.Parse(result.Valid_until, CultureInfo.InvariantCulture),
                 CreatedAt = result.Created_at,
                 UpdatedAt = result.Updated_at,
             };
@@ -491,7 +600,7 @@ namespace FacturaLusa.v2
 
         public async Task<CheckSerieCommunicationResponse> CheckSerieCommunication(string apiKey, CheckSerieCommunicationRequest request)
         {
-            var result = await Post($"v2/administration/series/{request.Id}/check_communication", apiKey, new
+            var result = await Post($"api/v2/administration/series/{request.Id}/check_communication", apiKey, new
             {
                 Document_type = request.DocumentType,
             }, false);
@@ -504,7 +613,7 @@ namespace FacturaLusa.v2
 
         public async Task<CommunicateSerieResponse> CommunicateSerie(string apiKey, CommunicateSerieRequest request)
         {
-            var result = await Post($"v2/administration/series/{request.Id}/communicate ", apiKey, new
+            var result = await Post($"api/v2/administration/series/{request.Id}/communicate", apiKey, new
             {
             }, new
             {
@@ -632,10 +741,10 @@ namespace FacturaLusa.v2
                 Type = result.Type,
                 VatType = result.Vat_type,
                 VatExemptionId = result.Vat_exemption_id,
-                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax),
+                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax, CultureInfo.InvariantCulture),
                 Observations = result.Observations,
                 OtherContacts = result.Other_contacts,
-                OtherEmails = result.Other_emails?.Split(","),
+                OtherEmails = result.Other_emails?.Split(','),
                 ReceiveSms = result.Receive_sms == 1,
                 ReceiveEmails = result.Receive_emails == 1,
                 Language = result.Language,
@@ -732,10 +841,10 @@ namespace FacturaLusa.v2
                 Type = result.Type,
                 VatType = result.Vat_type,
                 VatExemptionId = result.Vat_exemption_id,
-                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax),
+                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax, CultureInfo.InvariantCulture),
                 Observations = result.Observations,
                 OtherContacts = result.Other_contacts,
-                OtherEmails = result.Other_emails?.Split(","),
+                OtherEmails = result.Other_emails?.Split(','),
                 ReceiveSms = result.Receive_sms == 1,
                 ReceiveEmails = result.Receive_emails == 1,
                 Language = result.Language,
@@ -945,17 +1054,17 @@ namespace FacturaLusa.v2
                 SerieId = result.Serie_id,
                 DocumentTypeId = result.Document_type_id,
                 DocumentFullNumber = result.Document_full_number,
-                GrossTotal = decimal.Parse(result.Gross_total),
-                TotalDiscount = decimal.Parse(result.Total_discount),
-                NetTotal = decimal.Parse(result.Net_total),
-                TotalBaseVat = decimal.Parse(result.Total_base_vat),
-                TotalVat = decimal.Parse(result.Total_vat),
-                TotalShipping = decimal.Parse(result.Total_shipping),
-                GrandTotal = decimal.Parse(result.Grand_total),
-                GrandTotalAtExchangeRate = decimal.Parse(result.Grand_total_with_currency_exchange),
-                FinalFinancialDiscount = decimal.Parse(result.Final_discount_financial),
-                FinalGlobalDiscount = decimal.Parse(result.Final_discount_global),
-                FinalGlobalDiscountValue = decimal.Parse(result.Final_discount_global_value),
+                GrossTotal = decimal.Parse(result.Gross_total, CultureInfo.InvariantCulture),
+                TotalDiscount = decimal.Parse(result.Total_discount, CultureInfo.InvariantCulture),
+                NetTotal = decimal.Parse(result.Net_total, CultureInfo.InvariantCulture),
+                TotalBaseVat = decimal.Parse(result.Total_base_vat, CultureInfo.InvariantCulture),
+                TotalVat = decimal.Parse(result.Total_vat, CultureInfo.InvariantCulture),
+                TotalShipping = decimal.Parse(result.Total_shipping, CultureInfo.InvariantCulture),
+                GrandTotal = decimal.Parse(result.Grand_total, CultureInfo.InvariantCulture),
+                GrandTotalAtExchangeRate = decimal.Parse(result.Grand_total_with_currency_exchange, CultureInfo.InvariantCulture),
+                FinalFinancialDiscount = decimal.Parse(result.Final_discount_financial, CultureInfo.InvariantCulture),
+                FinalGlobalDiscount = decimal.Parse(result.Final_discount_global, CultureInfo.InvariantCulture),
+                FinalGlobalDiscountValue = decimal.Parse(result.Final_discount_global_value, CultureInfo.InvariantCulture),
 
                 CustomerId = result.Customer_id,
                 CustomerCode = result.Customer_code,
@@ -980,18 +1089,18 @@ namespace FacturaLusa.v2
                 PaymentMethodId = result.Payment_method_id,
                 PaymentConditionId = result.Payment_condition_id,
                 ShippingModeId = result.Shipping_mode_id,
-                ShippingValue = result.Shipping_value == null ? null : decimal.Parse(result.Shipping_value),
+                ShippingValue = result.Shipping_value == null ? null : decimal.Parse(result.Shipping_value, CultureInfo.InvariantCulture),
                 ShippingVatId = result.Shipping_vat_id,
                 PriceId = result.Price_id,
                 CurrencyId = result.Currency_id,
-                CurrencyExchangeRate = decimal.Parse(result.Currency_exchange),
+                CurrencyExchangeRate = decimal.Parse(result.Currency_exchange, CultureInfo.InvariantCulture),
                 VatType = result.Vat_type,
                 Observations = result.Observations,
 
-                IrsRetentionApply = decimal.Parse(result.Irs_retention_apply),
-                IrsRetentionBase = decimal.Parse(result.Irs_retention_base),
-                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax),
-                IrsRetentionTotal = decimal.Parse(result.Irs_retention_total),
+                IrsRetentionApply = decimal.Parse(result.Irs_retention_apply, CultureInfo.InvariantCulture),
+                IrsRetentionBase = decimal.Parse(result.Irs_retention_base, CultureInfo.InvariantCulture),
+                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax, CultureInfo.InvariantCulture),
+                IrsRetentionTotal = decimal.Parse(result.Irs_retention_total, CultureInfo.InvariantCulture),
 
                 UrlFile = result.Url_file,
                 FileFormat = result.File_format,
@@ -1016,15 +1125,15 @@ namespace FacturaLusa.v2
                     Id = s.Id,
                     ItemId = s.Item_id,
                     ItemDetails = s.Item_details,
-                    UnitPrice = decimal.Parse(s.Unit_price),
-                    Quantity = decimal.Parse(s.Quantity),
-                    Discount = decimal.Parse(s.Discount),
-                    GrossTotal = decimal.Parse(s.Gross_total),
-                    NetTotal = decimal.Parse(s.Net_total),
-                    TotalBaseVat = decimal.Parse(s.Total_base_vat),
-                    TotalVat = decimal.Parse(s.Total_vat),
-                    TotalDiscount = decimal.Parse(s.Total_discount),
-                    GrandTotal = decimal.Parse(s.Grand_total),
+                    UnitPrice = decimal.Parse(s.Unit_price, CultureInfo.InvariantCulture),
+                    Quantity = decimal.Parse(s.Quantity, CultureInfo.InvariantCulture),
+                    Discount = decimal.Parse(s.Discount, CultureInfo.InvariantCulture),
+                    GrossTotal = decimal.Parse(s.Gross_total, CultureInfo.InvariantCulture),
+                    NetTotal = decimal.Parse(s.Net_total, CultureInfo.InvariantCulture),
+                    TotalBaseVat = decimal.Parse(s.Total_base_vat, CultureInfo.InvariantCulture),
+                    TotalVat = decimal.Parse(s.Total_vat, CultureInfo.InvariantCulture),
+                    TotalDiscount = decimal.Parse(s.Total_discount, CultureInfo.InvariantCulture),
+                    GrandTotal = decimal.Parse(s.Grand_total, CultureInfo.InvariantCulture),
                     VatRateId = s.Vat_id,
                     UnitId = s.Unit_id,
                     VatExemptionId = s.Vat_exemption_id,
@@ -1046,7 +1155,7 @@ namespace FacturaLusa.v2
                     {
                         Id = s.Vat.Id,
                         Description = s.Vat.Description,
-                        TaxPercentage = decimal.Parse(s.Vat.Tax),
+                        TaxPercentage = decimal.Parse(s.Vat.Tax, CultureInfo.InvariantCulture),
                         SaftRegion = s.Vat.Saft_region,
                         Type = s.Vat.Type,
                     },
@@ -1062,7 +1171,7 @@ namespace FacturaLusa.v2
                 {
                     Id = result.Serie.Id,
                     Description = result.Serie.Description,
-                    ValidUntilYear = int.Parse(result.Serie.Valid_until),
+                    ValidUntilYear = int.Parse(result.Serie.Valid_until, CultureInfo.InvariantCulture),
                 },
 
                 PaymentMethod = result.Paymentmethod == null ? null : new SalePaymentMethod
@@ -1094,10 +1203,10 @@ namespace FacturaLusa.v2
                     Type = result.Customer.Type,
                     VatType = result.Customer.Vat_type,
                     VatExemptionId = result.Customer.Vat_exemption_id,
-                    IrsRetentionTax = decimal.Parse(result.Customer.Irs_retention_tax),
+                    IrsRetentionTax = decimal.Parse(result.Customer.Irs_retention_tax, CultureInfo.InvariantCulture),
                     Observations = result.Customer.Observations,
                     OtherContacts = result.Customer.Other_contacts,
-                    OtherEmails = result.Customer.Other_emails?.Split(","),
+                    OtherEmails = result.Customer.Other_emails?.Split(','),
                     ReceiveSms = result.Customer.Receive_sms == 1,
                     ReceiveEmails = result.Customer.Receive_emails == 1,
                     Language = result.Customer.Language,
@@ -1111,7 +1220,7 @@ namespace FacturaLusa.v2
                     SerieId = result.Reference.Serie_id,
                     DocumentTypeId = result.Reference.Document_type_id,
                     DocumentFullNumber = result.Reference.Document_full_number,
-                    GrandTotal = decimal.Parse(result.Reference.Grand_total),
+                    GrandTotal = decimal.Parse(result.Reference.Grand_total, CultureInfo.InvariantCulture),
                     Serie = new SaleSerie
                     {
                         Id = result.Reference.Serie.Id,
@@ -1383,17 +1492,17 @@ namespace FacturaLusa.v2
                 SerieId = result.Serie_id,
                 DocumentTypeId = result.Document_type_id,
                 DocumentFullNumber = result.Document_full_number,
-                GrossTotal = decimal.Parse(result.Gross_total),
-                TotalDiscount = decimal.Parse(result.Total_discount),
-                NetTotal = decimal.Parse(result.Net_total),
-                TotalBaseVat = decimal.Parse(result.Total_base_vat),
-                TotalVat = decimal.Parse(result.Total_vat),
-                TotalShipping = decimal.Parse(result.Total_shipping),
-                GrandTotal = decimal.Parse(result.Grand_total),
-                GrandTotalAtExchangeRate = decimal.Parse(result.Grand_total_with_currency_exchange),
-                FinalFinancialDiscount = decimal.Parse(result.Final_discount_financial),
-                FinalGlobalDiscount = decimal.Parse(result.Final_discount_global),
-                FinalGlobalDiscountValue = decimal.Parse(result.Final_discount_global_value),
+                GrossTotal = decimal.Parse(result.Gross_total, CultureInfo.InvariantCulture),
+                TotalDiscount = decimal.Parse(result.Total_discount, CultureInfo.InvariantCulture),
+                NetTotal = decimal.Parse(result.Net_total, CultureInfo.InvariantCulture),
+                TotalBaseVat = decimal.Parse(result.Total_base_vat, CultureInfo.InvariantCulture),
+                TotalVat = decimal.Parse(result.Total_vat, CultureInfo.InvariantCulture),
+                TotalShipping = decimal.Parse(result.Total_shipping, CultureInfo.InvariantCulture),
+                GrandTotal = decimal.Parse(result.Grand_total, CultureInfo.InvariantCulture),
+                GrandTotalAtExchangeRate = decimal.Parse(result.Grand_total_with_currency_exchange, CultureInfo.InvariantCulture),
+                FinalFinancialDiscount = decimal.Parse(result.Final_discount_financial, CultureInfo.InvariantCulture),
+                FinalGlobalDiscount = decimal.Parse(result.Final_discount_global, CultureInfo.InvariantCulture),
+                FinalGlobalDiscountValue = decimal.Parse(result.Final_discount_global_value, CultureInfo.InvariantCulture),
 
                 CustomerId = result.Customer_id,
                 CustomerCode = result.Customer_code,
@@ -1418,18 +1527,18 @@ namespace FacturaLusa.v2
                 PaymentMethodId = result.Payment_method_id,
                 PaymentConditionId = result.Payment_condition_id,
                 ShippingModeId = result.Shipping_mode_id,
-                ShippingValue = result.Shipping_value == null ? null : decimal.Parse(result.Shipping_value),
+                ShippingValue = result.Shipping_value == null ? null : decimal.Parse(result.Shipping_value, CultureInfo.InvariantCulture),
                 ShippingVatId = result.Shipping_vat_id,
                 PriceId = result.Price_id,
                 CurrencyId = result.Currency_id,
-                CurrencyExchangeRate = decimal.Parse(result.Currency_exchange),
+                CurrencyExchangeRate = decimal.Parse(result.Currency_exchange, CultureInfo.InvariantCulture),
                 VatType = result.Vat_type,
                 Observations = result.Observations,
 
-                IrsRetentionApply = decimal.Parse(result.Irs_retention_apply),
-                IrsRetentionBase = decimal.Parse(result.Irs_retention_base),
-                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax),
-                IrsRetentionTotal = decimal.Parse(result.Irs_retention_total),
+                IrsRetentionApply = decimal.Parse(result.Irs_retention_apply, CultureInfo.InvariantCulture),
+                IrsRetentionBase = decimal.Parse(result.Irs_retention_base, CultureInfo.InvariantCulture),
+                IrsRetentionTax = decimal.Parse(result.Irs_retention_tax, CultureInfo.InvariantCulture),
+                IrsRetentionTotal = decimal.Parse(result.Irs_retention_total, CultureInfo.InvariantCulture),
 
                 UrlFile = result.Url_file,
                 FileFormat = result.File_format,
@@ -1454,15 +1563,15 @@ namespace FacturaLusa.v2
                     Id = s.Id,
                     ItemId = s.Item_id,
                     ItemDetails = s.Item_details,
-                    UnitPrice = decimal.Parse(s.Unit_price),
-                    Quantity = decimal.Parse(s.Quantity),
-                    Discount = decimal.Parse(s.Discount),
-                    GrossTotal = decimal.Parse(s.Gross_total),
-                    NetTotal = decimal.Parse(s.Net_total),
-                    TotalBaseVat = decimal.Parse(s.Total_base_vat),
-                    TotalVat = decimal.Parse(s.Total_vat),
-                    TotalDiscount = decimal.Parse(s.Total_discount),
-                    GrandTotal = decimal.Parse(s.Grand_total),
+                    UnitPrice = decimal.Parse(s.Unit_price, CultureInfo.InvariantCulture),
+                    Quantity = decimal.Parse(s.Quantity, CultureInfo.InvariantCulture),
+                    Discount = decimal.Parse(s.Discount, CultureInfo.InvariantCulture),
+                    GrossTotal = decimal.Parse(s.Gross_total, CultureInfo.InvariantCulture),
+                    NetTotal = decimal.Parse(s.Net_total, CultureInfo.InvariantCulture),
+                    TotalBaseVat = decimal.Parse(s.Total_base_vat, CultureInfo.InvariantCulture),
+                    TotalVat = decimal.Parse(s.Total_vat, CultureInfo.InvariantCulture),
+                    TotalDiscount = decimal.Parse(s.Total_discount, CultureInfo.InvariantCulture),
+                    GrandTotal = decimal.Parse(s.Grand_total, CultureInfo.InvariantCulture),
                     VatRateId = s.Vat_id,
                     UnitId = s.Unit_id,
                     VatExemptionId = s.Vat_exemption_id,
@@ -1484,7 +1593,7 @@ namespace FacturaLusa.v2
                     {
                         Id = s.Vat.Id,
                         Description = s.Vat.Description,
-                        TaxPercentage = decimal.Parse(s.Vat.Tax),
+                        TaxPercentage = decimal.Parse(s.Vat.Tax, CultureInfo.InvariantCulture),
                         SaftRegion = s.Vat.Saft_region,
                         Type = s.Vat.Type,
                     },
@@ -1500,7 +1609,7 @@ namespace FacturaLusa.v2
                 {
                     Id = result.Serie.Id,
                     Description = result.Serie.Description,
-                    ValidUntilYear = int.Parse(result.Serie.Valid_until),
+                    ValidUntilYear = int.Parse(result.Serie.Valid_until, CultureInfo.InvariantCulture),
                 },
 
                 PaymentMethod = result.Paymentmethod == null ? null : new SalePaymentMethod
@@ -1532,10 +1641,10 @@ namespace FacturaLusa.v2
                     Type = result.Customer.Type,
                     VatType = result.Customer.Vat_type,
                     VatExemptionId = result.Customer.Vat_exemption_id,
-                    IrsRetentionTax = decimal.Parse(result.Customer.Irs_retention_tax),
+                    IrsRetentionTax = decimal.Parse(result.Customer.Irs_retention_tax, CultureInfo.InvariantCulture),
                     Observations = result.Customer.Observations,
                     OtherContacts = result.Customer.Other_contacts,
-                    OtherEmails = result.Customer.Other_emails?.Split(","),
+                    OtherEmails = result.Customer.Other_emails?.Split(','),
                     ReceiveSms = result.Customer.Receive_sms == 1,
                     ReceiveEmails = result.Customer.Receive_emails == 1,
                     Language = result.Customer.Language,
@@ -1549,7 +1658,7 @@ namespace FacturaLusa.v2
                     SerieId = result.Reference.Serie_id,
                     DocumentTypeId = result.Reference.Document_type_id,
                     DocumentFullNumber = result.Reference.Document_full_number,
-                    GrandTotal = decimal.Parse(result.Reference.Grand_total),
+                    GrandTotal = decimal.Parse(result.Reference.Grand_total, CultureInfo.InvariantCulture),
                     Serie = new SaleSerie
                     {
                         Id = result.Reference.Serie.Id,
