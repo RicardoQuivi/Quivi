@@ -138,10 +138,10 @@ const SwitchMerchantModal = (props: SwitchMerchantModalProps) => {
                 merchantsQuery.data.map(m => 
                     <div 
                         key={m.id}
-                        className={`rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] cursor-pointer`}
+                        className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] cursor-pointer"
                         onClick={async () => {
                             if(m.parentId == undefined) {
-                                setState(s => ({ ...s, parentMerchant: m }));
+                                setState(s => ({ ...s, parentMerchant: m, page: 0, }));
                                 return;
                             }
                             await switchToMerchant(m);
