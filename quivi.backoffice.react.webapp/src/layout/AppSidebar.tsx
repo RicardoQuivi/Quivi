@@ -4,6 +4,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { BankIcon, ChevronDownIcon, GearIcon, GraphIcon, GridIcon, HorizontaLDots, ListIcon, QuiviFullIcon, QuiviIcon, ShopIcon, TradeIcon, UserIcon } from "../icons";
 import { useTranslation } from "react-i18next";
 import { useAuthenticatedUser } from "../context/AuthContext";
+import { SwitchMerchantButton } from "../components/header/SwitchMerchantButton";
 
 interface User {
     readonly isAdmin: boolean;
@@ -336,7 +337,7 @@ const AppSidebar = () => {
             onMouseLeave={() => setIsHovered(false)}
         >
             <div
-                className={`py-2 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
+                className={`py-2 flex flex-col gap-4 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
             >
                 <Link to="/" className="w-full flex justify-center hidden lg:flex">
                 {
@@ -347,27 +348,27 @@ const AppSidebar = () => {
                     <QuiviIcon width="100%" className="h-auto" />
                 }
                 </Link>
+
+                <SwitchMerchantButton collapsed={!(isExpanded || isHovered || isMobileOpen)} />
             </div>
             <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
                 <nav className="mb-6">
                     <div className="flex flex-col gap-4">
-                        <>
-                            <h2
-                                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                                        ? "lg:justify-center"
-                                        : "justify-start"
-                                    }`}
-                            >
-                                {
-                                    isExpanded || isHovered || isMobileOpen 
-                                    ?
-                                        "Menu"
-                                    :
-                                        <HorizontaLDots className="size-6" />
-                                }
-                            </h2>
-                            {renderMenuItems(items)}
-                        </>
+                        <h2
+                            className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                                    ? "lg:justify-center"
+                                    : "justify-start"
+                                }`}
+                        >
+                            {
+                                isExpanded || isHovered || isMobileOpen 
+                                ?
+                                    "Menu"
+                                :
+                                    <HorizontaLDots className="size-6" />
+                            }
+                        </h2>
+                        {renderMenuItems(items)}
                     </div>
                 </nav>
             </div>

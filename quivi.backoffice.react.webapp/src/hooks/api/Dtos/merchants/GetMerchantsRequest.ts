@@ -4,4 +4,5 @@ export interface GetMerchantsRequest extends PagedRequest {
     readonly search?: string;
     readonly parentId?: string;
     readonly ids?: string[];
+    readonly isParent?: boolean;
 }

@@ -16,6 +16,7 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Claims;
 using Quivi.Infrastructure.Extensions;
+using Quivi.Infrastructure.Roles;
 using System.Data;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -262,7 +263,8 @@ namespace Quivi.OAuth2.Controllers
                 return;
             }
 
-            var merchant = await GetMerchantId(userId, merchantId.Value);
+            var isAdmin = IsAdmin(identity);
+            var merchant = await GetMerchantId(userId, merchantId.Value, isAdmin);
             identity.SetClaim(QuiviClaims.MerchantId, idConverter.ToPublicId(merchant.ParentMerchant?.Id ?? merchant.Id));
 
             if (merchant.ParentMerchant != null)
@@ -290,11 +292,17 @@ namespace Quivi.OAuth2.Controllers
                 identity.SetClaim(QuiviClaims.SubMerchantId, idConverter.ToPublicId(subMerchant.Id));
         }
 
-        private async Task<Merchant> GetMerchantId(int userId, int merchantId)
+        private bool IsAdmin(ClaimsIdentity identity)
+        {
+            string[] admin = [QuiviRoles.Admin, QuiviRoles.SuperAdmin];
+            return identity.Claims.Any(c => c.Type == QuiviClaims.Role && admin.Contains(c.Value));
+        }
+
+        private async Task<Merchant> GetMerchantId(int userId, int merchantId, bool isAdmin)
         {
             var merchantQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
             {
-                ApplicationUserIds = [userId],
+                ApplicationUserIds = isAdmin ? null : [userId],
                 Ids = [merchantId],
                 PageSize = 1,
                 IsDeleted = false,

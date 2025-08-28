@@ -1,6 +1,5 @@
 ﻿using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Merchants;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Quivi.Backoffice.Api.Dtos
 {

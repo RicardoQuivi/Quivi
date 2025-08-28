@@ -27,7 +27,7 @@ namespace Quivi.Backoffice.Api.Controllers
         public MerchantsController(IQueryProcessor queryProcessor,
                                     ICommandProcessor commandProcessor,
                                     IIdConverter idConverter,
-                                    IMapper mapper) 
+                                    IMapper mapper)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
@@ -49,6 +49,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 ParentIds = parentMerchantId.HasValue ? [parentMerchantId.Value] : null,
                 Ids = ids,
                 IncludeFees = User.IsAdmin(),
+                IsParentMerchant = request.IsParent,
 
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
@@ -166,7 +167,7 @@ namespace Quivi.Backoffice.Api.Controllers
                                         t.Fee = upsertingItem.Fee.Value;
 
                                     if (upsertingItem.Unit.HasValue)
-                                        t.Unit = upsertingItem.Unit.Value; 
+                                        t.Unit = upsertingItem.Unit.Value;
                                 });
 
                                 var newValue = e.Surcharges[method];

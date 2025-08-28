@@ -22,6 +22,7 @@
             "Duplicate": "A entry with this value already exists",
             "NoBalance": "Your current balance is not enough to perform this refund."
         },
+        "all": "All",
         "settings": "Settings",
         "refunded": "Refunded",
         "details": "Details",
@@ -311,6 +312,12 @@
         "zoom": "Zoom"
     },
     "sidebar": {
+        "switchMerchant": {
+            "title": "Alterar comerciante",
+            "selectGroup": "Select whole group",
+            "selectSubMerchant": "Select sub-merchant",
+            "success": "Youa re now in the context of merchant {{name}}."
+        },
         "home": "Home",
         "administration": {
             "": "Administration",

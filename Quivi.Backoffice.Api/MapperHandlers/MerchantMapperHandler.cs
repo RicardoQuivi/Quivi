@@ -10,7 +10,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
         private readonly IDefaultSettings defaultSettings;
         private readonly IIdConverter idConverter;
 
-        public MerchantMapperHandler(IDefaultSettings defaultSettings, IIdConverter idConverter) 
+        public MerchantMapperHandler(IDefaultSettings defaultSettings, IIdConverter idConverter)
         {
             this.defaultSettings = defaultSettings;
             this.idConverter = idConverter;
@@ -18,18 +18,13 @@ namespace Quivi.Backoffice.Api.MapperHandlers
 
         public Dtos.Merchant Map(Merchant model)
         {
-            string? logoUrl = model.LogoUrl;
-
-            if (logoUrl == null)
-                logoUrl = defaultSettings.DefaultMerchantLogo;
-
             return new Dtos.Merchant
             {
                 Id = idConverter.ToPublicId(model.Id),
                 ParentId = model.ParentMerchantId == null ? null : idConverter.ToPublicId(model.ParentMerchantId.Value),
                 Name = model.Name,
                 VatNumber = model.VatNumber ?? "",
-                LogoUrl = logoUrl,
+                LogoUrl = model.LogoUrl ?? defaultSettings.DefaultMerchantLogo,
                 SetUpFee = 0.0m,
 
                 TransactionFee = model.TransactionFee,

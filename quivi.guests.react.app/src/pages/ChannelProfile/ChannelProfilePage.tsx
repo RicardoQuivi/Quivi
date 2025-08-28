@@ -41,7 +41,7 @@ export const ChannelProfilePage = () => {
                 {
                     channelContext.features.allowsSessions == true &&
                     <Link className="primary-button w-100" to={`/c/${channelContext.channelId}/session/summary`}>
-                        {channelContext.features.payAtTheTable.isActive ? `🤩 ${t("home.payBill")}` : t("home.seeBill")}
+                        {channelContext.features.payAtTheTable.isActive ? t("home.payBill") : t("home.seeBill")}
                     </Link>
                 }
             </ButtonsSection>

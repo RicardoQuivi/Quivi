@@ -4,6 +4,7 @@ import { MerchantFee } from "./MerchantFee";
 
 export interface Merchant {
     readonly id: string;
+    readonly parentId?: string;
     readonly name: string;
     readonly vatNumber: string;
     readonly logoUrl: string;

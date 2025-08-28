@@ -22,6 +22,7 @@
             "Duplicate": "Já existe um registo com este valor",
             "NoBalance": "O seu balanço atual não é suficiente para proceder a esta operação."
         },
+        "all": "Todos",
         "settings": "Definições",
         "refunded": "Reembolso",
         "details": "Detalhes",
@@ -311,6 +312,12 @@
         "zoom": "Zoom"
     },
     "sidebar": {
+        "switchMerchant": {
+            "title": "Alterar comerciante",
+            "selectGroup": "Ver todo o grupo",
+            "selectSubMerchant": "Ver sub-comerciante",
+            "success": "Está agora no contexto do comerciante {{name}}."
+        },
         "home": "Início",
         "administration": {
             "": "Administração",

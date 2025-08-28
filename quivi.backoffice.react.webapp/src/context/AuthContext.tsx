@@ -113,6 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setState(getState);
                 return;
             }
+            throw e;
         }
     }
     

@@ -25,6 +25,10 @@ export const useMerchantsApi = () => {
             queryParams.set("parentId", request.parentId.toString());
         }
 
+        if (request.isParent != undefined) {
+            queryParams.set("isParent", request.isParent == true ? "true" : "false");
+        }
+
         request.ids?.forEach((id, index) => queryParams.set(`ids[${index}]`, id));
 
         const url = new URL(`api/merchants?${queryParams}`, import.meta.env.VITE_API_URL).toString();
