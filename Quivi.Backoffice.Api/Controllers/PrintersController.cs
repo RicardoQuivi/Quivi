@@ -49,6 +49,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 PrinterWorkerIds = string.IsNullOrWhiteSpace(request.PrinterWorkerId) ? null : [idConverter.FromPublicId(request.PrinterWorkerId)],
                 IncludeNotificationsContact = true,
+                IsDeleted = false,
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
             });
