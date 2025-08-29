@@ -280,14 +280,15 @@ namespace Quivi.OAuth2.Controllers
 
         private async Task SetDefaultQuiviClaims(ClaimsIdentity identity, int userId)
         {
-            var merchant = await GetDefaultMerchantId(userId, null);
+            var isAdmin = IsAdmin(identity);
+            var merchant = await GetDefaultMerchantId(userId, null, isAdmin);
             if (merchant == null)
                 return;
 
             identity.SetClaim(QuiviClaims.MerchantId, idConverter.ToPublicId(merchant.Id));
             identity.SetClaim(QuiviClaims.ActivatedAt, merchant.TermsAndConditionsAcceptedDate.HasValue ? new DateTimeOffset(merchant.TermsAndConditionsAcceptedDate.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
 
-            var subMerchant = await GetDefaultMerchantId(userId, merchant.Id);
+            var subMerchant = await GetDefaultMerchantId(userId, merchant.Id, isAdmin);
             if (subMerchant != null)
                 identity.SetClaim(QuiviClaims.SubMerchantId, idConverter.ToPublicId(subMerchant.Id));
         }
@@ -315,11 +316,11 @@ namespace Quivi.OAuth2.Controllers
             return merchantQuery.First();
         }
 
-        private async Task<Merchant?> GetDefaultMerchantId(int userId, int? parentMerchantId)
+        private async Task<Merchant?> GetDefaultMerchantId(int userId, int? parentMerchantId, bool isAdmin)
         {
             var merchantQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
             {
-                ApplicationUserIds = [userId],
+                ApplicationUserIds = isAdmin ? null : [userId],
                 ParentIds = parentMerchantId.HasValue ? [parentMerchantId.Value] : null,
                 IsParentMerchant = parentMerchantId.HasValue == false,
                 PageSize = 1,
