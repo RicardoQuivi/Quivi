@@ -94,15 +94,26 @@ namespace Quivi.OAuth2.Controllers
         {
             var refreshToken = request.RefreshToken() ?? "";
             var rawMerchantId = request.MerchantId();
-            int? merchantId = string.IsNullOrWhiteSpace(rawMerchantId) ? null : idConverter.FromPublicId(rawMerchantId);
+            string? merchantId = string.IsNullOrWhiteSpace(rawMerchantId) ? null : rawMerchantId;
 
-            var user = await GetUserByToken(refreshToken);
+            var tokenIdentity = await GetClaimsPrincipalFromToken(refreshToken);
+            if (tokenIdentity == null)
+                return BadRequest();
+
+            var user = await GetUserFromPrincipal(tokenIdentity);
             if (user == null)
                 return BadRequest();
 
+            if (merchantId == null)
+            {
+                var subMerchantId = tokenIdentity.SubMerchantId();
+                if (string.IsNullOrWhiteSpace(subMerchantId) == false)
+                    merchantId = subMerchantId;
+            }
+
             return await ProcessIdentity(user, async identity =>
             {
-                await SetQuiviClaims(identity, user.Id, merchantId);
+                await SetQuiviClaims(identity, user.Id, merchantId == null ? null : idConverter.FromPublicId(merchantId));
             }, request.ClientId ?? "");
         }
 
