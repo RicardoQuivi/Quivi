@@ -1,5 +1,5 @@
 export enum NotificationType {
-    Test = 1,
+    Test = 1 << 0,
     FailedCharge = 1 << 1,
     ExpiredCharge = 1 << 2,
     PosOffline = 1 << 3,

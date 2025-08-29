@@ -3,7 +3,7 @@ using Quivi.Infrastructure.Abstractions.Mapping;
 
 namespace Quivi.Backoffice.Api.MapperHandlers
 {
-    public class NotificationsTypessMapperHandler : IMapperHandler<NotificationMessageType, IEnumerable<Dtos.NotificationType>>,
+    public class NotificationsTypesMapperHandler : IMapperHandler<NotificationMessageType, IEnumerable<Dtos.NotificationType>>,
                                                         IMapperHandler<IEnumerable<Dtos.NotificationType>, NotificationMessageType>
     {
         public IEnumerable<Dtos.NotificationType> Map(NotificationMessageType model)
@@ -22,6 +22,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
         {
             switch (model)
             {
+                case NotificationMessageType.Test: return Dtos.NotificationType.Test;
                 case NotificationMessageType.FailedCharge: return Dtos.NotificationType.FailedCharge;
                 case NotificationMessageType.ExpiredCharge: return Dtos.NotificationType.ExpiredCharge;
                 case NotificationMessageType.PosOffline: return Dtos.NotificationType.PosOffline;
@@ -52,6 +53,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
         {
             switch (model)
             {
+                case Dtos.NotificationType.Test: return NotificationMessageType.Test;
                 case Dtos.NotificationType.FailedCharge: return NotificationMessageType.FailedCharge;
                 case Dtos.NotificationType.ExpiredCharge: return NotificationMessageType.ExpiredCharge;
                 case Dtos.NotificationType.PosOffline: return NotificationMessageType.PosOffline;
