@@ -20,6 +20,7 @@ using Quivi.Infrastructure.Roles;
 using System.Data;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Quivi.OAuth2.Controllers
@@ -110,13 +111,21 @@ namespace Quivi.OAuth2.Controllers
             var subjectToken = request.SubjectToken() ?? "";
             var tokenType = request.SubjectType() ?? "";
 
-            var user = await GetUserByToken(subjectToken);
+            var tokenIdentity = await GetClaimsPrincipalFromToken(subjectToken);
+            if (tokenIdentity == null)
+                return BadRequest();
+
+            var user = await GetUserFromPrincipal(tokenIdentity);
             if (user == null)
+                return BadRequest();
+
+            var subMerchantId = tokenIdentity.SubMerchantId();
+            if (subMerchantId == null)
                 return BadRequest();
 
             return await ProcessIdentity(user, async identity =>
             {
-                await SetQuiviClaims(identity, user.Id, null);
+                await SetQuiviClaims(identity, user.Id, idConverter.FromPublicId(subMerchantId));
             }, request.ClientId ?? "");
         }
 
@@ -194,25 +203,37 @@ namespace Quivi.OAuth2.Controllers
             return user;
         }
 
-        private async Task<ApplicationUser?> GetUserByToken(string token)
+        private async Task<IPrincipal?> GetClaimsPrincipalFromToken(string token)
         {
             var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             if (!result.Succeeded)
                 return null;
 
             var identity = await GetIdentity(token, "backoffice");
+            return identity;
+        }
+
+        private async Task<ApplicationUser?> GetUserByToken(string token)
+        {
+            var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            if (!result.Succeeded)
+                return null;
+
+            var identity = await GetClaimsPrincipalFromToken(token);
             if (identity == null)
                 return null;
 
-            var rawUserId = identity.UserId();
+            return await GetUserFromPrincipal(identity);
+        }
+
+        private async Task<ApplicationUser?> GetUserFromPrincipal(IPrincipal principal)
+        {
+            var rawUserId = principal.UserId();
             if (string.IsNullOrWhiteSpace(rawUserId) == true)
                 return null;
 
             int id = idConverter.FromPublicId(rawUserId);
             var user = await userManager.FindByIdAsync(id.ToString());
-            if (user == null)
-                return null;
-
             return user;
         }
 
