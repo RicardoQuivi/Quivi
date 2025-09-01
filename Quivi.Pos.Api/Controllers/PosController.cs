@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Attributes;
+using Quivi.Application.Commands.Pos;
 using Quivi.Application.Commands.PrinterNotificationMessages;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Infrastructure.Abstractions.Converters;
@@ -73,10 +74,23 @@ namespace Quivi.Pos.Api.Controllers
         [HttpPost("endOfDayClosing")]
         public async Task<PrintEndOfDayClosingResponse> PrintEndOfDayClosing([FromBody] PrintEndOfDayClosingRequest request)
         {
-            //TODO: Implement
+            await commandProcessor.Execute(new GenerateEndOfDayClosingAsyncCommand
+            {
+                MerchantId = User.SubMerchantId(idConverter)!.Value,
+                EmployeeId = User.EmployeeId(idConverter)!.Value,
+                LocationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId),
+
+                AllLocationsLabel = request.AllLocationsLabel,
+                PrintedByLabel = request.PrintedByLabel,
+                AmountLabel = request.AmountLabel,
+                LocationLabel = request.LocationLabel,
+                TipsLabel = request.TipsLabel,
+                TitleLabel = request.TitleLabel,
+                TotalLabel = request.TotalLabel,
+            });
+
             return new PrintEndOfDayClosingResponse
             {
-
             };
         }
     }

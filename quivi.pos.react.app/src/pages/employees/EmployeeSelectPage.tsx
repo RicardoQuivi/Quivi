@@ -14,7 +14,6 @@ export const EmployeeSelectPage = (props: Props) => {
     
     const handleListItemClick = (value: Employee) => props.onEmployeeSelect(value);
 
-    console.log(employeesQuery.data)
     return <Grid container spacing={2}>
         <Grid size={12} sx={{display: "flex", justifyContent: "center"}}>
             { 

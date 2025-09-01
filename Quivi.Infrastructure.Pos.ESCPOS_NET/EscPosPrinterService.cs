@@ -211,6 +211,69 @@ namespace Quivi.Infrastructure.Pos.ESCPOS_NET
             }
         }
 
+        public string Get(EndOfDayClosingParameters parameters)
+        {
+            using (var printer = new CharacterSafeCommandEmitter())
+            {
+                var result = printer
+                    .StartConcat(
+                        printer.Clear(),
+                        printer.Initialize(),
+                        printer.FeedLines(FeedLineStart),
+                        printer.CenterAlign(),
+                        printer.SetStyles(PrintStyle.DoubleHeight),
+                        printer.PrintLine(parameters.Title),
+                        printer.SetStyles(PrintStyle.None),
+                        printer.PrintLine("")
+                    )
+                    .ConcatIf(
+                        !string.IsNullOrEmpty(parameters.PrinterDescription), () => new[]
+                        {
+                            printer.PrintLine(parameters.PrinterDescription),
+                            printer.PrintLine("")
+                        })
+                    .ConcatWith(
+                        printer.LeftAlign(),
+                        printer.Print(parameters.ActionDateTime),
+                        printer.PrintLine(""),
+                        printer.PrintLine(parameters.EmployeeDesignation),
+                        printer.PrintLine(parameters.LocalDesignation),
+                        printer.PrintLine(""),
+                        printer.CenterAlign(),
+                        printer.PrintLine("------------------------------------------------"),
+                        printer.LeftAlign()
+                    )
+                    .ConcatWithForeach(parameters.PaymentMethods, item =>
+                        printer.StartConcat(
+                            printer.SetStyles(PrintStyle.DoubleHeight),
+                            printer.AlignToSides(item.Name, item.Total),
+                            printer.PrintLine("")
+                        ).ConcatWith(
+                            printer.LeftAlign(),
+                            printer.SetStyles(PrintStyle.None),
+                            printer.AlignToSides($"  {parameters.AmountLabel}", item.Amount),
+                            printer.AlignToSides($"  {parameters.TipsLabel}", item.Tips)
+                        )
+                    );
+
+                result = result.ConcatWith(
+                    printer.SetStyles(PrintStyle.None),
+                    printer.CenterAlign(),
+                    printer.PrintLine("------------------------------------------------"),
+                    printer.SetStyles(PrintStyle.DoubleHeight),
+                    printer.AlignToSides(parameters.TotalLabel, parameters.Total),
+                    printer.LeftAlign(),
+                    printer.SetStyles(PrintStyle.None),
+                    printer.AlignToSides($"  {parameters.AmountLabel}", parameters.Amount),
+                    printer.AlignToSides($"  {parameters.TipsLabel}", parameters.Tips),
+                    printer.FeedLines(FeedLineEnd),
+                    printer.FullCut()
+                );
+
+                return result.Encode();
+            }
+        }
+
         private IEnumerable<string> FlatenizeModifiers(IEnumerable<BasePreparationRequestItem>? modifiers)
         {
             if (modifiers == null)

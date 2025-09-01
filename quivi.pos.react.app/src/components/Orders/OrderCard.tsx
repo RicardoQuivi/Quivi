@@ -300,7 +300,7 @@ export const OrderCard = (props: OrderCardProps) => {
                         {
                             props.order?.state == OrderState.Scheduled
                             ?
-                                t("WebDashboard.SendToInProgress")
+                                t("sendToInProgress")
                             :
                                 t("accept")
                         }

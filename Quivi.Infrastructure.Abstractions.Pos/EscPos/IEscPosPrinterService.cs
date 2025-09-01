@@ -7,5 +7,6 @@
         string Get(NewPendingOrderParameters request);
         string Get(OpenCashDrawerParameters request);
         string Get(AppendToDocumentParameters request);
+        string Get(EndOfDayClosingParameters request);
     }
 }

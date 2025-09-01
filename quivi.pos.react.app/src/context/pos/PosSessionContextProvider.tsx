@@ -9,6 +9,7 @@ import { useCartSession } from "../../hooks/pos/session/useCartSession";
 import { ChannelPermissions, useAllowedActions } from "../../hooks/pos/useAllowedActions";
 import { QueryResult } from "../../hooks/queries/QueryResult";
 import { usePosApi } from "../../hooks/api/usePosApi";
+import { useTranslation } from "react-i18next";
 
 interface PosSessionContextType {
     readonly signOut: () => void;
@@ -17,6 +18,7 @@ interface PosSessionContextType {
     readonly permissions: QueryResult<ChannelPermissions>;
     readonly changeToSession: (channelId: string) => void;
     readonly openCashDrawer: (locationId?: string) => Promise<void>;
+    readonly endOfDayClosing: (locationId?: string) => Promise<void>;
     readonly printConsumerBill: (locationId?: string) => Promise<void>;
 }
 const PosSessionContext = createContext<PosSessionContextType | undefined>(undefined);
@@ -24,6 +26,7 @@ const PosSessionContext = createContext<PosSessionContextType | undefined>(undef
 export const PosSessionContextProvider = ({ children }: { children: ReactNode }) => {
     const employeeContext = useLoggedEmployee();
     const posApi = usePosApi();
+    const { t } = useTranslation();
     
     const searchParamsHook = useBrowserStorage(BrowserStorageType.UrlParam);
     const [channelId, setChannelId] = useStoredState<string | undefined>("channelId", undefined, searchParamsHook);
@@ -59,6 +62,16 @@ export const PosSessionContextProvider = ({ children }: { children: ReactNode })
         channelId,
         openCashDrawer: (l?: string) => posApi.openCashDrawer({
             locationId: l,
+        }),
+        endOfDayClosing: (l?: string) => posApi.endOfDayClosing({
+            locationId: l,
+            titleLabel: t("endOfDayClosing.titleLabel"),
+            printedByLabel: t("endOfDayClosing.printedByLabel"),
+            locationLabel: t("endOfDayClosing.locationLabel"),
+            allLocationsLabel: t("endOfDayClosing.allLocationsLabel"),
+            totalLabel: t("endOfDayClosing.totalLabel"),
+            amountLabel: t("endOfDayClosing.amountLabel"),
+            tipsLabel: t("endOfDayClosing.tipsLabel"),
         }),
         printConsumerBill: async (l?: string) => {
             if(cartSession.sessionId == undefined) {

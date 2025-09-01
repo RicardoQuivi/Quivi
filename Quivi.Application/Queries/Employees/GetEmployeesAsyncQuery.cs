@@ -8,9 +8,11 @@ namespace Quivi.Application.Queries.Employees
 {
     public class GetEmployeesAsyncQuery : APagedAsyncQuery<Employee>
     {
-        public IEnumerable<int>? MerchantIds { get; set; }
-        public IEnumerable<int>? Ids { get; set; }
-        public bool? IsDeleted { get; set; }
+        public IEnumerable<int>? MerchantIds { get; init; }
+        public IEnumerable<int>? Ids { get; init; }
+        public bool? IsDeleted { get; init; }
+
+        public bool IncludeMerchant { get; init; }
     }
 
     public class GetEmployeesAsyncQueryHandler : APagedQueryAsyncHandler<GetEmployeesAsyncQuery, Employee>
@@ -29,6 +31,7 @@ namespace Quivi.Application.Queries.Employees
                 Ids = query.Ids,
                 MerchantIds = query.MerchantIds,
                 IsDeleted = query.IsDeleted,
+                IncludeMerchant = query.IncludeMerchant,
 
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

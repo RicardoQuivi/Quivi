@@ -1,4 +1,5 @@
 ﻿using Quivi.Domain.Entities.Pos;
+using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 using Quivi.Infrastructure.Abstractions.Repositories.Data;
@@ -6,25 +7,8 @@ using Quivi.Infrastructure.Cqrs;
 
 namespace Quivi.Application.Queries.PosCharges
 {
-    public class GetPosChargesAsyncQuery : APagedAsyncQuery<PosCharge>
+    public class GetPosChargesAsyncQuery : AGetPosChargesQuery, IQuery<Task<IPagedData<PosCharge>>>
     {
-        public IEnumerable<int>? ParentMerchantIds { get; init; }
-        public IEnumerable<int>? MerchantIds { get; init; }
-        public IEnumerable<int>? Ids { get; init; }
-        public IEnumerable<int>? SessionIds { get; init; }
-        public IEnumerable<int>? OrderIds { get; init; }
-        public IEnumerable<int>? CustomChargeMethodIds { get; set; }
-        public bool? IsCaptured { get; init; }
-        public bool? HasSession { get; init; }
-        public DateTime? FromCapturedDate { get; set; }
-        public DateTime? ToCapturedDate { get; set; }
-        public bool? HasDiscounts { get; set; }
-        public bool? HasReview { get; set; }
-        public bool? HasReviewComment { get; set; }
-        public bool? HasRefunds { get; init; }
-        public bool? QuiviPaymentsOnly { get; init; }
-        public SyncAttemptState? SyncingState { get; init; }
-
         public bool IncludePosChargeSelectedMenuItems { get; init; }
         public bool IncludePosChargeInvoiceItems { get; init; }
         public bool IncludePosChargeInvoiceItemsOrderMenuItems { get; init; }
@@ -34,6 +18,9 @@ namespace Quivi.Application.Queries.PosCharges
         public bool IncludeMerchant { get; init; }
         public bool IncludeCharge { get; init; }
         public bool IncludeAcquirerCharge { get; init; }
+
+        public int PageIndex { get; init; } = 0;
+        public int? PageSize { get; init; } = 0;
     }
 
     public class GetPosChargesAsyncQueryHandler : APagedQueryAsyncHandler<GetPosChargesAsyncQuery, PosCharge>

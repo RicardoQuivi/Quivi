@@ -66,6 +66,27 @@ namespace Quivi.Pos.Api.Controllers
             };
         }
 
+        [HttpGet("resume")]
+        public async Task<GetTransactionsResumeResponse> GetResume([FromQuery] GetTransactionsResumeRequest request)
+        {
+            request ??= new();
+            var result = await queryProcessor.Execute(new GetPosChargesResumeAsyncQuery
+            {
+                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                Ids = request.Ids?.Select(idConverter.FromPublicId),
+                IsCaptured = true,
+            });
+
+            return new GetTransactionsResumeResponse
+            {
+                Data = new Dtos.TransactionsResume
+                {
+                    Payment = result.PaymentAmount,
+                    Tip = result.TipAmount,
+                },
+            };
+        }
+
         [HttpPost]
         public async Task<CreateTransactionResponse> Create([FromBody] CreateTransactionRequest request)
         {

@@ -148,13 +148,16 @@
         "title": "Histórico de pagamentos",
         "transaction": "Transação",
         "clickToSeeItems": "Cliqui aqui para expandir itens",
-        "transactionWasRefundedWarning": "Um montante de <amount></amount> foi devolvido nesta transação. A transação foi devolvida em <description></description>",
+        "transactionWasRefundedWarning": "Um montante de <amount></amount> foram reembolsados nesta transação. A transação foi reembolsada em <description></description>",
         "item": "Item",
-        "unitPrice": "Preço unitário"
+        "unitPrice": "Preço unitário",
+        "byEmployee": "Pelo funcionário {{name}}",
+        "refunded": "Reembolsada"
     },
     "details": "Detalhes",
     "sessionDetails": "Detalhes da sessão",
     "dateHelper": {
+        "at": "às",
         "months": {
             "full": {
                 "january": "Janeiro",
@@ -185,5 +188,14 @@
                 "december": "Dez"
             }
         }
+    },
+    "endOfDayClosing": {
+        "titleLabel": "Fecho de dia",
+        "printedByLabel": "Impresso por",
+        "locationLabel": "Local",
+        "allLocationsLabel": "Todos os locais",
+        "totalLabel": "Total",
+        "amountLabel":  "Montante",
+        "tipsLabel":  "Gratificações"
     }
 }

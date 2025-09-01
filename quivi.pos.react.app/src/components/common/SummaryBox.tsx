@@ -1,4 +1,4 @@
-import { Grid, Skeleton, styled} from "@mui/material";
+import { Grid, Skeleton, styled, Typography} from "@mui/material";
 import React from "react";
 
 const SummaryGridCell = styled(Grid)({
@@ -23,16 +23,16 @@ export const SummaryBox: React.FC<Props> = (props) => {
         <Grid container className="table-summary-header" justifyContent="space-around" width="100%" style={props.style}>
             {
                 props.items.map((item, index) => (
-                    !!item &&
+                    item != undefined &&
                     <SummaryGridCell size="grow" key={`${item.label}_${index}`}>
-                        <label>{item.label}</label>
-                        <span>
+                        <Typography variant="body2" component="label" gutterBottom fontWeight="bold">
+                            {item.label}
+                        </Typography>
+                        <Typography variant="subtitle1" component="label" gutterBottom>
                         {
-                            props.isLoading == true
-                            ? <Skeleton animation="wave" style={{width: "4rem"}}/>
-                            : item.content
+                            props.isLoading == true ? <Skeleton animation="wave" style={{width: "4rem"}}/> : item.content
                         }
-                        </span>
+                        </Typography>
                     </SummaryGridCell>
                 ))
             }

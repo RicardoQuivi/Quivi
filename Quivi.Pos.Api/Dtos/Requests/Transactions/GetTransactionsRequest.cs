@@ -1,7 +1,8 @@
 ﻿namespace Quivi.Pos.Api.Dtos.Requests.Transactions
 {
-    public class GetTransactionsRequest : APagedRequest
+    public class GetTransactionsRequest : AGetTransactionsRequest, IPagedRequest
     {
-        public IEnumerable<string>? Ids { get; init; }
+        public int Page { get; init; } = 0;
+        public int? PageSize { get; init; } = null;
     }
 }

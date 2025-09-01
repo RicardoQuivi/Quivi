@@ -7,6 +7,8 @@
         public IEnumerable<string>? Names { get; init; }
         public bool? IsDeleted { get; init; }
 
+        public bool IncludeMerchant { get; init; }
+
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }
     }

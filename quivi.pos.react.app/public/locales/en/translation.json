@@ -150,11 +150,14 @@
         "clickToSeeItems": "Click to see items",
         "transactionWasRefundedWarning": "An amount of <amount></amount> was already refunded for this transactions. This transaction was refunded at <description></description>",
         "item": "Item",
-        "unitPrice": "Unit price"
+        "unitPrice": "Unit price",
+        "byEmployee": "By employee {{name}}",
+        "refunded": "Refunded"
     },
     "details": "Details",
     "sessionDetails": "Session details",
     "dateHelper": {
+        "at": "at",
         "months": {
             "full": {
                 "january": "January",
@@ -185,5 +188,14 @@
                 "december": "Dec"
             }
         }
+    },
+    "endOfDayClosing": {
+        "titleLabel": "End of day",
+        "printedByLabel": "Printed by",
+        "locationLabel": "Location",
+        "allLocationsLabel": "All locations",
+        "totalLabel": "Total",
+        "amountLabel":  "Amount",
+        "tipsLabel":  "Tips"
     }
 }

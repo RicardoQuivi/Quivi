@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Chip, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
+import { Accordion, AccordionSummary, Chip, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
 import { useTranslation } from "react-i18next"
 import { useChannelsQuery } from "../../hooks/queries/implementations/useChannelsQuery";
 import { useEmployeesQuery } from "../../hooks/queries/implementations/useEmployeesQuery";
@@ -18,6 +18,8 @@ import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/use
 import { QuiviIcon, RefundIcon } from "../../icons";
 import { AGetTransactionsRequest } from "../../hooks/api/Dtos/transactions/AGetTransactionsRequest";
 import { usePrintersQuery } from "../../hooks/queries/implementations/usePrintersQuery";
+import { useTransactionsResumeQuery } from "../../hooks/queries/implementations/useTransactionsResumeQuery";
+import { SummaryBox } from "../common/SummaryBox";
 
 const dateToString = (d: Date) => {
     const year = d.getFullYear();
@@ -46,7 +48,7 @@ export const TransactionsTable = ({
         currentPage: 0,
     })
     
-    // const transactionsResumeQuery = useTransactionsResume(baseRequest);
+    const transactionsResumeQuery = useTransactionsResumeQuery(baseRequest);
     const transactionsQuery = useTransactionsQuery({
         ...baseRequest,
         page: state.currentPage,
@@ -93,24 +95,28 @@ export const TransactionsTable = ({
 
     return (
         <>
-            {/* <SummaryBox 
-                isLoading={transactionsResumeQuery.isFirstLoading}
-                items={[
-                    {
-                        label: t("total"),
-                        content: <CurrencySpan value={transactionsResumeQuery.data.payment + transactionsResumeQuery.data.tip} />
-                    },
-                    {
-                        label: t("amount"),
-                        content: <CurrencySpan value={transactionsResumeQuery.data.payment} />
-                    },
-                    {
-                        label: t("tips"),
-                        content: <CurrencySpan value={transactionsResumeQuery.data.tip} />
-                    },
-                ]}
-            />
-             */}
+            <Accordion square sx={{backgroundColor: "#F7F7F8", width: "100%"}} expanded>
+                <AccordionSummary>
+                    <SummaryBox 
+                        isLoading={transactionsResumeQuery.isFirstLoading}
+                        items={[
+                            {
+                                label: t("total"),
+                                content: <CurrencySpan value={transactionsResumeQuery.data == undefined ? 0 : (transactionsResumeQuery.data.payment + transactionsResumeQuery.data.tip)} />
+                            },
+                            {
+                                label: t("amount"),
+                                content: <CurrencySpan value={transactionsResumeQuery.data == undefined ? 0 : transactionsResumeQuery.data.payment} />
+                            },
+                            {
+                                label: t("tips"),
+                                content: <CurrencySpan value={transactionsResumeQuery.data == undefined ? 0 : transactionsResumeQuery.data.tip} />
+                            },
+                        ]}
+                    />
+                </AccordionSummary>
+            </Accordion>
+
             <TableContainer component={"div"}>
                 <Table>
                     <TableHead>
@@ -275,7 +281,7 @@ const TransactionRow = (props: RowProps) => {
                     <CurrencySpan value={row.payment + row.tip} />
                     {
                         row.refundedAmount > 0 &&
-                        <Tooltip title={t("WebDashboard.Refunded")}>
+                        <Tooltip title={t("refunded")}>
                             <Chip
                                 label={<CurrencySpan value={-1 * row.refundedAmount} />}
                                 variant="outlined"

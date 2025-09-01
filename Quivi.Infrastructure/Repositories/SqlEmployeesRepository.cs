@@ -1,8 +1,8 @@
-﻿using Quivi.Domain.Entities.Pos;
+﻿using Microsoft.EntityFrameworkCore;
+using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
-using System.Linq;
 
 namespace Quivi.Infrastructure.Repositories
 {
@@ -15,6 +15,9 @@ namespace Quivi.Infrastructure.Repositories
         public override IOrderedQueryable<Employee> GetFilteredQueryable(GetEmployeesCriteria criteria)
         {
             IQueryable<Employee> query = Set;
+
+            if (criteria.IncludeMerchant)
+                query = query.Include(e => e.Merchant);
 
             if (criteria.Ids != null)
                 query = query.Where(q => criteria.Ids.Contains(q.Id));

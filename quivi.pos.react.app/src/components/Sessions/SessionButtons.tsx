@@ -203,11 +203,7 @@ export const SessionButtons = ({
 
     const onEndDayTotals = async () => {
         try {
-            // await posApi.tools.EndOfDayClosing({
-            //     accessToken: context.merchant.token,
-            //     employeeToken: context.user.employeeToken ?? "",
-            //     locationId: localId,
-            // })
+            await pos.endOfDayClosing(localId)
             toast.success(t("endOfDayTotalsMsg"));
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));

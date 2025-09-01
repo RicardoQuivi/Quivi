@@ -95,7 +95,12 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onCustomChargeMethodEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.CustomChargeMethods), evt.id),
             onSessionUpdatedEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Sessions), evt.id),
             onBackgroundJobChangedEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.BackgroundJobs), evt.id),
-            onPosChargeEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.id),
+            onPosChargeEvent: (evt) => {
+                const p1 = invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.id);
+                const p2 = invalidateQuery(queryClient, getEntityType(Entity.TransactionItems), evt.id);
+                const p3 = invalidateQuery(queryClient, getEntityType(Entity.TransactionResumes), evt.id);
+                return Promise.all([p1, p2, p3]);
+            },
             onPosChargeSyncAttemptEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Transactions), evt.posChargeId),
             onOrderOperationEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Orders), evt.id),
             onPreparationGroupOperationEvent: (evt) => invalidateQuery(queryClient, getEntityType(Entity.PreparationGroups), evt.id),

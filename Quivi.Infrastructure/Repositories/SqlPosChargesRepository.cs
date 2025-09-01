@@ -4,6 +4,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using System.Linq.Expressions;
 
 namespace Quivi.Infrastructure.Repositories
 {
@@ -11,6 +12,80 @@ namespace Quivi.Infrastructure.Repositories
     {
         public SqlPosChargesRepository(QuiviContext context) : base(context)
         {
+        }
+
+        private IQueryable<PosCharge> Filter(IQueryable<PosCharge> query, AGetPosChargesCriteria criteria)
+        {
+            var innerQuery = query;
+            if (criteria.ParentMerchantIds != null)
+                innerQuery = innerQuery.Where(q => q.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds.Contains(q.Merchant!.ParentMerchantId.Value));
+
+            if (criteria.MerchantIds != null)
+                innerQuery = innerQuery.Where(q => criteria.MerchantIds.Contains(q.MerchantId));
+
+            if (criteria.Ids != null)
+                innerQuery = innerQuery.Where(q => criteria.Ids.Contains(q.ChargeId));
+
+            if (criteria.SessionIds != null)
+                innerQuery = innerQuery.Where(q => q.SessionId.HasValue && criteria.SessionIds.Contains(q.SessionId.Value));
+
+            if (criteria.ChannelIds != null)
+                innerQuery = innerQuery.Where(q => criteria.ChannelIds.Contains(q.ChannelId));
+
+            if (criteria.IsCaptured.HasValue)
+                innerQuery = innerQuery.Where(q => q.CaptureDate.HasValue == criteria.IsCaptured.Value);
+
+            if (criteria.OrderIds != null)
+            {
+                var sessionIds = Context.Orders.Where(o => criteria.OrderIds.Contains(o.Id))
+                                                .Where(o => o.SessionId.HasValue)
+                                                .Select(o => o.SessionId!.Value)
+                                                .Distinct();
+
+                innerQuery = innerQuery.Where(q => (q.SessionId.HasValue && sessionIds.Contains(q.SessionId.Value)) ||
+                                            q.PosChargeSelectedMenuItems!.Select(q => q.OrderMenuItem!).All(omi => criteria.OrderIds.Contains(omi.OrderId)));
+            }
+
+
+            if (criteria.LocationIds != null)
+                query = query.Where(q => q.LocationId.HasValue && criteria.LocationIds.Contains(q.LocationId.Value));
+
+            if (criteria.FromCapturedDate.HasValue)
+                innerQuery = innerQuery.Where(q => criteria.FromCapturedDate.Value <= q.CaptureDate);
+
+            if (criteria.ToCapturedDate.HasValue)
+                innerQuery = innerQuery.Where(q => q.CaptureDate <= criteria.ToCapturedDate.Value);
+
+            if (criteria.HasSession.HasValue)
+                innerQuery = innerQuery.Where(q => q.SessionId.HasValue == criteria.HasSession.Value);
+
+            if (criteria.HasDiscounts.HasValue)
+                innerQuery = innerQuery.Where(q => q.PosChargeInvoiceItems!.Any(item => item.OrderMenuItem!.OriginalPrice > item.OrderMenuItem!.FinalPrice) == criteria.HasDiscounts.Value);
+
+            if (criteria.HasReview.HasValue)
+                innerQuery = innerQuery.Where(q => q.Review != null);
+
+            if (criteria.HasReviewComment.HasValue)
+                innerQuery = innerQuery.Where(q => q.Review != null && string.IsNullOrEmpty(q.Review.Comment) == criteria.HasReviewComment.Value);
+
+            if (criteria.CustomChargeMethodIds != null)
+                innerQuery = innerQuery.Where(r => criteria.CustomChargeMethodIds.Contains(r.Charge!.MerchantCustomCharge!.CustomChargeMethodId));
+
+            if (criteria.HasRefunds.HasValue)
+                innerQuery = criteria.HasRefunds.Value ? innerQuery.Where(r => r.TotalRefund > 0) : innerQuery.Where(r => r.TotalRefund == 0);
+
+            if (criteria.QuiviPaymentsOnly.HasValue)
+                innerQuery = innerQuery.Where(r => !(r.Charge!.ChargeMethod == ChargeMethod.Custom));
+
+            if (criteria.SyncingState.HasValue)
+            {
+                if (criteria.SyncingState == SyncAttemptState.Syncing)
+                    innerQuery = innerQuery.Where(q => q.PosChargeSyncAttempts!.Any(pcsa => pcsa.State == SyncAttemptState.Synced || pcsa.State == SyncAttemptState.Failed) == false);
+                else
+                    innerQuery = innerQuery.Where(q => q.PosChargeSyncAttempts!.Any(pcsa => pcsa.State == criteria.SyncingState.Value));
+            }
+
+            return innerQuery;
         }
 
         public override IOrderedQueryable<PosCharge> GetFilteredQueryable(GetPosChargesCriteria criteria)
@@ -47,71 +122,30 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeReview)
                 query = query.Include(q => q.Review);
 
-            if (criteria.ParentMerchantIds != null)
-                query = query.Where(q => q.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds.Contains(q.Merchant!.ParentMerchantId.Value));
-
-            if (criteria.MerchantIds != null)
-                query = query.Where(q => criteria.MerchantIds.Contains(q.MerchantId));
-
-            if (criteria.Ids != null)
-                query = query.Where(q => criteria.Ids.Contains(q.ChargeId));
-
-            if (criteria.SessionIds != null)
-                query = query.Where(q => q.SessionId.HasValue && criteria.SessionIds.Contains(q.SessionId.Value));
-
-            if (criteria.ChannelIds != null)
-                query = query.Where(q => criteria.ChannelIds.Contains(q.ChannelId));
-
-            if (criteria.IsCaptured.HasValue)
-                query = query.Where(q => q.CaptureDate.HasValue == criteria.IsCaptured.Value);
-
-            if (criteria.OrderIds != null)
-            {
-                var sessionIds = Context.Orders.Where(o => criteria.OrderIds.Contains(o.Id))
-                                                .Where(o => o.SessionId.HasValue)
-                                                .Select(o => o.SessionId!.Value)
-                                                .Distinct();
-
-                query = query.Where(q => (q.SessionId.HasValue && sessionIds.Contains(q.SessionId.Value)) ||
-                                            q.PosChargeSelectedMenuItems!.Select(q => q.OrderMenuItem!).All(omi => criteria.OrderIds.Contains(omi.OrderId)));
-            }
-
-            if (criteria.FromCapturedDate.HasValue)
-                query = query.Where(q => criteria.FromCapturedDate.Value <= q.CaptureDate);
-
-            if (criteria.ToCapturedDate.HasValue)
-                query = query.Where(q => q.CaptureDate <= criteria.ToCapturedDate.Value);
-
-            if (criteria.HasSession.HasValue)
-                query = query.Where(q => q.SessionId.HasValue == criteria.HasSession.Value);
-
-            if (criteria.HasDiscounts.HasValue)
-                query = query.Where(q => q.PosChargeInvoiceItems!.Any(item => item.OrderMenuItem!.OriginalPrice > item.OrderMenuItem!.FinalPrice) == criteria.HasDiscounts.Value);
-
-            if (criteria.HasReview.HasValue)
-                query = query.Where(q => q.Review != null);
-
-            if (criteria.HasReviewComment.HasValue)
-                query = query.Where(q => q.Review != null && string.IsNullOrEmpty(q.Review.Comment) == criteria.HasReviewComment.Value);
-
-            if (criteria.CustomChargeMethodIds != null)
-                query = query.Where(r => criteria.CustomChargeMethodIds.Contains(r.Charge!.MerchantCustomCharge!.CustomChargeMethodId));
-
-            if (criteria.HasRefunds.HasValue)
-                query = criteria.HasRefunds.Value ? query.Where(r => r.TotalRefund > 0) : query.Where(r => r.TotalRefund == 0);
-
-            if (criteria.QuiviPaymentsOnly.HasValue)
-                query = query.Where(r => !(r.Charge!.ChargeMethod == ChargeMethod.Custom));
-
-            if (criteria.SyncingState.HasValue)
-            {
-                if (criteria.SyncingState == SyncAttemptState.Syncing)
-                    query = query.Where(q => q.PosChargeSyncAttempts!.Any(pcsa => pcsa.State == SyncAttemptState.Synced || pcsa.State == SyncAttemptState.Failed) == false);
-                else
-                    query = query.Where(q => q.PosChargeSyncAttempts!.Any(pcsa => pcsa.State == criteria.SyncingState.Value));
-            }
+            query = Filter(query, criteria);
 
             return query.OrderByDescending(o => o.CaptureDate.HasValue ? o.CaptureDate : o.CreatedDate);
+        }
+
+        public async Task<IReadOnlyDictionary<T, PosChargesResume>> GetResumeAsync<T>(GetPosChargesResumeCriteria criteria, Expression<Func<PosCharge, T>> grouping, T defaultKey)
+        {
+            IQueryable<PosCharge> query = Filter(Set, criteria);
+            var preResult = query.GroupBy(grouping).Select(q => new
+            {
+                Key = q.Key,
+                Resume = new PosChargesResume
+                {
+                    PaymentAmount = q.Sum(e => e.Payment) - q.Sum(e => e.PaymentRefund ?? 0.0M),
+                    PaymentDiscount = q
+                        .SelectMany(e => e.PosChargeInvoiceItems!)
+                        .Sum(ii => (ii.ParentPosChargeInvoiceItemId.HasValue ? ii.ParentPosChargeInvoiceItem!.Quantity : 1) * ii.Quantity * (ii.ParentPosChargeInvoiceItem!.OrderMenuItem!.OriginalPrice - ii.ParentPosChargeInvoiceItem!.OrderMenuItem!.FinalPrice)),
+                    SurchageAmount = q.Sum(e => e.SurchargeFeeAmount),
+                    TipAmount = q.Sum(e => e.Tip) - q.Sum(e => e.TipRefund ?? 0.0M),
+                    RefundedAmount = q.Sum(e => (e.PaymentRefund ?? 0.0M) + (e.TipRefund ?? 0.0M)),
+                },
+            });
+            var listResult = await preResult.ToListAsync();
+            return listResult.ToDictionary(t => t.Key == null ? defaultKey : t.Key, t => t.Resume);
         }
     }
 }

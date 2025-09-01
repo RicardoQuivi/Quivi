@@ -17,6 +17,7 @@ export enum Entity {
     BackgroundJobs,
     Transactions,
     TransactionItems,
+    TransactionResumes,
     TransactionDocuments,
     SessionAdditionalInformations,
 }
@@ -41,6 +42,7 @@ export const getEntityType = (entity: Entity): string => {
         case Entity.BackgroundJobs: return "BackgroundJobs";
         case Entity.Transactions: return "Transactions";
         case Entity.TransactionItems: return "TransactionItems";
+        case Entity.TransactionResumes: return "TransactionResumes";
         case Entity.TransactionDocuments: return "TransactionDocuments";
         case Entity.SessionAdditionalInformations: return "SessionAdditionalInformations";
     }

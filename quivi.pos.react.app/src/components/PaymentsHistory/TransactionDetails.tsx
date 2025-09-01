@@ -72,7 +72,6 @@ export const TransactionDetails = ({
         }
     }
 
-    console.log(transaction?.vatNumber)
     return <Stack direction="column" spacing={2}>
         <Tooltip title={t("paymentHistory.clickToSeeItems")} style={{width: "100%"}}>
             <Accordion square sx={{backgroundColor: "#F7F7F8", width: "100%"}} expanded={isExpanded} onChange={() => setIsExpanded(p => !p)}>
@@ -119,7 +118,7 @@ export const TransactionDetails = ({
             <HighlightMessage messageType={MessageType.warning}>
                 <Trans
                     t={t}
-                    i18nKey="transactionWasRefundedWarning"
+                    i18nKey="paymentHistory.transactionWasRefundedWarning"
                     shouldUnescape={true}
                     components={{
                         amount: <CurrencySpan value={transaction.refundedAmount} />,
@@ -217,7 +216,7 @@ const RefundDescription = (props: RefundDescriptionProps) => {
     const refundEmployee = refundEmployeeQuery.isFirstLoading || refundEmployeeQuery.data.length == 0 ? undefined : refundEmployeeQuery.data[0];
    
     const getEmployeeDescription = (name: string) => {
-        const string = t("WebDashboard.ByEmployee", {
+        const string = t("byEmployee", {
             name: name,
         });
 
@@ -227,7 +226,7 @@ const RefundDescription = (props: RefundDescriptionProps) => {
     return (
         <span>
             {dateHelper.toLocalString(props.transaction.lastModified, `D MMM YYYY`)}
-            <span style={{textTransform: "lowercase"}}>&nbsp;{t("WebDashboard.At")}&nbsp;</span>
+            <span style={{textTransform: "lowercase"}}>&nbsp;{t("dateHelper.at")}&nbsp;</span>
             {dateHelper.toLocalString(props.transaction.lastModified, `HH:mm`)}
             {
                 props.transaction.refundEmployeeId != undefined &&
