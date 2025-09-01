@@ -44,6 +44,9 @@ namespace Quivi.Domain.Entities.Pos
         public int? RefundEmployeeId { get; set; }
         public Employee? RefundEmployee { get; set; }
 
+        public int? EmployeeId { get; set; }
+        public Employee? Employee { get; set; }
+
         public Review? Review { get; set; }
 
         public ICollection<PosChargeSelectedMenuItem>? PosChargeSelectedMenuItems { get; set; }

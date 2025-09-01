@@ -14,8 +14,12 @@
     "invalidPinDescription": "The pin is invalid",
     "items": "Items",
     "channels": "Channels",
+    "channel": "Channel",
     "orders": "Orders",
+    "date": "Date",
     "employeeAccessDenied": "You don't have permissions to transfer items between sessions",
+    "employee": "Employee",
+    "actions": "Actions",
     "openLink": "Open link",
     "closeSession": "Close session",
     "transferSession": "Tranfer session",
@@ -45,6 +49,7 @@
     "absoluteDiscount": "Absolute discount",
     "percentageDiscount": "Percentage discount",
     "newPrice": "New price",
+    "printing": "Printing...",
     "printingBill": "Printing bill...",
     "printingBillError": "Error while printing bill. Please check printer connection",
     "openingCashDrawerMsg": "Opening drawer...",
@@ -68,6 +73,7 @@
     "next": "Next",
     "invoiceEscPosPrintingNotSupported": "Invoice printing not supported",
     "printerMissing": "Printer not configured",
+    "notAvailable": "Not available",
     "paymentTypes": {
         "Price": "Amount",
         "ItemsSelection": "Items selection"
@@ -77,6 +83,7 @@
     "observations": "Observations",
     "amount": "Amount",
     "tip": "Tip",
+    "tips": "Tips",
     "customerInformation": "Customer information",
     "paymentMethods": "Payment methods",
     "paymentSuccess": "Payment submitted successfully",
@@ -120,6 +127,7 @@
     "accept": "Accept",
     "yes": "Yes",
     "no": "No",
+    "documents": "Documents",
     "sendToInProgress": "Prepare",
     "quivi": {
         "product": {
@@ -134,6 +142,48 @@
     "common": {
         "apiErrors": {
             "InvalidCredentials": "Invalid pin. Please try again"
+        }
+    },
+    "paymentHistory": {
+        "title": "Payment history",
+        "transaction": "Transaction",
+        "clickToSeeItems": "Click to see items",
+        "transactionWasRefundedWarning": "An amount of <amount></amount> was already refunded for this transactions. This transaction was refunded at <description></description>",
+        "item": "Item",
+        "unitPrice": "Unit price"
+    },
+    "details": "Details",
+    "sessionDetails": "Session details",
+    "dateHelper": {
+        "months": {
+            "full": {
+                "january": "January",
+                "february": "February",
+                "march": "March",
+                "april": "April",
+                "may": "May",
+                "june": "June",
+                "july": "July",
+                "august": "August",
+                "september": "September",
+                "october": "October",
+                "november": "November",
+                "december": "December"
+            },
+            "short": {
+                "january": "Jan",
+                "february": "Feb",
+                "march": "Mar",
+                "april": "Apr",
+                "may": "May",
+                "june": "Jun",
+                "july": "Jul",
+                "august": "Aug",
+                "september": "Sep",
+                "october": "Oct",
+                "november": "Nov",
+                "december": "Dec"
+            }
         }
     }
 }

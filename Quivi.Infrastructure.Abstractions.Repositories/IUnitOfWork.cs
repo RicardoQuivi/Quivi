@@ -35,6 +35,7 @@
         IPostingsRepository Postings { get; }
         IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations { get; }
         IOrderAdditionalInfosRepository OrderAdditionalInfos { get; }
+        IPosChargeInvoiceItemsRepository PosChargeInvoiceItems { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

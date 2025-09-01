@@ -2199,6 +2199,9 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("InvoiceRefundType")
                         .HasColumnType("int");
 
@@ -2254,6 +2257,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.HasKey("ChargeId");
 
                     b.HasIndex("ChannelId");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("LocationId");
 
@@ -3889,6 +3894,10 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Quivi.Domain.Entities.Pos.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId");
+
                     b.HasOne("Quivi.Domain.Entities.Pos.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
@@ -3910,6 +3919,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("Channel");
 
                     b.Navigation("Charge");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Location");
 

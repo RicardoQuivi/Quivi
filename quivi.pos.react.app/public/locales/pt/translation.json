@@ -14,8 +14,12 @@
     "invalidPinDescription": "O Pin é inválido",
     "items": "Itens",
     "channels": "Canais",
+    "channel": "Canal",
     "orders": "Pedidos",
+    "date": "Data",
     "employeeAccessDenied": "Não tem permissões para transferir itens entre sessões",
+    "employee": "Funcionário",
+    "actions": "Ações",
     "openLink": "Abrir ligação",
     "closeSession": "Fechar sessão",
     "transferSession": "Transferir sessão",
@@ -45,6 +49,7 @@
     "absoluteDiscount": "Desconto absoluto",
     "percentageDiscount": "Desconto percentual",
     "newPrice": "Novo preço",
+    "printing": "A imprimir...",
     "printingBill": "A imprimir conta...",
     "printingBillError": "Erro ao imprimir conta. Verifique a conexão da impressora",
     "openingCashDrawerMsg": "A abrir a Gaveta...",
@@ -68,6 +73,7 @@
     "next": "Seguinte",
     "invoiceEscPosPrintingNotSupported": "Impressão de recibos não suportada",
     "printerMissing": "Impressora não configurada",
+    "notAvailable": "Indisponível",
     "paymentTypes": {
         "Price": "Montante",
         "ItemsSelection": "Seleção de itens"
@@ -77,6 +83,7 @@
     "observations": "Observações",
     "amount": "Montante",
     "tip": "Gratificação",
+    "tips": "Gratificações",
     "customerInformation": "Informação do cliente",
     "paymentMethods": "Métodos de pagamento",
     "paymentSuccess": "Pagamento registado com sucesso",
@@ -121,6 +128,7 @@
     "yes": "Sim",
     "no": "Não",
     "sendToInProgress": "Preparar",
+    "documents": "Documentos",
     "quivi": {
         "product": {
             "description": "Um PoS moderno e revolucionário para impulsionar o seu negócio"
@@ -134,6 +142,48 @@
     "common": {
         "apiErrors": {
             "InvalidCredentials": "Pin inválido. Tente novamente."
+        }
+    },
+    "paymentHistory": {
+        "title": "Histórico de pagamentos",
+        "transaction": "Transação",
+        "clickToSeeItems": "Cliqui aqui para expandir itens",
+        "transactionWasRefundedWarning": "Um montante de <amount></amount> foi devolvido nesta transação. A transação foi devolvida em <description></description>",
+        "item": "Item",
+        "unitPrice": "Preço unitário"
+    },
+    "details": "Detalhes",
+    "sessionDetails": "Detalhes da sessão",
+    "dateHelper": {
+        "months": {
+            "full": {
+                "january": "Janeiro",
+                "february": "Fevereiro",
+                "march": "Março",
+                "april": "Abril",
+                "may": "Maio",
+                "june": "Junho",
+                "july": "Julho",
+                "august": "Agosto",
+                "september": "Setembro",
+                "october": "Outubro",
+                "november": "Novembro",
+                "december": "Dezembro"
+            },
+            "short": {
+                "january": "Jan",
+                "february": "Fev",
+                "march": "Mar",
+                "april": "Abr",
+                "may": "Mai",
+                "june": "Jun",
+                "july": "Jul",
+                "august": "Ago",
+                "september": "Set",
+                "october": "Out",
+                "november": "Nov",
+                "december": "Dez"
+            }
         }
     }
 }

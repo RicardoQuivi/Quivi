@@ -65,12 +65,12 @@ namespace Quivi.Printer.Service.Helpers
                      .Any() ?? false;
 
                 if (!enqueuedJobs)
-                    SendBytesToPrinter(printerName, new byte[] { }, out string error);
+                    SendBytesToPrinter(printerName, Array.Empty<byte>(), out string error);
 
                 string query = $"SELECT * FROM Win32_Printer WHERE Name = '{printerName}'";
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
 
-                ManagementObject printer = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
+                ManagementObject? printer = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
 
                 if (printer == null)
                     return new PrinterStatusResponse
@@ -79,7 +79,7 @@ namespace Quivi.Printer.Service.Helpers
                         Log = "Cant find printer",
                     };
 
-                var worksOffline = printer["WorkOffline"]?.ToString().ToLower() == "true";
+                var worksOffline = printer["WorkOffline"]?.ToString()?.ToLower() == "true";
 
                 var statusParsed = Enum.TryParse<PrinterStatus>(printer.GetPropertyValue("PrinterStatus").ToString(), true, out PrinterStatus printerStatus);
 

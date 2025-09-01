@@ -12,9 +12,7 @@ export const usePrintersQuery = (request: GetPrintersRequest | undefined) : Page
     const queryResult = useQueryable({
         queryName: "usePrintersQuery",
         entityType: getEntityType(Entity.Printers),
-        request: request == undefined ? undefined : {
-            ...request,
-        },
+        request: request,
         getId: (e: Printer) => e.id,
         query: r => api.get(r),
 

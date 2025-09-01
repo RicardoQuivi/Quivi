@@ -18,6 +18,7 @@ namespace Quivi.Application.Commands.PosCharges
         public int MerchantId { get; init; }
         public int ChannelId { get; init; }
         public int CustomChargeMethodId { get; init; }
+        public int EmployeeId { get; init; }
         public string? VatNumber { get; init; }
         public string? Email { get; init; }
         public string? Observations { get; init; }
@@ -195,6 +196,7 @@ namespace Quivi.Application.Commands.PosCharges
                 VatNumber = command.VatNumber,
                 Observations = command.Observations,
                 CaptureDate = now,
+                EmployeeId = command.EmployeeId,
                 Charge = new Charge
                 {
                     ChargeMethod = ChargeMethod.Custom,

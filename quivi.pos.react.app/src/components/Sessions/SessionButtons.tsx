@@ -22,6 +22,7 @@ import { PaymentAmountType } from "../../hooks/api/Dtos/payments/PaymentAmountTy
 import { TransactionSyncedPromise } from "../../hooks/signalR/promises/TransactionSyncedPromise";
 import { useTransactionsApi } from "../../hooks/api/useTransactionsApi";
 import { PreparationGroupDetailModal } from "../Orders/groups/PreparationGroupDetailModal";
+import { PaymentHistoryModal } from "../PaymentsHistory/PaymentHistoryModal";
 
 const getCheckedItems = (group: PreparationGroup | undefined) =>  {
     if(group == undefined) {
@@ -373,9 +374,9 @@ export const SessionButtons = ({
             onCheckedItemsChanged={setIsItemCheckedMap}
         />
 
-        {/* <PaymentHistoryModal
+        <PaymentHistoryModal
             isOpen={paymentHistoryModalOpen}
             onClose={() => setPaymentHistoryModalOpen(false)}
-        /> */}
+        />
     </>
 }

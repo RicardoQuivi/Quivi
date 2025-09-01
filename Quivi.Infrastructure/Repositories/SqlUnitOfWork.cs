@@ -46,6 +46,7 @@ namespace Quivi.Infrastructure.Repositories
         public IPostingsRepository Postings => new SqlPostingsRepository(quiviContext);
         public IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations => new SqlOrderConfigurableFieldChannelProfileAssociationsRepository(quiviContext);
         public IOrderAdditionalInfosRepository OrderAdditionalInfos => new SqlOrderAdditionalInfosRepository(quiviContext);
+        public IPosChargeInvoiceItemsRepository PosChargeInvoiceItems => new SqlPosChargeInvoiceItemsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

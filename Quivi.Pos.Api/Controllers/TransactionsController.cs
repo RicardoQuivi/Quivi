@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Attributes;
 using Quivi.Application.Commands.PosCharges;
+using Quivi.Application.Queries.MerchantInvoiceDocuments;
+using Quivi.Application.Queries.PosChargeInvoiceItems;
 using Quivi.Application.Queries.PosCharges;
+using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
@@ -47,6 +50,8 @@ namespace Quivi.Pos.Api.Controllers
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 IncludePosChargeInvoiceItems = true,
+                IncludeMerchantCustomCharge = true,
+                IsCaptured = true,
 
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
@@ -70,6 +75,7 @@ namespace Quivi.Pos.Api.Controllers
                 MerchantId = User.SubMerchantId(idConverter)!.Value,
                 ChannelId = idConverter.FromPublicId(request.ChannelId),
                 CustomChargeMethodId = idConverter.FromPublicId(request.CustomChargeMethodId),
+                EmployeeId = User.EmployeeId(idConverter)!.Value,
                 LocationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId),
                 Email = request.Email,
                 VatNumber = request.VatNumber,
@@ -100,6 +106,55 @@ namespace Quivi.Pos.Api.Controllers
             return new CreateTransactionResponse
             {
                 Data = mapper.Map<Dtos.Transaction>(result),
+            };
+        }
+
+        [HttpGet]
+        [Route("{id}/items")]
+        public async Task<GetTransactionItemsResponse> GetTransactionItems(string id, [FromQuery] GetTransactionItemsRequest request)
+        {
+            var result = await queryProcessor.Execute(new GetPosChargeInvoiceItemsAsyncQuery
+            {
+                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                PosChargeIds = [idConverter.FromPublicId(id)],
+                IsParent = true,
+
+                IncludeOrderMenuItem = true,
+                IncludeChildrenPosChargeInvoiceItems = true,
+
+                PageIndex = request.Page,
+                PageSize = request.PageSize,
+            });
+
+            return new GetTransactionItemsResponse
+            {
+                Page = result.CurrentPage,
+                TotalPages = result.NumberOfPages,
+                TotalItems = result.TotalItems,
+                Data = mapper.Map<Dtos.TransactionItem>(result),
+            };
+        }
+
+        [HttpGet]
+        [Route("{id}/documents")]
+        public async Task<GetTransactionDocumentsResponse> GetDocuments(string id, [FromQuery] GetTransactionDocumentsRequest request)
+        {
+            var result = await queryProcessor.Execute(new GetMerchantInvoiceDocumentsAsyncQuery
+            {
+                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                PosChargeIds = [idConverter.FromPublicId(id)],
+                HasDownloadPath = true,
+                Formats = [DocumentFormat.Pdf],
+                PageIndex = request.Page,
+                PageSize = request.PageSize,
+            });
+
+            return new GetTransactionDocumentsResponse
+            {
+                Page = result.CurrentPage,
+                TotalPages = result.NumberOfPages,
+                TotalItems = result.TotalItems,
+                Data = mapper.Map<Dtos.TransactionDocument>(result),
             };
         }
     }

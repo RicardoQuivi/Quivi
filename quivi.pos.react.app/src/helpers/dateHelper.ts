@@ -66,10 +66,31 @@ export const useDateHelper = () => {
         return t("longTimeAgo");
     }
 
+    const toLocalString = (rawDate: string | Date, format: string): string => {
+        const date = toDate(rawDate);
+
+        const day = date.getDate();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+
+        const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+
+        // Replace tokens in the format string
+        return format.replace(/YYYY/g, year.toString())
+                    .replace(/YY/g, year.toString().slice(-2))
+                    .replace(/MMMM/g, t(`dateHelper.months.full.${monthNames[month]}`))
+                    .replace(/MMM/g, t(`dateHelper.months.short.${monthNames[month]}`))
+                    .replace(/MM/g, String(month + 1).padStart(2, "0"))
+                    .replace(/M/g, String(month + 1))
+                    .replace(/DD/g, String(day).padStart(2, "0"))
+                    .replace(/D/g, String(day));
+    }
+
     const result = useMemo(() => ({
         toDate,
         getTimeAgo,
         getTimeTaken,
+        toLocalString,
     }), [t])
 
     return result;

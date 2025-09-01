@@ -49,6 +49,7 @@ namespace Quivi.Infrastructure.Repositories
         public IPostingsRepository Postings => unitOfWork.Postings;
         public IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations => unitOfWork.OrderConfigurableFieldChannelProfileAssociations;
         public IOrderAdditionalInfosRepository OrderAdditionalInfos => unitOfWork.OrderAdditionalInfos;
+        public IPosChargeInvoiceItemsRepository PosChargeInvoiceItems => unitOfWork.PosChargeInvoiceItems;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

@@ -911,6 +911,10 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .WithMany()
                         .HasForeignKey(m => m.RefundEmployeeId);
 
+                entity.HasOne(m => m.Employee)
+                        .WithMany()
+                        .HasForeignKey(m => m.EmployeeId);
+
                 entity.HasMany(m => m.PosChargeSyncAttempts)
                         .WithOne(m => m.PosCharge)
                         .HasForeignKey(m => m.PosChargeId);

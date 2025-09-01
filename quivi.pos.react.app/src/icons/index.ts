@@ -31,6 +31,9 @@ import { ReactComponent as TakeAwayIcon } from "./takeaway.svg?react";
 import { ReactComponent as CashCoinIcon } from "./cashcoin.svg?react";
 import { ReactComponent as QuiviIcon } from "./quivi.svg?react";
 import { ReactComponent as QuiviFullIcon } from "./quivifull.svg?react";
+import { ReactComponent as RefundIcon } from "./refund.svg?react";
+import { ReactComponent as PrinterIcon } from "./printer.svg?react";
+import { ReactComponent as DownloadIcon } from "./download.svg?react";
 
 export {
     ExitIcon,
@@ -66,4 +69,7 @@ export {
     CashCoinIcon,
     QuiviIcon,
     QuiviFullIcon,
+    RefundIcon,
+    PrinterIcon,
+    DownloadIcon,
 };
