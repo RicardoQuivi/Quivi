@@ -136,6 +136,7 @@
     },
     "pages": {
         "employeeLockPage": {
+            "selectEmployee": "Select employee",
             "backToEmployee": "Back to select employee"
         }
     },
@@ -197,5 +198,6 @@
         "totalLabel": "Total",
         "amountLabel":  "Amount",
         "tipsLabel":  "Tips"
-    }
+    },
+    "changeLanguage": "Change language"
 }

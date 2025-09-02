@@ -3,6 +3,7 @@ import { useAuth } from "./context/AuthContextProvider";
 import { useEffect } from "react";
 import { useEmployeeManager } from "./context/employee/EmployeeContextProvider";
 import { useTranslation } from "react-i18next";
+import { CircularProgress } from "@mui/material";
 
 export const SignIn = () => {
     const { i18n } = useTranslation();
@@ -31,5 +32,5 @@ export const SignIn = () => {
         navigate("/");
     }, [])
 
-    return <></>
+    return <CircularProgress color="inherit" />
 }

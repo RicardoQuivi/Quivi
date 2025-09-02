@@ -104,8 +104,20 @@ export const Pos = () => {
     ]);
 
     return (
-        <Box style={{height: "100dvh", width: "100dvw", overflow: "hidden", display: "flex", flexDirection: "column"}}>
-            <Box style={{flex: "0 0 auto"}}>
+        <Box 
+            sx={{
+                height: "100dvh",
+                width: "100dvw",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column"
+            }}
+        >
+            <Box 
+                sx={{
+                    flex: "0 0 auto"
+                }}
+            >
                 <PosAppBar
                     search={searchTxt}
                     onSearchChanged={setSearchTxt}
@@ -115,18 +127,47 @@ export const Pos = () => {
                     onReadQrCodeButtonClicked={() => setReadQrCodeOpen(true)}
                 />
             </Box>
-            <Grid container sx={{ overflow: "hidden", flex: "1 1 auto"}}>
-                <Grid size={{xs: 12, sm: hasChannelsWithSessions ? 8 : 12 }} style={{height: "100%", display: "flex", flexDirection: "column", padding: isMobile ? 0 : "1rem"}}>
-                    <Box style={{flex: "0 0 auto"}}>
-                        <PosTabs
-                            hasChannelsWithSessions={hasChannelsWithSessions}
-                            isMobile={isMobile}
-                            onTabIndexChanged={setActiveTab}
-                            tab={activeTab}
-                            localId={localId}
-                        />
-                    </Box>
-                    <Box style={{flex: "1 1 auto", marginTop: isMobile ? 0 : "1rem", order: isMobile ? -1 : 0}}>
+
+            <Grid 
+                container
+                sx={{
+                    overflow: "hidden",
+                    flex: "1 1 auto",
+                    padding: isMobile ? 0 : "1rem",
+                }}
+                spacing={2}
+            >
+                <Grid 
+                    size={{
+                        xs: 12, 
+                        sm: hasChannelsWithSessions ? 8 : 12
+                    }}
+                    sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
+                    <PosTabs
+                        hasChannelsWithSessions={hasChannelsWithSessions}
+                        isMobile={isMobile}
+                        onTabIndexChanged={setActiveTab}
+                        tab={activeTab}
+                        localId={localId}
+                        sx={{
+                            flex: "0 0 auto"
+                        }}
+                    />
+
+                    <Box
+                        sx={{
+                            flex: 1,
+                            marginTop: isMobile ? 0 : "1rem",
+                            order: isMobile ? -1 : 0,
+                            padding: isMobile ? "0.5rem 0.5rem 0 0.5rem" : 0,
+                            overflowY: "auto",
+                        }}
+                    >
                         {
                             hasChannelsWithSessions && activeTab == ActiveTab.ItemSelection &&
                             <ItemsSelector
@@ -164,7 +205,11 @@ export const Pos = () => {
                         
                         {
                             hasChannelsWithSessions && isMobile && activeTab == ActiveTab.SessionOverview &&
-                            <Box style={{padding: "0.5rem", height: "100%"}}>
+                            <Box
+                                sx={{
+                                    height: "100%",
+                                }}
+                            >
                                 <SessionViewer
                                     onTransferSessionClicked={onTransferSessionClicked}
                                     onEditItem={onEditItemPrice}
@@ -175,9 +220,18 @@ export const Pos = () => {
                         }
                     </Box>
                 </Grid>
+
                 {
                     hasChannelsWithSessions && isMobile == false &&
-                    <Grid size={{xs: 12, sm: 4}} sx={{padding: "1rem", height: "100%"}}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 4,
+                        }}
+                        sx={{
+                            height: "100%",
+                        }}
+                    >
                         <SessionViewer
                             onTransferSessionClicked={onTransferSessionClicked}
                             onEditItem={onEditItemPrice}
@@ -187,6 +241,7 @@ export const Pos = () => {
                     </Grid>
                 }
             </Grid>
+
             <TransferSessionModal
                 currentChannel={transferChannel}
                 onClose={() => setTransferChannel(undefined)}

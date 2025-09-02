@@ -1,4 +1,4 @@
-import { Badge, BottomNavigation, BottomNavigationAction, Grid, Paper, Tab, Tabs } from "@mui/material";
+import { Badge, BottomNavigation, BottomNavigationAction, Grid, Paper, SxProps, Tab, Tabs, Theme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useChannelsQuery } from "../hooks/queries/implementations/useChannelsQuery";
 import { CartIcon, ListIcon, OrdersIcon, QrCodeIcon } from "../icons";
@@ -7,8 +7,9 @@ import { useOrdersQuery } from "../hooks/queries/implementations/useOrdersQuery"
 import { OrderState } from "../hooks/api/Dtos/orders/OrderState";
 import { usePreparationGroupsQuery } from "../hooks/queries/implementations/usePreparationGroupsQuery";
 import { usePosSession } from "../context/pos/PosSessionContextProvider";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useAllowedActions } from "../hooks/pos/useAllowedActions";
+import { useChannelProfilesQuery } from "../hooks/queries/implementations/useChannelProfilesQuery";
 
 const availableTabs = ["items", "channels", "orders"]
 
@@ -26,6 +27,7 @@ interface Props {
     readonly onTabIndexChanged: (tab: ActiveTab) => any;
     readonly hasChannelsWithSessions: boolean;
     readonly localId: string | undefined;
+    readonly sx?: SxProps<Theme>;
 }
 export const PosTabs = (props: Props) => {
     const { t } = useTranslation();
@@ -38,6 +40,13 @@ export const PosTabs = (props: Props) => {
         allowsSessionsOnly: false,
         includeDeleted: true,
     })
+    const channel = useMemo(() => channelQuery.data.length == 0 ? undefined : channelQuery.data[0], [channelQuery.data]);
+
+    const profileQuery = useChannelProfilesQuery(channel == undefined ? undefined : {
+        ids: [channel.channelProfileId],
+        page: 0,
+    })
+    const profile = useMemo(() => profileQuery.data.length == 0 ? undefined : profileQuery.data[0], [profileQuery.data]);
 
     const pendingApprovalOrdersQuery = useOrdersQuery({
         page: 0,
@@ -57,83 +66,105 @@ export const PosTabs = (props: Props) => {
     }
     
     if(props.isMobile == false) {
-        return <>
-            <Grid container gap={2}>
-                <Grid size="grow" style={{flex: "1 1 auto"}}>
-                    <Paper elevation={16}>
-                        <Tabs
-                            value={
-                                    props.tab == ActiveTab.Notifications
+        return (
+        <Paper 
+            elevation={16}
+            sx={props.sx}
+        >
+            <Tabs
+                value={
+                        props.tab == ActiveTab.Notifications
+                        ?
+                        false
+                        :
+                        (
+                            [ActiveTab.ItemSelection, ActiveTab.ChannelSelection].includes(props.tab)
+                            ? 
+                            (
+                                props.hasChannelsWithSessions == false
+                                ?
+                                false
+                                :
+                                (
+                                    pos.permissions.data.allowsAddingItems === false && props.tab == ActiveTab.ItemSelection
                                     ?
                                     false
                                     :
-                                    (
-                                        [ActiveTab.ItemSelection, ActiveTab.ChannelSelection].includes(props.tab)
-                                        ? 
-                                        (
-                                            props.hasChannelsWithSessions == false
-                                            ?
-                                            false
-                                            :
-                                            (
-                                                pos.permissions.data.allowsAddingItems === false && props.tab == ActiveTab.ItemSelection
-                                                ?
-                                                false
-                                                :
-                                                props.tab
-                                            )
-                                        ) 
-                                        :
-                                        props.tab
-                                    )
-                                }
-                            onChange={(_, value: number) => props.onTabIndexChanged(value)}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="fullWidth"
-                        >
-                            {
-                                props.hasChannelsWithSessions &&
-                                [
-                                    ...
-                                    (
-                                        pos.permissions.data.allowsAddingItems === true
-                                        ?
-                                            [<Tab key={"add-items"} label={<span>{t(availableTabs[0])}</span>} value={ActiveTab.ItemSelection} /> ]
-                                        :
-                                            []
-                                    ),
-                                    <Tab key={"qrcode-selection"} label={<span>{t(availableTabs[1])}</span>} value={ActiveTab.ChannelSelection} />
-                                ]
-                            }
+                                    props.tab
+                                )
+                            ) 
+                            :
+                            props.tab
+                        )
+                    }
+                onChange={(_, value: number) => props.onTabIndexChanged(value)}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                sx={{
+                    '& .MuiTabs-scroller': {
+                        width: 0,
+                    },
 
-                            <Tab value={ActiveTab.Ordering}
-                                label={<Badge badgeContent={totalPendingOrders} color="primary" variant="standard" overlap="rectangular">
-                                        <span>{t(availableTabs[2])}</span>
-                                    </Badge>}
-                            />
-                        </Tabs>
-                    </Paper>
-                </Grid>
-            </Grid>
+                    "& .MuiTabs-flexContainer": {
+                        flex: 1,
+                    },
+
+                    "& .MuiTab-root": {
+                        minWidth: 0,
+                        flex: "1 1 auto",
+                        padding: 0,
+                    }
+                }}
+            >
+                {
+                    props.hasChannelsWithSessions &&
+                    [
+                        ...
+                        (
+                            pos.permissions.data.allowsAddingItems === true
+                            ?
+                                [<Tab key="add-items" label={t(availableTabs[0])} value={ActiveTab.ItemSelection} />]
+                            :
+                                []
+                        ),
+                        <Tab key="channel-selection" label={t(availableTabs[1])} value={ActiveTab.ChannelSelection} />
+                    ]
+                }
+
+                <Tab
+                    value={ActiveTab.Ordering}
+                    label={<Badge 
+                        badgeContent={totalPendingOrders}
+                        color="primary"
+                        variant="standard"
+                        overlap="rectangular"
+                    >
+                        {t(availableTabs[2])}
+                    </Badge>}
+                />
+            </Tabs>
             <TabValidator channelId={pos.cartSession.channelId} tab={props.tab} onTabCanProceed={props.onTabIndexChanged} />
-        </>
+        </Paper>
+        )
     }
 
-    return <>
+    return (
         <BottomNavigation 
-            sx={{ 
+            sx={{
+                ...(props.sx ?? {}),
                 width: "100%", 
-                flex: "0 0 auto", 
-                bgcolor: "#FF3F01",
+                bgcolor: 'var(--color-brand-950)',
                 height: "auto",
                 padding: "0.75rem 0",
+                position: "fixed",
+                bottom: 0,
 
                 "& .MuiButtonBase-root": {
                     color: "rgba(255, 255, 255, 0.7)",
                     padding: 0,
                 },
-                
+
                 "& .MuiButtonBase-root.Mui-selected": {
                     color: "rgba(255, 255, 255, 1)",
                     fontWeight: 800,
@@ -149,35 +180,63 @@ export const PosTabs = (props: Props) => {
         >
             {
                 pos.permissions.data.allowsAddingItems === true &&
-                <BottomNavigationAction label={t(availableTabs[0])} value={ActiveTab.ItemSelection} icon={<ListIcon />} />
-            }
-            <BottomNavigationAction label={t(availableTabs[1])} value={ActiveTab.ChannelSelection} icon={<QrCodeIcon />} />
-            <BottomNavigationAction label={t(availableTabs[2])} value={ActiveTab.Ordering} icon={<Badge badgeContent={totalPendingOrders} color="primary" variant="standard" overlap="rectangular" sx={{
-                                                                                                    "& .MuiBadge-badge": {
-                                                                                                        backgroundColor: '#6c757d',
-                                                                                                        color: '#fff',
-                                                                                                    }
-                                                                                                }}>
-                                                                                                    <OrdersIcon />
-                                                                                                </Badge>} 
-                                                            />
-            {
-                channelQuery.data.length > 0 &&
-                <BottomNavigationAction label={channelQuery.data[0].name} 
-                                        value={ActiveTab.SessionOverview}
-                                        icon={<Badge badgeContent={pos.cartSession.items.reduce((r, c) => r + c.quantity, 0)} color="primary" variant="standard" overlap="rectangular" sx={{
-                                                    "& .MuiBadge-badge": {
-                                                        backgroundColor: '#6c757d',
-                                                        color: '#fff',
-                                                    }
-                                                }}>
-                                                    <CartIcon />
-                                                </Badge>}
+                <BottomNavigationAction
+                    label={t(availableTabs[0])}
+                    value={ActiveTab.ItemSelection}
+                    icon={<ListIcon />}
                 />
             }
+            <BottomNavigationAction
+                label={t(availableTabs[1])}
+                value={ActiveTab.ChannelSelection}
+                icon={<QrCodeIcon />}
+            />
+            <BottomNavigationAction
+                label={t(availableTabs[2])}
+                value={ActiveTab.Ordering}
+                icon={(
+                    <Badge
+                        badgeContent={totalPendingOrders} 
+                        color="primary"
+                        variant="standard"
+                        overlap="rectangular"
+                        sx={{
+                            "& .MuiBadge-badge": {
+                                backgroundColor: '#6c757d',
+                                color: '#fff',
+                            }
+                        }}
+                    >
+                            <OrdersIcon />
+                        </Badge>
+                )} 
+            />
+            {
+                channel != undefined && profile != undefined &&
+                <BottomNavigationAction
+                    label={`${profile.name} ${channel.name}`} 
+                    value={ActiveTab.SessionOverview}
+                    icon={(
+                        <Badge 
+                            badgeContent={pos.cartSession.items.reduce((r, c) => r + c.quantity, 0)}
+                            color="primary"
+                            variant="standard"
+                            overlap="rectangular"
+                            sx={{
+                                "& .MuiBadge-badge": {
+                                    backgroundColor: '#6c757d',
+                                    color: '#fff',
+                                }
+                            }}
+                        >
+                            <CartIcon />
+                        </Badge>
+                    )}
+                />
+            }
+            <TabValidator channelId={pos.cartSession.channelId} tab={props.tab} onTabCanProceed={props.onTabIndexChanged} />
         </BottomNavigation>
-        <TabValidator channelId={pos.cartSession.channelId} tab={props.tab} onTabCanProceed={props.onTabIndexChanged} />
-    </>
+    )
 }
 
 interface TabValidatorProps {

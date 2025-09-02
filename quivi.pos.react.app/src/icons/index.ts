@@ -34,6 +34,8 @@ import { ReactComponent as QuiviFullIcon } from "./quivifull.svg?react";
 import { ReactComponent as RefundIcon } from "./refund.svg?react";
 import { ReactComponent as PrinterIcon } from "./printer.svg?react";
 import { ReactComponent as DownloadIcon } from "./download.svg?react";
+import { ReactComponent as UnitedKingdomFlagIcon } from "./unitedkingdomflag.svg?react";
+import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
 
 export {
     ExitIcon,
@@ -72,4 +74,6 @@ export {
     RefundIcon,
     PrinterIcon,
     DownloadIcon,
+    PortugalFlagIcon,
+    UnitedKingdomFlagIcon,
 };

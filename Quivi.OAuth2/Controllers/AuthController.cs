@@ -224,19 +224,6 @@ namespace Quivi.OAuth2.Controllers
             return identity;
         }
 
-        private async Task<ApplicationUser?> GetUserByToken(string token)
-        {
-            var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            if (!result.Succeeded)
-                return null;
-
-            var identity = await GetClaimsPrincipalFromToken(token);
-            if (identity == null)
-                return null;
-
-            return await GetUserFromPrincipal(identity);
-        }
-
         private async Task<ApplicationUser?> GetUserFromPrincipal(IPrincipal principal)
         {
             var rawUserId = principal.UserId();

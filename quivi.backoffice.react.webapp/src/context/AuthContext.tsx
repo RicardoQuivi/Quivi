@@ -154,23 +154,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const httpClient = useMemo<HttpClient>(() => ({
-        get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
+        get: async <TResponse = void>(url: string, headers?: HeadersInit) => await guard(token => HttpHelper.Client.get<TResponse>(url, {
             ...(headers ?? {}),
             "Authorization": `Bearer ${token}`,
         })),
-        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
+        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => await guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
             ...(headers ?? {}),
             "Authorization": `Bearer ${token}`,
         })),
-        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
+        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => await guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
             ...(headers ?? {}),
             "Authorization": `Bearer ${token}`,
         })),
-        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
+        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => await guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
             ...(headers ?? {}),
             "Authorization": `Bearer ${token}`,
         })),
-        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
+        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => await guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
             ...(headers ?? {}),
             "Authorization": `Bearer ${token}`,
         })),

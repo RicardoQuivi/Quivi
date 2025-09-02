@@ -36,5 +36,9 @@ export const EmployeePinCodeLock = (props: Props) => {
         loginWithPinCode();
     }, [state.pinCode])
     
-    return <PinCodeInput pin={state.pinCode} onChange={(p) => setState(s => ({...s, pinCode: p}))} loading={state.isLoading} />
+    return <PinCodeInput
+        pin={state.pinCode}
+        onChange={(p) => setState(s => ({...s, pinCode: p}))}
+        loading={state.isLoading}
+    />
 }

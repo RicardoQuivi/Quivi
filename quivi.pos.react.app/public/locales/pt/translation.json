@@ -136,6 +136,7 @@
     },
     "pages": {
         "employeeLockPage": {
+            "selectEmployee": "Selecionar funcionário",
             "backToEmployee": "Voltar a escolher funcionário"
         }
     },
@@ -197,5 +198,6 @@
         "totalLabel": "Total",
         "amountLabel":  "Montante",
         "tipsLabel":  "Gratificações"
-    }
+    },
+    "changeLanguage": "Alterar idioma"
 }

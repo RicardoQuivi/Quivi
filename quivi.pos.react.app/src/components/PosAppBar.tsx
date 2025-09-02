@@ -1,11 +1,10 @@
-import { alpha, AppBar, Badge, Box, Chip, IconButton, InputBase, ListItemIcon, ListItemText, Menu, MenuItem, styled, Toolbar, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { alpha, AppBar,  Chip, IconButton, InputBase, ListItemIcon, ListItemText, Menu, MenuItem, styled, Toolbar, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNotificationsQuery } from "../hooks/queries/implementations/useNotificationsQuery";
 import { useLocalsQuery } from "../hooks/queries/implementations/useLocalsQuery";
 import useDebouncedState from "../hooks/useDebouncedState";
 import { EmployeeAvatar } from "./Employees/EmployeeAvatar";
-import { BellIcon, MenuIcon, QrCodeIcon, SearchIcon, SwapIcon } from "../icons";
+import { MenuIcon, SearchIcon, SwapIcon } from "../icons";
 import { ChangeLocalModal } from "./Locals/ChangeLocalModal";
 import { usePosSession } from "../context/pos/PosSessionContextProvider";
 
@@ -65,11 +64,6 @@ export const PosAppBar = (props: Props) => {
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
     const posContext = usePosSession();
-    const notificationsQuery = useNotificationsQuery({
-        isRead: false,
-        page: 0,
-        pageSize: 0,
-    })
     const locationsQuery = useLocalsQuery({})
 
     const [searchTxt, setSearchTxt, debouncedSearchText, setDebouncedSearchText] = useDebouncedState<string>("", 500);
@@ -109,18 +103,6 @@ export const PosAppBar = (props: Props) => {
                     />
                 </Tooltip>
             }
-            <Tooltip title={t("verify")} style={{backgroundColor: "transparent" }}>
-                <IconButton size="large" color="inherit" onClick={props.onNotificationClicked}>
-                    <Badge badgeContent={notificationsQuery.totalItems} color="primary" variant="standard" overlap="rectangular" sx={{
-                        "& .MuiBadge-badge": {
-                            backgroundColor: '#6c757d',
-                            color: '#fff',
-                        }
-                    }}>
-                        <QrCodeIcon width={18} height={18} />
-                    </Badge>
-                </IconButton>
-            </Tooltip>
         </>
     }
 
@@ -159,7 +141,7 @@ export const PosAppBar = (props: Props) => {
                         </ListItemText>
                     </MenuItem>
                 }
-                <MenuItem 
+                {/* <MenuItem 
                     onClick={() => {
                         props.onReadQrCodeButtonClicked(); 
                         setState(s => ({...s, menuAnchor: undefined}))
@@ -171,7 +153,7 @@ export const PosAppBar = (props: Props) => {
                     <ListItemText sx={{marginLeft: "0.25rem"}}>
                         {t("verify")}
                     </ListItemText>
-                </MenuItem>
+                </MenuItem> */}
             </Menu>
         </>
     }
@@ -180,7 +162,7 @@ export const PosAppBar = (props: Props) => {
     
     return <>
         <AppBar position="relative">
-            <Toolbar variant="dense">
+            <Toolbar variant="regular">
                 { renderOptions() }
                 <Search style={{flex: "1 1 auto"}}>
                     <SearchIconWrapper>
@@ -188,18 +170,6 @@ export const PosAppBar = (props: Props) => {
                     </SearchIconWrapper>
                     <StyledInputBase placeholder={t("search")!} value={searchTxt} onChange={(v) => setSearchTxt(v.target.value)} />
                 </Search>
-                <Box sx={{ display: "flex" }}>
-                    <IconButton size="large" color="inherit" onClick={props.onNotificationClicked}>
-                        <Badge badgeContent={notificationsQuery.totalItems} color="primary" variant="standard" overlap="rectangular" sx={{
-                            "& .MuiBadge-badge": {
-                                backgroundColor: '#6c757d',
-                                color: '#fff',
-                            }
-                        }}>
-                            <BellIcon width={18} height={18} />
-                        </Badge>
-                    </IconButton>
-                </Box>
             </Toolbar>
         </AppBar>
         <ChangeLocalModal

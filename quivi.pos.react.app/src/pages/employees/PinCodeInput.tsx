@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react"
 import Keyboard from "react-simple-keyboard";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import 'react-simple-keyboard/build/css/index.css';
 
 interface Props {
@@ -172,46 +172,48 @@ export const PinCodeInput = (props: Props) => {
         return r;
     }
 
-    <style>
-        {`
-  .custom-button-style {
-    font-size: 20px; /* Ajuste o tamanho da fonte */
-    font-weight: bold;
-  }
-`}
-    </style>
-
     return <div onKeyDownCapture={(e) => onKeyPadPress(e.key)} tabIndex={-1} ref={ref} style={{outlineColor: "transparent"}}>
-        <div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
-            <div style={{width: "min-content", display: "grid", gridAutoFlow: "column", gridGap: "20px"}} className="mb-4">
-                {
-                    props.loading == true
-                    ?
-                        <CircularProgress style={{height: "4rem", width: "4rem" }}/>
-                    :
-                    getInputArray().map((c, i) => <input key={i} 
-                                                            ref={inputItems[i]}
-                                                            autoCapitalize="off" 
-                                                            autoCorrect="off" 
-                                                            autoComplete="off" 
-                                                            inputMode="numeric" 
-                                                            aria-required="true" 
-                                                            value={c}
-                                                            style={{
-                                                                border: `2px solid ${currentDigit == i ? "#FF3F01" : "gray"}`,
-                                                                fontSize: "2rem",
-                                                                height: "4rem",
-                                                                outline: "none",
-                                                                textAlign: "center",
-                                                                transitionDuration: "250ms",
-                                                                transitionProperty: "color, border, box-shadow, transform",
-                                                                width: "4rem",
-                                                                boxShadow: currentDigit == i ? "0 0 0.25rem rgba(#FF3F01, 0.5)" : undefined
-                                                            }}
-                                                            disabled />)
-                }
-            </div>
-        </div>
+        <Grid
+            container
+            gap={2}
+            marginBottom="1.5rem"
+            paddingX="1rem"
+        >
+            {
+                props.loading == true
+                ?
+                <Grid size="grow" justifyContent="center" display="flex">
+                    <CircularProgress style={{height: "4rem", width: "4rem" }}/>
+                </Grid>
+                :
+                getInputArray().map((c, i) => <Grid
+                    key={i} 
+                    size="grow"
+                >
+                    <input
+                        ref={inputItems[i]}
+                        autoCapitalize="off" 
+                        autoCorrect="off" 
+                        autoComplete="off" 
+                        inputMode="numeric" 
+                        aria-required="true" 
+                        value={c}
+                        style={{
+                            border: `2px solid ${currentDigit == i ? "var(--color-brand-950)" : "gray"}`,
+                            fontSize: "2rem",
+                            outline: "none",
+                            textAlign: "center",
+                            transitionDuration: "250ms",
+                            transitionProperty: "color, border, box-shadow, transform",
+                            width: "100%",
+                            aspectRatio: 1,
+                            boxShadow: currentDigit == i ? "0 0 0.25rem rgba(var(--color-brand-950), 0.5)" : undefined
+                        }}
+                        disabled
+                    />
+                </Grid>)
+            }
+        </Grid>
         <Keyboard
             layoutName="default"
             theme={"hg-theme-default hg-theme-numeric hg-layout-numeric numeric-theme hg-font-large"}
@@ -226,11 +228,11 @@ export const PinCodeInput = (props: Props) => {
         />
 
         <style>
-            {`
-  .hg-font-large .hg-button {
-    font-size: 24px;
-  }
-`}
+        {`
+            .hg-font-large .hg-button {
+                font-size: 24px;
+            }
+        `}
         </style>
     </div>
 }

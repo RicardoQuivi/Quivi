@@ -28,6 +28,8 @@ enum QrCodesViewType {
     Map,
 }
 
+const getUnpaidTotal = (session: Session) => Items.getTotalPrice(session.items.filter(e => !e.isPaid));
+
 interface Props {
     readonly search: string;
     readonly onChannelClicked: (channel: Channel) => any;
@@ -88,10 +90,11 @@ export const ChannelsOverview: React.FC<Props> = ({
     }, new Map<string, PosIntegration>()), [integrationsQuery.data])
     
     useEffect(() => {
-        if (xs)
+        if (xs) {
             setQrCodesViewType(QrCodesViewType.Grid);
-        else
+        } else {
             setQrCodesViewType(browserStorage.getItem<QrCodesViewType>("channelView") ?? QrCodesViewType.Grid);
+        }
     }, [xs]);
 
     useEffect(() => {
@@ -107,11 +110,7 @@ export const ChannelsOverview: React.FC<Props> = ({
         }
         browserStorage.setItem("qrCodeView", channelsViewType);
     }, [channelsViewType]);
-
-    const getUnpaidTotal = (session: Session) => Items.getTotalPrice(session.items.filter(e => !e.isPaid));
-
-    useEffect(() => setCurrentPage(0), [])
-
+    
     useEffect(() => {
         if(profilesMap.size == 0) {
             setChannelProfileId(undefined);
@@ -123,16 +122,41 @@ export const ChannelsOverview: React.FC<Props> = ({
     }, [profilesMap]);
 
     return (
-        <Box sx={{height: "100%", overflow: "hidden", display: "flex", flexDirection: "column"}}>
-            <Grid container width="100%" spacing={2}>
+        <Box 
+            sx={{
+                height: "100%",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column"
+            }}
+        >
+            <Grid
+                container
+                width="100%"
+                spacing={2}
+            >
                 {
                     !xs &&
-                    <Grid size="auto">
-                        <ButtonGroup variant="outlined" sx={{alignSelf: "center", justifySelf: "flex-end"}}>
-                            <Button variant={channelsViewType == QrCodesViewType.Grid ? "contained" : "outlined"} onClick={() => setQrCodesViewType(QrCodesViewType.Grid)}>
+                    <Grid
+                        size="auto"
+                    >
+                        <ButtonGroup
+                            variant="outlined"
+                            sx={{
+                                alignSelf: "center",
+                                justifySelf: "flex-end",
+                            }}
+                        >
+                            <Button
+                                variant={channelsViewType == QrCodesViewType.Grid ? "contained" : "outlined"}
+                                onClick={() => setQrCodesViewType(QrCodesViewType.Grid)}
+                            >
                                 <GridIcon />
                             </Button>
-                            <Button variant={channelsViewType == QrCodesViewType.Map ? "contained" : "outlined"} onClick={() => setQrCodesViewType(QrCodesViewType.Map)}>
+                            <Button
+                                variant={channelsViewType == QrCodesViewType.Map ? "contained" : "outlined"}
+                                onClick={() => setQrCodesViewType(QrCodesViewType.Map)}
+                            >
                                 <LayersIcon />
                             </Button>
                         </ButtonGroup>
@@ -140,11 +164,12 @@ export const ChannelsOverview: React.FC<Props> = ({
                 }
                 {
                     channelsViewType == QrCodesViewType.Grid &&
-                    !channelProfilesQuery.isFirstLoading &&
-                    channelProfilesQuery.data.map(profile => 
+                    channelProfilesQuery.data.map(profile =>
                         <Grid size="grow" key={profile.id}>
                             <Chip
-                                sx={{width: "100%"}}
+                                sx={{
+                                    width: "100%",
+                                }}
                                 label={profile.name}
                                 color="primary"
                                 variant={channelProfileId == profile.id ? "filled" : "outlined"}
@@ -154,11 +179,29 @@ export const ChannelsOverview: React.FC<Props> = ({
                     )
                 }
             </Grid>
+            
             {
                 channelsViewType == QrCodesViewType.Grid &&
                 <>
-                    <Box style={{flex: "1 1 auto", overflow: "auto", padding: "0.5rem 0.5rem", width: "100%", display: "flex", flexDirection: "column", flexWrap: "wrap", alignContent: "center"}}>
-                        <Grid container spacing={2} sx={{width: "100%"}}>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            overflow: "auto",
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            flexWrap: "wrap",
+                            alignContent: "center",
+                            mt: "1rem"
+                        }}
+                    >
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{
+                                width: "100%",
+                            }}
+                        >
                             {
                                 channelsQuery.isFirstLoading == false
                                 ?
@@ -194,7 +237,7 @@ export const ChannelsOverview: React.FC<Props> = ({
                                     </Grid>
                                 })
                                 :
-                                    [1, 2, 3, 4, 5, 6].map(i => <Grid size={{xs: 4, sm: 3, md: 2}} key={i}>
+                                    [1, 2, 3, 4, 5, 6].map(i => <Grid size={{xs: 6, sm: 3, md: 2}} key={i}>
                                         <ChannelCard subtitle={<Skeleton animation="wave" />} />
                                     </Grid>)
                             }
@@ -202,9 +245,15 @@ export const ChannelsOverview: React.FC<Props> = ({
                     </Box>
                     {
                         channelsQuery.totalPages > 1 &&
-                        <Box style={{flex: "0 0 auto"}}>
+                        <Box
+                            sx={{flex: "0 0 auto"}}
+                        >
                             <Divider />
-                            <PaginationFooter currentPage={currentPage} onPageChanged={setCurrentPage} numberOfPages={channelsQuery.totalPages} />
+                            <PaginationFooter
+                                currentPage={currentPage}
+                                onPageChanged={setCurrentPage}
+                                numberOfPages={channelsQuery.totalPages}
+                            />
                         </Box>
                     }
                 </>

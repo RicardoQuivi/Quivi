@@ -19,23 +19,23 @@ export const EmployeeSelectPage = (props: Props) => {
             { 
                 employeesQuery.isFirstLoading
                 ?
-                <CircularProgress color="inherit" />
+                <CircularProgress color="primary" />
                 :
                 <Grid container spacing={2}>
-                    {
-                        employeesQuery.data.map((employee) => (
-                            <Grid size="auto" key={employee.id}>
-                                <ListItem disableGutters>
-                                    <ListItemButton onClick={() => handleListItemClick(employee)}>
-                                        <ListItemAvatar>
-                                            <EmployeeAvatar employee={employee} />
-                                        </ListItemAvatar>
-                                        <ListItemText primary={employee.name} />
-                                    </ListItemButton>
-                                </ListItem>
-                            </Grid>
-                        ))
-                    }
+                {
+                    employeesQuery.data.map((employee) => (
+                        <Grid size="auto" key={employee.id}>
+                            <ListItem disableGutters>
+                                <ListItemButton onClick={() => handleListItemClick(employee)}>
+                                    <ListItemAvatar>
+                                        <EmployeeAvatar employee={employee} />
+                                    </ListItemAvatar>
+                                    <ListItemText primary={employee.name} />
+                                </ListItemButton>
+                            </ListItem>
+                        </Grid>
+                    ))
+                }
                 </Grid>
             }
         </Grid>
