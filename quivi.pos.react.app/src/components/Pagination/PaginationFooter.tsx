@@ -13,7 +13,6 @@ export const PaginationFooter: React.FC<Props> = ({
 }) => {
     return <Box
         sx={{
-            mt: "0.5rem",
             py: "0.5rem",
 
             '& .MuiPagination-root': {
@@ -27,7 +26,11 @@ export const PaginationFooter: React.FC<Props> = ({
             page={currentPage + 1}
             variant="outlined"
             shape="rounded"
+            color="primary"
+            size="large"
             onChange={(_, p) => onPageChanged(p - 1)}
+            showFirstButton
+            showLastButton
         />
     </Box>
 }

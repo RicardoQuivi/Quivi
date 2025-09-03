@@ -4,7 +4,7 @@ interface InactivityResult {
     readonly isInactive: boolean;
 }
 interface Props {
-    readonly timeout: number;
+    readonly timeout?: number;
 }
 export const useUserInactivity = ({ timeout }: Props): InactivityResult => {
     const [isInactive, setIsInactive] = useState(false);
@@ -15,7 +15,9 @@ export const useUserInactivity = ({ timeout }: Props): InactivityResult => {
             clearTimeout(timeoutId.current);
         }
         setIsInactive(false);
-        timeoutId.current = window.setTimeout(() => setIsInactive(true), timeout);
+        if(timeout != undefined) {
+            timeoutId.current = window.setTimeout(() => setIsInactive(true), timeout);
+        }
     }, [timeout]);
 
     useEffect(() => {
@@ -23,7 +25,7 @@ export const useUserInactivity = ({ timeout }: Props): InactivityResult => {
 
         const handleEvent = () => resetTimer();
         events.forEach(event => window.addEventListener(event, handleEvent));
-        resetTimer(); // Initialize the timer
+        resetTimer();
         return () => {
             events.forEach(event => window.removeEventListener(event, handleEvent));
             if (timeoutId.current) {

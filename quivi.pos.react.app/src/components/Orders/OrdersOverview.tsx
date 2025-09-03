@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Avatar, Box, Chip, } from "@mui/material";
+import { Avatar, Box, Chip, Grid, } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
@@ -27,7 +27,7 @@ interface Props {
 }
 export const OrdersOverview = (props: Props) => {
     const { t } = useTranslation();
-
+    
     const [filters, setFilters] = useState({
         states: newTabStates,
         selectedLocation: undefined as Local | undefined,
@@ -85,11 +85,12 @@ export const OrdersOverview = (props: Props) => {
     const getCardsSection = () => {
         switch(filters.states)
         {
-            // case historyStates: 
-            //     return <OrdersHistory
-            //                 states={filters.states}
-            //                 onOrderSelected={(o) => props.onOrderSelected(o.id)}
-            //             />;
+            case historyStates:
+                return <></> 
+                // return <OrdersHistory
+                //             states={filters.states}
+                //             onOrderSelected={(o) => props.onOrderSelected(o.id)}
+                //         />;
             case processingStates: 
                 return <PreparationGroupsQueueCards
                             locationId={props.localId}
@@ -106,54 +107,121 @@ export const OrdersOverview = (props: Props) => {
             onOrderSelected={(o) => props.onOrderSelected(o.id)}
             onOrderUpdated={o => props.onOrderUpdated(o.channelId)}
         />;
-
-        return <></>
     }
 
     return (
-        <Box sx={{padding: "0.25rem 0.5rem", pb: 0, width: "100%", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden"}}>
-            <Box sx={{display: "flex", alignItems: "center", justifyContent: "stretch", gap: 2, flex: "0 0 auto"}} >
-                <Chip 
-                    sx={{width: "100%"}}
-                    label={t("ordersTab.new")} 
-                    color="primary"
-                    variant={filters.states == newTabStates ? "filled" : "outlined"} 
-                    onClick={() => setFilters(f => ({...f, states: newTabStates}))} 
-                    avatar={requestedCountQuery.isFirstLoading ? undefined : <Avatar>{requestedCountQuery.totalItems}</Avatar>}
-                />
-                <Chip 
-                    sx={{width: "100%"}}
-                    label={t("ordersTab.inProgress")} 
-                    color="primary"
-                    variant={filters.states == processingStates ? "filled" : "outlined"} 
-                    onClick={() => setFilters(f => ({...f, states: processingStates}))} 
-                    avatar={processingCountQuery.isFirstLoading ? undefined : <Avatar>{processingCountQuery.totalItems}</Avatar>}
-                />
-                <Chip 
-                    sx={{width: "100%"}}
-                    label={t("ordersTab.preparing")} 
-                    color="primary"
-                    variant={filters.states == preparingStates ? "filled" : "outlined"} 
-                    onClick={() => setFilters(f => ({...f, states: preparingStates}))} 
-                    avatar={preparingCountQuery.isFirstLoading ? undefined : <Avatar>{preparingCountQuery.totalItems}</Avatar>}
-                />
-                <Chip 
-                    sx={{width: "100%"}}
-                    label={t("ordersTab.history")} 
-                    color="primary"
-                    variant={filters.states == historyStates ? "filled" : "outlined"} 
-                    onClick={() => setFilters(f => ({...f, states: historyStates}))} 
-                />
-                <Chip 
-                    sx={{width: "100%"}}
-                    label={t("ordersTab.scheduled")} 
-                    color="primary"
-                    variant={filters.states == scheduledStates ? "filled" : "outlined"} 
-                    onClick={() => setFilters(f => ({...f, states: scheduledStates}))} 
-                    avatar={scheduledCountQuery.isFirstLoading ? undefined : <Avatar>{scheduledCountQuery.totalItems}</Avatar>}
-                />
-            </Box>
-            <Box sx={{flex: "1 1 auto", pt: "1rem", overflow: "hidden"}}>
+        <Box
+            sx={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden"
+            }}
+        >
+            <Grid
+                container
+                spacing={1}
+                width="100%"
+            >
+                <Grid
+                    size={{
+                        xs: 6,
+                        md: "grow",
+                    }}
+                >
+                    <Chip 
+                        sx={{
+                            width: "100%",
+                            whiteSpace: "normal", // Allow text to wrap
+                        }}
+                        label={t("ordersTab.new")} 
+                        color="primary"
+                        variant={filters.states == newTabStates ? "filled" : "outlined"} 
+                        onClick={() => setFilters(f => ({...f, states: newTabStates}))} 
+                        avatar={requestedCountQuery.isFirstLoading ? undefined : <Avatar>{requestedCountQuery.totalItems}</Avatar>}
+                    />
+                </Grid>
+                <Grid
+                    size={{
+                        xs: 6,
+                        md: "grow",
+                    }}
+                >
+                    <Chip 
+                        sx={{
+                            width: "100%",
+                            whiteSpace: "normal", // Allow text to wrap
+                        }}
+                        label={t("ordersTab.inProgress")} 
+                        color="primary"
+                        variant={filters.states == processingStates ? "filled" : "outlined"} 
+                        onClick={() => setFilters(f => ({...f, states: processingStates}))} 
+                        avatar={processingCountQuery.isFirstLoading ? undefined : <Avatar>{processingCountQuery.totalItems}</Avatar>}
+                    />
+                </Grid>
+                <Grid
+                    size={{
+                        xs: 6,
+                        md: "grow",
+                    }}
+                >
+                    <Chip 
+                        sx={{
+                            width: "100%",
+                            whiteSpace: "normal", // Allow text to wrap
+                        }}
+                        label={t("ordersTab.preparing")} 
+                        color="primary"
+                        variant={filters.states == preparingStates ? "filled" : "outlined"} 
+                        onClick={() => setFilters(f => ({...f, states: preparingStates}))} 
+                        avatar={preparingCountQuery.isFirstLoading ? undefined : <Avatar>{preparingCountQuery.totalItems}</Avatar>}
+                    />
+                </Grid>
+                <Grid
+                    size={{
+                        xs: 6,
+                        md: "grow",
+                    }}
+                >
+                    <Chip 
+                        sx={{
+                            width: "100%",
+                            whiteSpace: "normal", // Allow text to wrap
+                        }}
+                        label={t("ordersTab.history")} 
+                        color="primary"
+                        variant={filters.states == historyStates ? "filled" : "outlined"} 
+                        onClick={() => setFilters(f => ({...f, states: historyStates}))} 
+                    />
+                </Grid>
+                <Grid
+                    size={{
+                        xs: 6,
+                        md: "grow",
+                    }}
+                >
+                    <Chip 
+                        sx={{
+                            width: "100%",
+                            whiteSpace: "normal", // Allow text to wrap
+                        }}
+                        label={t("ordersTab.scheduled")} 
+                        color="primary"
+                        variant={filters.states == scheduledStates ? "filled" : "outlined"} 
+                        onClick={() => setFilters(f => ({...f, states: scheduledStates}))} 
+                        avatar={scheduledCountQuery.isFirstLoading ? undefined : <Avatar>{scheduledCountQuery.totalItems}</Avatar>}
+                    />
+                </Grid>
+            </Grid>
+
+            <Box 
+                sx={{
+                    flex: "1 1 auto",
+                    pt: "1rem",
+                    overflow: "hidden"
+                }}
+            >
                 {getCardsSection()}
             </Box>
             {/* <QrCodeReaderModal isOpen={props.readQrCodeOpen} onClose={props.onReadQrCodeClosed} onOrderRead={onQrCodeRead} />

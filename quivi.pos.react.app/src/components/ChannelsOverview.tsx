@@ -133,7 +133,7 @@ export const ChannelsOverview: React.FC<Props> = ({
             <Grid
                 container
                 width="100%"
-                spacing={2}
+                spacing={1}
             >
                 {
                     !xs &&
@@ -192,7 +192,7 @@ export const ChannelsOverview: React.FC<Props> = ({
                             flexDirection: "column",
                             flexWrap: "wrap",
                             alignContent: "center",
-                            mt: "1rem"
+                            mt: "1rem",
                         }}
                     >
                         <Grid
@@ -200,7 +200,9 @@ export const ChannelsOverview: React.FC<Props> = ({
                             spacing={2}
                             sx={{
                                 width: "100%",
+                                padding: "1rem",
                             }}
+                            gap={2}
                         >
                             {
                                 channelsQuery.isFirstLoading == false
@@ -209,9 +211,19 @@ export const ChannelsOverview: React.FC<Props> = ({
                                     const session = sessionsMap.get(channel.id);
                                     const profile = profilesMap.get(channel.channelProfileId);
                                     const integration = profile == undefined ? undefined : integrationsMap.get(profile.posIntegrationId);
-                                    return <Grid size={{xs: 6, sm: 3, md: 2}} key={channel.id}>
+                                    return <Grid
+                                        key={channel.id}
+                                        size={{
+                                            xs: 6,
+                                            sm: 3,
+                                            md: 2,
+                                        }}
+                                    >
                                         <ChannelCard
-                                            cardProps={{ backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.1)" : "rgba(0, 255, 0, 0.1)" }}
+                                            cardProps={{
+                                                backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.1)" : undefined,
+                                                borderColor: "red"
+                                            }}
                                             subtitle={
                                                 sessionsQuery.isLoading
                                                 ?
@@ -227,7 +239,7 @@ export const ChannelsOverview: React.FC<Props> = ({
                                             integration={integration}
 
                                             onCardClicked={() => onChannelClicked(channel)}
-                                            onQrCodeUrlClicked={() => window.open(channel.url, "_blank")}
+                                            onChannelUrlClicked={() => window.open(channel.url, "_blank")}
                                             onTransferQrCodeSessionClicked={sessionsQuery.isLoading ? undefined : () => onTransferSessionClicked(channel)}
                                             onCloseSessionClicked={session == undefined || profile == undefined ? undefined : () => setSessionToClose({
                                                 channel: channel,
@@ -289,7 +301,7 @@ const ChannelCard = (props: {
     readonly session?: Session, 
     readonly integration?: PosIntegration,
     readonly onCardClicked?: () => any,
-    readonly onQrCodeUrlClicked?: () => any,
+    readonly onChannelUrlClicked?: () => any,
     readonly onTransferQrCodeSessionClicked?: () => any,
     readonly onCloseSessionClicked?: () => any;
 }) => {
@@ -304,73 +316,83 @@ const ChannelCard = (props: {
     const permissionsQuery = useAllowedActions(props.channel?.id);
 
     return (
-        <Paper elevation={16}>
-            <Card sx={props.cardProps}>
-                <CardActionArea onClick={props.onCardClicked}>
-                    <Grid
-                        container
-                    >
-                        <Grid size="grow">
-                            <CardHeader
-                                title={props.channel == undefined || props.channelProfile == undefined 
-                                    ? 
-                                        <Skeleton animation="wave" />
-                                    : 
-                                    `${props.channelProfile.name} ${props.channel.name}`
-                                }
-                                subheader={props.subtitle}
-                                slotProps={{
-                                    title: {
-                                        fontSize: "1rem",
-                                    },
-                                }}
-                            />
-                        </Grid>
-
-                        {
-                            sessionEmployee != undefined &&
-                            <Grid size="auto">
-                                <Box sx={{marginRight: "0.25rem"}} height="100%" display="flex" alignItems="center">
-                                    <Tooltip title={sessionEmployee.name} style={{ float: "right" }}>
-                                        <EmployeeAvatar employee={sessionEmployee} />
-                                    </Tooltip>
-                                </Box>
-                            </Grid>
-                        }
+        <Card sx={props.cardProps} elevation={8}>
+            <CardActionArea onClick={props.onCardClicked}>
+                <Grid
+                    container
+                >
+                    <Grid size="grow">
+                        <CardHeader
+                            title={props.channel == undefined || props.channelProfile == undefined 
+                                ? 
+                                    <Skeleton animation="wave" />
+                                : 
+                                `${props.channelProfile.name} ${props.channel.name}`
+                            }
+                            subheader={props.subtitle}
+                            slotProps={{
+                                title: {
+                                    fontSize: "1rem",
+                                },
+                            }}
+                        />
                     </Grid>
-                </CardActionArea>
-                <Divider />
-                {
-                    <CardActions sx={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                        <Tooltip title={t("openLink")}>
-                            <IconButton size="large" onClick={props.onQrCodeUrlClicked}>
-                                <QrCodeIcon style={{height: "16", aspectRatio: 1}} />
-                            </IconButton>
-                        </Tooltip>
-                        {
-                            permissionsQuery.data.allowsAddingItems != false &&
-                            <>
-                                {
-                                    permissionsQuery.data.allowsRemovingItems == true &&
-                                    props.session?.isOpen !== false &&
-                                    props.onCloseSessionClicked != undefined &&
-                                    <Tooltip title={t("closeSession")}>
-                                        <IconButton size="large" onClick={props.onCloseSessionClicked}>
-                                            <CloseIcon style={{height: "16", aspectRatio: 1}} />
-                                        </IconButton>
-                                    </Tooltip>
-                                }
-                                <Tooltip title={t("transferSession")}>
-                                    <IconButton size="large" disabled={!!props.disableTransfer} onClick={props.onTransferQrCodeSessionClicked}>
-                                        <SwitchIcon style={{height: "16", aspectRatio: 1}}/>
+
+                    {
+                        sessionEmployee != undefined &&
+                        <Grid size="auto">
+                            <Box sx={{marginRight: "0.25rem"}} height="100%" display="flex" alignItems="center">
+                                <Tooltip title={sessionEmployee.name} style={{ float: "right" }}>
+                                    <EmployeeAvatar employee={sessionEmployee} />
+                                </Tooltip>
+                            </Box>
+                        </Grid>
+                    }
+                </Grid>
+            </CardActionArea>
+            <Divider />
+            {
+                <CardActions
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                    }}
+                >
+                    <Tooltip title={t("openLink")}>
+                        <IconButton
+                            size="medium"
+                            onClick={props.onChannelUrlClicked}
+                        >
+                            <QrCodeIcon style={{height: "16", aspectRatio: 1}} />
+                        </IconButton>
+                    </Tooltip>
+                    {
+                        permissionsQuery.data.allowsAddingItems != false &&
+                        <>
+                            {
+                                permissionsQuery.data.allowsRemovingItems == true &&
+                                props.session?.isOpen !== false &&
+                                props.onCloseSessionClicked != undefined &&
+                                <Tooltip title={t("closeSession")}>
+                                    <IconButton
+                                        size="medium"
+                                        onClick={props.onCloseSessionClicked}
+                                    >
+                                        <CloseIcon style={{height: "16", aspectRatio: 1}} />
                                     </IconButton>
                                 </Tooltip>
-                            </>
-                        }
-                    </CardActions>
-                }
-            </Card>
-        </Paper>
+                            }
+                            <Tooltip title={t("transferSession")}>
+                                <IconButton size="medium" disabled={!!props.disableTransfer} onClick={props.onTransferQrCodeSessionClicked}>
+                                    <SwitchIcon style={{height: "16", aspectRatio: 1}}/>
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    }
+                </CardActions>
+            }
+        </Card>
     );
 }
 

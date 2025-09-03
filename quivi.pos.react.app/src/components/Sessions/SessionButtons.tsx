@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Grid, Tooltip } from "@mui/material"
+import { Badge, Box, Button, Grid, SpeedDial, SpeedDialAction, SpeedDialIcon, Tooltip } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { useToast } from "../../context/ToastProvider";
@@ -13,7 +13,7 @@ import { usePrintersQuery } from "../../hooks/queries/implementations/usePrinter
 import { usePreparationGroupsQuery } from "../../hooks/queries/implementations/usePreparationGroupsQuery";
 import { PreparationGroup } from "../../hooks/api/Dtos/preparationgroups/PreparationGroup";
 import SplitButton from "../Buttons/SplitButton";
-import { CashDrawerIcon, ReceiptIcon } from "../../icons";
+import { CashDrawerIcon, MoneyBillIcon, OvenIcon, PercentIcon, ReceiptIcon } from "../../icons";
 import { DiscountedItem, DiscountsModal } from "../Modals/DiscountsModal";
 import { SessionItem } from "../../hooks/api/Dtos/sessions/SessionItem";
 import { PaymentData, PaymentsModal } from "../Payments/PaymentsModal";
@@ -23,6 +23,7 @@ import { TransactionSyncedPromise } from "../../hooks/signalR/promises/Transacti
 import { useTransactionsApi } from "../../hooks/api/useTransactionsApi";
 import { PreparationGroupDetailModal } from "../Orders/groups/PreparationGroupDetailModal";
 import { PaymentHistoryModal } from "../PaymentsHistory/PaymentHistoryModal";
+import { createPortal } from 'react-dom';
 
 const getCheckedItems = (group: PreparationGroup | undefined) =>  {
     if(group == undefined) {
@@ -38,7 +39,6 @@ const getCheckedItems = (group: PreparationGroup | undefined) =>  {
     }
     return result;
 }
-
 
 interface SessionButtonsProps {
     readonly canPay: boolean;
@@ -66,6 +66,7 @@ export const SessionButtons = ({
     const printersQuery = usePrintersQuery({
         page: 0,
     });
+
     const currentChannelQuery = useChannelsQuery({
         ids: [pos.cartSession.channelId],
         page: 0,
@@ -116,16 +117,12 @@ export const SessionButtons = ({
     const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
     const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
     const [paymentHistoryModalOpen, setPaymentHistoryModalOpen] = useState(false);
-    const [isItemCheckedMap, setIsItemCheckedMap] = useState<Record<string, boolean>>(getCheckedItems(preparationGroup))
+    const [isItemCheckedMap, setIsItemCheckedMap] = useState<Record<string, boolean>>(() => getCheckedItems(preparationGroup))
 
     const paymentsDisabled = pos.cartSession.isSyncing || pos.cartSession.items.filter(m => !m.isPaid).length == 0;
     const kitchenOrdersEnabled = !pos.cartSession.isSyncing && ((preparationGroup != undefined && preparationGroup.items.length > 0) || !paymentsDisabled);
 
-    const {
-        canOpenCashDrawer,
-        canPrintBill,
-        canPrintEndOfDay
-    } = useMemo(() => {
+    const printerSettings = useMemo(() => {
         let canOpenCashDrawer = false;
         let canPrintBill = false;
         let canPrintEndOfDay = false;
@@ -179,7 +176,7 @@ export const SessionButtons = ({
             return;
         }
 
-        if(canPrintBill == false){
+        if(printerSettings.canPrintBill == false){
             toast.error(t('printerMissing'));
             return;
         }
@@ -241,9 +238,32 @@ export const SessionButtons = ({
         return <></>
     }
     
-    return <>
-        <Grid container gap={1} style={{flex: "0 0 auto",}}>
-            <Grid size={{xs: 12, sm: "grow"}}>
+    return <Box
+        sx={{
+
+            position: "relative"
+        }}
+    >
+        <Grid
+            container
+            spacing={2}
+            sx={{
+                flex: "0 0 auto",
+                display: {
+                    xs: 'none',
+                    sm: 'none',
+                    md: 'flex',
+                    lg: "flex",
+                    xl: "flex",
+                },
+            }}
+        >
+            <Grid 
+                size={{
+                    xs: 12,
+                    sm: "grow"
+                }}
+            >
                 <Badge
                     sx={{
                         "& .MuiBadge-badge": {
@@ -265,7 +285,7 @@ export const SessionButtons = ({
                         variant="contained"
                         sx={{
                             width: "100%",
-                            height: "3rem"
+                            height: "3rem",
                         }}
                         loading={!!pos.cartSession.sessionId && preparationGroupQuery.isFirstLoading} 
                         disabled={!kitchenOrdersEnabled || totalPendingItems == 0} 
@@ -275,11 +295,16 @@ export const SessionButtons = ({
                     </Button>
                 </Badge>
             </Grid>
-            <Grid size={{xs: 12, sm: "grow"}}>
+            <Grid
+                size={{
+                    xs: 12,
+                    sm: "grow"
+                }}
+            >
                 <SplitButton
                     style={{
                         width: "100%",
-                        height: "3rem"
+                        height: "3rem",
                     }}
                     onClick={printBill}
                     isDisabled={paymentsDisabled}
@@ -300,15 +325,28 @@ export const SessionButtons = ({
                     {t("bill")}
                 </SplitButton>
             </Grid>
-            <Grid size={{xs: 12 }}>
-                <Box sx={{display: "flex", gap: 1}}>
+            <Grid
+                size={{ 
+                    xs: 12,
+                }}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                    }}
+                >
                     <SplitButton
-                        style={{ flexGrow: 1, height: "3rem" }} 
+                        style={{
+                            flexGrow: 1,
+                            height: "3rem",
+                        }} 
                         onClick={() => {
                             if(paymentsDisabled) {
-                                toast.info(t("emptySession"))
+                                toast.info(t("session.empty"))
                                 return;
                             }
+
                             if(canPay == false) {
                                 toast.info(t("integrationDoesNotAllowPayments"))
                                 return;
@@ -327,15 +365,15 @@ export const SessionButtons = ({
                         {t("payment")}
                     </SplitButton>
                     {
-                        canOpenCashDrawer &&
+                        printerSettings.canOpenCashDrawer &&
                         <Tooltip title={t("openCashDrawer")}>
-                            <Button variant="contained" sx={{height: "3rem", width: "3rem"}} onClick={onClickOpenCashDrawer}>
+                            <Button variant="contained" sx={{ height: "3rem", width: "3rem" }} onClick={onClickOpenCashDrawer}>
                                 <CashDrawerIcon />
                             </Button>
                         </Tooltip>
                     }
                     {
-                        canPrintEndOfDay &&
+                        printerSettings.canPrintEndOfDay &&
                         <Tooltip title={t("printEndOfDayTotals")}>
                             <Button variant="contained" sx={{height: "3rem", width: "3rem"}} onClick={onEndDayTotals}>
                                 <ReceiptIcon />
@@ -345,6 +383,91 @@ export const SessionButtons = ({
                 </Box>
             </Grid>
         </Grid>
+
+        {
+            createPortal(<Box
+                sx={{
+                    position: 'absolute',
+                    bottom: 55,
+                    right: 15,
+                    display: {
+                        xs: 'block',
+                        sm: 'block',
+                        md: 'none',
+                        lg: "none",
+                        xl: "none"
+                    },
+
+                    "& svg": {
+                        width: 25,
+                        height: "auto",
+                    }
+                }}
+            >
+                <SpeedDial
+                    ariaLabel="session actions"
+                    icon={<SpeedDialIcon />}
+                    direction="up"
+                >
+                    <SpeedDialAction
+                        icon={<OvenIcon />}
+                        slotProps={{
+                            tooltip: {
+                                title: t("sendToPreparation"),
+                            },
+                        }}
+                        onClick={() => {
+                            if(kitchenOrdersEnabled == false || totalPendingItems == 0) {
+                                toast.info(t("session.nothingToPrepare"))
+                                return;
+                            }
+                            setIsPrepareModalOpen(true);
+                        }}
+                    />
+
+                    {
+                        canApplyDiscounts &&
+                        <SpeedDialAction
+                            icon={<PercentIcon />}
+                            slotProps={{
+                                tooltip: {
+                                    title: t("applyDiscount"),
+                                },
+                            }}
+                            onClick={() => {
+                                if(paymentsDisabled) {
+                                    toast.info(t("session.empty"))
+                                    return;
+                                }
+                                setDiscountsModalOpen(true);
+                            }}
+                        />
+                    }
+
+                    <SpeedDialAction
+                        icon={<MoneyBillIcon />}
+                        slotProps={{
+                            tooltip: {
+                                title: t("payment"),
+                            },
+                        }}
+                        onClick={() => {
+                            if(paymentsDisabled) {
+                                toast.info(t("session.empty"))
+                                return;
+                            }
+
+                            if(canPay == false) {
+                                toast.info(t("session.paymentNotAllowed"))
+                                return;
+                            }
+
+                            setPaymentsModalOpen(true);
+                        }}
+                    />
+                </SpeedDial>
+            </Box>, document.body)
+        }
 
         <PaymentsModal
             isOpen={paymentsModalOpen}
@@ -374,5 +497,5 @@ export const SessionButtons = ({
             isOpen={paymentHistoryModalOpen}
             onClose={() => setPaymentHistoryModalOpen(false)}
         />
-    </>
+    </Box>
 }

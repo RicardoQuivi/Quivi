@@ -25,7 +25,11 @@
     "transferSession": "Tranfer session",
     "closeSessionQuestion": "Are you sure you want to close session of <bold>{{name}}</bold>?",
     "sessionInformation": "Session information",
-    "emptySession": "This session is empty",
+    "session": {
+        "empty": "This session is empty",
+        "nothingToPrepare": "There are no pending items to prepare in this session",
+        "paymentNotAllowed": "Payment is not available at the moment. Your PoS is either offline or does not allow this action."
+    },
     "unpaid": "Unpaid",
     "paid": "Paid",
     "total": "Total",

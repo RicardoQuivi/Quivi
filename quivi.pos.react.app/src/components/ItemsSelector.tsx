@@ -1,62 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Box, ButtonBase, ImageList, ImageListItem, ImageListItemBar, Paper, Skeleton, Tab, Tabs, styled, useMediaQuery, useTheme } from "@mui/material"
+import { Box, ButtonBase, Divider, ImageList, ImageListItem, ImageListItemBar, Paper, Skeleton, Tab, Tabs, styled, useMediaQuery, useTheme } from "@mui/material"
 import { useTranslation } from "react-i18next";
 import { PaginationFooter } from "./Pagination/PaginationFooter";
 import { MenuItem } from "../hooks/api/Dtos/menuitems/MenuItem";
 import { MenuCategory } from "../hooks/api/Dtos/menucategories/MenuCategory";
 import { useMenuCategoriesQuery } from "../hooks/queries/implementations/useMenuCategoriesQuery";
 import { useMenuItemsQuery } from "../hooks/queries/implementations/useMenuItemsQuery";
-
-const StyledTabs = styled(Tabs)({
-    paddingTop: 0,
-    paddingBottom: 0,
-
-    "& .MuiTabRoot": {
-        paddingTop: "0.5rem",
-        paddingBottom: "0.5rem",
-    },
-
-    "& > .MuiTabScrollButton-horizontal:first-of-type": {
-        marginLeft: "-1rem",
-        "&.Mui-disabled": {
-            marginLeft: "-3rem",
-        },
-    },
-
-    "& > .MuiTabScrollButton-horizontal:last-of-type": {
-        marginRight: "-1rem",
-        "&.Mui-disabled": {
-            marginRight: "-3rem",
-        },
-    },
-});
-  
-interface StyledImageListItemBarProps {
-    readonly isMobile: boolean;
-}
-const StyledImageListItemBar = styled(ImageListItemBar, {
-    shouldForwardProp: (prop) => prop !== 'isMobile'
-})<StyledImageListItemBarProps>((props) => ({
-    height: "100%",
-    userSelect: "none",
-
-    "& .MuiImageListItemBar-title": {
-        textWrap: "wrap",
-        fontSize: !props.isMobile ? "1rem" : "0.85rem",
-        lineHeight: !props.isMobile ? "24px" : "16px",
-        textAlign: "center",
-    },
-
-    "& .MuiImageListItemBar-titleWrap": {
-        backgroundColor: "rgba(0,0,0,0.4)",
-    },
-
-    "& .MuiImageListItemBar-subtitle": {
-        position: "absolute",
-        bottom: "0.5rem",
-        right: "0.5rem",
-    }
-}));
 
 const ListItem = (props: {
     readonly image?: string;
@@ -77,7 +26,30 @@ const ListItem = (props: {
                     :
                     <img src={props.image?.replace("_full.", "_thumbnail.")} alt={props.name} loading="lazy" style={{aspectRatio: "4/3"}}/>
                 }
-                <StyledImageListItemBar title={props.name == null ? <Skeleton animation="wave" /> : truncateName(props.name)} isMobile={props.isMobile}/>
+                <ImageListItemBar
+                    title={props.name == null ? <Skeleton animation="wave" /> : truncateName(props.name)}
+                    sx={{
+                        height: "100%",
+                        userSelect: "none",
+
+                        "& .MuiImageListItemBar-title": {
+                            textWrap: "wrap",
+                            fontSize: !props.isMobile ? "1rem" : "0.85rem",
+                            lineHeight: !props.isMobile ? "24px" : "16px",
+                            textAlign: "center",
+                        },
+
+                        "& .MuiImageListItemBar-titleWrap": {
+                            backgroundColor: "rgba(0,0,0,0.4)",
+                        },
+
+                        "& .MuiImageListItemBar-subtitle": {
+                            position: "absolute",
+                            bottom: "0.5rem",
+                            right: "0.5rem",
+                        }
+                    }}
+                />
             </ImageListItem>
         </ButtonBase>
     )
@@ -177,9 +149,20 @@ export const ItemsSelector: React.FC<Props> = ({
         setSelectedItemWithModifier(item);
     }
 
-    return <>
-        <Paper elevation={16} sx={{ px: "1rem", pb: 0, pt: "0.5rem", height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <StyledTabs 
+    return (
+        <Paper
+            elevation={16}
+            sx={{
+                px: "1rem",
+                pb: 0,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                rowGap: 1,
+            }}
+        >
+            <Tabs 
                 variant="scrollable" 
                 allowScrollButtonsMobile 
                 scrollButtons="auto" 
@@ -187,23 +170,60 @@ export const ItemsSelector: React.FC<Props> = ({
                 onChange={onCategorySelected} 
                 sx={{
                     flex: "0 0 auto",
+
+                    paddingTop: 0,
+                    paddingBottom: 0,
+
+                    "& .MuiTabRoot": {
+                        paddingTop: "0.5rem",
+                        paddingBottom: "0.5rem",
+                    },
+
+                    "& > .MuiTabScrollButton-horizontal:first-of-type": {
+                        marginLeft: "-1rem",
+                        "&.Mui-disabled": {
+                            marginLeft: "-3rem",
+                        },
+                    },
+
+                    "& > .MuiTabScrollButton-horizontal:last-of-type": {
+                        marginRight: "-1rem",
+                        "&.Mui-disabled": {
+                            marginRight: "-3rem",
+                        },
+                    },
                 }}
+                
             >
             {
                 categoriesQuery.isFirstLoading
                 ?
-                [1, 2, 3, 4, 5].map(i => <Tab label={<Skeleton animation="wave" width="100%" />} value={i == 0 ? "" : `Loading-${i}`} key={`Loading-${i}`} />)
+                [1, 2, 3, 4, 5].map(i => <Tab
+                                            label={<Skeleton animation="wave" width="100%" />}
+                                            value={i == 0 ? "" : `Loading-${i}`}
+                                            key={`Loading-${i}`}
+                                        />)
                 :
                 [
-                    ...categoriesQuery.data.map(a => 
-                        <Tab label={a.name} value={a.id} key={a.id} />
-                    ), 
-                    <Tab label={t("all")} value="" key={"All"} />,
+                    ...categoriesQuery.data.map(a => <Tab label={a.name} value={a.id} key={a.id} />), 
+                    <Tab label={t("all")} value="" key="All" />,
                 ]
             }
-            </StyledTabs>
-            <Box style={{flex: "1 1 auto", overflow: "auto", paddingBottom: "0.5rem"}}>
-                <ImageList sx={{mt: "1rem", mb: 0}} cols={xs ? 2 : (sm ? 3 : isMobile ? 4 : 6)}>
+            </Tabs>
+            <Box
+                sx={{
+                    flex: "1 1 auto",
+                    overflow: "auto",
+                    paddingBottom: "0.5rem",
+                }}
+            >
+                <ImageList
+                    sx={{
+                        mt: "1rem",
+                        mb: 0,
+                    }}
+                    cols={xs ? 2 : (sm ? 3 : isMobile ? 4 : 6)}
+                >
                     {
                         menuItemsQuery.isFirstLoading
                         ?
@@ -224,11 +244,16 @@ export const ItemsSelector: React.FC<Props> = ({
             </Box>
             {
                 menuItemsQuery.totalPages > 0 && 
-                <Box style={{flex: "0 0 auto"}}>
+                <Box
+                    sx={{
+                        flex: "0 0 auto",
+                    }}
+                >
+                    <Divider />
                     <PaginationFooter currentPage={currentPage} numberOfPages={menuItemsQuery.totalPages} onPageChanged={setCurrentPage} />
                 </Box>
             }
+            {/* <ItemWithModifiersSelectorModal onSelect={onItemSelect} item={selectedItemWithModifier} onClose={() => setSelectedItemWithModifier(undefined)} /> */}
         </Paper>
-        {/* <ItemWithModifiersSelectorModal onSelect={onItemSelect} item={selectedItemWithModifier} onClose={() => setSelectedItemWithModifier(undefined)} /> */}
-    </>
+    )
 }

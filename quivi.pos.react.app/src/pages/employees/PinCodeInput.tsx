@@ -1,6 +1,6 @@
-﻿import { useEffect, useRef, useState } from "react"
+﻿import { useEffect, useMemo, useRef, useState } from "react"
 import Keyboard from "react-simple-keyboard";
-import { CircularProgress, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid, LinearProgress } from "@mui/material";
 import 'react-simple-keyboard/build/css/index.css';
 
 interface Props {
@@ -21,18 +21,13 @@ const getPinFromValue = (pin: string, totalInputs: number) => {
 }
 export const PinCodeInput = (props: Props) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [input, setInput] = useState(getPinFromValue(props.pin, totalInputs));
     const [currentDigit, setCurrentDigit] = useState<number | undefined>();
     const inputItems = Array.from({length: totalInputs}, () => useRef<HTMLInputElement>(null));
 
-    useEffect(() => setInput(getPinFromValue(props.pin, totalInputs)), [props.pin])
+    const input = useMemo(() => getPinFromValue(props.pin, totalInputs), [totalInputs, props.pin]);
 
     useEffect(() => ref.current?.focus(), [ref.current])
     useEffect(() => setCurrentDigit(input.trim().length), [input])
-    useEffect(() => {
-        const pin = input.trim();
-        props.onChange(pin, pin.length == totalInputs);
-    }, [input])
 
     useEffect(() => {
         if(currentDigit == undefined) {
@@ -59,7 +54,7 @@ export const PinCodeInput = (props: Props) => {
             const timeout = setTimeout(() => element.focus(), 0);
             return () => {
                 clearTimeout(timeout);
-                setTimeout(() => element.type = "password", 350)
+                setTimeout(() => element.type = "password", 3500)
             }
         }
 
@@ -78,7 +73,7 @@ export const PinCodeInput = (props: Props) => {
             clearTimeout(timeout);
             setTimeout(() => element.type = "password", 350)
         }
-    }, [currentDigit, inputItems])
+    }, [currentDigit, ...inputItems])
 
     useEffect(() => {
         if(props.loading != true) {
@@ -120,7 +115,12 @@ export const PinCodeInput = (props: Props) => {
                 element.type = i == currentDigit ? "text" : "password";
             }
         }
-    }, [inputItems])
+    }, inputItems)
+
+    const triggerOnPinChange = (input: string) => {
+        const pin = input.trim();
+        props.onChange(pin, pin.length == totalInputs);
+    }
 
     const onKeyPadPress = (button: string) => {
         if(props.loading) {
@@ -128,19 +128,18 @@ export const PinCodeInput = (props: Props) => {
         }
         
         if (button === "{clear}") {
-            return setInput("");
+            return triggerOnPinChange("");
         }
 
         if(button == "{bksp}" || button == "Backspace") {
             props.onDigitPress?.("Backspace");
 
-            setInput(p => {    
-                const index = currentDigit == undefined ? p.length - 1 : currentDigit - 1;
-                if(index == -1) {
-                    return p;
-                }
-                return p.substring(0, index) + ' ' + p.substring(index + 1);
-            })
+            const index = currentDigit == undefined ? input.length - 1 : currentDigit - 1;
+            if(index == -1) {
+                return;
+            }
+            triggerOnPinChange(input.substring(0, index) + ' ' + input.substring(index + 1));
+            return;
         }
 
         if(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].findIndex(s => s == button) == -1) {
@@ -148,16 +147,14 @@ export const PinCodeInput = (props: Props) => {
         }
 
         props.onDigitPress?.(button);
-        setInput(p => {
-            if(currentDigit == undefined || p.trim().length == totalInputs) {
-                return p;
-            }
+        if(currentDigit == undefined || input.trim().length == totalInputs) {
+            return;
+        }
 
-            //The following trimStart is an attempt to solve an issue that is reproduced by (very) quickly spamming and
-            //typing numbers and backspace. Eventually, somehow, the input string will be left with a space at the start
-            //and thus leading into a bug where you can never fill the pin code.
-            return (p.substring(0, currentDigit) + button + p.substring(currentDigit + 1)).trimStart();
-        })
+        //The following trimStart is an attempt to solve an issue that is reproduced by (very) quickly spamming and
+        //typing numbers and backspace. Eventually, somehow, the input string will be left with a space at the start
+        //and thus leading into a bug where you can never fill the pin code.
+        triggerOnPinChange((input.substring(0, currentDigit) + button + input.substring(currentDigit + 1)).trimStart());
     }
 
     const getInputArray = () => {
@@ -172,51 +169,85 @@ export const PinCodeInput = (props: Props) => {
         return r;
     }
 
-    return <div onKeyDownCapture={(e) => onKeyPadPress(e.key)} tabIndex={-1} ref={ref} style={{outlineColor: "transparent"}}>
-        <Grid
-            container
-            gap={2}
-            marginBottom="1.5rem"
-            paddingX="1rem"
+    const loading = props.loading;
+    return <Box
+        onKeyDownCapture={(e) => onKeyPadPress(e.key)}
+        tabIndex={-1}
+        ref={ref}
+        sx={{
+            outlineColor: "transparent",
+            aspectRatio: 1,
+        }}
+    >
+        <Box
+            sx={{
+                marginBottom: "1.5rem",
+                paddingX: "1rem",
+                display: "flex",
+                flexDirection: "column",
+            }}
+            rowGap={1}
         >
-            {
-                props.loading == true
-                ?
-                <Grid size="grow" justifyContent="center" display="flex">
-                    <CircularProgress style={{height: "4rem", width: "4rem" }}/>
-                </Grid>
-                :
-                getInputArray().map((c, i) => <Grid
-                    key={i} 
-                    size="grow"
-                >
-                    <input
-                        ref={inputItems[i]}
-                        autoCapitalize="off" 
-                        autoCorrect="off" 
-                        autoComplete="off" 
-                        inputMode="numeric" 
-                        aria-required="true" 
-                        value={c}
-                        style={{
-                            border: `2px solid ${currentDigit == i ? "var(--color-brand-950)" : "gray"}`,
-                            fontSize: "2rem",
-                            outline: "none",
-                            textAlign: "center",
-                            transitionDuration: "250ms",
-                            transitionProperty: "color, border, box-shadow, transform",
-                            width: "100%",
-                            aspectRatio: 1,
-                            boxShadow: currentDigit == i ? "0 0 0.25rem rgba(var(--color-brand-950), 0.5)" : undefined
-                        }}
-                        disabled
-                    />
-                </Grid>)
-            }
-        </Grid>
+            <Grid
+                container
+                gap={2}
+            >
+                {
+                    getInputArray().map((c, i) => <Grid
+                        key={i} 
+                        size="grow"
+                    >
+                        <Box
+                            sx={{
+                                border: `2px solid ${currentDigit == i ? "var(--color-brand-950)" : "gray"}`,
+                                boxShadow: currentDigit == i ? "0 0 0.25rem rgba(var(--color-brand-950), 0.5)" : undefined,
+                                transitionProperty: "color, border, box-shadow, transform",
+                                position: "relative",
+                            }}
+                        >
+                            <input
+                                ref={inputItems[i]}
+                                type={inputItems[i].current?.type ?? "text"}
+                                autoCapitalize="off" 
+                                autoCorrect="off" 
+                                autoComplete="off" 
+                                inputMode="numeric" 
+                                aria-required="true" 
+                                value={c}
+                                style={{
+                                    border: `none`,
+                                    fontSize: "2rem",
+                                    outline: "none",
+                                    textAlign: "center",
+                                    transitionDuration: "250ms",
+                                    width: "100%",
+                                    aspectRatio: 1,
+                                    visibility: loading ? "collapse" : undefined,
+                                }}
+                                disabled
+                            />
+                        </Box>
+                    </Grid>)
+                }
+            </Grid>
+
+            <LinearProgress
+                sx={{
+                    visibility: loading ? "visible" : "hidden",
+                    height: {
+                        xs: 5,
+                        sm: 5,
+                        md: 10,
+                        lg: 10,
+                        xl: 10,
+                    },
+                    borderRadius: 1,
+                }}
+            />
+        </Box>
         <Keyboard
             layoutName="default"
-            theme={"hg-theme-default hg-theme-numeric hg-layout-numeric numeric-theme hg-font-large"}
+            theme="hg-theme-default hg-theme-numeric hg-layout-numeric numeric-theme hg-font-large"
             layout={{
                 default: ["1 2 3", "4 5 6", "7 8 9", "{clear} 0 {bksp}"],
             }}
@@ -232,7 +263,12 @@ export const PinCodeInput = (props: Props) => {
             .hg-font-large .hg-button {
                 font-size: 24px;
             }
+
+            .hg-theme-default.hg-layout-numeric .hg-button {
+                height: auto !important;
+                aspect-ratio: 2 !important;
+            }
         `}
         </style>
-    </div>
+    </Box>
 }

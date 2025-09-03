@@ -200,15 +200,43 @@ export const SessionViewer: React.FC<Props> = ({
 
     const sessionClosedRecently = pos.cartSession.closedAt != null &&  pos.cartSession.closedAt.getTime() + recentThreshold > new Date().getTime();
 
-    return <Box style={{display: "flex", flexDirection: "column", height: "100%"}}>
-        <Paper elevation={16} sx={{flex: "1 1 auto", padding: "1rem 0", marginBottom: "1rem", display: "flex", flexDirection: "column", overflow: "hidden auto" }}>
-            <Box sx={{height: "100%", display: "flex", flexDirection: "column"}}>
+    return <Box
+        sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%"
+        }}
+    >
+        <Paper
+            elevation={16}
+            sx={{
+                flex: "1 1 auto",
+                marginBottom: "1rem",
+                display: "flex", flexDirection: "column",
+                overflow: "hidden auto",
+                }}
+        >
+            <Box
+                sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
                 {
                     channel == undefined || profile == undefined
                     ?
-                    <Skeleton animation="wave" sx={{width: "96%", alignSelf: "center"}}/>
+                    <Skeleton animation="wave" sx={{ width: "96%", alignSelf: "center" }}/>
                     :
-                    <Box sx={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", mt: "-1rem", height: "48px"}}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            height: "48px",
+                        }}
+                    >
                         {
                             onSessionAdditionalInfoClicked != undefined &&
                             !!pos.cartSession.sessionId &&
@@ -232,13 +260,26 @@ export const SessionViewer: React.FC<Props> = ({
                         }
                     </Box>
                 }
-                <Divider variant="fullWidth" style={{flex: "0 0 auto"}}/>
-                <Box style={{flex: "1 1 auto", overflow: "hidden auto", }}>
+                <Divider variant="fullWidth" sx={{flex: "0 0 auto"}}/>
+                <Box
+                    sx={{
+                        flex: "1 1 auto",
+                        overflow: "hidden auto",
+                    }}
+                >
                     {
                         pos.cartSession.items.length == 0 && pendingOrdersQuery.data.length == 0
                         ?
-                        <Box style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                            <p style={{ textAlign: "center", fontSize: "16px" }}>{ t("emptySession")}</p>
+                        <Box
+                            sx={{
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <p style={{ textAlign: "center", fontSize: "16px" }}>{ t("session.empty")}</p>
                         </Box>
                         :
                         <List sx={{ bgcolor: 'background.paper'}}>
@@ -272,23 +313,32 @@ export const SessionViewer: React.FC<Props> = ({
                     }
                 </Box>
                 <BottomNavigation
-                    sx={{mt: "1rem"}}
+                    sx={{
+                        mt: "1rem",
+                        mb: "0.5rem",
+                    }}
                     showLabels
                     value={itemStatusFilter}
                     onChange={(_, newValue) => setItemStatusFilter(newValue)}
-                    >
-                    <StyleBottomNavigationAction value={false} 
-                                                    label={t("unpaid")} 
-                                                    className={itemsState.recentlyUnpaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
-                                                    icon={<CurrencySpan value={Items.getTotalPrice(itemsState.unpaidItems)} />} />
-                    <StyleBottomNavigationAction value={true} 
-                                                    label={t("paid")} 
-                                                    className={itemsState.recentlyPaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
-                                                    icon={<CurrencySpan value={Items.getTotalPrice(itemsState.paidItems)} />} />
-                    <StyleBottomNavigationAction value={null} 
-                                                    label={t("total")} 
-                                                    className={itemsState.recentlyPaidChangedItems.size > 0 || itemsState.recentlyUnpaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
-                                                    icon={<CurrencySpan value={Items.getTotalPrice(itemsState.allItems)} />} />
+                >
+                    <StyleBottomNavigationAction
+                        value={false}
+                        label={t("unpaid")}
+                        className={itemsState.recentlyUnpaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
+                        icon={<CurrencySpan value={Items.getTotalPrice(itemsState.unpaidItems)} />}
+                    />
+                    <StyleBottomNavigationAction 
+                        value={true}
+                        label={t("paid")}
+                        className={itemsState.recentlyPaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
+                        icon={<CurrencySpan value={Items.getTotalPrice(itemsState.paidItems)} />}
+                    />
+                    <StyleBottomNavigationAction
+                        value={null}
+                        label={t("total")}
+                        className={itemsState.recentlyPaidChangedItems.size > 0 || itemsState.recentlyUnpaidChangedItems.size > 0 || sessionClosedRecently ? "active" : ""}
+                        icon={<CurrencySpan value={Items.getTotalPrice(itemsState.allItems)} />}
+                    />
                 </BottomNavigation>
             </Box>
             <EditSessionItemModal
@@ -317,34 +367,6 @@ export const SessionViewer: React.FC<Props> = ({
         />
     </Box>;
 }
-
-interface StyledListItemProps {
-}
-const StyledListItem = styled(ListItem)<StyledListItemProps>(({ }) => ({
-    transition: "background-color 0.5s ease",
-    borderRadius: 0,
-    padding: "0 0 0 1rem",
-
-    "& .MuiListItemSecondaryAction-root": {
-        position: "unset",
-        top: "unset",
-        right: 0,
-        transform: "unset",
-        marginRight: "0.5rem"
-    },
-
-    "& .MuiListItemAvatar-root": {
-        minWidth: "34px",
-    },
-
-    "& .MuiListItemText-primary": {
-        fontSize: "0.8rem",
-    },
-
-    "&.active": {
-        backgroundColor: "rgba(25, 118, 210, 0.08);",
-    },
-}));
 
 const SessionItemComponent = (props : {
     readonly item: SessionItem | BaseSessionItem;
@@ -418,7 +440,34 @@ const SessionItemComponent = (props : {
     const item = props.item?.menuItemId != undefined ? props.item as BaseSessionItem : undefined;
     const name = item == undefined ? undefined : props.itemsMap.get(item?.menuItemId)?.name;
     return <>
-        <StyledListItem sx={{opacity: isItemDisabled() ? 0.6 : 1}}
+        <ListItem
+            sx={{
+                opacity: isItemDisabled() ? 0.6 : 1,
+
+                transition: "background-color 0.5s ease",
+                borderRadius: 0,
+                padding: "0 0 0 1rem",
+
+                "& .MuiListItemSecondaryAction-root": {
+                    position: "unset",
+                    top: "unset",
+                    right: 0,
+                    transform: "unset",
+                    marginRight: "0.5rem"
+                },
+
+                "& .MuiListItemAvatar-root": {
+                    minWidth: "34px",
+                },
+
+                "& .MuiListItemText-primary": {
+                    fontSize: "0.8rem",
+                },
+
+                "&.active": {
+                    backgroundColor: "rgba(25, 118, 210, 0.08);",
+                },
+            }}
             className={props.recentlyChanged ? "active" : ""}
             style={{
                 width: "100%", 
@@ -496,7 +545,7 @@ const SessionItemComponent = (props : {
                     </ButtonBase>
                 }
             />
-        </StyledListItem>
+        </ListItem>
         {
             modifiers.length > 0 &&
             <Collapse in={isOpen} timeout="auto" unmountOnExit>

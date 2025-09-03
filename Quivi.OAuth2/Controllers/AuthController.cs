@@ -16,7 +16,6 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Claims;
 using Quivi.Infrastructure.Extensions;
-using Quivi.Infrastructure.Roles;
 using System.Data;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
@@ -157,19 +156,14 @@ namespace Quivi.OAuth2.Controllers
             if (string.IsNullOrWhiteSpace(rawSubmerchantId))
                 return BadRequest();
 
-            var employee = await queryProcessor.Execute(new GetEmployeeByLoginAsyncQuery
-            {
-                Id = idConverter.FromPublicId(rawEmployeeId),
-                MerchantId = idConverter.FromPublicId(rawSubmerchantId),
-                PinCode = pinCode,
-            });
+            Domain.Entities.Pos.Employee? employee = await GetEmployee(rawEmployeeId, pinCode, rawSubmerchantId, tokenIdentity.IsAdmin());
             if (employee == null)
                 return BadRequest();
 
             var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, QuiviClaims.Email, QuiviClaims.Role);
             identity.AddClaims(tokenIdentity.Claims);
+            identity.SetClaim(QuiviClaims.EmployeeId, idConverter.ToPublicId(employee.Id));
 
-            identity.SetClaim(QuiviClaims.EmployeeId, rawEmployeeId);
             identity.SetDestinations(static claim => claim.Type switch
             {
                 _ => [Destinations.AccessToken]
@@ -179,6 +173,29 @@ namespace Quivi.OAuth2.Controllers
             principal.SetScopes(Scopes.OpenId, Scopes.Profile, Scopes.Email, Scopes.OfflineAccess);
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        private async Task<Domain.Entities.Pos.Employee?> GetEmployee(string rawEmployeeId, string pinCode, string rawSubmerchantId, bool isAdmin)
+        {
+            int merchantId = idConverter.FromPublicId(rawSubmerchantId);
+            int employeeId = idConverter.FromPublicId(rawEmployeeId);
+            if (isAdmin)
+            {
+                var employeesQuery = await queryProcessor.Execute(new GetEmployeesAsyncQuery
+                {
+                    MerchantIds = [merchantId],
+                    Ids = [employeeId],
+                    PageSize = 1,
+                });
+                return employeesQuery.SingleOrDefault();
+            }
+
+            return await queryProcessor.Execute(new GetEmployeeByLoginAsyncQuery
+            {
+                Id = employeeId,
+                MerchantId = merchantId,
+                PinCode = pinCode,
+            });
         }
 
         private async Task<IActionResult> ProcessIdentity(ApplicationUser user, Func<ClaimsIdentity, Task> identityFunc, string audience)
@@ -290,11 +307,10 @@ namespace Quivi.OAuth2.Controllers
             {
                 identity.SetClaim(QuiviClaims.ActivatedAt, merchant.ParentMerchant.TermsAndConditionsAcceptedDate.HasValue ? new DateTimeOffset(merchant.ParentMerchant.TermsAndConditionsAcceptedDate.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
                 identity.SetClaim(QuiviClaims.SubMerchantId, idConverter.ToPublicId(merchant.Id));
+                return;
             }
-            else
-            {
-                identity.SetClaim(QuiviClaims.ActivatedAt, merchant.TermsAndConditionsAcceptedDate.HasValue ? new DateTimeOffset(merchant.TermsAndConditionsAcceptedDate.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
-            }
+
+            identity.SetClaim(QuiviClaims.ActivatedAt, merchant.TermsAndConditionsAcceptedDate.HasValue ? new DateTimeOffset(merchant.TermsAndConditionsAcceptedDate.Value.ToUniversalTime()).ToUnixTimeSeconds() : null);
         }
 
         private async Task SetDefaultQuiviClaims(ClaimsIdentity identity, int userId)
@@ -312,11 +328,7 @@ namespace Quivi.OAuth2.Controllers
                 identity.SetClaim(QuiviClaims.SubMerchantId, idConverter.ToPublicId(subMerchant.Id));
         }
 
-        private bool IsAdmin(ClaimsIdentity identity)
-        {
-            string[] admin = [QuiviRoles.Admin, QuiviRoles.SuperAdmin];
-            return identity.Claims.Any(c => c.Type == QuiviClaims.Role && admin.Contains(c.Value));
-        }
+        private bool IsAdmin(ClaimsIdentity identity) => new ClaimsPrincipal(identity).IsAdmin();
 
         private async Task<Merchant> GetMerchantId(int userId, int merchantId, bool isAdmin)
         {

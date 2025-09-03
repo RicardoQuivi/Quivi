@@ -110,7 +110,8 @@ export const Pos = () => {
                 width: "100dvw",
                 overflow: "hidden",
                 display: "flex",
-                flexDirection: "column"
+                flexDirection: "column",
+                background: "var(--color-brand-50)"
             }}
         >
             <Box 
@@ -137,6 +138,27 @@ export const Pos = () => {
                 }}
                 spacing={2}
             >
+                {
+                    hasChannelsWithSessions &&
+                    isMobile == false &&
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 4,
+                        }}
+                        sx={{
+                            height: "100%",
+                        }}
+                    >
+                        <SessionViewer
+                            onTransferSessionClicked={onTransferSessionClicked}
+                            onEditItem={onEditItemPrice}
+                            onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
+                            localId={localId}
+                        />
+                    </Grid>
+                }
+
                 <Grid 
                     size={{
                         xs: 12, 
@@ -164,8 +186,8 @@ export const Pos = () => {
                             flex: 1,
                             marginTop: isMobile ? 0 : "1rem",
                             order: isMobile ? -1 : 0,
-                            padding: isMobile ? "0.5rem 0.5rem 0 0.5rem" : 0,
-                            overflowY: "auto",
+                            padding: isMobile ? "0.5rem" : 0,
+                            overflowY: "hidden",
                         }}
                     >
                         {
@@ -220,26 +242,6 @@ export const Pos = () => {
                         }
                     </Box>
                 </Grid>
-
-                {
-                    hasChannelsWithSessions && isMobile == false &&
-                    <Grid
-                        size={{
-                            xs: 12,
-                            sm: 4,
-                        }}
-                        sx={{
-                            height: "100%",
-                        }}
-                    >
-                        <SessionViewer
-                            onTransferSessionClicked={onTransferSessionClicked}
-                            onEditItem={onEditItemPrice}
-                            onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
-                            localId={localId}
-                        />
-                    </Grid>
-                }
             </Grid>
 
             <TransferSessionModal

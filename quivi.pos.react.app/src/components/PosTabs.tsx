@@ -157,8 +157,6 @@ export const PosTabs = (props: Props) => {
                 bgcolor: 'var(--color-brand-950)',
                 height: "auto",
                 padding: "0.75rem 0",
-                position: "fixed",
-                bottom: 0,
 
                 "& .MuiButtonBase-root": {
                     color: "rgba(255, 255, 255, 0.7)",

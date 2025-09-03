@@ -36,6 +36,9 @@ import { ReactComponent as PrinterIcon } from "./printer.svg?react";
 import { ReactComponent as DownloadIcon } from "./download.svg?react";
 import { ReactComponent as UnitedKingdomFlagIcon } from "./unitedkingdomflag.svg?react";
 import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
+import { ReactComponent as OvenIcon } from "./oven.svg?react";
+import { ReactComponent as PercentIcon } from "./percent.svg?react";
+import { ReactComponent as MoneyBillIcon } from "./money-bill.svg?react";
 
 export {
     ExitIcon,
@@ -76,4 +79,7 @@ export {
     DownloadIcon,
     PortugalFlagIcon,
     UnitedKingdomFlagIcon,
+    OvenIcon,
+    PercentIcon,
+    MoneyBillIcon,
 };

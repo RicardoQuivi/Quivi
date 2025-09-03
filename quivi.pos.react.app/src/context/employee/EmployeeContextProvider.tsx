@@ -43,7 +43,7 @@ const getState = () => {
     return data;
 }
 
-const getLogoutTimeout = (employee: Employee | undefined, defaultTimeout: number): number => {
+const getLogoutTimeout = (employee: Employee | undefined, defaultTimeout?: number): number | undefined => {
     if(employee?.inactivityLogoutTimeout == undefined) {
         return defaultTimeout;
     }
@@ -92,7 +92,8 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
         }
         return loggedEmployeeQuery.data[0];
     }, [loggedEmployeeQuery.data])
-    const activity = useUserInactivity({ timeout: getLogoutTimeout(loggedEmployeeQuery.data.length > 0 ? loggedEmployeeQuery.data[0] : undefined, 2 * 60 * 1000)});
+
+    const activity = useUserInactivity({ timeout: getLogoutTimeout(loggedEmployeeQuery.data.length > 0 ? loggedEmployeeQuery.data[0] : undefined)});
 
     const login = async (employeeId: string, pinCode: string) => auth.tokenProvider(async token => {
         if(auth.principal == undefined) {
