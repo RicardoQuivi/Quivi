@@ -111,12 +111,12 @@ export const Pos = () => {
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                background: "var(--color-brand-50)"
+                background: "var(--color-brand-50)",
             }}
         >
             <Box 
                 sx={{
-                    flex: "0 0 auto"
+                    flex: "0 0 auto",
                 }}
             >
                 <PosAppBar
@@ -177,7 +177,7 @@ export const Pos = () => {
                         tab={activeTab}
                         localId={localId}
                         sx={{
-                            flex: "0 0 auto"
+                            flex: "0 0 auto",
                         }}
                     />
 

@@ -216,12 +216,14 @@ export const ChannelsOverview: React.FC<Props> = ({
                                         size={{
                                             xs: 6,
                                             sm: 3,
-                                            md: 2,
+                                            md: 3,
+                                            lg: 2,
+                                            xl: 2,
                                         }}
                                     >
                                         <ChannelCard
                                             cardProps={{
-                                                backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.1)" : undefined,
+                                                backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.3)" : undefined,
                                                 borderColor: "red"
                                             }}
                                             subtitle={
@@ -316,8 +318,21 @@ const ChannelCard = (props: {
     const permissionsQuery = useAllowedActions(props.channel?.id);
 
     return (
-        <Card sx={props.cardProps} elevation={8}>
-            <CardActionArea onClick={props.onCardClicked}>
+        <Card
+            sx={{
+                ...(props.cardProps ?? {}),
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }}
+            elevation={8}
+        >
+            <CardActionArea
+                onClick={props.onCardClicked}
+                sx={{
+                    flex: 1,
+                }}
+            >
                 <Grid
                     container
                 >
@@ -356,7 +371,8 @@ const ChannelCard = (props: {
                     sx={{
                         display: "flex",
                         flexDirection: "row",
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
+                        flex: 0,
                     }}
                 >
                     <Tooltip title={t("openLink")}>
