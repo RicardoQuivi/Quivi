@@ -94,50 +94,29 @@ export const NoEmployeeLayout = (props: Props) => {
                 </Grid>
 
                 {/* Right side graphic panel */}
-                <RightSidePanel />
-                {/* <Grid
-                size={{lg:6}}
-                sx={{
-                    display: { 
-                        xs: 'none',
-                        md: 'flex',
-                        lg: 'flex' 
-                    },
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                    bgcolor: 'var(--color-brand-950)',
-                }}
-            >
-                <Box
-                    position="relative"
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    zIndex={1}
+                <Grid
+                    size={{ 
+                        xs: 0,
+                        sm: 0,
+                        md: 6,
+                        lg: 6,
+                    }}
+                    sx={{
+                        display: {
+                            xs: 'none',
+                            sm: 'none',
+                            md: 'flex',
+                            lg: 'flex',
+                        },
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                        bgcolor: 'var(--color-brand-950)',
+                    }}
                 >
-                    <GridShape />
-                    <Box display="flex" flexDirection="column" alignItems="center" maxWidth="xs">
-                        <Box
-                            sx={{
-                                marginBottom: '1rem',
-                                display: 'block',
-                            }}
-                        >
-                            <QuiviFullIcon height="auto" width={231} /> 
-                        </Box>
-                        <Box
-                            textAlign="center"
-                            sx={{
-                                color: 'grey.400',
-                            }}
-                        >
-                            {t("quivi.product.description")}
-                        </Box>
-                    </Box>
-                </Box>
-            </Grid> */}
+                    <RightSidePanel />
+                </Grid>
             </Grid>
 
             <FloatingLanguageButton />
@@ -149,102 +128,80 @@ const RightSidePanel = () => {
     const { t } = useTranslation();
 
     return (
-        <Grid
-            size={{ 
-                xs: 0,
-                sm: 0,
-                md: 6,
-                lg: 6,
-            }}
+        <Box
             sx={{
-                display: {
-                    xs: 'none',
-                    sm: 'none',
-                    md: 'flex',
-                    lg: 'flex',
-                },
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
-                height: '100%',
-                bgcolor: 'var(--color-brand-950)',
+                position: 'relative',
+                zIndex: 1,
+                width: "100%",
             }}
         >
+            {/* Background grid image - top right */}
             <Box
                 sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                    zIndex: 1,
-                    width: "100%",
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    zIndex: -1,
+                    width: '50%',
+                    transform: "translate(0, -50%)",
                 }}
             >
-                {/* Background grid image - top right */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        bottom: 0,
-                        right: 0,
-                        zIndex: -1,
-                        width: '50%',
-                        transform: "translate(0, -50%)",
-                    }}
-                >
-                    <img
-                        alt="grid"
-                        src="/images/shape/grid-01.svg"
-                        style={{ width: '100%' }}
-                    />
-                </Box>
-
-                {/* Background grid image - bottom left, rotated */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        zIndex: -1,
-                        width: '50%',
-                        transform: 'rotate(180deg) translate(0, -50%)',
-                    }}
-                >
-                    <img 
-                        alt="grid"
-                        src="/images/shape/grid-01.svg"
-                        style={{
-                            width: '100%',
-                        }}
-                    />
-                </Box>
-
-                {/* Content */}
-                <Box 
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Box 
-                        sx={{ mb: 2 }}
-                    >
-                        <QuiviFullIcon height="auto" width={231} />
-                    </Box>
-
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            textAlign: 'center',
-                            color: 'grey.400',
-                        }}
-                    >
-                            {t("quivi.product.description")}
-                    </Typography>
-                </Box>
+                <img
+                    alt="grid"
+                    src="/images/shape/grid-01.svg"
+                    style={{ width: '100%' }}
+                />
             </Box>
-        </Grid>
+
+            {/* Background grid image - bottom left, rotated */}
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    zIndex: -1,
+                    width: '50%',
+                    transform: 'rotate(180deg) translate(0, -50%)',
+                }}
+            >
+                <img 
+                    alt="grid"
+                    src="/images/shape/grid-01.svg"
+                    style={{
+                        width: '100%',
+                    }}
+                />
+            </Box>
+
+            {/* Content */}
+            <Box 
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Box 
+                    sx={{ mb: 2 }}
+                >
+                    <QuiviFullIcon height="auto" width={231} />
+                </Box>
+
+                <Typography
+                    variant="body1"
+                    sx={{
+                        textAlign: 'center',
+                        color: 'grey.400',
+                    }}
+                >
+                        {t("quivi.product.description")}
+                </Typography>
+            </Box>
+        </Box>
     );
 }

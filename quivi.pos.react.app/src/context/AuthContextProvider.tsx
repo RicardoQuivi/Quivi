@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthenticationError, useAuthApi } from '../hooks/api/useAuthApi';
 import { UnauthorizedException } from '../hooks/api/exceptions/UnauthorizedException';
 import { HttpClient, HttpHelper } from '../helpers/httpClient';
+import { AuthResponse } from '../hooks/api/Dtos/auth/AuthResponse';
 
 const TOKENS = "tokens";
 
@@ -39,6 +40,12 @@ const getState = () => {
     return data;
 }
 
+let refreshPromise: {
+    promise: Promise<AuthResponse>,
+    refreshToken: string,
+} | undefined = undefined;
+
+
 interface Principal {
     readonly merchantId: string;
     readonly subMerchantId: string;
@@ -70,64 +77,86 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
         setState(getState());
     }
-    
-    const guard = async <TResponse = void>(call: (token: string) => Promise<TResponse>) => {
-        if(state == undefined) {
-            throw new UnauthorizedException(); 
-        }
 
-        try {
-            return await call(state.accessToken);
-        } catch (e) {
-            if(e instanceof UnauthorizedException) {
-                try {
-                    console.debug("Refreshing JWT!");
-                    const refreshResponse = await authApi.jwtRefresh({
-                        refreshToken: state.refreshToken,
-                    });
-                    console.debug("Refreshing JWT response:", refreshResponse)
-                    saveTokens({
-                        accessToken: refreshResponse.access_token,
-                        refreshToken: refreshResponse.refresh_token,
-                    });
-                    setState(getState);
-                    const response = await call(refreshResponse.access_token);
-                    return response;
-                } catch (e2) {
-                    if(e2 instanceof AuthenticationError) {
-                        saveTokens(undefined);
-                        setState(getState);
-                        throw e;
-                    }
-                    throw e2;
+    const httpClient = useMemo(() => {
+        const refreshToken = async (refreshToken: string) => {
+            const promise = await navigator.locks.request("AuthContextProvider.RefreshToken.Lock", () => {
+                if(state == undefined) {
+                    throw new AuthenticationError("No refresh token");
                 }
-            }
-            throw e;
-        }
-    }
 
-    const httpClient = useMemo<HttpClient>(() => ({
-        get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
-            ...(headers ?? {}),
-            "Authorization": `Bearer ${token}`,
-        })),
-        post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
-            ...(headers ?? {}),
-            "Authorization": `Bearer ${token}`,
-        })),
-        put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
-            ...(headers ?? {}),
-            "Authorization": `Bearer ${token}`,
-        })),
-        patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
-            ...(headers ?? {}),
-            "Authorization": `Bearer ${token}`,
-        })),
-        delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
-            ...(headers ?? {}),
-            "Authorization": `Bearer ${token}`,
-        })),
-    }), [state?.accessToken, state?.refreshToken])
+                if (refreshPromise != undefined && refreshPromise.refreshToken == refreshToken) {
+                    return refreshPromise.promise;
+                }
+                
+                console.debug("Merchant refreshing JWT for token: ", refreshToken);
+                const promise = authApi.jwtRefresh({
+                    refreshToken: refreshToken,
+                });
+                refreshPromise = {
+                    promise: promise,
+                    refreshToken: refreshToken,
+                }
+                return promise;
+            });
+            return await promise;
+        }
+        
+        const guard = async <TResponse = void>(call: (token: string) => Promise<TResponse>) => {
+            if(state == undefined) {
+                throw new UnauthorizedException(); 
+            }
+
+            try {
+                return await call(state.accessToken);
+            } catch (e) {
+                if(e instanceof UnauthorizedException) {
+                    try {
+                        const refreshResponse = await refreshToken(state.refreshToken);
+                        saveTokens({
+                            accessToken: refreshResponse.access_token,
+                            refreshToken: refreshResponse.refresh_token,
+                        });
+                        setState(getState);
+                        const response = await call(refreshResponse.access_token);
+                        return response;
+                    } catch (e2) {
+                        if(e2 instanceof AuthenticationError) {
+                            saveTokens(undefined);
+                            setState(getState);
+                            throw e;
+                        }
+                        throw e2;
+                    }
+                }
+                throw e;
+            }
+        }
+
+        return {
+            get: async <TResponse = void>(url: string, headers?: HeadersInit) => guard(token => HttpHelper.Client.get<TResponse>(url, {
+                ...(headers ?? {}),
+                "Authorization": `Bearer ${token}`,
+            })),
+            post: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.post<TResponse>(url, requestData, {
+                ...(headers ?? {}),
+                "Authorization": `Bearer ${token}`,
+            })),
+            put: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.put<TResponse>(url, requestData, {
+                ...(headers ?? {}),
+                "Authorization": `Bearer ${token}`,
+            })),
+            patch: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.patch<TResponse>(url, requestData, {
+                ...(headers ?? {}),
+                "Authorization": `Bearer ${token}`,
+            })),
+            delete: async <TResponse = void>(url: string, requestData?: any, headers?: HeadersInit) => guard(token => HttpHelper.Client.delete<TResponse>(url, requestData, {
+                ...(headers ?? {}),
+                "Authorization": `Bearer ${token}`,
+            })),
+            guard,
+        }
+    }, [state?.accessToken, state?.refreshToken])
 
     return (
         <AuthContext.Provider value={{
@@ -139,7 +168,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 isAdmin: state.isAdmin ?? false,
             },
             client: httpClient,
-            tokenProvider: guard,
+            tokenProvider: httpClient.guard,
         }}>
             {children}
         </AuthContext.Provider>
