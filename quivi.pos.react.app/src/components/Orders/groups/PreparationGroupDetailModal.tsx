@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Alert, Box, Checkbox, Divider, Grid, keyframes, Skeleton, Stack, styled, TextField, Typography } from "@mui/material";
+import { Alert, Box, Checkbox, Divider, Grid, IconButton, keyframes, Skeleton, Stack, styled, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { BasePreparationGroupItem, PreparationGroup, PreparationGroupItem } from "../../../hooks/api/Dtos/preparationgroups/PreparationGroup";
 import { Local } from "../../../hooks/api/Dtos/locals/Local";
@@ -92,27 +92,53 @@ export const PreparationGroupDetailModal = (props: GroupDetailModalProps) => {
             return <></>
         }
 
-        return <Box style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-            <Box style={{display: "flex", flexDirection: "column"}}>
-                <span>{props.group.id}</span>
-            </Box>
-
-            <Box style={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", flex: "1 1 auto", flexWrap: "wrap"}}>
-                <h3>
+        return <Box
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+            }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignContent: "center",
+                    flex: 1,
+                    flexWrap: "wrap",
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: "bold",
+                    }}
+                >
                 {
                     channel == undefined || profile == undefined
                     ?
                     <Skeleton animation="wave" sx={{width: "90%", height: "100%"}} />
                     :
-                    <b>{profile.name} {channel.name}</b>
+                    `${profile.name} ${channel.name}`
                 }
-                </h3>
+                </Typography>
             </Box>
 
-            <Box style={{display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "center", alignContent: "center", gap: 4}}>
-                <Box onClick={props.onClose} style={{cursor: "pointer"}}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignContent: "center",
+                    gap: 4,
+                }}
+            >
+                <IconButton onClick={props.onClose}>
                     <CloseIcon />
-                </Box>
+                </IconButton>
             </Box>
         </Box>
     }

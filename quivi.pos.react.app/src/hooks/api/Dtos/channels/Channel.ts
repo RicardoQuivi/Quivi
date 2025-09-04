@@ -3,4 +3,5 @@ export interface Channel {
     readonly name: string;
     readonly url: string;
     readonly channelProfileId: string;
+    readonly isDeleted: boolean;
 }

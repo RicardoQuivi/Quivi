@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { PinCodeInput } from "./PinCodeInput";
 import { Alert, Fade, Step, StepLabel, Stepper, } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Employee } from "../../hooks/api/Dtos/employees/Employee";
 import { useEmployeesApi } from "../../hooks/api/useEmployeesApi";
 import { useEmployeeManager } from "../../context/employee/EmployeeContextProvider";
+import { LoadingAnimation } from "../../components/Loadings/LoadingAnimation";
 
 enum PinCodeStep {
     InsertingPinCode,
@@ -13,7 +13,7 @@ enum PinCodeStep {
 }
 
 interface Props {
-    readonly employee: Employee;
+    readonly employeeId: string;
     readonly onComplete: (error: boolean) => any; 
 }
 export const DefineEmployeePinCode = (props: Props) => {
@@ -108,10 +108,10 @@ export const DefineEmployeePinCode = (props: Props) => {
         try {
             setIsLoading(true);
             await api.updatePinCode({
-                id: props.employee.id,
+                id: props.employeeId,
                 pincode: pinCode,
             });
-            await employeeManager.login(props.employee.id, pinCode);
+            await employeeManager.login(props.employeeId, pinCode);
             props.onComplete(false);
         } catch {
             props.onComplete(true);
@@ -176,6 +176,6 @@ export const DefineEmployeePinCode = (props: Props) => {
         </Fade>
         { step == PinCodeStep.InsertingPinCode && <PinCodeInput pin={pinCode} onChange={(p) => setPinCode(p)} onDigitPress={onDigitPress} /> }
         { step == PinCodeStep.InsertingConfirmation && <PinCodeInput pin={confirmationPinCode} onChange={(p) => setConfirmationPinCode(p)} onDigitPress={onDigitPress} loading={isLoading} /> }
-        {/* { step == PinCodeStep.Loading && <LoadingAnimation /> } */}
+        { step == PinCodeStep.Loading && <LoadingAnimation /> }
     </>
 }

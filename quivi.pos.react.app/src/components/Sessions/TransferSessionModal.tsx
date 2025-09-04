@@ -444,60 +444,94 @@ export const TransferSessionModal = ({
                     isLoading
                     ?
                     <Grid size={12}>
-                        <Box sx={{p: 3, display: "flex", flexDirection: "column", justifyContent: "stretch", alignItems: "stretch", gap: 3}}>
+                        <Box
+                            sx={{
+                                p: 3,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "stretch",
+                                alignItems: "stretch",
+                                gap: 3
+                            }}
+                        >
                             <LoadingAnimation />
                         </Box>
                     </Grid>
                     :
                     <>
                         <Grid size={12}>
-                            <Box sx={{p: 3, display: "flex", flexDirection: "column", justifyContent: "stretch", alignItems: "stretch", gap: 3}}>
-                                {
-                                    state.sourceOptions.data.length > 0 && state.targetOptions.data.length > 0 &&
-                                    <Box sx={{display: "flex", flexDirection: "row"}}>
-                                        {
-                                            <Dropdown
-                                                label={t("source")}
-                                                selectedItem={state.sourceOptions.selected}
-                                                items={state.sourceOptions.data}
-                                                isLoading={isLoading}
-                                                onSelectionChanged={selection => setState(s => ({
-                                                    ...s,
-                                                    sourceOptions: {
-                                                        ...s.sourceOptions,
-                                                        selected: selection,
-                                                    }
-                                                }))}
-                                                channelProfilesMap={profilesMap}
-                                            />
-                                        }
-                                        <ButtonBase disabled sx={{margin: "0.5rem"}}>
+                            {
+                                state.sourceOptions.data.length > 0 && state.targetOptions.data.length > 0 &&
+                                <Grid container>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            sm: "grow",
+                                        }}
+                                    >
+                                        <Dropdown
+                                            label={t("source")}
+                                            selectedItem={state.sourceOptions.selected}
+                                            items={state.sourceOptions.data}
+                                            isLoading={isLoading}
+                                            onSelectionChanged={selection => setState(s => ({
+                                                ...s,
+                                                sourceOptions: {
+                                                    ...s.sourceOptions,
+                                                    selected: selection,
+                                                }
+                                            }))}
+                                            channelProfilesMap={profilesMap}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            sm: "auto",
+                                        }}
+                                        alignContent="center"
+                                        justifyContent="center"
+                                        display="flex"
+                                        sx={{
+                                            transform: {
+                                                xs: "rotate(90deg)",
+                                                sm: "none"
+                                            }
+                                        }}
+                                    >
+                                        <ButtonBase
+                                            disabled
+                                            sx={{
+                                                margin: "0.5rem",
+                                            }}
+                                        >
                                             <RightArrowIcon height={24} width={24} />
                                         </ButtonBase>
-                                        {
-                                            <Dropdown
-                                                label={t("target")}
-                                                selectedItem={state.targetOptions.selected}
-                                                items={state.targetOptions.data}
-                                                isLoading={isLoading}
-                                                onSelectionChanged={selection => setState(s => ({
-                                                    ...s,
-                                                    targetOptions: {
-                                                        ...s.targetOptions,
-                                                        selected: selection,
-                                                    }
-                                                }))}
-                                                channelProfilesMap={profilesMap}
-                                            />
-                                        }
-                                    </Box>
-                                }
-                                {
-                                    notAllowedReason.map((r, i) => <HighlightMessage messageType={MessageType.warning} key={i}>
-                                        {r}
-                                    </HighlightMessage>)
-                                }
-                            </Box>
+                                    </Grid>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            sm: "grow",
+                                        }}
+                                    >
+                                        <Dropdown
+                                            label={t("target")}
+                                            selectedItem={state.targetOptions.selected}
+                                            items={state.targetOptions.data}
+                                            isLoading={isLoading}
+                                            onSelectionChanged={selection => setState(s => ({
+                                                ...s,
+                                                targetOptions: {
+                                                    ...s.targetOptions,
+                                                    selected: selection,
+                                                }
+                                            }))}
+                                            channelProfilesMap={profilesMap}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            }
+                            { notAllowedReason.map((r, i) => <HighlightMessage messageType={MessageType.warning} key={i} children={r} />) }
                         </Grid>
                         {
                             isLoadingAnything
@@ -507,23 +541,21 @@ export const TransferSessionModal = ({
                             (
                                 notAllowedReason.length == 0 &&
                                 <Grid size={12}>
-                                    <Box sx={{p: 3, display: "flex", flexDirection: "column", justifyContent: "stretch", alignItems: "stretch", gap: 3}}>
-                                        <QuantifiedItemPicker
-                                            unselectedItems={state.unselectedItems}
-                                            selectedItems={state.selectedItems}
-                                            getItemName={(item) => {
-                                                const menuItem = itemsMap.get(item.menuItemId);
-                                                if(menuItem == undefined) {
-                                                    return <Skeleton animation="wave" />
-                                                }
-                                                return menuItem.name;
-                                            }}
-                                            getItemKey={(item) => item.id}
-                                            unselectedLabel={getFromSourceItemsLabel()}
-                                            selectedLabel={getToTargetItemsLabel()}
-                                            onChanged={onItemsChanged}
-                                        />
-                                    </Box>
+                                    <QuantifiedItemPicker
+                                        unselectedItems={state.unselectedItems}
+                                        selectedItems={state.selectedItems}
+                                        getItemName={(item) => {
+                                            const menuItem = itemsMap.get(item.menuItemId);
+                                            if(menuItem == undefined) {
+                                                return <Skeleton animation="wave" />
+                                            }
+                                            return menuItem.name;
+                                        }}
+                                        getItemKey={(item) => item.id}
+                                        unselectedLabel={getFromSourceItemsLabel()}
+                                        selectedLabel={getToTargetItemsLabel()}
+                                        onChanged={onItemsChanged}
+                                    />
                                 </Grid>
                             )
                         }
@@ -579,7 +611,6 @@ const Dropdown = (props: {
             <Autocomplete
                 options={props.items}
                 groupBy={(channel) => channel.channelProfileId}
-                //getOptionLabel={(channel) => getChannelName(channel)}
                 renderValue={getChannelName}
                 renderOption={(props, option) => (
                     <li {...props}>

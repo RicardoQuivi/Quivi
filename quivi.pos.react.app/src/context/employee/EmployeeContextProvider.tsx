@@ -16,10 +16,20 @@ interface Tokens {
     readonly refreshToken: string;
 }
 
-const saveTokens = (token: Tokens | undefined) => {
+const saveTokens = (token: Tokens | undefined, previousTokens?: Tokens | undefined) => {
     if(token == undefined) {
         localStorage.removeItem(EMPLOYEE_TOKENS);
         return;
+    }
+
+    if(previousTokens != undefined) {
+        const tokens = getTokens();
+        if(tokens?.accessToken != previousTokens.accessToken) {
+            return;
+        }
+        if(tokens?.refreshToken != previousTokens.refreshToken) {
+            return;
+        }
     }
     localStorage.setItem(EMPLOYEE_TOKENS, JSON.stringify(token));
 }
@@ -154,6 +164,13 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
                 console.debug("Employee refreshing JWT for token: ", refreshToken);
                 const promise = authApi.jwtRefresh({
                     refreshToken: refreshToken,
+                }).then(r => {
+                    saveTokens({
+                        accessToken: r.access_token,
+                        refreshToken: r.refresh_token,
+                    }, state);
+                    setState(getState);
+                    return r;
                 });
                 refreshPromise = {
                     promise: promise,
@@ -175,11 +192,6 @@ export const EmployeeProvider = ({ children }: { children: ReactNode }) => {
                 if(e instanceof UnauthorizedException) {
                     try {
                         const refreshResponse = await refreshToken(state.refreshToken);
-                        saveTokens({
-                            accessToken: refreshResponse.access_token,
-                            refreshToken: refreshResponse.refresh_token,
-                        });
-                        setState(getState);
                         const response = await call(refreshResponse.access_token);
                         return response;
                     } catch (e2) {

@@ -18,5 +18,6 @@
         public bool HasPinCode { get; init; }
         public TimeSpan? InactivityLogoutTimeout { get; init; }
         public required IEnumerable<EmployeeRestriction> Restrictions { get; init; }
+        public bool IsDeleted { get; init; }
     }
 }

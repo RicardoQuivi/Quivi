@@ -109,26 +109,24 @@ export const SessionAdditionalFieldsModal = (props: Props) => {
         initialStatus: false,
     });
 
-    const getTitle = () => {
-        return <Box sx={{display: "flex", justifyContent: "center"}}>
-            {
-                channel == undefined || profile == undefined
-                ?
-                <>
-                    <Skeleton animation="wave" sx={{ width: 80, display: "inline-block" }} />&nbsp; - {t("sessionInformation")}
-                </>
-                :
-                <>
-                    {profile.name} {channel.name} - {t("sessionInformation")}
-                </>
-            }
-        </Box>
-    }
-
     return (
         <CustomModal 
             isOpen={props.isOpen}
-            title={getTitle()}
+            title={(
+            <Box sx={{display: "flex", justifyContent: "center"}}>
+                {
+                    channel == undefined || profile == undefined
+                    ?
+                    <>
+                        <Skeleton animation="wave" sx={{ width: 80, display: "inline-block" }} />&nbsp; - {t("sessionInformation")}
+                    </>
+                    :
+                    <>
+                        {profile.name} {channel.name} - {t("sessionInformation")}
+                    </>
+                }
+            </Box>
+            )}
             onClose={props.onClose}
             hideClose={props.additionalInfo.length == 0}
             disableCloseOutsideModal={props.additionalInfo.length == 0}
@@ -152,7 +150,16 @@ export const SessionAdditionalFieldsModal = (props: Props) => {
             <Grid container spacing={2} justifyContent="center">
             {
                 props.fields.map(f => (
-                    <Grid key={f.id} size="grow">
+                    <Grid
+                        key={f.id}
+                        size={{
+                            xs: 12,
+                            sm: 12,
+                            md: "grow",
+                            lg: "grow",
+                            xl: "grow"
+                        }}
+                    >
                         <ConfigurableFieldInput
                             field={f}
                             onChange={(v) => {

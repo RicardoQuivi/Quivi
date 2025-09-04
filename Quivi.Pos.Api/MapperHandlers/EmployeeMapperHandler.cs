@@ -24,6 +24,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 HasPinCode = string.IsNullOrWhiteSpace(model.PinCodeHash) == false,
                 InactivityLogoutTimeout = model.LogoutInactivity,
                 Restrictions = mapper.Map<IEnumerable<Dtos.EmployeeRestriction>>(model.Restrictions),
+                IsDeleted = model.DeletedDate.HasValue,
             };
         }
     }

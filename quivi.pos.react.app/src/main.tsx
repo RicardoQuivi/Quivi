@@ -13,7 +13,19 @@ import { EmployeeProvider } from './context/employee/EmployeeContextProvider.tsx
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#1C3A11'
+            main: '#1C3A11',
+            light: '#F0F8EE',
+
+            "50": "#F0F8EE",
+            "100": "#E0F1DB",
+            "200": "#C8E6C9",
+            "300": "#A4D98F",
+            "400": "#91CF6D",
+            "500": "#7AC943",
+            "600": "#65B33B",
+            "700": "#2F631C",
+            "800": "#3B7D22",
+            "900": "#E0F1DB",
         }
     }
 });

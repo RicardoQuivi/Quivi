@@ -26,6 +26,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 Name = model.Identifier,
                 Url = appHostsSettings.GuestsApp.CombineUrl($"/c/{id}"),
                 ChannelProfileId = idConverter.ToPublicId(model.ChannelProfileId),
+                IsDeleted = model.DeletedDate.HasValue,
             };
         }
     }

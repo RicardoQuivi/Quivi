@@ -6,6 +6,7 @@ import { MenuItem } from "../hooks/api/Dtos/menuitems/MenuItem";
 import { MenuCategory } from "../hooks/api/Dtos/menucategories/MenuCategory";
 import { useMenuCategoriesQuery } from "../hooks/queries/implementations/useMenuCategoriesQuery";
 import { useMenuItemsQuery } from "../hooks/queries/implementations/useMenuItemsQuery";
+import { useGenerateImage } from "../hooks/useGenerateImage";
 
 const ListItem = (props: {
     readonly image?: string;
@@ -16,18 +17,37 @@ const ListItem = (props: {
 }) => {
     const truncateName = (original: string) => original.length > 84 ? `${original.substring(0, 84)}...` : original;
 
+    const generatedImageUrl = useGenerateImage({
+        name: props.image == undefined ?  props.name : undefined,
+        width: 400,
+        height: 300,
+    })
+
+    const imageUrl = useMemo(() => {
+        if(props.image == undefined) {
+            return generatedImageUrl;
+        }
+        return props.image.replace("_full.", "_thumbnail.");
+    }, [props.image, generatedImageUrl])
+
     return (
         <ButtonBase onClick={props.onClick}>
-            <ImageListItem style={{cursor: "pointer", height: "100%", width: "100%"}}>
+            <ImageListItem
+                sx={{
+                    cursor: "pointer",
+                    height: "100%",
+                    width: "100%",
+                }}
+            >
                 {
-                    props.image == null
+                    imageUrl == undefined
                     ?
                     <Skeleton variant="rounded" height={200} animation="wave"/>
                     :
-                    <img src={props.image?.replace("_full.", "_thumbnail.")} alt={props.name} loading="lazy" style={{aspectRatio: "4/3"}}/>
+                    <img src={imageUrl} alt={props.name} loading="lazy" style={{ aspectRatio: "4/3"}}/>
                 }
                 <ImageListItemBar
-                    title={props.name == null ? <Skeleton animation="wave" /> : truncateName(props.name)}
+                    title={props.name == undefined ? <Skeleton animation="wave" /> : truncateName(props.name)}
                     sx={{
                         height: "100%",
                         userSelect: "none",
@@ -84,7 +104,6 @@ export const ItemsSelector: React.FC<Props> = ({
         return r;
     }, new Map<string, MenuCategory>()), [categoriesQuery.data])
 
-    const [defaultPhotoPath, setDefaultPhotoPath] = useState<string>("");
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [_selectedItemWithModifier, setSelectedItemWithModifier] = useState<MenuItem>();
 
@@ -103,25 +122,7 @@ export const ItemsSelector: React.FC<Props> = ({
         pageSize: 64,
     });
 
-    useEffect(() => setCurrentPage(0), [selectedCategory])
-    useEffect(() => setDefaultPhotoPath(""), []);
-
-    useEffect(() => {
-        if(categoriesQuery.isFirstLoading) {
-            return;
-        }
-
-        if(categoriesQuery.data.length == 0) {
-            return;
-        }
-        
-        if(selectedCategory != undefined) {
-            return;
-        }
-
-        onCategoryChanged(categoriesQuery.data[0]);
-    }, [categoriesQuery.isFirstLoading])
-
+    useEffect(() => setCurrentPage(0), [selectedCategory])    
     useEffect(() => {
         if (categoriesQuery.isFirstLoading || !categoriesQuery.data.length || !search?.length) {
             return;
@@ -159,24 +160,45 @@ export const ItemsSelector: React.FC<Props> = ({
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
-                rowGap: 1,
+
+                '& > *': {
+                    marginBottom: 1,
+                },
+
+                '& > *:nth-last-of-type(-n+2)': {
+                    marginBottom: 0,
+                }
             }}
         >
             <Tabs 
                 variant="scrollable" 
                 allowScrollButtonsMobile 
-                scrollButtons="auto" 
+                scrollButtons="auto"
                 value={categoriesQuery.isFirstLoading ? false : selectedCategory?.id ?? ""} 
-                onChange={onCategorySelected} 
+                onChange={onCategorySelected}
                 sx={{
                     flex: "0 0 auto",
 
                     paddingTop: 0,
                     paddingBottom: 0,
+                    minHeight: {
+                        xs: 35,
+                        sm: 48,
+                    },
 
-                    "& .MuiTabRoot": {
-                        paddingTop: "0.5rem",
-                        paddingBottom: "0.5rem",
+                    "& .MuiTab-root": {
+                        minHeight: {
+                            xs: 35,
+                            sm: 48,
+                        },
+                        paddingTop: {
+                            xs: "0.25rem",
+                            sm: "0.5rem",
+                        },
+                        paddingBottom: {
+                            xs: "0.25rem",
+                            sm: "0.5rem",
+                        },
                     },
 
                     "& > .MuiTabScrollButton-horizontal:first-of-type": {
@@ -205,11 +227,12 @@ export const ItemsSelector: React.FC<Props> = ({
                                         />)
                 :
                 [
-                    ...categoriesQuery.data.map(a => <Tab label={a.name} value={a.id} key={a.id} />), 
                     <Tab label={t("all")} value="" key="All" />,
+                    ...categoriesQuery.data.map(a => <Tab label={a.name} value={a.id} key={a.id} />), 
                 ]
             }
             </Tabs>
+
             <Box
                 sx={{
                     flex: "1 1 auto",
@@ -219,7 +242,7 @@ export const ItemsSelector: React.FC<Props> = ({
             >
                 <ImageList
                     sx={{
-                        mt: "1rem",
+                        mt: 0,
                         mb: 0,
                     }}
                     cols={xs ? 2 : (sm ? 3 : isMobile ? 4 : 6)}
@@ -233,7 +256,7 @@ export const ItemsSelector: React.FC<Props> = ({
                                 <ListItem
                                     key={item.id}
                                     isMobile={isMobile}
-                                    image={item.imageUrl != undefined ? item.imageUrl : defaultPhotoPath}
+                                    image={item.imageUrl}
                                     name={item.name}
                                     price={item.price}
                                     onClick={() => onItemClicked(item)}

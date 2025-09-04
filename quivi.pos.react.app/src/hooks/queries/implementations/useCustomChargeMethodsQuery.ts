@@ -16,7 +16,7 @@ export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsReque
             ids: request?.ids == undefined ? undefined : Array.from(new Set(request.ids)),
         },
         getId: (e: CustomChargeMethod) => e.id,
-        query: r => api.get(r),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

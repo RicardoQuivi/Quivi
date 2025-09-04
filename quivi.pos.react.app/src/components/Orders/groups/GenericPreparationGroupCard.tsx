@@ -318,7 +318,13 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
         )
     }
 
-    return <Paper elevation={16} style={{height: "100%"}}>
+    return <Paper
+        elevation={16}
+        sx={{
+            height: "100%",
+            maxWidth: "100%",
+        }}
+    >
         <Card sx={{
             border: isDelayed ? "2px solid #d26806" : undefined,
             height: "100%",
@@ -331,7 +337,11 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
             >
                 <CardHeader 
                     title={getTitle()} 
-                    titleTypographyProps={{fontSize: "1rem"}}
+                    slotProps={{
+                        title: {
+                            fontSize: "1rem",
+                        },
+                    }}
                     action={props.headerAction}
                 />
             </CardActionArea>
@@ -349,7 +359,14 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
                 props.group != undefined &&
                 <CardContent>
                     <Divider sx={{mb: "0.5rem"}}>{t("ordersTab.associatedOrders")}</Divider>
-                    <Grid container spacing={1}>
+                    <Grid
+                        container
+                        spacing={1}
+                        wrap="wrap"
+                        sx={{
+                            overflowX: "auto",
+                        }}
+                    >
                     {
                         props.group.orderIds.map(id => <Grid size="auto" key={id} justifyContent="center" display="flex">
                             <OrderBadge orderId={id} onOrderClicked={props.onOrderClicked} />

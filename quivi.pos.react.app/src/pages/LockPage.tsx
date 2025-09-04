@@ -9,7 +9,6 @@ import { Box, Link, Stack, Typography } from "@mui/material";
 import { LeftArrowIcon } from "../icons";
 
 enum Page {
-    SelectEmployee,
     PinCode,
     DefinePinCode,
 }
@@ -18,7 +17,7 @@ export const LockPage = () => {
     const toast = useToast();
 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const [currentPage, setCurrentPage] = useState(Page.SelectEmployee);
+    const [currentPage, setCurrentPage] = useState<Page>();
 
     const onComplete = (hasError: boolean) => {
         if(hasError == false) {
@@ -31,8 +30,8 @@ export const LockPage = () => {
 
     useEffect(() => {
         if(selectedEmployee == undefined) {
-            setCurrentPage(Page.SelectEmployee);
-        } else if(selectedEmployee.hasPinCode) {
+            setCurrentPage(undefined);
+        } else if(selectedEmployee.hasPinCode == true) {
             setCurrentPage(Page.PinCode);
         } else {
             setCurrentPage(Page.DefinePinCode);
@@ -60,17 +59,16 @@ export const LockPage = () => {
             width="100%"
             maxWidth="md"
             mx="auto"
-            mb={5}
+            mb={2}
             pt={{ sm: 10 }}
         >
             {
-                currentPage == Page.SelectEmployee &&
+                selectedEmployee == undefined
+                ?
                 <Typography variant="h5" gutterBottom>
                     {t("pages.employeeLockPage.selectEmployee")}
                 </Typography>
-            }
-            {
-                currentPage != Page.SelectEmployee &&
+                :
                 <Typography variant="h5" gutterBottom>
                     <Link
                         sx={{
@@ -89,10 +87,11 @@ export const LockPage = () => {
                         <Stack
                             direction="row"
                             gap={2}
+                            sx={{
+                                alignItems: "center",
+                            }}
                         >
-                            <div>
                                 <LeftArrowIcon style={{ fontSize: 20, marginRight: 0.5 }} />
-                            </div>
                             {t("pages.employeeLockPage.backToEmployee")}
                         </Stack>
                     </Link>
@@ -109,9 +108,16 @@ export const LockPage = () => {
             maxWidth="md"
             mx="auto"
         >
-            { currentPage == Page.SelectEmployee && <EmployeeSelectPage onEmployeeSelect={setSelectedEmployee} /> }
-            { currentPage == Page.PinCode && <EmployeePinCodeLock employee={selectedEmployee!} /> }
-            { currentPage == Page.DefinePinCode && <DefineEmployeePinCode employee={selectedEmployee!} onComplete={onComplete} />}
+            { 
+                selectedEmployee == undefined || currentPage == undefined
+                ? 
+                <EmployeeSelectPage onEmployeeSelect={setSelectedEmployee} />
+                :
+                <>
+                    { currentPage == Page.PinCode && <EmployeePinCodeLock employeeId={selectedEmployee.id} /> }
+                    { currentPage == Page.DefinePinCode && <DefineEmployeePinCode employeeId={selectedEmployee.id} onComplete={onComplete} />}
+                </>
+            }
         </Box>
     </Box>
 }

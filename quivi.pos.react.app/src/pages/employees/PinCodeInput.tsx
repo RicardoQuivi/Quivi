@@ -199,8 +199,8 @@ export const PinCodeInput = (props: Props) => {
                     >
                         <Box
                             sx={{
-                                border: `2px solid ${currentDigit == i ? "var(--color-brand-950)" : "gray"}`,
-                                boxShadow: currentDigit == i ? "0 0 0.25rem rgba(var(--color-brand-950), 0.5)" : undefined,
+                                border: p => `2px solid ${currentDigit == i ? p.palette.primary.main : "gray"}`,
+                                boxShadow: currentDigit == i ? p => `0 0 0.25rem rgba(${p.palette.primary.main}, 0.5)` : undefined,
                                 transitionProperty: "color, border, box-shadow, transform",
                                 position: "relative",
                             }}
@@ -213,7 +213,7 @@ export const PinCodeInput = (props: Props) => {
                                 autoComplete="off" 
                                 inputMode="numeric" 
                                 aria-required="true" 
-                                value={c}
+                                value={loading && !c ? " " : c}
                                 style={{
                                     border: `none`,
                                     fontSize: "2rem",

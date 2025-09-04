@@ -54,7 +54,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
     }
 
     useEffect(() => {
-        if(isOpen== false) {
+        if(isOpen == false) {
             return;
         }
         onOpen?.();
@@ -73,11 +73,21 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 onClose?.();
             }}
         >
-            <DialogTitle sx={{ m: 0, p: 2 }}>
+            <DialogTitle
+                sx={{
+                    m: 0,
+                    p: 2,
+                }}
+            >
             {
                 typeof title === "string"
                 ? 
-                <Box sx={{display: "flex", justifyContent: "center"}}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
                     {title}
                 </Box>
                 :
@@ -106,7 +116,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             </DialogContent>
             
             {
-                !!footer &&
+                footer != undefined &&
                 <DialogActions>
                     {footer}
                 </DialogActions>

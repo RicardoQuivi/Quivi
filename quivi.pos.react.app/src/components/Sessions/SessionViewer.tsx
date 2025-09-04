@@ -210,11 +210,14 @@ export const SessionViewer: React.FC<Props> = ({
         <Paper
             elevation={16}
             sx={{
-                flex: "1 1 auto",
-                marginBottom: "1rem",
+                flex: 1,
+                marginBottom: {
+                    xs: 0,
+                    sm: "1rem",
+                },
                 display: "flex", flexDirection: "column",
                 overflow: "hidden auto",
-                }}
+            }}
         >
             <Box
                 sx={{

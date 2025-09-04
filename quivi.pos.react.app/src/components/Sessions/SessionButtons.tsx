@@ -113,6 +113,9 @@ export const SessionButtons = ({
     }, [preparationGroupQuery.data])
     
 
+    const [printingConsumerBill, setPrintingConsumerBill] = useState(false);
+    const [isOpeningCashDrawer, setIsOpeningCashDrawer] = useState(false);
+    const [printingEndOfDayTotals, setPrintingEndOfDayTotals] = useState(false);
     const [isPrepareModalOpen, setIsPrepareModalOpen] = useState(false);
     const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
     const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
@@ -156,9 +159,9 @@ export const SessionButtons = ({
         };
     }, [printersQuery.data, integrationQuery.data])
 
-    const totalPendingItems = useMemo(() => preparationGroup?.items.reduce((r, i) => r + Math.abs(i.remainingQuantity), 0) ?? 0, [preparationGroupQuery]);
+    const totalPendingItems = useMemo(() => preparationGroup?.items.reduce((r, i) => r + Math.abs(i.remainingQuantity), 0) ?? 0, [preparationGroup]);
 
-    useEffect(() => setIsItemCheckedMap(getCheckedItems(preparationGroup)), [preparationGroupQuery.isFirstLoading, preparationGroupQuery.data])
+    useEffect(() => setIsItemCheckedMap(getCheckedItems(preparationGroup)), [preparationGroup])
 
     const applyDiscount = async (selectableItems: DiscountedItem<SessionItem>[]) => {
         for(const {item, newDiscount, quantityToApply} of selectableItems) {
@@ -182,28 +185,37 @@ export const SessionButtons = ({
         }
 
         try {
+            setPrintingConsumerBill(true);
             await pos.printConsumerBill(localId);
             toast.success(t("printingBill"))
         } catch {
             toast.error(t("printingBillError"))
+        } finally {
+            setPrintingConsumerBill(false);
         }
     }
     
     const onClickOpenCashDrawer = async () => {
         try {
+            setIsOpeningCashDrawer(true);
             await pos.openCashDrawer(localId);
             toast.success(t("openingCashDrawerMsg"));
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
+        } finally {
+            setIsOpeningCashDrawer(false);
         }
     }
 
     const onEndDayTotals = async () => {
         try {
+            setPrintingEndOfDayTotals(true);
             await pos.endOfDayClosing(localId)
             toast.success(t("endOfDayTotalsMsg"));
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
+        } finally {
+            setPrintingEndOfDayTotals(false);
         }
     }
     
@@ -240,7 +252,6 @@ export const SessionButtons = ({
     
     return <Box
         sx={{
-
             position: "relative"
         }}
     >
@@ -282,7 +293,7 @@ export const SessionButtons = ({
                     }}
                 >
                     <Button
-                        variant="contained"
+                        variant="outlined"
                         sx={{
                             width: "100%",
                             height: "3rem",
@@ -308,7 +319,7 @@ export const SessionButtons = ({
                     }}
                     onClick={printBill}
                     isDisabled={paymentsDisabled}
-                    isLoading={pos.cartSession.isSyncing}
+                    isLoading={pos.cartSession.isSyncing || printingConsumerBill}
                     options={
                         canApplyDiscounts
                         ? 
@@ -334,9 +345,19 @@ export const SessionButtons = ({
                     sx={{
                         display: "flex",
                         gap: 1,
+
+                        "& .MuiButtonBase-root": {
+                            height: "3rem",
+
+                            "& svg": {
+                                height: "80%",
+                                width: "auto",
+                            }
+                        }
                     }}
                 >
                     <SplitButton
+                        variant="contained"
                         style={{
                             flexGrow: 1,
                             height: "3rem",
@@ -367,7 +388,11 @@ export const SessionButtons = ({
                     {
                         printerSettings.canOpenCashDrawer &&
                         <Tooltip title={t("openCashDrawer")}>
-                            <Button variant="contained" sx={{ height: "3rem", width: "3rem" }} onClick={onClickOpenCashDrawer}>
+                            <Button 
+                                variant="outlined"
+                                onClick={onClickOpenCashDrawer}
+                                loading={isOpeningCashDrawer}
+                            >
                                 <CashDrawerIcon />
                             </Button>
                         </Tooltip>
@@ -375,7 +400,11 @@ export const SessionButtons = ({
                     {
                         printerSettings.canPrintEndOfDay &&
                         <Tooltip title={t("printEndOfDayTotals")}>
-                            <Button variant="contained" sx={{height: "3rem", width: "3rem"}} onClick={onEndDayTotals}>
+                            <Button
+                                variant="outlined"
+                                onClick={onEndDayTotals}
+                                loading={printingEndOfDayTotals}
+                            >
                                 <ReceiptIcon />
                             </Button>
                         </Tooltip>
@@ -414,6 +443,7 @@ export const SessionButtons = ({
                         slotProps={{
                             tooltip: {
                                 title: t("sendToPreparation"),
+                                open: true,
                             },
                         }}
                         onClick={() => {
@@ -432,6 +462,7 @@ export const SessionButtons = ({
                             slotProps={{
                                 tooltip: {
                                     title: t("applyDiscount"),
+                                    open: true,
                                 },
                             }}
                             onClick={() => {
@@ -449,6 +480,7 @@ export const SessionButtons = ({
                         slotProps={{
                             tooltip: {
                                 title: t("payment"),
+                                open: true,
                             },
                         }}
                         onClick={() => {

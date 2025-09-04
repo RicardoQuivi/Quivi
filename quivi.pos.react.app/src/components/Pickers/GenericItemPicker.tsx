@@ -33,16 +33,11 @@ export const GenericItemPicker = <T,>({
     unselectButtonsDisable,
     maxHeight,
 }: Props<T>) => {
-    const [leftChecked, setLeftChecked] = useState<T[]>([]);
-    const [rightChecked, setRightChecked] = useState<T[]>([]);
+    const [leftChecked, setLeftChecked] = useState<T[]>(() => intersection([], unselectedItems, getItemKey));
+    const [rightChecked, setRightChecked] = useState<T[]>(() => intersection([], selectedItems, getItemKey));
 
-    useEffect(() => {
-        setLeftChecked(p => intersection(p, unselectedItems, getItemKey));
-    }, [unselectedItems])
-
-    useEffect(() => {
-        setRightChecked(p => intersection(p, selectedItems, getItemKey));
-    }, [selectedItems])
+    useEffect(() => setLeftChecked(p => intersection(p, unselectedItems, getItemKey)), [unselectedItems])
+    useEffect(() => setRightChecked(p => intersection(p, selectedItems, getItemKey)), [selectedItems])
   
     const handleToggle = (value: T, checked: T[], action: (result: T[]) => any) => () => {
         const currentIndex = checked.findIndex(v => getItemKey(v) == getItemKey(value));
@@ -58,15 +53,25 @@ export const GenericItemPicker = <T,>({
     };
   
     const customList = (items: readonly T[], checked: T[], action: (result: T[]) => any, label: React.ReactNode | undefined) => (
-        <Card style={{height: "100%", display: "flex", flexDirection: "column", maxHeight: maxHeight ?? "unset"}}>
+        <Card sx={{height: "100%", display: "flex", flexDirection: "column", maxHeight: maxHeight ?? "unset"}}>
             {
                 label &&
                 <>
                     <CardHeader sx={{ px: 2, py: 1 }} title={label} />
-                    <Divider style={{flex: "1 1 auto"}} />
+                    <Divider sx={{flex: 1 }} />
                 </>
             }
-            <List dense component="div" role="list" sx={{ width: "100%", height: "100%", overflow: 'auto' }}>
+            <List
+                dense
+                component="div"
+                role="list"
+                sx={{
+                    width: "100%",
+                    height: "100%",
+                    overflow: 'auto',
+                    minHeight: 50,
+                }}
+            >
                 {
                     items.map((item: T) => {
                         const key = getItemKey(item);
@@ -79,7 +84,16 @@ export const GenericItemPicker = <T,>({
                                 onClick={handleToggle(item, checked, action)}
                             >
                                 <ListItemIcon>
-                                    <Checkbox checked={isChecked} tabIndex={-1} disableRipple inputProps={{'aria-labelledby': labelId, }} />
+                                    <Checkbox
+                                        checked={isChecked}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        slotProps={{
+                                            input: {
+                                                'aria-labelledby': labelId,
+                                            }
+                                        }}
+                                    />
                                 </ListItemIcon>
                                 <ListItemText id={labelId}>
                                     <Typography style={getItemStyle(item)}>
@@ -96,27 +110,116 @@ export const GenericItemPicker = <T,>({
 
     return (
         <Grid container spacing={2} justifyContent="center" alignItems="stretch">
-            <Grid size={{xs: 5}}>
-                {customList(unselectedItems, leftChecked, (r) => setLeftChecked(r), unselectedLabel)}
+            <Grid
+                size={{
+                    xs: 12,
+                    sm: "grow",
+                }}
+            >
+                {customList(unselectedItems, leftChecked, setLeftChecked, unselectedLabel)}
             </Grid>
-            <Grid size={{xs: 2}}>
-                <Grid container direction="column" alignItems="center" justifyContent="center" style={{height: "100%"}}>
-                    <Button sx={{ my: 0.5 }} variant="outlined" size="small" onClick={() => onItemsAdded(unselectedItems, true)} disabled={selectButtonsDisable == true || unselectedItems.length == 0} aria-label="move all right">
-                        ≫
-                    </Button>
-                    <Button sx={{ my: 0.5 }} variant="outlined" size="small" onClick={() => onItemsAdded(leftChecked, false)} disabled={selectButtonsDisable == true || leftChecked.length == 0} aria-label="move selected right">
-                        &gt;
-                    </Button>
-                    <Button sx={{ my: 0.5 }} variant="outlined" size="small" onClick={() => onItemsRemoved(rightChecked, false)} disabled={unselectButtonsDisable == true || rightChecked.length == 0} aria-label="move selected left">
-                        &lt;
-                    </Button>
-                    <Button sx={{ my: 0.5 }} variant="outlined" size="small" onClick={() => onItemsRemoved(selectedItems, true)} disabled={unselectButtonsDisable == true || selectedItems.length == 0} aria-label="move all left">
-                        ≪
-                    </Button>
+            <Grid
+                size={{
+                    xs: 12,
+                    sm: "auto",
+                }}
+            >
+                <Grid 
+                    container
+                    sx={{
+                        width: {
+                            xs: "100%",
+                            sm: "min-content",
+                        },
+
+                        "& .MuiButtonBase-root": {
+                            "& .MuiTypography-root": {
+                                transform: "rotate(90deg)",
+                            }
+                        }
+                    }}
+                    gap={1}
+                >
+                    <Grid
+                        size={{
+                            xs: "grow",
+                            sm: 12,
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => onItemsAdded(unselectedItems, true)} disabled={selectButtonsDisable == true || unselectedItems.length == 0}
+                            aria-label="move all right"
+                        >
+                            <Typography variant="button" gutterBottom>
+                            ≫
+                            </Typography>
+                        </Button>
+                    </Grid>
+
+                    <Grid
+                        size={{
+                            xs: "grow",
+                            sm: 12,
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => onItemsAdded(leftChecked, false)} disabled={selectButtonsDisable == true || leftChecked.length == 0}
+                            aria-label="move selected right"
+                        >
+                            <Typography variant="button" gutterBottom>
+                                &gt;
+                            </Typography>
+                        </Button>
+                    </Grid>
+
+                    <Grid
+                        size={{
+                            xs: "grow",
+                            sm: 12,
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => onItemsRemoved(rightChecked, false)} disabled={unselectButtonsDisable == true || rightChecked.length == 0}
+                            aria-label="move selected left"
+                        >
+                            <Typography variant="button" gutterBottom>
+                                &lt;
+                            </Typography>
+                        </Button>
+                    </Grid>
+
+                    <Grid
+                        size={{
+                            xs: "grow",
+                            sm: 12,
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => onItemsRemoved(selectedItems, true)} disabled={unselectButtonsDisable == true || selectedItems.length == 0}
+                            aria-label="move all left"
+                        >
+                            <Typography variant="button" gutterBottom>
+                                ≪
+                            </Typography>
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
-            <Grid size={{xs: 5}}>
-                {customList(selectedItems, rightChecked, (r) => setRightChecked(r), selectedLabel)}
+            <Grid
+                size={{
+                    xs: 12,
+                    sm: "grow",
+                }}
+            >
+                {customList(selectedItems, rightChecked, setRightChecked, selectedLabel)}
             </Grid>
         </Grid>
     )

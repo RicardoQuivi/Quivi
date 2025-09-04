@@ -92,6 +92,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 console.debug("Merchant refreshing JWT for token: ", refreshToken);
                 const promise = authApi.jwtRefresh({
                     refreshToken: refreshToken,
+                }).then(r => {
+                    saveTokens({
+                        accessToken: r.access_token,
+                        refreshToken: r.refresh_token,
+                    });
+                    setState(getState);
+                    return r;
                 });
                 refreshPromise = {
                     promise: promise,
@@ -113,11 +120,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if(e instanceof UnauthorizedException) {
                     try {
                         const refreshResponse = await refreshToken(state.refreshToken);
-                        saveTokens({
-                            accessToken: refreshResponse.access_token,
-                            refreshToken: refreshResponse.refresh_token,
-                        });
-                        setState(getState);
                         const response = await call(refreshResponse.access_token);
                         return response;
                     } catch (e2) {

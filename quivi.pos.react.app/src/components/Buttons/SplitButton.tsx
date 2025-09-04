@@ -14,6 +14,7 @@ interface SplitButtonProps {
     readonly style?: React.CSSProperties;
     readonly children: React.ReactNode;
     readonly options: ISplitButtonOption[];
+    readonly variant?: 'text' | 'outlined' | 'contained';
 }
 
 const SplitButton: React.FC<SplitButtonProps> = (props) => {
@@ -52,12 +53,12 @@ const SplitButton: React.FC<SplitButtonProps> = (props) => {
             ref={anchorRef}
             style={props.style}
             sx={{width: "100%"}}
-            variant="contained"
+            variant={props.variant}
         >
-            <Button variant="contained" sx={{width: "100%"}} loading={props.isLoading} disabled={props.isDisabled} onClick={() => handleClick()}>
+            <Button variant={props.variant} sx={{width: "100%"}} loading={props.isLoading} disabled={props.isDisabled} onClick={handleClick}>
                 {props.children}
             </Button>
-            <Button variant="contained" size="small" loading={props.isLoading} disabled={props.isDisabled} onClick={() => handleToggle()}>
+            <Button variant={props.variant} size="small" loading={props.isLoading} disabled={props.isDisabled} onClick={handleToggle}>
                 <ArrowDropDownIcon height={25} width={25} />
             </Button>
         </ButtonGroup>
@@ -73,8 +74,7 @@ const SplitButton: React.FC<SplitButtonProps> = (props) => {
             <Grow
                 {...TransitionProps}
                 style={{
-                transformOrigin:
-                    placement === 'bottom' ? 'center top' : 'center bottom',
+                    transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
                 }}
             >
                 <Paper>

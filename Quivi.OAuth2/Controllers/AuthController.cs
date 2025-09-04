@@ -105,14 +105,24 @@ namespace Quivi.OAuth2.Controllers
 
             if (merchantId == null)
             {
-                var subMerchantId = tokenIdentity.SubMerchantId();
-                if (string.IsNullOrWhiteSpace(subMerchantId) == false)
-                    merchantId = subMerchantId;
+                var identitySubMerchantId = tokenIdentity.SubMerchantId();
+                if (string.IsNullOrWhiteSpace(identitySubMerchantId) == false)
+                    merchantId = identitySubMerchantId;
+                else
+                {
+                    var identityMerchantId = tokenIdentity.MerchantId();
+                    if (string.IsNullOrWhiteSpace(identityMerchantId) == false)
+                        merchantId = identityMerchantId;
+                }
             }
 
             return await ProcessIdentity(user, async identity =>
             {
                 await SetQuiviClaims(identity, user.Id, merchantId == null ? null : idConverter.FromPublicId(merchantId));
+                var employeeId = tokenIdentity.EmployeeId();
+                if (string.IsNullOrWhiteSpace(employeeId) == false)
+                    identity.AddClaim(QuiviClaims.EmployeeId, employeeId);
+
             }, request.ClientId ?? "");
         }
 
@@ -164,15 +174,24 @@ namespace Quivi.OAuth2.Controllers
             identity.AddClaims(tokenIdentity.Claims);
             identity.SetClaim(QuiviClaims.EmployeeId, idConverter.ToPublicId(employee.Id));
 
-            identity.SetDestinations(static claim => claim.Type switch
-            {
-                _ => [Destinations.AccessToken]
-            });
+            SetDestinations(identity);
             var principal = new ClaimsPrincipal(identity);
             principal.SetAudiences("pos");
             principal.SetScopes(Scopes.OpenId, Scopes.Profile, Scopes.Email, Scopes.OfflineAccess);
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        private void SetDestinations(ClaimsIdentity identity)
+        {
+            identity.SetDestinations(static claim => claim.Type switch
+            {
+                QuiviClaims.Role => [Destinations.AccessToken, Destinations.IdentityToken],
+                QuiviClaims.MerchantId => [Destinations.AccessToken, Destinations.IdentityToken],
+                QuiviClaims.SubMerchantId => [Destinations.AccessToken, Destinations.IdentityToken],
+                QuiviClaims.EmployeeId => [Destinations.AccessToken, Destinations.IdentityToken],
+                _ => [Destinations.AccessToken],
+            });
         }
 
         private async Task<Domain.Entities.Pos.Employee?> GetEmployee(string rawEmployeeId, string pinCode, string rawSubmerchantId, bool isAdmin)
@@ -207,10 +226,8 @@ namespace Quivi.OAuth2.Controllers
             await SetRoles(identity, user);
             await identityFunc(identity);
 
-            identity.SetDestinations(static claim => claim.Type switch
-            {
-                _ => [Destinations.AccessToken]
-            });
+            SetDestinations(identity);
+
             var principal = new ClaimsPrincipal(identity);
             principal.SetAudiences(audience);
             principal.SetScopes(Scopes.OpenId, Scopes.Profile, Scopes.Email, Scopes.OfflineAccess);
@@ -270,6 +287,7 @@ namespace Quivi.OAuth2.Controllers
                     ValidIssuer = new Uri(appHostsSettings.OAuth, UriKind.Absolute).ToString(),
                     ValidAudience = audience,
                     IssuerSigningKey = new RsaSecurityKey(jwtSettings.SigningCertificate.GetRSAPublicKey()),
+                    RoleClaimType = QuiviClaims.Role,
                 });
                 if (tokenValidationResult.IsValid == false)
                 {
@@ -280,7 +298,7 @@ namespace Quivi.OAuth2.Controllers
                 claims = tokenValidationResult.ClaimsIdentity.Claims;
             }
 
-            var identity = new ClaimsIdentity(claims);
+            var identity = new ClaimsIdentity(null, claims, null, null, QuiviClaims.Role);
             var principal = new ClaimsPrincipal(identity);
             return principal;
         }

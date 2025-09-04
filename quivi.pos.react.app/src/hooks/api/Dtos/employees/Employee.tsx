@@ -14,4 +14,5 @@ export interface Employee {
     readonly hasPinCode: boolean;
     readonly inactivityLogoutTimeout?: string;
     readonly restrictions: EmployeeRestriction[];
+    readonly isDeleted: boolean;
 }

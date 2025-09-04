@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Box, Button, ButtonGroup, Card, CardActionArea, CardActions, CardHeader, Chip, Divider, Grid, IconButton, Paper, Skeleton, SxProps, Theme, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, ButtonGroup, Card, CardActionArea, CardActions, CardHeader, Chip, Divider, Grid, IconButton, Skeleton, SxProps, Theme, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { Channel } from "../hooks/api/Dtos/channels/Channel";
 import { useStoredState } from "../hooks/useStoredState";
@@ -47,8 +47,8 @@ export const ChannelsOverview: React.FC<Props> = ({
     const searchParamsStorage = useBrowserStorage(BrowserStorageType.UrlParam);
 
     const canTransferSession = posContext.cartSession.isSyncing == false;
-    const [channelProfileId, setChannelProfileId] = useStoredState<string | undefined>("channelProfileId", browserStorage.getItem("channelProfileId"), searchParamsStorage);
-    const [channelsViewType, setQrCodesViewType] = useStoredState<QrCodesViewType | undefined>("channelView", !xs ? (browserStorage.getItem("channelView") ?? QrCodesViewType.Grid) : QrCodesViewType.Grid, searchParamsStorage);
+    const [channelProfileId, setChannelProfileId] = useStoredState<string | undefined>("channelProfileId", () => browserStorage.getItem("channelProfileId"), searchParamsStorage);
+    const [channelsViewType, setQrCodesViewType] = useStoredState<QrCodesViewType | undefined>("channelView", () => !xs ? (browserStorage.getItem("channelView") ?? QrCodesViewType.Grid) : QrCodesViewType.Grid, searchParamsStorage);
     const [currentPage, setCurrentPage] = useState(0);
     const channelProfilesQuery = useChannelProfilesQuery({
         allowsSessionsOnly: true,
@@ -108,7 +108,7 @@ export const ChannelsOverview: React.FC<Props> = ({
         if (channelsViewType == undefined || xs) {
             return;
         }
-        browserStorage.setItem("qrCodeView", channelsViewType);
+        browserStorage.setItem("channelView", channelsViewType);
     }, [channelsViewType]);
     
     useEffect(() => {
@@ -145,6 +145,7 @@ export const ChannelsOverview: React.FC<Props> = ({
                             sx={{
                                 alignSelf: "center",
                                 justifySelf: "flex-end",
+                                height: "100%",
                             }}
                         >
                             <Button
@@ -224,7 +225,7 @@ export const ChannelsOverview: React.FC<Props> = ({
                                         <ChannelCard
                                             cardProps={{
                                                 backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.3)" : undefined,
-                                                borderColor: "red"
+                                                borderColor: "red",
                                             }}
                                             subtitle={
                                                 sessionsQuery.isLoading

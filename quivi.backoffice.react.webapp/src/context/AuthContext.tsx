@@ -140,6 +140,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const promise = authApi.jwtRefresh({
                     merchantId: merchantId,
                     refreshToken: refreshToken,
+                }).then(r => {
+                    saveTokens({
+                        accessToken: r.access_token,
+                        refreshToken: r.refresh_token,
+                    });
+                    setState(getState);
+                    return r;
                 });
                 refreshPromise = {
                     promise: promise,
@@ -161,11 +168,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if(e instanceof UnauthorizedException) {
                     try {                       
                         const refreshResponse = await refreshToken(state.refreshToken, state.subMerchantId ?? state.merchantId);
-                        saveTokens({
-                            accessToken: refreshResponse.access_token,
-                            refreshToken: refreshResponse.refresh_token,
-                        });
-                        setState(getState);
                         const response = await call(refreshResponse.access_token);
                         return response;
                     } catch (e2) {

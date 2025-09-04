@@ -61,7 +61,14 @@ export const OrdersQueueCards = (props: Props) => {
             {
                 ordersQuery.isFirstLoading == false
                 ?
-                    ordersQuery.data.map(s => <Grid size="auto" sx={{minWidth: 300}} key={s.id}>
+                    ordersQuery.data.map(s => <Grid
+                        size="auto"
+                        sx={{
+                            minWidth: 300,
+                            maxWidth: "100%",
+                        }}
+                        key={s.id}
+                    >
                         <OrderCard 
                             order={s}
                             onNextStateClicked={o => updateOrder(o, false)}
@@ -70,7 +77,14 @@ export const OrdersQueueCards = (props: Props) => {
                         />
                     </Grid>)
                 :
-                    [1, 2, 3, 4, 5].map(i => <Grid size="auto" sx={{minWidth: 300}} key={`Loading-${i}`}>
+                    [1, 2, 3, 4, 5].map(i => <Grid
+                        size="auto"
+                        sx={{
+                            minWidth: 300,
+                            maxWidth: "100%",
+                        }}
+                        key={`Loading-${i}`}
+                    >
                         <OrderCard />
                     </Grid>)
             }

@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next";
-import { Employee } from "../../hooks/api/Dtos/employees/Employee";
 import { useToast } from "../../context/ToastProvider";
 import { useEmployeeManager } from "../../context/employee/EmployeeContextProvider";
 import { PinCodeInput } from "./PinCodeInput";
 
 interface Props {
-    readonly employee: Employee;
+    readonly employeeId: string;
 }
 export const EmployeePinCodeLock = (props: Props) => {
     const { t } = useTranslation();
@@ -21,7 +20,7 @@ export const EmployeePinCodeLock = (props: Props) => {
     const loginWithPinCode = async () => {
         try {
             setState(s => ({...s, isLoading: true}))
-            await employeeManager.login(props.employee.id, state.pinCode);
+            await employeeManager.login(props.employeeId, state.pinCode);
         } catch {
             toast.error(t('invalidPinDescription'));
             setState(s => ({...s, isLoading: false, pinCode: ""}))

@@ -40,7 +40,14 @@ export const CommitedPreparationGroupsQueueCards = (props: Props) => {
             {
                 groupsQuery.isFirstLoading == false
                 ?
-                    groupsQuery.data.map(s => <Grid size="auto" sx={{ minWidth: 300 }} key={s.id}>
+                    groupsQuery.data.map(s => <Grid 
+                        size="auto"
+                        sx={{
+                            minWidth: 300,
+                            maxWidth: "100%",
+                        }}
+                        key={s.id}
+                    >
                         <CommitedPreparationGroupCard group={s} 
                                                         onOrderClicked={props.onOrderSelected}
                                                         locationId={props.locationId}
@@ -48,7 +55,14 @@ export const CommitedPreparationGroupsQueueCards = (props: Props) => {
                         />
                     </Grid>)
                 :
-                    [1, 2, 3, 4, 5].map(i => <Grid size="auto" sx={{ minWidth: 300 }} key={`Loading-${i}`}>
+                    [1, 2, 3, 4, 5].map(i => <Grid
+                        size="auto"
+                        sx={{
+                            minWidth: 300,
+                            maxWidth: "100%",
+                        }}
+                        key={`Loading-${i}`}
+                    >
                         <GenericPreparationGroupCard 
                             locationId={props.locationId} 
                             locationsMap={locationsMap} 

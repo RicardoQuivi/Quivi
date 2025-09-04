@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@mui/material';
+import { Box, Pagination, useMediaQuery, useTheme } from '@mui/material';
 
 interface Props {
     readonly currentPage: number;
@@ -11,6 +11,10 @@ export const PaginationFooter: React.FC<Props> = ({
     numberOfPages,
     onPageChanged,
 }) => {
+    
+    const theme = useTheme();
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
     return <Box
         sx={{
             py: "0.5rem",
@@ -27,7 +31,7 @@ export const PaginationFooter: React.FC<Props> = ({
             variant="outlined"
             shape="rounded"
             color="primary"
-            size="large"
+            size={xs ? "small" : "large"}
             onChange={(_, p) => onPageChanged(p - 1)}
             showFirstButton
             showLastButton

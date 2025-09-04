@@ -154,13 +154,20 @@ export const PosTabs = (props: Props) => {
             sx={{
                 ...(props.sx ?? {}),
                 width: "100%", 
-                bgcolor: 'var(--color-brand-950)',
+                bgcolor: p => p.palette.primary.main,
                 height: "auto",
                 padding: "0.75rem 0",
 
                 "& .MuiButtonBase-root": {
                     color: "rgba(255, 255, 255, 0.7)",
                     padding: 0,
+
+                    "& svg": {
+                        width: 20,
+                        aspectRatio: 1,
+                        height: "auto",
+                        pb: "0.25rem",
+                    },
                 },
 
                 "& .MuiButtonBase-root.Mui-selected": {
@@ -169,7 +176,7 @@ export const PosTabs = (props: Props) => {
 
                     "& .MuiBottomNavigationAction-label": {
                         fontSize: "0.75rem"
-                    }
+                    },
                 }
             }}
             showLabels

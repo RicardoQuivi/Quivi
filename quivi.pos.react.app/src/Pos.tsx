@@ -111,7 +111,7 @@ export const Pos = () => {
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                background: "var(--color-brand-50)",
+                background: p => p.palette.primary.light,
             }}
         >
             <Box 

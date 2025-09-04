@@ -8,78 +8,72 @@ import { useChannelProfilesApi } from "../../api/useChannelProfilesApi";
 import { ChannelFeatures } from "../../api/Dtos/channelProfiles/ChannelFeatures";
 
 export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | undefined) : PagedQueryResult<ChannelProfile> => {      
-    const innerQueryResult = useInternalChannelProfilesQuery();
-
-    const result = useMemo<PagedQueryResult<ChannelProfile>>(() => {
-        if(request == undefined) {
-            return {
-                data: [],
-                page: 0,
-                totalItems: 0,
-                totalPages: 0,
-                isFirstLoading: true,
-                isLoading: true,
-            }
-        }
-        
-        let allData = innerQueryResult.data.filter((d) => {
-            if(request.allowsSessionsOnly != undefined && (d.features&ChannelFeatures.AllowsSessions) != ChannelFeatures.AllowsSessions) {
-                return false;
-            }
-
-            if(request.ids != undefined && request.ids.includes(d.id) == false) {
-                return false;
-            }
-
-            return true;
-        });
-
-        let totalPages = 1;
-        if(request.pageSize != undefined) {
-            const start = request.page * request.pageSize;
-            totalPages = Math.ceil(allData.length / request.pageSize);
-            allData = allData.splice(start, start + request.pageSize)
-        }   
-        return {
-            data: allData,
-            isFirstLoading: innerQueryResult.isFirstLoading,
-            isLoading: innerQueryResult.isLoading,
-            totalItems: allData.length,
-            totalPages: totalPages,
-            page: request.page,
-        }
-    }, [
-        JSON.stringify(request), 
-
-        innerQueryResult.isFirstLoading,
-        innerQueryResult.isLoading,
-        innerQueryResult.data,
-    ])
-
-    return result;
-}
-
-export const useInternalChannelProfilesQuery = () => {      
     const api = useChannelProfilesApi();
 
-    const queryResult = useQueryable({
-        queryName: "useChannelProfilesQuery",
+    const innerQueryResult = useQueryable({
+        queryName: "useInternalChannelProfilesQuery",
         entityType: getEntityType(Entity.ChannelProfiles),
         request: {
             page: 0,
         } as GetChannelProfilesRequest,
         getId: (e: ChannelProfile) => e.id,
-        query: r => api.get(r),
-
+        query: api.get,
         refreshOnAnyUpdate: true,
-        canUseOptimizedResponse: r => r.ids != undefined,
-        getResponseFromEntities: (e) => ({
-            data: e,
-            page: 0,
-            totalPages: 1,
-            totalItems: 1,
-        }),       
     })
 
-    return queryResult;
+    const queryResult = useQueryable({
+        queryName: "useChannelProfilesQuery",
+        entityType: `${getEntityType(Entity.ChannelProfiles)}-processed`,
+        request: request == undefined ? undefined : {
+            entities: innerQueryResult.data,
+            isFirstLoading: innerQueryResult.isFirstLoading,
+            isLoading: innerQueryResult.isLoading,
+
+            request: request,
+        },
+        getId: (e: ChannelProfile) => e.id,
+        query: async r => {
+            const request = r.request;
+            
+            const allData = r.entities.filter((d) => {
+                if(request.allowsSessionsOnly != undefined && (d.features&ChannelFeatures.AllowsSessions) != ChannelFeatures.AllowsSessions) {
+                    return false;
+                }
+
+                if(request.ids != undefined && request.ids.includes(d.id) == false) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            let totalPages = 1;
+            let resultData = allData;
+            if(request.pageSize != undefined) {
+                const start = request.page * request.pageSize;
+                totalPages = Math.ceil(allData.length / request.pageSize);
+                resultData = allData.splice(start, start + request.pageSize)
+            }   
+            return {
+                data: resultData,
+                isFirstLoading: r.isFirstLoading,
+                isLoading: r.isLoading,
+                totalItems: allData.length,
+                totalPages: totalPages,
+                page: request.page,
+            }
+        },
+        refreshOnAnyUpdate: false,
+    })
+
+    const result = useMemo(() => ({
+        isFirstLoading: queryResult.isFirstLoading,
+        isLoading: queryResult.isLoading,
+        data: queryResult.data,
+        page: queryResult.response?.page ?? 0,
+        totalPages: queryResult.response?.totalPages ?? 0,
+        totalItems: queryResult.response?.totalItems ?? 0,
+    }), [queryResult]);
+
+    return result;
 }

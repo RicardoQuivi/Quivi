@@ -57,7 +57,7 @@ export const OrdersOverview = (props: Props) => {
         sortDirection: SortDirection.Asc,
     });
     
-    const [selectedOrder, setSelecteOrder] = useState({
+    const [_selectedOrder, setSelecteOrder] = useState({
         id: undefined as (string | undefined),
         wasAlreadyRedeemed: false,
     });
@@ -73,7 +73,7 @@ export const OrdersOverview = (props: Props) => {
         }
     }), [props.selectedOrderId])
 
-    const onQrCodeRead = (id: string, wasAlreadyRedeemed: boolean) => {
+    const _onQrCodeRead = (id: string, wasAlreadyRedeemed: boolean) => {
         props.onReadQrCodeClosed();
         setSelecteOrder({
             id: id,
@@ -126,7 +126,7 @@ export const OrdersOverview = (props: Props) => {
             >
                 <Grid
                     size={{
-                        xs: 6,
+                        xs: "auto",
                         md: "grow",
                     }}
                 >
@@ -144,7 +144,7 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: 6,
+                        xs: "auto",
                         md: "grow",
                     }}
                 >
@@ -162,7 +162,7 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: 6,
+                        xs: "auto",
                         md: "grow",
                     }}
                 >
@@ -180,7 +180,7 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: 6,
+                        xs: "auto",
                         md: "grow",
                     }}
                 >
@@ -197,7 +197,7 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: 6,
+                        xs: "auto",
                         md: "grow",
                     }}
                 >

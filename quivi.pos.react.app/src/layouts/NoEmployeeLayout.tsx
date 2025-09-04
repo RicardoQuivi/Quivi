@@ -112,7 +112,7 @@ export const NoEmployeeLayout = (props: Props) => {
                         justifyContent: 'center',
                         width: '100%',
                         height: '100%',
-                        bgcolor: 'var(--color-brand-950)',
+                        bgcolor: p => p.palette.primary.main,
                     }}
                 >
                     <RightSidePanel />
