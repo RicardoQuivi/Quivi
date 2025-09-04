@@ -116,10 +116,13 @@ export const PosAppBar = (props: Props) => {
                 open={state.menuAnchor != undefined}
                 onClose={() => setState(s => ({...s, menuAnchor: undefined}))}
             >
-                <MenuItem 
+                <MenuItem
                     onClick={async () => {
                         await posContext.signOut();
                         setState(s => ({...s, menuAnchor: undefined}))
+                    }}
+                    sx={{
+                        gap: 1,
                     }}
                 >
                     <ListItemIcon>

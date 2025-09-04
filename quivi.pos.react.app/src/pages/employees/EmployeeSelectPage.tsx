@@ -90,7 +90,6 @@ interface EmployeeCardProps {
     readonly onClick: () => any;
 }
 const EmployeeCard = (props: EmployeeCardProps) => {
-
     const imageUrl = useGenerateImage({
         name: props.employee.name,
         width: 400,
@@ -102,6 +101,12 @@ const EmployeeCard = (props: EmployeeCardProps) => {
             sx={{
                 cursor: "pointer",
                 width: "100%",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                boxShadow: 3,
+                "&:hover": {
+                    transform: "translateY(-4px) scale(1.02)",
+                    boxShadow: 8,
+                },
             }}
             elevation={10}
             onClick={props.onClick}
@@ -117,7 +122,7 @@ const EmployeeCard = (props: EmployeeCardProps) => {
             />
             <CardContent
                 sx={{
-                    paddingY: "0.75rem !important"
+                    paddingY: "0.75rem !important",
                 }}
             >
                 <Typography
