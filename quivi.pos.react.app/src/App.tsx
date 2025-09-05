@@ -7,7 +7,8 @@ import { LockPage } from './pages/LockPage';
 import { LoggedEmployeeContextProvider } from './context/pos/LoggedEmployeeContextProvider';
 import { PosSessionContextProvider } from './context/pos/PosSessionContextProvider';
 import { NoEmployeeLayout } from './layouts/NoEmployeeLayout';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
+import { LoadingAnimation } from './components/Loadings/LoadingAnimation';
 
 export const App = () => {
     return (
@@ -46,7 +47,14 @@ const AuthLayoutRoute = () => {
     if(auth.principal == undefined) {
         window.location.href = import.meta.env.VITE_BACKOFFICE_APP_URL
         return <NoEmployeeLayout>
-            <CircularProgress color="primary" />
+            <LoadingAnimation
+                sx={{
+                    width: {
+                        xs: "50%",
+                        sm: "25%",
+                    }
+                }}
+            />
         </NoEmployeeLayout>
     }
 

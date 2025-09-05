@@ -1,9 +1,32 @@
-export const LoadingAnimation = () => {
+import { Box, SxProps, Theme } from "@mui/material";
+import { QuiviIcon } from "../../icons";
+
+interface Props {
+    readonly sx?: SxProps<Theme>;
+}
+export const LoadingAnimation = (props: Props) => {
     return (
-        <div className="container" style={{display: "flex", flexDirection: "column", alignItems: "center", margin: "3rem 0" }}>
-            <div className="spinner-border" role="status" style={{width: "2rem", height: "2rem"}}>
-                <span className="sr-only">Loading...</span>
-            </div>
-        </div>
+        <Box
+            sx={{
+                ...(props.sx ?? {}),
+
+                "& svg": {
+                    width: "100%",
+                    height: "100%",
+
+                    animation: "spin 2s linear infinite",
+                    "@keyframes spin": {
+                        from: { 
+                            transform: "rotate(0deg)",
+                        },
+                        to: { 
+                            transform: "rotate(360deg)",
+                        },
+                    },
+                }
+            }}
+        >
+            <QuiviIcon />
+        </Box>
     );
 };

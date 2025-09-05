@@ -1,4 +1,4 @@
-import { Badge, BottomNavigation, BottomNavigationAction, Grid, Paper, SxProps, Tab, Tabs, Theme } from "@mui/material";
+import { Badge, BottomNavigation, BottomNavigationAction, Paper, SxProps, Tab, Tabs, Theme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useChannelsQuery } from "../hooks/queries/implementations/useChannelsQuery";
 import { CartIcon, ListIcon, OrdersIcon, QrCodeIcon } from "../icons";

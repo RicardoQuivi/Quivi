@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { PinCodeInput } from "./PinCodeInput";
-import { Alert, Fade, Step, StepLabel, Stepper, } from "@mui/material";
+import { Alert, Box, Fade, Step, StepLabel, Stepper, } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEmployeesApi } from "../../hooks/api/useEmployeesApi";
 import { useEmployeeManager } from "../../context/employee/EmployeeContextProvider";
@@ -163,7 +163,7 @@ export const DefineEmployeePinCode = (props: Props) => {
         <Stepper activeStep={getActiveStep()} alternativeLabel className="mb-4">
         {
             steps.map((label, index) => (
-                <Step key={index} onClick={() => goTo(index)} style={{ cursor: "pointer" }}>
+                <Step key={index} onClick={() => goTo(index)} sx={{ cursor: "pointer" }}>
                     <StepLabel>{label}</StepLabel>
                 </Step>
             ))
@@ -174,8 +174,25 @@ export const DefineEmployeePinCode = (props: Props) => {
                 {t("pinCodesDontMatch")}
             </Alert>
         </Fade>
-        { step == PinCodeStep.InsertingPinCode && <PinCodeInput pin={pinCode} onChange={(p) => setPinCode(p)} onDigitPress={onDigitPress} /> }
-        { step == PinCodeStep.InsertingConfirmation && <PinCodeInput pin={confirmationPinCode} onChange={(p) => setConfirmationPinCode(p)} onDigitPress={onDigitPress} loading={isLoading} /> }
-        { step == PinCodeStep.Loading && <LoadingAnimation /> }
+        { step == PinCodeStep.InsertingPinCode && <PinCodeInput pin={pinCode} onChange={setPinCode} onDigitPress={onDigitPress} /> }
+        { step == PinCodeStep.InsertingConfirmation && <PinCodeInput pin={confirmationPinCode} onChange={setConfirmationPinCode} onDigitPress={onDigitPress} loading={isLoading} /> }
+        {
+            step == PinCodeStep.Loading &&
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
+                <LoadingAnimation 
+                    sx={{
+                        width: {
+                            xs: "50%",
+                            sm: "25%",
+                        }
+                    }}
+                />
+            </Box>
+        }
     </>
 }

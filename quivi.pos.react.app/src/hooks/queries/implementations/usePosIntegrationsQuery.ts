@@ -6,7 +6,19 @@ import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | undefined) : QueryResult<PosIntegration[]> => {
-    const innerQueryResult = useInternalPosIntegrationsQuery();
+    const api = usePosIntegrationsApi();
+    
+    const innerQueryResult = useQueryable({
+        queryName: "useInternalPosIntegrationsQuery",
+        entityType: getEntityType(Entity.PosIntegrations),
+        request: {
+            page: 0,
+        } as GetPosIntegrationsRequest,
+        getId: (e: PosIntegration) => e.id,
+        query: api.get,
+        refreshOnAnyUpdate: true,
+    })
+
 
     const queryResult = useQueryable({
         queryName: "usePosIntegrationsQuery",
@@ -49,22 +61,5 @@ export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | und
         },
         refreshOnAnyUpdate: false,
     })
-    return queryResult;
-}
-
-const useInternalPosIntegrationsQuery = (): QueryResult<PosIntegration[]> => {
-    const api = usePosIntegrationsApi();
-    
-    const queryResult = useQueryable({
-        queryName: "useInternalPosIntegrationsQuery",
-        entityType: getEntityType(Entity.PosIntegrations),
-        request: {
-            page: 0,
-        } as GetPosIntegrationsRequest,
-        getId: (e: PosIntegration) => e.id,
-        query: api.get,
-        refreshOnAnyUpdate: true,
-    })
-
     return queryResult;
 }

@@ -1,9 +1,10 @@
-import { Box, Card, CardContent, CardMedia, CircularProgress, Grid, Typography } from "@mui/material"
+import { Box, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
 import { Employee } from "../../hooks/api/Dtos/employees/Employee";
 import { useEmployeesQuery } from "../../hooks/queries/implementations/useEmployeesQuery";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { PaginationFooter } from "../../components/Pagination/PaginationFooter";
 import { useGenerateImage } from "../../hooks/useGenerateImage";
+import { LoadingAnimation } from "../../components/Loadings/LoadingAnimation";
 
 const pageSize = 20;
 interface Props {
@@ -34,9 +35,16 @@ export const EmployeeSelectPage = (props: Props) => {
             justifyContent="center"
         >
             {
-                employeesQuery.isFirstLoading
+                employeesQuery.isFirstLoading || employeesQuery.data.length == 0
                 ?
-                <CircularProgress color="primary" />
+                <LoadingAnimation 
+                    sx={{
+                        width: {
+                            xs: "50%",
+                            sm: "25%",
+                        }
+                    }}
+                />
                 :
                 <Grid 
                     container 
@@ -102,13 +110,13 @@ const EmployeeCard = (props: EmployeeCardProps) => {
                 cursor: "pointer",
                 width: "100%",
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                boxShadow: 3,
+
                 "&:hover": {
                     transform: "translateY(-4px) scale(1.02)",
-                    boxShadow: 8,
+                    boxShadow: theme => theme.shadows[14],
                 },
             }}
-            elevation={10}
+            elevation={5}
             onClick={props.onClick}
         >
             <CardMedia

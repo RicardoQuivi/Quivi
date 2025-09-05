@@ -41,7 +41,7 @@ export const Pos = () => {
     const [additionalInfoModalOpen, setAdditionalInfoModalOpen] = useState(false);
 
     const searchParamsHook = useBrowserStorage(BrowserStorageType.UrlParam);
-    const [activeTab, setActiveTab] = useStoredState<ActiveTab>("tab", ActiveTab.ChannelSelection, searchParamsHook);
+    const [activeTab, setActiveTab] = useStoredState<ActiveTab>("tab", () => ActiveTab.ChannelSelection, searchParamsHook);
     const [localId, setLocalId] = useStoredState<string | undefined>("localId", undefined, searchParamsHook);
     const [orderId, setOrderId] = useStoredState<string | undefined>("orderId", undefined, searchParamsHook);
 
@@ -116,7 +116,7 @@ export const Pos = () => {
         >
             <Box 
                 sx={{
-                    flex: "0 0 auto",
+                    flex: 0,
                 }}
             >
                 <PosAppBar
@@ -133,7 +133,7 @@ export const Pos = () => {
                 container
                 sx={{
                     overflow: "hidden",
-                    flex: "1 1 auto",
+                    flex: 1,
                     padding: isMobile ? 0 : "1rem",
                 }}
                 spacing={2}
@@ -177,7 +177,7 @@ export const Pos = () => {
                         tab={activeTab}
                         localId={localId}
                         sx={{
-                            flex: "0 0 auto",
+                            flex: 0,
                         }}
                     />
 

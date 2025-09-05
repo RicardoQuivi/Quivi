@@ -6,7 +6,19 @@ import { QueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 
 export const useSessionsQuery = (request: GetSessionsRequest | undefined) : QueryResult<Session[]> => {
-    const innerQueryResult = useInternalSessionsQuery();
+    const api = useSessionsApi();
+    
+    const innerQueryResult = useQueryable({
+        queryName: "useInternalSessionsQuery",
+        entityType: getEntityType(Entity.Sessions),
+        request: {
+            page: 0,
+            includeDeleted: true,
+        } as GetSessionsRequest,
+        getId: (e: Session) => e.id,
+        query: api.get,
+        refreshOnAnyUpdate: true,
+    })
 
     const queryResult = useQueryable({
         queryName: "useSessionsQuery",
@@ -65,24 +77,6 @@ export const useSessionsQuery = (request: GetSessionsRequest | undefined) : Quer
             }
         },
         refreshOnAnyUpdate: false,
-    })
-
-    return queryResult;
-}
-
-const useInternalSessionsQuery = () : QueryResult<Session[]> => {
-    const api = useSessionsApi();
-    
-    const queryResult = useQueryable({
-        queryName: "useInternalSessionsQuery",
-        entityType: getEntityType(Entity.Sessions),
-        request: {
-            page: 0,
-            includeDeleted: true,
-        } as GetSessionsRequest,
-        getId: (e: Session) => e.id,
-        query: api.get,
-        refreshOnAnyUpdate: true,
     })
 
     return queryResult;

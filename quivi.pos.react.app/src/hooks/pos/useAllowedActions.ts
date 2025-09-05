@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Employee, EmployeeRestriction } from "../api/Dtos/employees/Employee";
 import { useChannelsQuery } from "../queries/implementations/useChannelsQuery";
 import { usePosIntegrationsQuery } from "../queries/implementations/usePosIntegrationsQuery";
@@ -52,9 +52,21 @@ export const useAllowedActions = (channelId: string | undefined): QueryResult<Ch
         page: 0,
     })
 
-    const [permissions, setPermissions] = useState<QueryResult<ChannelPermissions>>(getPermissions(undefined, channelId, integrationQuery, channelsQuery, channelProfileQuery, sessionsQuery, posContext.employee));
+    const prevPermissionsRef = useRef<QueryResult<ChannelPermissions> | undefined>(undefined);
 
-    useEffect(() => setPermissions(p => getPermissions(p, channelId, integrationQuery, channelsQuery, channelProfileQuery, sessionsQuery, posContext.employee)), [
+    const permissions = useMemo(() => {
+        const next = getPermissions(
+            prevPermissionsRef.current,
+            channelId,
+            integrationQuery,
+            channelsQuery,
+            channelProfileQuery,
+            sessionsQuery,
+            posContext.employee
+        );
+        prevPermissionsRef.current = next;
+        return next;
+    }, [
         channelId,
 
         integrationQuery.isLoading, 
@@ -74,7 +86,7 @@ export const useAllowedActions = (channelId: string | undefined): QueryResult<Ch
         sessionsQuery.data,
 
         posContext.employee,
-    ])
+    ]);
 
     return permissions;
 }

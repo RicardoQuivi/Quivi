@@ -15,12 +15,15 @@ const ListItem = (props: {
     readonly isMobile: boolean;
     readonly onClick?: () => any;
 }) => {
+    const width = 400;
+    const height = 300;
+
     const truncateName = (original: string) => original.length > 84 ? `${original.substring(0, 84)}...` : original;
 
     const generatedImageUrl = useGenerateImage({
         name: props.image == undefined ?  props.name : undefined,
-        width: 400,
-        height: 300,
+        width: width,
+        height: height,
     })
 
     const imageUrl = useMemo(() => {
@@ -42,9 +45,27 @@ const ListItem = (props: {
                 {
                     imageUrl == undefined
                     ?
-                    <Skeleton variant="rounded" height={200} animation="wave"/>
+                    <Box
+                        sx={{
+                            aspectRatio: "4/3" 
+                        }}
+                    >
+                        <Skeleton
+                            variant="rounded"
+                            width="100%"
+                            height="100%"
+                            animation="wave"
+                        />
+                    </Box>
                     :
-                    <img src={imageUrl} alt={props.name} loading="lazy" style={{ aspectRatio: "4/3"}}/>
+                    <img
+                        src={imageUrl}
+                        alt={props.name}
+                        loading="lazy"
+                        style={{ 
+                            aspectRatio: "4/3",
+                        }}
+                    />
                 }
                 <ImageListItemBar
                     title={props.name == undefined ? <Skeleton animation="wave" /> : truncateName(props.name)}
