@@ -161,6 +161,7 @@ export const PosTabs = (props: Props) => {
                 "& .MuiButtonBase-root": {
                     color: "rgba(255, 255, 255, 0.7)",
                     padding: 0,
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
 
                     "& svg": {
                         width: 20,
@@ -171,6 +172,7 @@ export const PosTabs = (props: Props) => {
                 },
 
                 "& .MuiButtonBase-root.Mui-selected": {
+                    transform: "translateY(-2px) scale(1.02)",
                     color: "rgba(255, 255, 255, 1)",
                     fontWeight: 800,
 

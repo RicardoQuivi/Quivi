@@ -216,9 +216,9 @@ export const ChannelsOverview: React.FC<Props> = ({
                                         key={channel.id}
                                         size={{
                                             xs: 6,
-                                            sm: 3,
+                                            sm: 4,
                                             md: 3,
-                                            lg: 2,
+                                            lg: 3,
                                             xl: 2,
                                         }}
                                     >

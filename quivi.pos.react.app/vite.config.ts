@@ -18,8 +18,8 @@ export default defineConfig({
         VitePWA({
             registerType: 'autoUpdate',
             manifest: {
-                name: 'Quivi Backoffice',
-                short_name: 'Backoffice',
+                name: 'Quivi PoS',
+                short_name: 'Quivi PoS',
                 start_url: '/',
                 display: 'standalone',
                 background_color: '#1C3A11',
@@ -36,10 +36,22 @@ export default defineConfig({
                         type: 'image/png'
                     },
                     {
-                        src: 'icons/quivi-512x512.png',
+                        src: 'icons/quivi-maskable.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any maskable'
+                    }
+                ],
+                screenshots: [
+                    {
+                        src: 'screenshots/wide.png',
+                        sizes: '1280x720',
+                        form_factor: 'wide'
+                    },
+                    {
+                        src: 'screenshots/narrow.png',
+                        sizes: '540x720',
+                        form_factor: 'narrow'
                     }
                 ]
             }
