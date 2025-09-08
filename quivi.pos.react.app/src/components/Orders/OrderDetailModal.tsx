@@ -12,7 +12,7 @@ import { Order } from "../../hooks/api/Dtos/orders/Order";
 import CustomModal, { ModalSize } from "../Modals/CustomModal";
 import { useToast } from "../../context/ToastProvider";
 import CurrencySpan from "../Currency/CurrencySpan";
-import { ConfigurableField, ConfigurableFieldType } from "../../hooks/api/Dtos/configurablefields/ConfigurableField";
+import { ConfigurableFieldType } from "../../hooks/api/Dtos/configurablefields/ConfigurableField";
 import ConfirmButton from "../Buttons/ConfirmButton";
 import { ApiException } from "../../hooks/api/exceptions/ApiException";
 import { useNow } from "../../hooks/useNow";
@@ -30,6 +30,7 @@ import { useMenuItemMutator } from "../../hooks/mutators/useMenuItemMutator";
 import { InvalidModelResponse } from "../../hooks/api/exceptions/InvalidModelResponse";
 import ValidationMessage from "../Validations/ValidationMessage";
 import { useActionAwaiter } from "../../hooks/useActionAwaiter";
+import { CollectionFunctions } from "../../helpers/collectionsHelper";
 
 const fadeIn = keyframes`
     from {
@@ -397,24 +398,13 @@ const OrderDetail = ({
     const transactionMutator = useTransactionMutator();
 
     const isDelayed = helper.isOrderDelayed(order.lastModified);
-    const fieldIds = useMemo(() => {
-        const set = new Set<string>();
-        for(const f of order.fields) {
-            set.add(f.id);
-        }
-        return Array.from(set.keys());
-    }, [order.fields]);
+
+    const fieldIds = useMemo(() => CollectionFunctions.uniqueIds(order.fields, f => f.id), [order.fields])
     const fieldsQuery = useConfigurableFieldsQuery(order.fields.length == 0 ? undefined : {
         ids: fieldIds,
         page: 0,
     })
-    const fieldsMap = useMemo(() => {
-        const map = new Map<string, ConfigurableField>();
-        for(const f of fieldsQuery.data) {
-            map.set(f.id, f);
-        }
-        return map;
-    }, [fieldsQuery.data])
+    const fieldsMap = useMemo(() => CollectionFunctions.toMap(fieldsQuery.data, f => f.id), [fieldsQuery.data])
     
     const getTimeBadge = (order: Order) => {
         if([OrderState.Scheduled, OrderState.ScheduledRequested].includes(order.state) && order.scheduledTo != undefined) {
@@ -498,15 +488,8 @@ const OrderDetail = ({
         page: 0,
         includeDeleted: true,
     })
-    const menuItemsMap = useMemo(() => {
-        const map = new Map<string, MenuItem>();
-        for(const item of menuItemsQuery.data) {
-            map.set(item.id, item);
-        }
-        return map;
-    }, [menuItemsQuery.data])
+    const menuItemsMap = useMemo(() => CollectionFunctions.toMap(menuItemsQuery.data, m => m.id), [menuItemsQuery.data])
 
-    console.log(transaction)
     return <>
         <TableContainer>
             <Table

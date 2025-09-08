@@ -12,7 +12,7 @@ import { ResponsiveTable } from "../Tables/ResponsiveTable";
 import { useDateHelper } from "../../helpers/dateHelper";
 import CurrencySpan from "../Currency/CurrencySpan";
 import { useOrderHelper } from "../../helpers/useOrderHelper";
-import { MapFunctions } from "../../helpers/mapHelper";
+import { CollectionFunctions } from "../../helpers/collectionsHelper";
 
 interface Props extends GetOrdersRequest {
     readonly onOrderSelected?: (order: Order) => any;
@@ -50,7 +50,7 @@ export const OrdersTable = ({
         allowsSessionsOnly: false,
         includeDeleted: true,
     })
-    const channelsMap = useMemo(() => MapFunctions.toMap(channelsQuery.data, q => q.id), [channelsQuery.data])
+    const channelsMap = useMemo(() => CollectionFunctions.toMap(channelsQuery.data, q => q.id), [channelsQuery.data])
     const profileIds = useMemo(() => {
         const set = new Set<string>();
         for(const c of channelsQuery.data) {
@@ -63,14 +63,14 @@ export const OrdersTable = ({
         ids: profileIds,
         page: 0,
     })
-    const profilesMap = useMemo(() => MapFunctions.toMap(profilesQuery.data, q => q.id), [profilesQuery.data])
+    const profilesMap = useMemo(() => CollectionFunctions.toMap(profilesQuery.data, q => q.id), [profilesQuery.data])
 
     const employeesQuery = useEmployeesQuery(employeeIds.length == 0 ? undefined : {
         ids: employeeIds,
         includeDeleted: true,
         page: 0,
     });
-    const employeesMap = useMemo(() => MapFunctions.toMap(employeesQuery.data, q => q.id), [employeesQuery.data])
+    const employeesMap = useMemo(() => CollectionFunctions.toMap(employeesQuery.data, q => q.id), [employeesQuery.data])
             
     return <>
         <Box

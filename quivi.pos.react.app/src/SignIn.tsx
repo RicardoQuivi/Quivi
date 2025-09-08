@@ -3,7 +3,7 @@ import { useAuth } from "./context/AuthContextProvider";
 import { useEffect } from "react";
 import { useEmployeeManager } from "./context/employee/EmployeeContextProvider";
 import { useTranslation } from "react-i18next";
-import { CircularProgress } from "@mui/material";
+import { LoadingAnimation } from "./components/Loadings/LoadingAnimation";
 
 export const SignIn = () => {
     const { i18n } = useTranslation();
@@ -32,5 +32,12 @@ export const SignIn = () => {
         navigate("/");
     }, [])
 
-    return <CircularProgress color="inherit" />
+    return <LoadingAnimation
+        sx={{
+            width: {
+                xs: "50%",
+                sm: "25%",
+            }
+        }}
+    />
 }

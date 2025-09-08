@@ -7,7 +7,6 @@ import { LockPage } from './pages/LockPage';
 import { LoggedEmployeeContextProvider } from './context/pos/LoggedEmployeeContextProvider';
 import { PosSessionContextProvider } from './context/pos/PosSessionContextProvider';
 import { NoEmployeeLayout } from './layouts/NoEmployeeLayout';
-import { Box } from '@mui/material';
 import { LoadingAnimation } from './components/Loadings/LoadingAnimation';
 
 export const App = () => {
@@ -28,15 +27,7 @@ export const App = () => {
 
 const SignInLayoutRoute = () => {
     return <NoEmployeeLayout>
-        <Box
-            sx={{
-                display: "flex",
-                alignContent: "center",
-                flexWrap: "wrap",
-            }}
-        >
-            <Outlet />
-        </Box>
+        <Outlet />
     </NoEmployeeLayout>
 }
 
