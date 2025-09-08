@@ -11,9 +11,11 @@ export interface Order {
     readonly channelId: string;
     readonly sequenceNumber: string;
     readonly state: OrderState;
+    readonly employeeId?: string;
     readonly isTakeAway: boolean;
     readonly items: SessionItem[];
     readonly fields: OrderFieldValue[];
     readonly scheduledTo?: string;
+    readonly createdDate: string;
     readonly lastModified: string;
 }

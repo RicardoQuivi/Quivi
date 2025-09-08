@@ -34,6 +34,7 @@ namespace Quivi.Application.Commands.MenuItems
         int? LocationId { get; set; }
         string? ImageUrl { get; set; }
         int SortIndex { get; set; }
+        bool HasStock { get; set; }
 
         IUpdatableTranslations<IMenuItemTranslation> Translations { get; }
         IUpdatableRelationship<IUpdatableItemCategory, int> Categories { get; }
@@ -130,12 +131,13 @@ namespace Quivi.Application.Commands.MenuItems
             private readonly int? originalLocationId;
             private readonly string? originalImageUrl;
             private readonly int originalSortIndex;
+            private readonly bool originalStock;
 
             public UpdatableMenuItem(MenuItem model, DateTime now) : base(model.MenuItemTranslations ?? [], t => new UpdatableMenuItemTranslation(t), () => new MenuItemTranslation
             {
                 Name = "",
                 Description = "",
-                
+
                 CreatedDate = now,
                 ModifiedDate = now,
                 DeletedDate = null,
@@ -159,6 +161,7 @@ namespace Quivi.Application.Commands.MenuItems
                 originalLocationId = model.LocationId;
                 originalImageUrl = model.ImageUrl;
                 originalSortIndex = model.SortIndex;
+                originalStock = model.Stock;
             }
 
             public int MerchantId => model.MerchantId;
@@ -171,6 +174,7 @@ namespace Quivi.Application.Commands.MenuItems
             public int? LocationId { get => model.LocationId; set => model.LocationId = value; }
             public string? ImageUrl { get => model.ImageUrl; set => model.ImageUrl = value; }
             public int SortIndex { get => model.SortIndex; set => model.SortIndex = value; }
+            public bool HasStock { get => model.Stock; set => model.Stock = value; }
             public IUpdatableRelationship<IUpdatableItemCategory, int> Categories => updatableCategories;
 
             public override bool HasChanges
@@ -201,12 +205,16 @@ namespace Quivi.Application.Commands.MenuItems
                     if (originalSortIndex != model.SortIndex)
                         return true;
 
+                    if (originalStock != model.Stock)
+                        return true;
+
                     if (updatableCategories.HasChanges)
                         return true;
 
                     return base.HasChanges;
                 }
             }
+
         }
 
 

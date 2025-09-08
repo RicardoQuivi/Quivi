@@ -9,6 +9,8 @@ import { Local } from "../../hooks/api/Dtos/locals/Local";
 import { PreparationGroupsQueueCards } from "./groups/PreparationGroupsQueueCards";
 import { CommitedPreparationGroupsQueueCards } from "./groups/CommitedPreparationGroupsQueueCards";
 import { OrdersQueueCards } from "./OrdersQueueCards";
+import { OrdersHistory } from "./OrdersHistory";
+import { OrderDetailModal } from "./OrderDetailModal";
 
 const newTabStates = [OrderState.PendingApproval, OrderState.ScheduledRequested];
 const processingStates = [OrderState.Accepted, OrderState.Processing];
@@ -57,12 +59,12 @@ export const OrdersOverview = (props: Props) => {
         sortDirection: SortDirection.Asc,
     });
     
-    const [_selectedOrder, setSelecteOrder] = useState({
+    const [selectedOrder, setSelectedOrder] = useState({
         id: undefined as (string | undefined),
         wasAlreadyRedeemed: false,
     });
 
-    useEffect(() => setSelecteOrder(s => {
+    useEffect(() => setSelectedOrder(s => {
         if(s.id == props.selectedOrderId) {
             return s;
         }
@@ -75,7 +77,7 @@ export const OrdersOverview = (props: Props) => {
 
     const _onQrCodeRead = (id: string, wasAlreadyRedeemed: boolean) => {
         props.onReadQrCodeClosed();
-        setSelecteOrder({
+        setSelectedOrder({
             id: id,
             wasAlreadyRedeemed: wasAlreadyRedeemed,
         })
@@ -86,11 +88,10 @@ export const OrdersOverview = (props: Props) => {
         switch(filters.states)
         {
             case historyStates:
-                return <></> 
-                // return <OrdersHistory
-                //             states={filters.states}
-                //             onOrderSelected={(o) => props.onOrderSelected(o.id)}
-                //         />;
+                return <OrdersHistory
+                            states={filters.states}
+                            onOrderSelected={(o) => props.onOrderSelected(o.id)}
+                        />;
             case processingStates: 
                 return <PreparationGroupsQueueCards
                             locationId={props.localId}
@@ -133,7 +134,7 @@ export const OrdersOverview = (props: Props) => {
                     <Chip 
                         sx={{
                             width: "100%",
-                            whiteSpace: "normal", // Allow text to wrap
+                            whiteSpace: "normal",
                         }}
                         label={t("ordersTab.new")} 
                         color="primary"
@@ -151,7 +152,7 @@ export const OrdersOverview = (props: Props) => {
                     <Chip 
                         sx={{
                             width: "100%",
-                            whiteSpace: "normal", // Allow text to wrap
+                            whiteSpace: "normal",
                         }}
                         label={t("ordersTab.inProgress")} 
                         color="primary"
@@ -169,7 +170,7 @@ export const OrdersOverview = (props: Props) => {
                     <Chip 
                         sx={{
                             width: "100%",
-                            whiteSpace: "normal", // Allow text to wrap
+                            whiteSpace: "normal",
                         }}
                         label={t("ordersTab.preparing")} 
                         color="primary"
@@ -187,7 +188,7 @@ export const OrdersOverview = (props: Props) => {
                     <Chip 
                         sx={{
                             width: "100%",
-                            whiteSpace: "normal", // Allow text to wrap
+                            whiteSpace: "normal",
                         }}
                         label={t("ordersTab.history")} 
                         color="primary"
@@ -204,7 +205,7 @@ export const OrdersOverview = (props: Props) => {
                     <Chip 
                         sx={{
                             width: "100%",
-                            whiteSpace: "normal", // Allow text to wrap
+                            whiteSpace: "normal",
                         }}
                         label={t("ordersTab.scheduled")} 
                         color="primary"
@@ -217,15 +218,19 @@ export const OrdersOverview = (props: Props) => {
 
             <Box 
                 sx={{
-                    flex: "1 1 auto",
+                    flex: 1,
                     pt: "1rem",
                     overflow: "hidden"
                 }}
             >
                 {getCardsSection()}
             </Box>
-            {/* <QrCodeReaderModal isOpen={props.readQrCodeOpen} onClose={props.onReadQrCodeClosed} onOrderRead={onQrCodeRead} />
-            <OrderDetailModal orderId={selectedOrder.id} alreadyRedeemed={selectedOrder.wasAlreadyRedeemed} onClose={() => props.onOrderSelected(undefined)} /> */}
+            {/* <QrCodeReaderModal isOpen={props.readQrCodeOpen} onClose={props.onReadQrCodeClosed} onOrderRead={onQrCodeRead} /> */}
+            <OrderDetailModal
+                orderId={selectedOrder.id}
+                alreadyRedeemed={selectedOrder.wasAlreadyRedeemed}
+                onClose={() => props.onOrderSelected(undefined)}
+            />
         </Box>
     )
 }

@@ -3,5 +3,6 @@
     public abstract class AGetTransactionsRequest
     {
         public IEnumerable<string>? Ids { get; init; }
+        public IEnumerable<string>? OrderIds { get; init; }
     }
 }

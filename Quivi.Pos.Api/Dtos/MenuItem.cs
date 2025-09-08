@@ -7,6 +7,7 @@
         public string? ImageUrl { get; init; }
         public decimal Price { get; init; }
         public required IEnumerable<ModifierGroup> ModifierGroups { get; init; }
+        public bool HasStock { get; set; }
         public bool IsDeleted { get; init; }
     }
 }

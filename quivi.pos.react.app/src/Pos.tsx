@@ -218,15 +218,11 @@ export const Pos = () => {
                                 onOrderUpdated={(id) => onChannelClicked(id, false)}
                             />
                         }
-                        {/*
-                        {
-                            activeTab == ActiveTab.Notifications &&
-                            <NotificationCenter />
-                        }
-                        */}
                         
                         {
-                            hasChannelsWithSessions && isMobile && activeTab == ActiveTab.SessionOverview &&
+                            hasChannelsWithSessions &&
+                            isMobile &&
+                            activeTab == ActiveTab.SessionOverview &&
                             <Box
                                 sx={{
                                     height: "100%",

@@ -32,9 +32,10 @@ export const useStoredState = <T>(
             return;
         }
 
-        if (storage.getItem<T>(paramKey) === value)
+        if (storage.getItem<T>(paramKey) === value) {
             return;
-
+        }
+        
         storage.setItem<T>(paramKey, value);
     }, [value]);
 

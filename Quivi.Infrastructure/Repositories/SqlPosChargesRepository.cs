@@ -37,18 +37,21 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.OrderIds != null)
             {
-                var sessionIds = Context.Orders.Where(o => criteria.OrderIds.Contains(o.Id))
-                                                .Where(o => o.SessionId.HasValue)
-                                                .Select(o => o.SessionId!.Value)
-                                                .Distinct();
+                //var sessionIds = Context.Orders.Where(o => criteria.OrderIds.Contains(o.Id))
+                //                                .Where(o => o.SessionId.HasValue)
+                //                                .Select(o => o.SessionId!.Value)
+                //                                .Distinct();
 
-                innerQuery = innerQuery.Where(q => (q.SessionId.HasValue && sessionIds.Contains(q.SessionId.Value)) ||
-                                            q.PosChargeSelectedMenuItems!.Select(q => q.OrderMenuItem!).All(omi => criteria.OrderIds.Contains(omi.OrderId)));
+                innerQuery = innerQuery.Where(q => //(q.SessionId.HasValue && sessionIds.Contains(q.SessionId.Value)) ||
+                                            (
+                                                q.PosChargeSelectedMenuItems!.Select(q => q.OrderMenuItem!).Any() &&
+                                                q.PosChargeSelectedMenuItems!.Select(q => q.OrderMenuItem!).All(omi => criteria.OrderIds.Contains(omi.OrderId))
+                                            ));
             }
 
 
             if (criteria.LocationIds != null)
-                query = query.Where(q => q.LocationId.HasValue && criteria.LocationIds.Contains(q.LocationId.Value));
+                innerQuery = innerQuery.Where(q => q.LocationId.HasValue && criteria.LocationIds.Contains(q.LocationId.Value));
 
             if (criteria.FromCapturedDate.HasValue)
                 innerQuery = innerQuery.Where(q => criteria.FromCapturedDate.Value <= q.CaptureDate);

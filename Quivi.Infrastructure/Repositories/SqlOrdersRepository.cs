@@ -3,6 +3,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using System.Linq.Expressions;
 
 namespace Quivi.Infrastructure.Repositories
 {
@@ -87,7 +88,11 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.OrderMenuItemIds != null)
                 query = query.Where(q => q.OrderMenuItems!.Any(omi => criteria.OrderMenuItemIds.Contains(omi.Id)));
 
-            return query.OrderBy(o => o.Id);
+
+            Expression<Func<Order, int>> orderBy = o => o.Id;
+            if (criteria.SortDirection == Abstractions.Repositories.Data.SortDirection.Ascending)
+                return query.OrderBy(orderBy);
+            return query.OrderByDescending(orderBy);
         }
     }
 }

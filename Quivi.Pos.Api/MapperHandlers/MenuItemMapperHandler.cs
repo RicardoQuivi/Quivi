@@ -23,6 +23,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Price = model.Price,
                 ModifierGroups = [],
+                HasStock = model.Stock,
                 IsDeleted = model.DeletedDate.HasValue,
             };
         }

@@ -9,7 +9,6 @@ export interface GetChannelsRequest extends PagedRequest {
     readonly sessionIds?: string[];
     readonly allowsPrePaidOrderingOnly?: boolean;
     readonly allowsPostPaidOrderingOnly?: boolean;
-    readonly includePageRanges?: boolean;
     readonly channelProfileId?: string;
     readonly hasOpenSession?: boolean;
 }

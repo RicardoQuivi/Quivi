@@ -26,6 +26,8 @@ namespace Quivi.Application.Queries.Orders
         public bool IncludeOrderMenuItems { get; init; }
         public bool IncludeOrderMenuItemsPosChargeInvoiceItems { get; init; }
         public bool IncludeOrderMenuItemsPosChargeInvoiceItemsPosCharge { get; init; }
+
+        public SortDirection SortDirection { get; init; }
     }
 
     public class GetOrdersAsyncQueryHandler : APagedQueryAsyncHandler<GetOrdersAsyncQuery, Order>
@@ -60,6 +62,7 @@ namespace Quivi.Application.Queries.Orders
                 IncludeOrderMenuItemsPosChargeInvoiceItemsPosCharge = query.IncludeOrderMenuItemsPosChargeInvoiceItemsPosCharge,
                 IncludeChangeLogs = query.IncludeChangeLogs,
 
+                SortDirection = query.SortDirection,
                 PageSize = query.PageSize,
                 PageIndex = query.PageIndex,
             });

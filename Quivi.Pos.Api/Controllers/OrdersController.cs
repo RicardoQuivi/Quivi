@@ -9,6 +9,7 @@ using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Mapping;
 using Quivi.Infrastructure.Abstractions.Pos;
+using Quivi.Infrastructure.Abstractions.Repositories.Data;
 using Quivi.Infrastructure.Extensions;
 using Quivi.Pos.Api.Dtos.Requests.Orders;
 using Quivi.Pos.Api.Dtos.Responses.Orders;
@@ -60,6 +61,7 @@ namespace Quivi.Pos.Api.Controllers
                 IncludeOrderSequence = true,
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
+                SortDirection = request.SortDirection ?? SortDirection.Descending,
             });
 
             return new GetOrdersResponse

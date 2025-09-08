@@ -3,5 +3,6 @@
     public enum ValidationError
     {
         InvalidValue,
+        NoBalance,
     }
 }

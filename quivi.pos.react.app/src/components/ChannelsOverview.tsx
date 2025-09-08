@@ -57,7 +57,6 @@ export const ChannelsOverview: React.FC<Props> = ({
     const channelsQuery = useChannelsQuery(channelProfileId == undefined ? undefined : {
         page: currentPage, 
         pageSize: 48,
-        includePageRanges: true, 
         search: search, 
         allowsSessionsOnly: true,
         channelProfileId: channelProfileId,

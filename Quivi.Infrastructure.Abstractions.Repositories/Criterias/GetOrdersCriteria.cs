@@ -1,4 +1,5 @@
 ﻿using Quivi.Domain.Entities.Pos;
+using Quivi.Infrastructure.Abstractions.Repositories.Data;
 
 namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 {
@@ -29,5 +30,6 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }
+        public SortDirection? SortDirection { get; init; }
     }
 }

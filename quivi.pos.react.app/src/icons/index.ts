@@ -39,6 +39,7 @@ import { ReactComponent as PortugalFlagIcon } from "./portugalflag.svg?react";
 import { ReactComponent as OvenIcon } from "./oven.svg?react";
 import { ReactComponent as PercentIcon } from "./percent.svg?react";
 import { ReactComponent as MoneyBillIcon } from "./money-bill.svg?react";
+import { ReactComponent as PosPlaceholderIcon } from "./pos-placeholder.svg?react";
 
 export {
     ExitIcon,
@@ -82,4 +83,5 @@ export {
     OvenIcon,
     PercentIcon,
     MoneyBillIcon,
+    PosPlaceholderIcon,
 };

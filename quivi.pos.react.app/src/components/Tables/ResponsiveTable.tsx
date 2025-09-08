@@ -55,7 +55,14 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
         {/* Mobile View */}
 
         {/* Other Devices View */}
-        <TableContainer component={"div"}>
+        <TableContainer
+            component={"div"}
+            sx={{
+                "& .MuiTableCell-head.MuiTableCell-root": {
+                    fontWeight: "bold",
+                }
+            }}
+        >
             {
                 hasInnerRows() == true
                 ?

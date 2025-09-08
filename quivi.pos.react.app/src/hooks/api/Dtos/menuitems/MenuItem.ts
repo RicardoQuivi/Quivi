@@ -4,6 +4,7 @@ export interface MenuItem {
     readonly imageUrl?: string;
     readonly price: number;
     readonly modifierGroups: ModifierGroup[];
+    readonly hasStock: boolean;
     readonly isDeleted: boolean;
 }
 

@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { GetMenuItemsRequest } from "./Dtos/menuitems/GetMenuItemsRequest";
 import { GetMenuItemsResponse } from "./Dtos/menuitems/GetMenuItemsResponse";
 import { useEmployeeHttpClient } from "../../context/employee/EmployeeContextProvider";
+import { PatchMenuItemsStockResponse } from "./Dtos/menuitems/PatchMenuItemsStockResponse";
+import { PatchMenuItemsStockRequest } from "./Dtos/menuitems/PatchMenuItemsStockRequest";
 
 export const useMenuItemsApi = () => {
     const httpClient = useEmployeeHttpClient();
@@ -31,8 +33,14 @@ export const useMenuItemsApi = () => {
         return httpClient.get<GetMenuItemsResponse>(url, {});
     }
 
+    const patchStock = async (request: PatchMenuItemsStockRequest) => {
+        const url = new URL(`api/menuitems`, import.meta.env.VITE_API_URL).toString();
+        return httpClient.patch<PatchMenuItemsStockResponse>(url, request, {});
+    }
+
     const state = useMemo(() => ({
         get,
+        patchStock,
     }), [httpClient]);
 
     return state;
