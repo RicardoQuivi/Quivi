@@ -8,7 +8,6 @@ import { useLocalsQuery } from "../../hooks/queries/implementations/useLocalsQue
 import { Local } from "../../hooks/api/Dtos/locals/Local";
 import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
-import { useWebEvents } from "../../hooks/signalR/useWebEvents";
 import { usePrintersQuery } from "../../hooks/queries/implementations/usePrintersQuery";
 import { usePreparationGroupsQuery } from "../../hooks/queries/implementations/usePreparationGroupsQuery";
 import { PreparationGroup } from "../../hooks/api/Dtos/preparationgroups/PreparationGroup";
@@ -19,11 +18,10 @@ import { SessionItem } from "../../hooks/api/Dtos/sessions/SessionItem";
 import { PaymentData, PaymentsModal } from "../Payments/PaymentsModal";
 import { useTransactionMutator } from "../../hooks/mutators/useTransactionMutator";
 import { PaymentAmountType } from "../../hooks/api/Dtos/payments/PaymentAmountType";
-import { TransactionSyncedPromise } from "../../hooks/signalR/promises/TransactionSyncedPromise";
-import { useTransactionsApi } from "../../hooks/api/useTransactionsApi";
 import { PreparationGroupDetailModal } from "../Orders/groups/PreparationGroupDetailModal";
 import { PaymentHistoryModal } from "../PaymentsHistory/PaymentHistoryModal";
 import { createPortal } from 'react-dom';
+import { useActionAwaiter } from "../../hooks/useActionAwaiter";
 
 const getCheckedItems = (group: PreparationGroup | undefined) =>  {
     if(group == undefined) {
@@ -58,9 +56,8 @@ export const SessionButtons = ({
 }: SessionButtonsProps) => {
     const { t } = useTranslation();
     const toast = useToast();
-    const webEvents = useWebEvents();
     const pos = usePosSession();
-    const transactionApi = useTransactionsApi();
+    const awaiter = useActionAwaiter();
     const transactionMutator = useTransactionMutator();
 
     const printersQuery = usePrintersQuery({
@@ -232,18 +229,7 @@ export const SessionButtons = ({
             items: data.amountType == PaymentAmountType.Price ? undefined : data.selectedItems,
             tip: data.tip,
         });
-        await new TransactionSyncedPromise(response.id, webEvents.client, async () => {
-            const result = await transactionApi.get({
-                ids: [response.id],
-                page: 0,
-                pageSize: 1,
-            });
-
-            if(result.data.length == 0) {
-                return undefined;
-            }
-            return result.data[0];
-        });
+        await awaiter.syncedTransaction(response.id);
     }
 
     if(canAddItems == false && canRemoveItems == false) {

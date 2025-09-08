@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Box, Grid, Link, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Grid, Toolbar, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { QuiviFullIcon, QuiviIcon } from "../icons";
 import { FloatingLanguageButton } from "../components/Buttons/FloatingLanguageButton";
@@ -7,8 +7,6 @@ interface Props {
     readonly children: React.ReactNode;
 }
 export const NoEmployeeLayout = (props: Props) => {
-    const { t } = useTranslation();
-
     return (
         <Box
             position="relative"

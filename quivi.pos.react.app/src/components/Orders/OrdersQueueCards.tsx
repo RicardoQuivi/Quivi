@@ -5,13 +5,11 @@ import { Order } from "../../hooks/api/Dtos/orders/Order";
 import { useTranslation } from "react-i18next";
 import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
 import { SortDirection } from "../../hooks/api/Dtos/SortableRequest";
-import { BackgroundJobPromise } from "../../hooks/signalR/promises/BackgroundJobPromise";
 import { PaginationFooter } from "../Pagination/PaginationFooter";
 import { useToast } from "../../context/ToastProvider";
 import { OrderCard } from "./OrderCard";
 import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
-import { useWebEvents } from "../../hooks/signalR/useWebEvents";
-import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
+import { useActionAwaiter } from "../../hooks/useActionAwaiter";
 
 interface Props {
     readonly states: OrderState[];
@@ -22,10 +20,8 @@ export const OrdersQueueCards = (props: Props) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const xs = useMediaQuery(theme.breakpoints.only('xs'));
-    const webEvents = useWebEvents();
-    const jobsApi = useBackgroundJobsApi();
     const toast = useToast();
-    
+    const awaiter = useActionAwaiter();
     const [page, setPage] = useState(0);
 
     const ordersQuery = useOrdersQuery({
@@ -43,12 +39,7 @@ export const OrdersQueueCards = (props: Props) => {
             const jobId = await orderMutator.process(o, {
                 completeOrder: complete,
             })
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            })
+            await awaiter.job(jobId);
             props.onOrderUpdated(o);
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));

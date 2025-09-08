@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { Employee, EmployeeRestriction } from "../api/Dtos/employees/Employee";
 import { useChannelsQuery } from "../queries/implementations/useChannelsQuery";
 import { usePosIntegrationsQuery } from "../queries/implementations/usePosIntegrationsQuery";

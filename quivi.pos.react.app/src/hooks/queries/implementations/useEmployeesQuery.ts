@@ -4,7 +4,6 @@ import { GetEmployeesRequest } from "../../api/Dtos/employees/GetEmployeesReques
 import { useEmployeesApi } from "../../api/useEmployeesApi";
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
-import { QueryResult } from "../QueryResult";
 
 export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
     const api = useEmployeesApi();

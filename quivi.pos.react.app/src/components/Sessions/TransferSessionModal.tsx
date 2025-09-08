@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Box } from '@mui/system';
 import { Autocomplete, ButtonBase, CircularProgress, FormControl, Grid, Skeleton, TextField } from '@mui/material';
 import { Channel } from '../../hooks/api/Dtos/channels/Channel';
 import { QuantifiedItem, QuantifiedItemPicker, SelectableItem } from '../Pickers/QuantifiedItemPicker';
@@ -14,7 +13,6 @@ import LoadingButton from '../Buttons/LoadingButton';
 import HighlightMessage, { MessageType } from '../Messages/HighlightMessage';
 import { useChannelProfilesQuery } from '../../hooks/queries/implementations/useChannelProfilesQuery';
 import { ChannelProfile } from '../../hooks/api/Dtos/channelProfiles/ChannelProfile';
-import { LoadingAnimation } from '../Loadings/LoadingAnimation';
 import { RightArrowIcon } from '../../icons';
 import { useCartSession } from '../../hooks/pos/session/useCartSession';
 import { useMenuItemsQuery } from '../../hooks/queries/implementations/useMenuItemsQuery';

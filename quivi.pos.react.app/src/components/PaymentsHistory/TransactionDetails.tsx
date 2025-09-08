@@ -1,11 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
-import { useToast } from "../../context/ToastProvider";
-import { useChannelsQuery } from "../../hooks/queries/implementations/useChannelsQuery";
-import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
-import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { DownloadIcon, ExpandIcon } from "../../icons";
 import { SummaryBox } from "../common/SummaryBox";
 import CurrencySpan from "../Currency/CurrencySpan";
@@ -27,50 +23,50 @@ export const TransactionDetails = ({
     const { t } = useTranslation();
     const auth = useAuth();
     //const api = usePrintersApi();
-    const toast = useToast();
+    //const toast = useToast();
     // const printersQuery = usePrintersQuery({
     //     page: 0,
     // });
 
-    const channelQuery = useChannelsQuery(transaction == undefined ? undefined : {
-        ids: [transaction.channelId],
-        page: 0,
-        includeDeleted: true,
-    })
-    const channel = useMemo(() => channelQuery.data.length == 0 ? undefined : channelQuery.data[0], [channelQuery.data]);
+    // const channelQuery = useChannelsQuery(transaction == undefined ? undefined : {
+    //     ids: [transaction.channelId],
+    //     page: 0,
+    //     includeDeleted: true,
+    // })
+    // const channel = useMemo(() => channelQuery.data.length == 0 ? undefined : channelQuery.data[0], [channelQuery.data]);
 
-    const channelProfileQuery = useChannelProfilesQuery(channel == undefined ? undefined : {
-        ids: [channel.channelProfileId],
-        page: 0,
-    })
-    const channelProfile = useMemo(() => channelProfileQuery.data.length == 0 ? undefined : channelProfileQuery.data[0], [channelProfileQuery.data]);
+    // const channelProfileQuery = useChannelProfilesQuery(channel == undefined ? undefined : {
+    //     ids: [channel.channelProfileId],
+    //     page: 0,
+    // })
+    // const channelProfile = useMemo(() => channelProfileQuery.data.length == 0 ? undefined : channelProfileQuery.data[0], [channelProfileQuery.data]);
 
-    const integrationQuery = usePosIntegrationsQuery(channelProfile == undefined ? undefined : {
-        ids: [channelProfile.posIntegrationId],
-        page: 0,
-    })
-    const integration = useMemo(() => integrationQuery.data.length == 0 ? undefined : integrationQuery.data[0], [integrationQuery.data]);
+    // const integrationQuery = usePosIntegrationsQuery(channelProfile == undefined ? undefined : {
+    //     ids: [channelProfile.posIntegrationId],
+    //     page: 0,
+    // })
+    // const integration = useMemo(() => integrationQuery.data.length == 0 ? undefined : integrationQuery.data[0], [integrationQuery.data]);
 
     const documentsQuery = useTransactionDocumentsQuery(transaction == undefined ? undefined : {
         transactionId: transaction.id,
         page: 0,
     })
 
-    const [isPrinting, setIsPrinting] = useState(false);
+    // const [isPrinting, setIsPrinting] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const Print = async (transaction: Transaction) => {
-        setIsPrinting(true);
+    // const Print = async (transaction: Transaction) => {
+    //     setIsPrinting(true);
         
-        try {
-            //await api.Print(transaction.id);
-            toast.info(t('savedChanges'));
-        } catch {
-            toast.error(t('unexpectedErrorHasOccurred'));
-        } finally {            
-            setIsPrinting(false);
-        }
-    }
+    //     try {
+    //         //await api.Print(transaction.id);
+    //         toast.info(t('savedChanges'));
+    //     } catch {
+    //         toast.error(t('unexpectedErrorHasOccurred'));
+    //     } finally {            
+    //         setIsPrinting(false);
+    //     }
+    // }
 
     return <Stack direction="column" spacing={2}>
         <Tooltip title={t("paymentHistory.clickToSeeItems")} style={{width: "100%"}}>

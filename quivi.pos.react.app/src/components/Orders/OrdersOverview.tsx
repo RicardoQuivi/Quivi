@@ -75,14 +75,14 @@ export const OrdersOverview = (props: Props) => {
         }
     }), [props.selectedOrderId])
 
-    const _onQrCodeRead = (id: string, wasAlreadyRedeemed: boolean) => {
-        props.onReadQrCodeClosed();
-        setSelectedOrder({
-            id: id,
-            wasAlreadyRedeemed: wasAlreadyRedeemed,
-        })
-        props.onOrderSelected(id);
-    }
+    // const onQrCodeRead = (id: string, wasAlreadyRedeemed: boolean) => {
+    //     props.onReadQrCodeClosed();
+    //     setSelectedOrder({
+    //         id: id,
+    //         wasAlreadyRedeemed: wasAlreadyRedeemed,
+    //     })
+    //     props.onOrderSelected(id);
+    // }
 
     const getCardsSection = () => {
         switch(filters.states)

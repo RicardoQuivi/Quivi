@@ -103,7 +103,16 @@ export const TransactionOverview = (props: Props) => {
             }
             </Typography>
         </Typography>
-        <Tabs value={tab} onChange={(c, value: number) => setTab(value)} indicatorColor="primary" textColor="primary" variant="fullWidth" style={{marginBottom: "1rem"}}>
+        <Tabs
+            value={tab}
+            onChange={(_, value: number) => setTab(value)}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            sx={{
+                marginBottom: "1rem",
+            }}
+        >
             <Tab
                 label={
                     <Typography variant="body2">

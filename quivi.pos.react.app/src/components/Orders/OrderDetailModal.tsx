@@ -15,7 +15,6 @@ import CurrencySpan from "../Currency/CurrencySpan";
 import { ConfigurableField, ConfigurableFieldType } from "../../hooks/api/Dtos/configurablefields/ConfigurableField";
 import ConfirmButton from "../Buttons/ConfirmButton";
 import { ApiException } from "../../hooks/api/exceptions/ApiException";
-import { BackgroundJobPromise } from "../../hooks/signalR/promises/BackgroundJobPromise";
 import { useNow } from "../../hooks/useNow";
 import { MenuItem } from "../../hooks/api/Dtos/menuitems/MenuItem";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
@@ -23,8 +22,6 @@ import { useConfigurableFieldsQuery } from "../../hooks/queries/implementations/
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
 import { useOrderHelper } from "../../helpers/useOrderHelper";
 import { useMenuItemsQuery } from "../../hooks/queries/implementations/useMenuItemsQuery";
-import { useWebEvents } from "../../hooks/signalR/useWebEvents";
-import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
 import { useDateHelper } from "../../helpers/dateHelper";
 import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
 import { useTransactionMutator } from "../../hooks/mutators/useTransactionMutator";
@@ -32,6 +29,7 @@ import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import { useMenuItemMutator } from "../../hooks/mutators/useMenuItemMutator";
 import { InvalidModelResponse } from "../../hooks/api/exceptions/InvalidModelResponse";
 import ValidationMessage from "../Validations/ValidationMessage";
+import { useActionAwaiter } from "../../hooks/useActionAwaiter";
 
 const fadeIn = keyframes`
     from {
@@ -40,7 +38,7 @@ const fadeIn = keyframes`
 `;
 
 const FadingTypography = styled(Typography)`
-  animation: ${fadeIn} 1s infinite alternate;
+    animation: ${fadeIn} 1s infinite alternate;
 `;
 const StyledAlert = styled(Alert)(() => ({
     "& .MuiAlert-icon": {
@@ -80,10 +78,9 @@ interface OrderDetailModalProps {
 export const OrderDetailModal = (props: OrderDetailModalProps) => {
     const { t } = useTranslation();
     const orderMutator = useOrderMutator();
-    const webEvents = useWebEvents();
-    const jobsApi = useBackgroundJobsApi();
     const toast = useToast();
-    
+    const awaiter = useActionAwaiter();
+
     const [helpActive, setHelpActive] = useState(false);
     const ordersQuery = useOrdersQuery(props.orderId == undefined ? undefined : {
         ids: [props.orderId],
@@ -205,12 +202,7 @@ export const OrderDetailModal = (props: OrderDetailModalProps) => {
             const jobId = await orderMutator.process(o, {
                 completeOrder: complete,
             });
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            });
+            await awaiter.job(jobId);
             props.onClose();
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
@@ -790,8 +782,7 @@ const OrderHelp = ({
     const toast = useToast();
     const orderMutator = useOrderMutator();
     const itemMutator = useMenuItemMutator();
-    const webEvents = useWebEvents();
-    const jobsApi = useBackgroundJobsApi();
+    const awaiter = useActionAwaiter();
 
     const actionOptions = [{
         id: 0,
@@ -888,12 +879,7 @@ const OrderHelp = ({
             const jobId = await orderMutator.decline(order, {
                 reason: state.reason,
             })
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            });
+            await awaiter.job(jobId);
             setState(s => ({...s, apiErrors: [], isSubmitting: false}));
             onCompleted();
         } catch (e) {

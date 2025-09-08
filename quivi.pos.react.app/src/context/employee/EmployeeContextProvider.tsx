@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useMemo, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
 import { Employee } from '../../hooks/api/Dtos/employees/Employee';
 import { useAuth } from '../AuthContextProvider';
 import { AuthenticationError, useAuthApi } from '../../hooks/api/useAuthApi';

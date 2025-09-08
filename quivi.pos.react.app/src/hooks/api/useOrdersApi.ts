@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useHttpClient } from "./useHttpClient";
 import { GetOrdersRequest } from "./Dtos/orders/GetOrdersRequest";
 import { GetOrdersResponse } from "./Dtos/orders/GetOrdersResponse";
 import { CreateOrdersRequest } from "./Dtos/orders/CreateOrdersRequest";

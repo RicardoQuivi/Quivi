@@ -6,11 +6,6 @@ import { useTransactionsApi } from "../../api/useTransactionsApi";
 import { GetTransactionsResumeRequest } from "../../api/Dtos/transactions/GetTransactionsResumeRequest";
 import { TransactionResume } from "../../api/Dtos/transactions/TransactionResume";
 
-const defaultResume: TransactionResume = {
-    payment: 0,
-    tip: 0,
-}
-
 export const useTransactionsResumeQuery = (request: GetTransactionsResumeRequest | undefined) : QueryResult<TransactionResume | undefined> => {
     const api = useTransactionsApi();
     

@@ -22,10 +22,8 @@ import { PickItemQuantityModal } from "./PickItemQuantityModal";
 import { EditItemPriceModel, EditSessionItemModal } from "./EditSessionItemModal";
 import { Items } from "../../helpers/itemsHelpers";
 import { useToast } from "../../context/ToastProvider";
-import { useBackgroundJobsApi } from "../../hooks/api/useBackgroundJobsApi";
-import { useWebEvents } from "../../hooks/signalR/useWebEvents";
-import { BackgroundJobPromise } from "../../hooks/signalR/promises/BackgroundJobPromise";
 import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
+import { useActionAwaiter } from "../../hooks/useActionAwaiter";
 
 const StyleBottomNavigationAction = styled(BottomNavigationAction)(({ }) => ({
     transition: "background-color 0.5s ease",
@@ -578,10 +576,9 @@ const OrderItemComponent = (props : {
     const { t } = useTranslation();
     const dateHelper = useDateHelper();
     const now = useNow(1000);
-    const jobsApi = useBackgroundJobsApi();
-    const webEvents = useWebEvents();
     const toast = useToast();
     const orderMutator = useOrderMutator();
+    const awaiter = useActionAwaiter();
 
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -590,12 +587,7 @@ const OrderItemComponent = (props : {
         setIsLoading(true);
         try {
             const jobId = await orderMutator.process(props.order, {})
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            })
+            await awaiter.job(jobId);
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
         } finally {
@@ -607,12 +599,7 @@ const OrderItemComponent = (props : {
         setIsLoading(true);
         try {
             const jobId = await orderMutator.decline(props.order, {})
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            });
+            await awaiter.job(jobId);
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
         } finally {

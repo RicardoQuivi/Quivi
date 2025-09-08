@@ -203,7 +203,7 @@ const CheckConfigurableField = (props: ConfigurableFieldInputProps) => {
             name={props.field.id}
             checked={value}
             value={value}
-            onChange={(e) => props.onChange(!value)}
+            onChange={_ => props.onChange(!value)}
             onBlur={props.onBlur}
             color="primary"
         />

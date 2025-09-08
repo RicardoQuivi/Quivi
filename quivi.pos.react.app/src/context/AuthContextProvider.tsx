@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthenticationError, useAuthApi } from '../hooks/api/useAuthApi';
 import { UnauthorizedException } from '../hooks/api/exceptions/UnauthorizedException';

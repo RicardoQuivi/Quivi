@@ -5,7 +5,6 @@ import { useChannelsQuery } from "../../hooks/queries/implementations/useChannel
 import { useEmployeesQuery } from "../../hooks/queries/implementations/useEmployeesQuery";
 import CurrencySpan from "../Currency/CurrencySpan";
 import { PaginationFooter } from "../Pagination/PaginationFooter";
-import { useToast } from "../../context/ToastProvider";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
 import { Channel } from "../../hooks/api/Dtos/channels/Channel";
 import { Employee } from "../../hooks/api/Dtos/employees/Employee";
@@ -14,10 +13,8 @@ import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import { CustomChargeMethod } from "../../hooks/api/Dtos/customchargemethods/CustomChargeMethod";
 import { useDateHelper } from "../../helpers/dateHelper";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
-import { usePosIntegrationsQuery } from "../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { QuiviIcon, RefundIcon } from "../../icons";
 import { AGetTransactionsRequest } from "../../hooks/api/Dtos/transactions/AGetTransactionsRequest";
-import { usePrintersQuery } from "../../hooks/queries/implementations/usePrintersQuery";
 import { useTransactionsResumeQuery } from "../../hooks/queries/implementations/useTransactionsResumeQuery";
 import { SummaryBox } from "../common/SummaryBox";
 
@@ -169,9 +166,9 @@ const TransactionRow = (props: RowProps) => {
     const { t } = useTranslation();
     const dateHelpers = useDateHelper();
     //const printersApi = usePrintersApi();
-    const printersQuery = usePrintersQuery({
-        page: 0,
-    });
+    // const printersQuery = usePrintersQuery({
+    //     page: 0,
+    // });
 
     const currentChannelQuery = useChannelsQuery(props.row == undefined ? undefined : {
         ids: [props.row.channelId],
@@ -185,31 +182,29 @@ const TransactionRow = (props: RowProps) => {
     })
     const channelProfile = useMemo(() => channelProfileQuery.data.length == 0 ? undefined : channelProfileQuery.data[0], [channelProfileQuery]);
 
-    const integrationQuery = usePosIntegrationsQuery(channelProfile == undefined ? undefined : {
-        ids: [channelProfile.posIntegrationId],
-        page: 0,
-    })
-    const integration = useMemo(() => integrationQuery.data.length == 0 ? undefined : integrationQuery.data[0], [integrationQuery]);
+    // const integrationQuery = usePosIntegrationsQuery(channelProfile == undefined ? undefined : {
+    //     ids: [channelProfile.posIntegrationId],
+    //     page: 0,
+    // })
+    // const integration = useMemo(() => integrationQuery.data.length == 0 ? undefined : integrationQuery.data[0], [integrationQuery]);
 
-    const toast = useToast();
+    // const [state, setState] = useState({
+    //     isPrinting: false,
+    // })
 
-    const [state, setState] = useState({
-        isPrinting: false,
-    })
+    // const setIsPrinting = (b: boolean) => setState(s => ({...s, isPrinting: b}));
+    // const Print = async (transaction: Transaction) => {
+    //     setIsPrinting(true);
 
-    const setIsPrinting = (b: boolean) => setState(s => ({...s, isPrinting: b}));
-    const Print = async (transaction: Transaction) => {
-        setIsPrinting(true);
-
-        try {
-            //await printersApi.Print(transaction.id);
-            toast.info(`${t('printing')}...`);
-        } catch {
-            toast.error(t('unexpectedErrorHasOccurred'));
-        } finally {            
-            setIsPrinting(false);
-        }
-    }
+    //     try {
+    //         //await printersApi.Print(transaction.id);
+    //         toast.info(`${t('printing')}...`);
+    //     } catch {
+    //         toast.error(t('unexpectedErrorHasOccurred'));
+    //     } finally {            
+    //         setIsPrinting(false);
+    //     }
+    // }
 
     const row = props.row;
     const channel = row != undefined && props.channelsMap != undefined ? props.channelsMap.get(row.channelId) : undefined;
@@ -219,7 +214,6 @@ const TransactionRow = (props: RowProps) => {
 
     const hasChargeMethod = row != undefined && row.customChargeMethodId != undefined;
     const chargeMethod = hasChargeMethod ? props.chargeMethodsMap.get(row.customChargeMethodId) : undefined;
-    const isFreePayment = props.row != undefined && props.row.isFreePayment;
 
     return (
     <TableRow

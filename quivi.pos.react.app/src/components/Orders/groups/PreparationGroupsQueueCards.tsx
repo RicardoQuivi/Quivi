@@ -11,11 +11,9 @@ import { useToast } from "../../../context/ToastProvider";
 import LoadingButton from "../../Buttons/LoadingButton";
 import { GenericPreparationGroupCard } from "./GenericPreparationGroupCard";
 import ConfirmButton from "../../Buttons/ConfirmButton";
-import { useWebEvents } from "../../../hooks/signalR/useWebEvents";
-import { useBackgroundJobsApi } from "../../../hooks/api/useBackgroundJobsApi";
 import { PreparationGroupDetailModal } from "./PreparationGroupDetailModal";
 import { usePreparationGroupMutator } from "../../../hooks/mutators/usePreparationGroupMutator";
-import { BackgroundJobPromise } from "../../../hooks/signalR/promises/BackgroundJobPromise";
+import { useActionAwaiter } from "../../../hooks/useActionAwaiter";
 
 interface Props {
     readonly locationId: string | undefined;
@@ -40,8 +38,8 @@ export const PreparationGroupsQueueCards = (props: Props) => {
         return r;
     }, new Map<string, Local>()), [locationsQuery.data])
 
-    return <Box style={{display: "flex", flexDirection: "column", height: "100%", overflow: "hidden"}}>
-        <Box style={{flex: "1 1 auto", overflow: "auto"}}>
+    return <Box sx={{display: "flex", flexDirection: "column", height: "100%", overflow: "hidden"}}>
+        <Box sx={{flex: "1 1 auto", overflow: "auto"}}>
             <Grid container spacing={1} justifyContent={xs ? "center" : undefined}>
             {
                 groupsQuery.isFirstLoading == false
@@ -97,9 +95,8 @@ interface PreparationGroupCardProps {
 const PreparationGroupCard = (props: PreparationGroupCardProps) => {
     const { t } = useTranslation();
     const toast = useToast();
-    const webEvents = useWebEvents();
     const mutator = usePreparationGroupMutator();
-    const jobsApi = useBackgroundJobsApi();
+    const awaiter = useActionAwaiter();
 
     const [itemsCheck, setItemsCheck] = useState(() => {
         const result = {} as Record<string, boolean>;
@@ -173,12 +170,7 @@ const PreparationGroupCard = (props: PreparationGroupCardProps) => {
                 isPrepared: asComplete,
             })
 
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            })
+            await awaiter.job(jobId);
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
         }

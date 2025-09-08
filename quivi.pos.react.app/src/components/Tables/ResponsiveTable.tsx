@@ -1,4 +1,4 @@
-import { Box, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, IconButton, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, IconButton, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PosPlaceholderIcon } from "../../icons";
@@ -99,7 +99,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                 props.data.map(d => (
                 <Card
                     key={props.getKey(d)}
-                    variant="outlined"
+                    variant="elevation"
                     sx={{
                         borderRadius: 3,
                         mb: 2,

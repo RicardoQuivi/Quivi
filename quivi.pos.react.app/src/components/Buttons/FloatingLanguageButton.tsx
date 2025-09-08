@@ -1,4 +1,4 @@
-import { Box, Grid, SpeedDial, Typography } from "@mui/material";
+import { Box, SpeedDial, Typography } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CountryIcon } from "../../icons/CountryIcon";

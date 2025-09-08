@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react"
 import Keyboard from "react-simple-keyboard";
-import { Box, CircularProgress, Grid, LinearProgress } from "@mui/material";
+import { Box, Grid, LinearProgress } from "@mui/material";
 import 'react-simple-keyboard/build/css/index.css';
 
 interface Props {

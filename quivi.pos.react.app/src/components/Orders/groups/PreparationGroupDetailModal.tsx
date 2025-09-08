@@ -11,15 +11,13 @@ import { MenuItem } from "../../../hooks/api/Dtos/menuitems/MenuItem";
 import { useNow } from "../../../hooks/useNow";
 import { useToast } from "../../../context/ToastProvider";
 import { useMenuItemsQuery } from "../../../hooks/queries/implementations/useMenuItemsQuery";
-import { useWebEvents } from "../../../hooks/signalR/useWebEvents";
-import { useBackgroundJobsApi } from "../../../hooks/api/useBackgroundJobsApi";
 import { CardItemDetails } from "../CardItemDetails";
 import { SingleSelect } from "../../Inputs/SingleSelect";
 import { ActionButton } from "../../Buttons/ActionButton";
 import { useDateHelper } from "../../../helpers/dateHelper";
 import { useOrderHelper } from "../../../helpers/useOrderHelper";
 import { usePreparationGroupMutator } from "../../../hooks/mutators/usePreparationGroupMutator";
-import { BackgroundJobPromise } from "../../../hooks/signalR/promises/BackgroundJobPromise";
+import { useActionAwaiter } from "../../../hooks/useActionAwaiter";
 
 const fadeIn = keyframes`
     from {
@@ -182,9 +180,8 @@ const GroupDetail = ({
     const now = useNow(1000);
     const helper = useOrderHelper();
     const toast = useToast();
-    const webEvents = useWebEvents();
+    const awaiter = useActionAwaiter();
     const mutator = usePreparationGroupMutator();
-    const jobsApi = useBackgroundJobsApi();
     
     const [selectedLocation, setSelectedLocation] = useState<Local>();
     const [innerNote, setInnerNote] = useState(note);
@@ -277,13 +274,7 @@ const GroupDetail = ({
                 isPrepared: asPrepared,
             })
 
-            await new BackgroundJobPromise(jobId, webEvents.client, async (jobId) => {
-                const response = await jobsApi.get({
-                    ids: [jobId],
-                });
-                return response.data[0].state;
-            })
-
+            await awaiter.job(jobId);
             onSubmit();
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
