@@ -20,6 +20,14 @@ export const OrdersHistory = (props: Props) => {
             width: "100%",
             display: "flex",
             flexDirection: "column",
+
+            background: (theme) => ({
+                xs: "transparent",
+                sm: "transparent",
+                md: theme.palette.background.paper,
+                lg: theme.palette.background.paper,
+                xl: theme.palette.background.paper,
+            })
         }}
     >
         <OrdersTable
