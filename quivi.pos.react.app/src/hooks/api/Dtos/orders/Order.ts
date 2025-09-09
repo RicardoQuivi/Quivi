@@ -12,6 +12,7 @@ export interface Order {
     readonly sequenceNumber: string;
     readonly state: OrderState;
     readonly employeeId?: string;
+    readonly sessionId?: string;
     readonly isTakeAway: boolean;
     readonly items: SessionItem[];
     readonly fields: OrderFieldValue[];

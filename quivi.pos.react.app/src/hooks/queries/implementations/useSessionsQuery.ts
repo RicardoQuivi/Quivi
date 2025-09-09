@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { GetSessionsRequest } from "../../api/Dtos/sessions/GetSessionsRequest";
 import { Session } from "../../api/Dtos/sessions/Session";
 import { useSessionsApi } from "../../api/useSessionsApi";
@@ -79,5 +80,11 @@ export const useSessionsQuery = (request: GetSessionsRequest | undefined) : Quer
         refreshOnAnyUpdate: false,
     })
 
-    return queryResult;
+    const result = useMemo(() => ({
+        isLoading: queryResult.isLoading,
+        isFirstLoading: queryResult.response?.isFirstLoading ?? queryResult.isFirstLoading,
+        data: queryResult.data,
+    }), [queryResult])
+    
+    return result;
 }

@@ -29,7 +29,7 @@ namespace Quivi.Guests.Api.Controllers
         {
             var query = await queryProcessor.Execute(new GetOrderConfigurableFieldsAsyncQuery
             {
-                ChannelsIds = [idConverter.FromPublicId(request.ChannelId)],
+                ChannelIds = [idConverter.FromPublicId(request.ChannelId)],
                 IncludeTranslations = true,
                 ForOrdering = true,
                 IsAutoFill = false,

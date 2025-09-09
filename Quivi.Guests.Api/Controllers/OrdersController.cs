@@ -129,7 +129,7 @@ namespace Quivi.Guests.Api.Controllers
 
                     var configurableFields = await queryProcessor.Execute(new GetOrderConfigurableFieldsAsyncQuery
                     {
-                        ChannelsIds = [o.ChannelId],
+                        ChannelIds = [o.ChannelId],
                         ForOrdering = true,
                         IsAutoFill = true,
                         IsDeleted = false,

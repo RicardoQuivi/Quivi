@@ -37,7 +37,7 @@ namespace Quivi.Pos.Api.Controllers
             var query = await queryProcessor.Execute(new GetOrderConfigurableFieldsAsyncQuery
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
-                ChannelsIds = request.ChannelIds?.Select(idConverter.FromPublicId),
+                ChannelIds = request.ChannelIds?.Select(idConverter.FromPublicId),
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 ForPosSessions = request.ForPosSessions,
                 IsAutoFill = false,

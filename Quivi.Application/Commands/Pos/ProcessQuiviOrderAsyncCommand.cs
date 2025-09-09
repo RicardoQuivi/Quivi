@@ -135,7 +135,7 @@ namespace Quivi.Application.Commands.Pos
         private readonly IPosChargesRepository posChargesRepo;
         private readonly IOrdersRepository ordersRepo;
         private readonly IOrderSequencesRepository sequencesRepository;
-        //private readonly IOrderConfigurableFieldsRepository configurableFieldsRepo;
+        private readonly IOrderConfigurableFieldsRepository configurableFieldsRepo;
 
         public ProcessQuiviOrderAsyncCommandHandler(IUnitOfWork unitOfWork,
                                                         IDateTimeProvider dateTimeProvider,
@@ -149,7 +149,7 @@ namespace Quivi.Application.Commands.Pos
             this.ordersRepo = unitOfWork.Orders;
             this.posChargesRepo = unitOfWork.PosCharges;
             this.sequencesRepository = unitOfWork.OrderSequences;
-            //configurableFieldsRepo = unitOfWork.OrderConfigurableFieldRepository;
+            this.configurableFieldsRepo = unitOfWork.OrderConfigurableFields;
         }
 
         public async Task<IEnumerable<IEvent>> Handle(ProcessQuiviOrderCancelationAsyncCommand command)
@@ -179,6 +179,7 @@ namespace Quivi.Application.Commands.Pos
                 IncludeOrderMenuItems = true,
                 IncludeOrderMenuItemsAndMofifiers = true,
                 IncludeOrderMenuItemsPosChargeInvoiceItems = true,
+                IncludeOrderAdditionalFields = true,
                 IncludeChannelProfile = true,
                 IncludeOrderSequence = true,
 
@@ -485,7 +486,9 @@ namespace Quivi.Application.Commands.Pos
 
         private bool HasPendingItems(Session session)
         {
-            var sessionItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).AsPaidSessionItems();
+            OrderState[] validOrderStates = [OrderState.Processing, OrderState.Completed, OrderState.Accepted];
+
+            var sessionItems = session.Orders!.Where(o => validOrderStates.Contains(o.State)).SelectMany(o => o.OrderMenuItems!).AsPaidSessionItems();
             foreach (var model in sessionItems)
             {
                 var unpaidQuantity = model.Quantity - model.PaidQuantity;
@@ -662,7 +665,7 @@ namespace Quivi.Application.Commands.Pos
         }
 
 
-        protected Task OnSessionAdded(Order order, Session session)
+        protected async Task OnSessionAdded(Order order, Session session)
         {
             AddOrderEvent(order, o => new OnSessionOperationEvent
             {
@@ -672,22 +675,23 @@ namespace Quivi.Application.Commands.Pos
                 MerchantId = o.MerchantId,
             });
 
-            return Task.CompletedTask;
-            //TODO: ConfigurableFields
+            var configurableFields = await configurableFieldsRepo.GetAsync(new GetOrderConfigurableFieldsCriteria
+            {
+                ChannelIds = [session.ChannelId],
+                ForPosSessions = true,
+                IsAutoFill = true,
+                IsDeleted = false,
+            });
 
-            //var configurableFields = await configurableFieldsRepo.GetAsync(new GetOrderConfigurableFieldsCriteria
-            //{
-            //    ChannelIds = [session.ChannelId],
-            //    ForPoSSessions = true,
-            //    IsAutoFill = true,
-            //    IsDeleted = false,
-            //});
+            if (configurableFields.Any() == false)
+                return;
 
-            //session.SessionAdditionalInfos = configurableFields.Select(c => new SessionAdditionalInfo
-            //{
-            //    OrderConfigurableFieldId = c.OrderConfigurableFieldId,
-            //    Value = c.DefaultValue,
-            //}).ToList();
+
+            order.OrderAdditionalInfos = configurableFields.Where(c => string.IsNullOrWhiteSpace(c.DefaultValue) == false).Select(c => new OrderAdditionalInfo
+            {
+                OrderConfigurableFieldId = c.Id,
+                Value = c.DefaultValue!,
+            }).ToList();
         }
     }
 }

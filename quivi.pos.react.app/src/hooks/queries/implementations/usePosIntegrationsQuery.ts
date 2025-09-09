@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { GetPosIntegrationsRequest } from "../../api/Dtos/posintegrations/GetPosIntegrationsRequest";
 import { PosIntegration } from "../../api/Dtos/posintegrations/PosIntegration";
 import { usePosIntegrationsApi } from "../../api/usePosIntegrationsApi";
@@ -61,5 +62,12 @@ export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | und
         },
         refreshOnAnyUpdate: false,
     })
-    return queryResult;
+    
+    const result = useMemo(() => ({
+        isLoading: queryResult.isLoading,
+        isFirstLoading: queryResult.response?.isFirstLoading ?? queryResult.isFirstLoading,
+        data: queryResult.data,
+    }), [queryResult])
+    
+    return result;
 }

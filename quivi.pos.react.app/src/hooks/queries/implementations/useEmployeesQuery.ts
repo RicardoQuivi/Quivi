@@ -67,7 +67,7 @@ export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
     })
 
     const result = useMemo(() => ({
-        isFirstLoading: queryResult.isFirstLoading,
+        isFirstLoading: queryResult.response?.isFirstLoading ?? queryResult.isFirstLoading,
         isLoading: queryResult.isLoading,
         data: queryResult.data,
         page: queryResult.response?.page ?? 0,

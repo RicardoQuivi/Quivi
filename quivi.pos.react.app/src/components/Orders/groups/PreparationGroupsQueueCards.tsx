@@ -14,6 +14,7 @@ import ConfirmButton from "../../Buttons/ConfirmButton";
 import { PreparationGroupDetailModal } from "./PreparationGroupDetailModal";
 import { usePreparationGroupMutator } from "../../../hooks/mutators/usePreparationGroupMutator";
 import { useActionAwaiter } from "../../../hooks/useActionAwaiter";
+import { CollectionFunctions } from "../../../helpers/collectionsHelper";
 
 interface Props {
     readonly locationId: string | undefined;
@@ -32,14 +33,22 @@ export const PreparationGroupsQueueCards = (props: Props) => {
     });
 
     const locationsQuery = useLocalsQuery({})
+    const locationsMap = useMemo(() => CollectionFunctions.toMap(locationsQuery.data, l => l.id), [locationsQuery.data])
 
-    const locationsMap = useMemo(() => locationsQuery.data.reduce((r, l) => {
-        r.set(l.id, l);
-        return r;
-    }, new Map<string, Local>()), [locationsQuery.data])
-
-    return <Box sx={{display: "flex", flexDirection: "column", height: "100%", overflow: "hidden"}}>
-        <Box sx={{flex: "1 1 auto", overflow: "auto"}}>
+    return <Box
+        sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            overflow: "hidden",
+        }}
+    >
+        <Box
+            sx={{
+                flex: 1,
+                overflow: "auto",
+            }}
+        >
             <Grid container spacing={1} justifyContent={xs ? "center" : undefined}>
             {
                 groupsQuery.isFirstLoading == false
@@ -52,10 +61,11 @@ export const PreparationGroupsQueueCards = (props: Props) => {
                         }} 
                         key={s.id}
                     >
-                        <PreparationGroupCard group={s} 
-                                                onOrderClicked={props.onOrderSelected}
-                                                locationId={props.locationId}
-                                                locationsMap={locationsMap}
+                        <PreparationGroupCard 
+                            group={s} 
+                            onOrderClicked={props.onOrderSelected}
+                            locationId={props.locationId}
+                            locationsMap={locationsMap}
                         />
                     </Grid>)
                 :
@@ -78,7 +88,11 @@ export const PreparationGroupsQueueCards = (props: Props) => {
         </Box>
         {
             groupsQuery.totalPages > 1 &&
-            <Box style={{flex: "0 0 auto"}}>
+            <Box
+                sx={{
+                    flex: 0,
+                }}
+            >
                 <Divider />
                 <PaginationFooter currentPage={page} numberOfPages={groupsQuery.totalPages} onPageChanged={setPage} />
             </Box>

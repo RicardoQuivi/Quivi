@@ -3,7 +3,7 @@
     public record GetOrderConfigurableFieldsCriteria : IPagedCriteria
     {
         public IEnumerable<int>? MerchantIds { get; init; }
-        public IEnumerable<int>? ChannelsIds { get; init; }
+        public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<int>? ChannelProfileIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Names { get; init; }

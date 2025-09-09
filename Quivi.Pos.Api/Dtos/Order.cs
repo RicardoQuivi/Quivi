@@ -8,6 +8,7 @@ namespace Quivi.Pos.Api.Dtos
         public required string SequenceNumber { get; init; }
         public required string ChannelId { get; init; }
         public string? EmployeeId { get; init; }
+        public string? SessionId { get; init; }
         public required IEnumerable<SessionItem> Items { get; init; }
         public required IEnumerable<OrderFieldValue> Fields { get; init; }
         public OrderState State { get; init; }

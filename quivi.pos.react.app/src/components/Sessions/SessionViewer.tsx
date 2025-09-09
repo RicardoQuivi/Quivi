@@ -24,6 +24,7 @@ import { Items } from "../../helpers/itemsHelpers";
 import { useToast } from "../../context/ToastProvider";
 import { useOrderMutator } from "../../hooks/mutators/useOrderMutator";
 import { useActionAwaiter } from "../../hooks/useActionAwaiter";
+import { CollectionFunctions } from "../../helpers/collectionsHelper";
 
 const StyleBottomNavigationAction = styled(BottomNavigationAction)(({ }) => ({
     transition: "background-color 0.5s ease",
@@ -105,25 +106,14 @@ export const SessionViewer: React.FC<Props> = ({
         page: 0,
         pageSize: 1,
     })
-    const channel = useMemo(() => {
-        if(channelsQuery.data.length == 0) {
-            return undefined;
-        }
-
-        return channelsQuery.data[0];
-    }, [channelsQuery.data]);
+    const channel = useMemo(() => channelsQuery.data.length == 0 ? undefined : channelsQuery.data[0], [channelsQuery.data]);
     
     const profilesQuery = useChannelProfilesQuery(channel == undefined ? undefined :{
         ids: [channel.channelProfileId],
         page: 0,
     });
-    const profile = useMemo(() => {
-        if(profilesQuery.data.length == 0) {
-            return undefined;
-        }
+    const profile = useMemo(() => profilesQuery.data.length == 0 ? undefined : profilesQuery.data[0], [profilesQuery.data]);
 
-        return profilesQuery.data[0];
-    }, [profilesQuery.data]);
 
     const pendingOrdersQuery = useOrdersQuery(!pos.cartSession.channelId ? undefined : {
         channelIds: [pos.cartSession.channelId],
@@ -157,13 +147,8 @@ export const SessionViewer: React.FC<Props> = ({
         ids: itemsIds,
         page: 0,
     })
-    const itemsMap = useMemo(() => {
-        const map = new Map<string, MenuItem>();
-        for(const item of itemsQuery.data) {
-            map.set(item.id, item);
-        }
-        return map;
-    }, [itemsQuery.data]);
+    const itemsMap = useMemo(() => CollectionFunctions.toMap(itemsQuery.data, item => item.id), [itemsQuery.data]);
+    
     const [itemStatusFilter, setItemStatusFilter] = useState<boolean | undefined>(false);
 
     useEffect(() => setItemsState(p => p.allItems == pos.cartSession.items ? p : getItemsState(pos.cartSession.items, dateHelper.toDate)), [pos.cartSession]);

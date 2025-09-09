@@ -23,6 +23,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 SequenceNumber = model.OrderSequence?.SequenceNumber.ToString() ?? idConverter.ToPublicId(model.Id),
                 ChannelId = idConverter.ToPublicId(model.ChannelId),
                 EmployeeId = model.EmployeeId.HasValue == false ? null : idConverter.ToPublicId(model.EmployeeId.Value),
+                SessionId = model.SessionId.HasValue == false ? null : idConverter.ToPublicId(model.SessionId.Value),
                 State = model.State,
                 IsTakeAway = model.OrderType == OrderType.TakeAway,
                 OrderOrigin = model.Origin,

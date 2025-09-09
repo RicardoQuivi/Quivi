@@ -6,13 +6,13 @@ import { Order } from "../../../hooks/api/Dtos/orders/Order";
 import { Local } from "../../../hooks/api/Dtos/locals/Local";
 import { useChannelsQuery } from "../../../hooks/queries/implementations/useChannelsQuery";
 import { useMenuItemsQuery } from "../../../hooks/queries/implementations/useMenuItemsQuery";
-import { MenuItem } from "../../../hooks/api/Dtos/menuitems/MenuItem";
 import { useNow } from "../../../hooks/useNow";
 import { TimeUnit, useDateHelper } from "../../../helpers/dateHelper";
 import { useOrdersQuery } from "../../../hooks/queries/implementations/useOrdersQuery";
-import { SortDirection } from "../../../hooks/api/Dtos/SortableRequest";
 import { CardItemDetails } from "../CardItemDetails";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
+import { CollectionFunctions } from "../../../helpers/collectionsHelper";
+import { SortDirection } from "../../../hooks/api/Dtos/SortableRequest";
 
 const getCheckedItems = (itemsMap: Map<string, BasePreparationGroupItem> | undefined, checkedMap: Record<string, boolean>, previous: {
     checks: Record<string, boolean>,
@@ -121,35 +121,38 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
         pageSize: 1,
         includeDeleted: true,
     })
-    const channel = useMemo(() => {
-        if(channelsQuery.data.length == 0) {
-            return undefined;
-        }
-        return channelsQuery.data[0];
-    }, [channelsQuery.data])
+    const channel = useMemo(() => channelsQuery.data.length == 0 ? undefined : channelsQuery.data[0], [channelsQuery.data])
 
     const profilesQuery = useChannelProfilesQuery(channel == undefined ? undefined : {
         ids: [channel.channelProfileId],
         page: 0,
     })
-    const profile = useMemo(() => {
-        if(profilesQuery.data.length == 0) {
-            return undefined;
-        }
-        return profilesQuery.data[0];
-    }, [profilesQuery.data])
+    const profile = useMemo(() => profilesQuery.data.length == 0 ? undefined : profilesQuery.data[0], [profilesQuery.data])
 
-    const ids = useMemo(() => props.group?.items.reduce((r, it) => {
-        r.push(it.menuItemId);
-        it.extras?.forEach(e => r.push(e.menuItemId));
-        return r;
-    }, [] as string[]) ?? [], [props.group]);
+    const ordersQuery = useOrdersQuery(props.group == undefined || props.group.orderIds.length == 0 ? undefined : {
+        ids: props.group.orderIds,
+        page: 0,
+        sortDirection: SortDirection.Asc,
+    })
+    const ordersMap = useMemo(() => CollectionFunctions.toMap(ordersQuery.data, o => o.id), [ordersQuery.data]);
+
+    const ids = useMemo(() => {
+        const set = new Set<string>();
+        for(const it of props.group?.items ?? []) {
+            set.add(it.menuItemId);
+            for(const e of it.extras) {
+                set.add(e.menuItemId);
+            }
+        }
+        return Array.from(set);
+    }, [props.group]);
 
     const menuItemsQuery = useMenuItemsQuery(ids.length == 0 ? undefined : {
         ids: ids,
         includeDeleted: true,
         page: 0,
     })
+    const menuItemsMap = useMemo(() => CollectionFunctions.toMap(menuItemsQuery.data, i => i.id), [menuItemsQuery.data])
 
     const groupItemsMap = useMemo(() => props.group?.items.reduce((r, item) => {
         r.set(item.id, item);
@@ -158,11 +161,6 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
         }
         return r;
     }, new Map<string, BasePreparationGroupItem>()), [props.group]);
-
-    const menuItemsMap = useMemo(() => menuItemsQuery.data.reduce((r, i) => {
-        r.set(i.id, i);
-        return r;
-    }, new Map<string, MenuItem>()), [menuItemsQuery.data])
     
     const itemsPerLocation = useMemo(() => {
         const result = new Map<string | undefined, (BasePreparationGroupItem | PreparationGroupItem)[]>();
@@ -369,7 +367,7 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
                     >
                     {
                         props.group.orderIds.map(id => <Grid size="auto" key={id} justifyContent="center" display="flex">
-                            <OrderBadge orderId={id} onOrderClicked={props.onOrderClicked} />
+                            <OrderBadge order={ordersMap.get(id)} onOrderClicked={props.onOrderClicked} />
                         </Grid>)
                     }
                     </Grid>
@@ -441,21 +439,21 @@ const TimeBadge = (props: TimeBadgeProps) => {
 }
 
 interface OrderSectionProps {
-    readonly orderId: string;
+    readonly order?: Order;
     readonly onOrderClicked?: (order: Order) => any;
 }
 const OrderBadge = (props: OrderSectionProps) => {
-    const orderQuery = useOrdersQuery({
-        ids: [props.orderId],
-        page: 0,
-        pageSize: 1,
-        sortDirection: SortDirection.Asc,
-    })
-
     return <Chip
         color="primary"
         variant="filled"
-        onClick={(evt) => { evt.stopPropagation(); props.onOrderClicked?.(orderQuery.data[0]); }}
-        label={orderQuery.isFirstLoading ? <Skeleton animation="wave" width={50}/> : orderQuery.data[0].sequenceNumber}
+        onClick={(evt) => {
+            if(props.order == undefined) {
+                return;
+            }
+
+            evt.stopPropagation(); 
+            props.onOrderClicked?.(props.order); 
+        }}
+        label={props.order == undefined ? <Skeleton animation="wave" width={50}/> : props.order.sequenceNumber}
     />
 }

@@ -25,9 +25,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.MerchantId));
 
-            if (criteria.ChannelsIds != null)
+            if (criteria.ChannelIds != null)
             {
-                var profileIds = Context.Channels.Where(q => criteria.ChannelsIds.Contains(q.Id)).Select(q => q.ChannelProfileId);
+                var profileIds = Context.Channels.Where(q => criteria.ChannelIds.Contains(q.Id)).Select(q => q.ChannelProfileId);
                 query = query.Where(q => q.AssociatedChannelProfiles!.Any(a => profileIds.Contains(a.ChannelProfileId)));
             }
 

@@ -7,19 +7,21 @@ import { Session } from "../../api/Dtos/sessions/Session";
 import { useOrdersApi } from "../../api/useOrdersApi";
 import { useTranslation } from "react-i18next";
 import { useToast } from "../../../context/ToastProvider";
-import { useBackgroundJobsQuery } from "../../queries/implementations/useBackgroundJobsQuery";
-import { JobState } from "../../api/Dtos/backgroundjobs/JobState";
 import { useSessionsQuery } from "../../queries/implementations/useSessionsQuery";
 import BigNumber from "bignumber.js";
+import { useBackgroundJobsQuery } from "../../queries/implementations/useBackgroundJobsQuery";
+import { JobState } from "../../api/Dtos/backgroundjobs/JobState";
+import { BackgroundJob } from "../../api/Dtos/backgroundjobs/BackgroundJob";
 
 interface ItemToSync {
     readonly channelId: string;
     readonly item: MenuItem | SessionItem;
     readonly patch: CreateOrderItem;
-    jobId?: string;
+    processingOperation?: {
+        jobId: string;
+    }
     synced: boolean;
 }
-
 export const useCartSession = (channelId: string | undefined): ICartSession => {
     const { t } = useTranslation();
     const ordersApi = useOrdersApi();
@@ -31,41 +33,56 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         isOpen: true,
     });
 
-    const [currentSession, setCurrentSession] = useState<Session>(() => getClosedSession(channelId, new Date().toISOString()));
-    const [operationsToSync, setOperationsToSync] = useState<ItemToSync[]>(() => [])
+    const [state, setState] = useState(() => ({
+        session: getClosedSession(channelId, new Date().toISOString()),
+        operationsToSync: [] as ItemToSync[],
+        pendingJobIds: [] as string[],
+    }))
     const [outOfSyncTimeout, setOutOfSyncTimeout] = useState<() => Promise<any>>();
-    const [pendingJobIds, setPendingJobIds] = useState<string[]>(() => []);
 
-    const jobQuery = useBackgroundJobsQuery(pendingJobIds.length == 0 ? undefined : pendingJobIds);
-    
-    const updateSession = async (channelId: string | undefined, data: Session | null) => {
+    const jobQuery = useBackgroundJobsQuery(state.pendingJobIds.length == 0 ? undefined : state.pendingJobIds);
+
+    const updateSession = (channelId: string | undefined, data: Session | null) => setState(s => {
+        let session = s.session;
+        let operationsToSync = s.operationsToSync;
+
         if (data == null) {
-            setCurrentSession(() => getClosedSession(channelId, new Date().toISOString()))
+            session = getClosedSession(channelId, new Date().toISOString());
         } else if (data.isOpen == false) {
-            setCurrentSession({
+            session = {
                 ...data,
                 items: [],
-            });
+            };
         } else {
             const items = data.items.map(item => ({
                 ...item,
             }));
             items.reverse();
 
-            setCurrentSession({
+            session = {
                 ...data,
                 items: items,
-            });
+            };
         }
 
-        if(operationsToSync.length > 0){
-            setOperationsToSync(p => p.filter(o => o.synced == false && o.jobId == undefined));
-        }
-    }
+        if(operationsToSync.length > 0) {
+            const aux = operationsToSync.filter(o => o.synced == false);
 
-    const addItem = (item: MenuItem | SessionItem, quantity: number) => setOperationsToSync(p => {
+            if(operationsToSync.length != aux.length) {
+                operationsToSync = aux;
+            }
+        }
+
+        return {
+            session: session,
+            operationsToSync: operationsToSync,
+            pendingJobIds: s.pendingJobIds,
+        }
+    })
+
+    const addItem = (item: MenuItem | SessionItem, quantity: number) => setState(s => {
         if(channelId == undefined) {
-            return p;
+            return s;
         }
 
         const isDigitalMenuItem = 'menuItemId' in item == false;
@@ -94,7 +111,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         //     }
         // }
 
-        return [...p, {
+        const operationsToSync = [...s.operationsToSync, {
             channelId: channelId,
             item: item,
             patch: {
@@ -106,11 +123,17 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
             } as CreateOrderItem,
             synced: false,
         }];
+
+        return {
+            session: s.session,
+            pendingJobIds: s.pendingJobIds,
+            operationsToSync: operationsToSync,
+        }
     })
 
-    const removeItem = (item: SessionItem, quantity: number, discount?: number) => setOperationsToSync(p => {
+    const removeItem = (item: SessionItem, quantity: number, discount?: number) => setState(s => {
         if(channelId == undefined) {
-            return p;
+            return s;
         }
 
         const discountApplied = discount ?? 0;
@@ -125,7 +148,8 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 price: extra.originalPrice,
             })
         }
-        return [...p, {
+        
+        const operationsToSync = [...s.operationsToSync, {
             channelId: channelId,
             item: item,
             patch: {
@@ -137,11 +161,17 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
             } as CreateOrderItem,
             synced: false,
         }];
+
+        return {
+            session: s.session,
+            pendingJobIds: s.pendingJobIds,
+            operationsToSync: operationsToSync,
+        }
     })
 
-    const applyDiscount = (item: SessionItem, quantity: number, discount: number, priceOverride?: number) => setOperationsToSync(p => {
+    const applyDiscount = (item: SessionItem, quantity: number, discount: number, priceOverride?: number) => setState(s => {
         if(channelId == undefined) {
-            return p;
+            return s;
         }
 
         const idToFind = item.menuItemId;
@@ -156,7 +186,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         }
 
         const originalPrice = priceOverride ?? new BigNumber(item.price).times(100).dividedBy(new BigNumber(100).minus(item.discountPercentage)).toNumber();
-        return [...p, {
+        const operationsToSync = [...s.operationsToSync, {
             channelId: channelId,
             item: {
                 ...item,
@@ -197,16 +227,22 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 price: item.originalPrice,
             } as CreateOrderItem,
             synced: false,
-        }]
+        }];
+
+        return {
+            session: s.session,
+            pendingJobIds: s.pendingJobIds,
+            operationsToSync: operationsToSync,
+        }
     })
 
-    const transferSession = (toChannelId: string, transferItems?: Map<SessionItem, number>) => setOperationsToSync(p => {
+    const transferSession = (toChannelId: string, transferItems?: Map<SessionItem, number>) => setState(s => {
         if(channelId == undefined) {
-            return p;
+            return s;
         }
 
-        const result = [...p];
-        const currentItems = getItems(currentSession.items, p);
+        const operationsToSync = [...s.operationsToSync];
+        const currentItems = getItems(s.session.items, s.operationsToSync);
         for(const item of currentItems.map(c => c as SessionItem)) {
             const quantityToTransfer = transferItems == undefined ? item.quantity : (transferItems.get(item) ?? 0);
             if(quantityToTransfer == 0) {
@@ -218,7 +254,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 quantity: extra.quantity,
                 price: extra.originalPrice,
             }));
-            result.push({
+            operationsToSync.push({
                 channelId: toChannelId,
                 item: item,
                 patch: {
@@ -230,7 +266,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 } as CreateOrderItem,
                 synced: false,
             })
-            result.push({
+            operationsToSync.push({
                 channelId: channelId,
                 item: item,
                 patch: {
@@ -243,19 +279,25 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 synced: false,
             })
         }
-        return result;
+
+        return {
+            session: s.session,
+            pendingJobIds: s.pendingJobIds,
+            operationsToSync: operationsToSync,
+        }
     });
 
     const forceSync = async () => {
-        if (!outOfSyncTimeout)
+        if (!outOfSyncTimeout) {
             return;
-        
+        }
+
         await outOfSyncTimeout();
         setOutOfSyncTimeout(undefined);
     }
 
     useEffect(() => {
-        const pendingOperations = operationsToSync.filter(o => o.jobId == undefined)
+        const pendingOperations = state.operationsToSync.filter(o => o.processingOperation == undefined)
         if(pendingOperations.length == 0) {
             setOutOfSyncTimeout(undefined);
             return;
@@ -286,77 +328,94 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                 })
                 
                 const jobId = response.data;
-                setOperationsToSync(p => {
-                    const result: ItemToSync[] = [];
-                    for(const item of p) {
+                setState(s => {
+                    const operationsToSync: ItemToSync[] = [];
+                    for(const item of s.operationsToSync) {
                         if(pendingOperations.find(i => i == item) != undefined) {
                             if(jobId == undefined) {
                                 continue;
                             }
                             
-                            item.jobId = jobId;
+                            item.processingOperation = {
+                                jobId: jobId,
+                            };
                         }
-                        result.push(item);
+                        operationsToSync.push(item);
                     }
-                    return result;
+
+                    let pendingJobIds = jobId != undefined ? [...s.pendingJobIds, jobId] : s.pendingJobIds;
+
+                    return {
+                        session: s.session,
+                        operationsToSync: operationsToSync,
+                        pendingJobIds: pendingJobIds,
+                    };
                 });
-                if(jobId != undefined) {
-                    setPendingJobIds(p => [...p, jobId]);
-                }                
             } catch (e) {
-                setOperationsToSync(p => {
+                setState(s => {
                     const result: ItemToSync[] = [];
-                    for(const item of p) {
+                    for(const item of s.operationsToSync) {
                         if(pendingOperations.find(i => i == item) != undefined) {
                             continue;
                         }
                         result.push(item);
                     }
-                    return result;
+                    return {
+                        session: s.session,
+                        pendingJobIds: s.pendingJobIds,
+                        operationsToSync: result,
+                    };
                 });
                 toast.error(t("employeeAccessDenied"))
             }
         });
-    }, [operationsToSync, ordersApi])
+    }, [state.operationsToSync, ordersApi])
 
-    useEffect(() => {
-        const completedJobs = jobQuery.data.filter(j => j != undefined && j.state == JobState.Completed);
-        if(completedJobs.length > 0) {
-            setOperationsToSync(p => {
-                const result: ItemToSync[] = [];
-                for(const item of p) {    
-                    if(item.jobId != undefined) {
-                        const job = completedJobs.find(j => j.id == item.jobId);
-                        if(job != undefined) {
-                            item.synced = true;
-                        }
+    useEffect(() => setState(s => {
+        let hasChanges = false;
+
+        let operationsToSync = s.operationsToSync;
+        let pendingJobIds = s.pendingJobIds;
+
+        const completedJobs = getCompletedJobsSet(jobQuery.data);
+        if(completedJobs.size > 0) {
+            operationsToSync = [];
+            for(const item of s.operationsToSync) {
+                if(item.processingOperation != undefined) {
+                    const jobId = item.processingOperation.jobId;
+                    const job = completedJobs.has(jobId);
+                    if(job != undefined && item.synced == false) {
+                        item.synced = true;
+                        console.log("Synced at: ", new Date().getTime());
+                        hasChanges = true;
                     }
-                    result.push(item);
                 }
-                return result;
-            });
-        }
-
-        if(jobQuery.isLoading || pendingJobIds.length == 0) {
-            return;
-        }
-
-        setPendingJobIds(p => {
-            for(const job of jobQuery.data) {
-                if(job.state == JobState.Completed) {
-                    p = p.filter(j => j != job.id);
-                }
+                operationsToSync.push(item);
             }
-            return p;
-        })
-    }, [jobQuery.data, jobQuery.isLoading])
+
+            if(s.pendingJobIds.length > 0) {
+                for(const jobId of completedJobs) {
+                    pendingJobIds = pendingJobIds.filter(j => j != jobId);
+                }
+                hasChanges = true;
+            }
+        }
+
+        if(hasChanges == false) {
+            return s;
+        }
+
+        return {
+            session: s.session,
+            operationsToSync: operationsToSync,
+            pendingJobIds: pendingJobIds,
+        }
+    }), [jobQuery.data])
     
     useEffect(() => {
-        if(sessionsQuery.isFirstLoading == true) {
-            return;
-        }
-
-        updateSession(channelId, sessionsQuery.data?.length > 0 ? sessionsQuery.data[0] : null);
+        updateSession(channelId, sessionsQuery.data.length > 0 ? sessionsQuery.data[0] : null);
+        // const timeout = setTimeout(() => updateSession(channelId, sessionsQuery.data.length > 0 ? sessionsQuery.data[0] : null), 1000);
+        // return () => clearTimeout(timeout);
     }, [channelId, sessionsQuery.data])
 
     useEffect(() => {
@@ -371,19 +430,31 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         return () => clearTimeout(timeout);
     }, [outOfSyncTimeout])
 
-    const state = useMemo(() => ({
+    const items = useMemo(() => getItems(state.session.items, state.operationsToSync), [state.session.items, state.operationsToSync]);
+
+    const result = useMemo(() => ({
         channelId: channelId ?? "",
-        items: getItems(currentSession.items, operationsToSync),
-        isSyncing: sessionsQuery.isFirstLoading || operationsToSync.filter(o => o.synced == false).length > 0 || pendingJobIds.length > 0,
+        items: items,
+        isSyncing: sessionsQuery.isFirstLoading || state.operationsToSync.filter(o => o.synced == false).length > 0 || state.pendingJobIds.length > 0,
         addItem: addItem,
         removeItem: removeItem,
         applyDiscount: applyDiscount,
         transferSession: transferSession,
         forceSync: forceSync,
-        sessionId: currentSession.id
-    }), [channelId, currentSession, operationsToSync, pendingJobIds])
+        sessionId: state.session.id,
+    }), [channelId, sessionsQuery.isFirstLoading, state.operationsToSync, state.pendingJobIds, state.session.id, items])
 
-    return state;
+    return result;
+}
+
+const getCompletedJobsSet = (data: BackgroundJob[]) => {
+    const set = new Set<string>();
+    for(const job of data) {
+        if(job.state == JobState.Completed) {
+            set.add(job.id);
+        }
+    }
+    return set;
 }
 
 const getClosedSession = (channelId: string | undefined, closeDate: string): Session => ({
@@ -475,48 +546,6 @@ const getItems = (items: SessionItem[], itemsToSync: ItemToSync[]): SessionItem[
         });
     }
     return result.filter(p => p.quantity > 0);
-}
-
-const isSamePatch = (patch1: BaseSessionItem | SessionItem, patch2: BaseSessionItem | SessionItem) => {
-    if(patch1.menuItemId != patch2.menuItemId) {
-        return false;
-    }
-
-    if(patch1.price != patch2.price) {
-        return false;
-    }
-
-    const patch1Discount = 'discountPercentage' in patch1 ? patch1.discountPercentage : null;
-    const patch2Discount = 'discountPercentage' in patch2 ? patch2.discountPercentage : null;
-    if(patch1Discount != patch2Discount) {
-        return false;
-    }
-
-    const patch1Extras = 'extras' in patch1 ? patch1.extras : undefined;
-    const patch2Extras = 'extras' in patch2 ? patch2.extras : undefined;
-    if(patch1Extras != undefined && patch2Extras != undefined) {
-        let patch1ExtrasMap = patch1Extras.reduce((maps, e) => {
-            maps.set(e.menuItemId, e);
-            return maps;
-        }, new Map<string, BaseSessionItem>());
-
-        for(const e2 of patch2Extras) {
-            const e1 = patch1ExtrasMap.get(e2.menuItemId);
-            if(e1 == undefined) {
-                return false;
-            }
-
-            if(isSamePatch(e2, e1) == false) {
-                return false;
-            }
-            patch1ExtrasMap.delete(e2.menuItemId);
-        }
-
-        if(patch1ExtrasMap.size != 0) {
-            return false;
-        }
-    }
-    return true;
 }
 
 const isSameItem = (existingItem: SessionItem, item: SessionItem | MenuItem, discount?: number) => {

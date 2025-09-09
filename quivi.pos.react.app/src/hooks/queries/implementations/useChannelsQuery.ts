@@ -6,10 +6,9 @@ import { Entity, getEntityType } from "../../EntitiesName";
 import { PagedQueryResult } from "../QueryResult";
 import { useQueryable } from "../useQueryable";
 import { useChannelProfilesQuery } from "./useChannelProfilesQuery";
-import { ChannelProfile } from "../../api/Dtos/channelProfiles/ChannelProfile";
 import { ChannelFeatures } from "../../api/Dtos/channelProfiles/ChannelFeatures";
 import { useSessionsQuery } from "./useSessionsQuery";
-import { Session } from "../../api/Dtos/sessions/Session";
+import { CollectionFunctions } from "../../../helpers/collectionsHelper";
 
 export const useChannelsQuery = (request: GetChannelsRequest | undefined) : PagedQueryResult<Channel> => {
     const api = useChannelsApi();
@@ -34,11 +33,7 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) : Page
             return undefined;
         }
 
-        const result = new Map<string, ChannelProfile>();
-        for(const p of channelProfilesQuery.data) {
-            result.set(p.id, p);
-        }
-        return result;
+        return CollectionFunctions.toMap(channelProfilesQuery.data, p => p.id);
     }, [channelProfilesQuery.isFirstLoading, channelProfilesQuery.data]);
 
     const sessionsQuery = useSessionsQuery({
@@ -48,12 +43,7 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) : Page
         if(sessionsQuery.isFirstLoading) {
             return undefined;
         }
-
-        const result = new Map<string, Session>();
-        for(const p of sessionsQuery.data) {
-            result.set(p.channelId, p);
-        }
-        return result;
+        return CollectionFunctions.toMap(sessionsQuery.data, p => p.channelId);
     }, [sessionsQuery.isFirstLoading, sessionsQuery.data]);
 
     
@@ -142,18 +132,20 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) : Page
                 totalItems: allData.length,
                 totalPages: totalPages,
                 page: r.request.page,
+                request: r.request,
             }
         },
         refreshOnAnyUpdate: false,
     })
 
     const result = useMemo(() => ({
-        isFirstLoading: queryResult.isFirstLoading,
+        isFirstLoading: queryResult.response?.isFirstLoading ?? queryResult.isFirstLoading,
         isLoading: queryResult.isLoading,
         data: queryResult.data,
         page: queryResult.response?.page ?? 0,
         totalPages: queryResult.response?.totalPages ?? 0,
         totalItems: queryResult.response?.totalItems ?? 0,
+        request: queryResult.response?.request,
     }), [queryResult]);
 
     return result;

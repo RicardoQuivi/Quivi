@@ -3,6 +3,8 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Events;
+using Quivi.Infrastructure.Abstractions.Events.Data;
+using Quivi.Infrastructure.Abstractions.Events.Data.Orders;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
@@ -101,13 +103,13 @@ namespace Quivi.Application.Commands.Orders
             foreach (var order in addedOrders)
             {
                 orderIds.Add(order.Id);
-                //await eventService.Publish(new OnOrderOperationEvent
-                //{
-                //    MerchantId = order.MerchantId,
-                //    ChannelId = order.ChannelId,
-                //    Id = order.Id,
-                //    Operation = EntityOperation.Create,
-                //});
+                await eventService.Publish(new OnOrderOperationEvent
+                {
+                    MerchantId = order.MerchantId,
+                    ChannelId = order.ChannelId,
+                    Id = order.Id,
+                    Operation = EntityOperation.Create,
+                });
             }
 
             return await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Accepted, false);

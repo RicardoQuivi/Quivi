@@ -10,7 +10,7 @@ namespace Quivi.Application.Queries.OrderConfigurableFields
     public class GetOrderConfigurableFieldsAsyncQuery : APagedAsyncQuery<OrderConfigurableField>
     {
         public IEnumerable<int>? MerchantIds { get; init; }
-        public IEnumerable<int>? ChannelsIds { get; init; }
+        public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<int>? ChannelProfileIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Names { get; init; }
@@ -36,7 +36,7 @@ namespace Quivi.Application.Queries.OrderConfigurableFields
             {
                 Ids = query.Ids,
                 MerchantIds = query.MerchantIds,
-                ChannelsIds = query.ChannelsIds,
+                ChannelIds = query.ChannelIds,
                 ChannelProfileIds = query.ChannelProfileIds,
                 ForPosSessions = query.ForPosSessions,
                 ForOrdering = query.ForOrdering,
