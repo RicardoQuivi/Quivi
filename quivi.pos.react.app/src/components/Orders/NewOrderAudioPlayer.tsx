@@ -4,7 +4,7 @@ import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { SortDirection } from "../../hooks/api/Dtos/SortableRequest";
 import { useDateHelper } from "../../helpers/dateHelper";
 
-const newOrderAudio = new Audio("/Content/sounds/New.wav");
+const newOrderAudio = new Audio("/sounds/New.wav");
 
 export const NewOrderAudioPlayer = () => {  
     const dateHelper = useDateHelper();
@@ -15,18 +15,22 @@ export const NewOrderAudioPlayer = () => {
         sortDirection: SortDirection.Desc,
     });
 
-    const [lastRequestedOrderDate, setLastRequestedOrderDate] = useState<Date>();
+    const [lastRequestedOrderDate, setLastRequestedOrderDate] = useState<Date | undefined | null>(undefined);
 
     useEffect(() => {
         const newDate = requestedOrdersQuery.data.length == 0 ? undefined : dateHelper.toDate(requestedOrdersQuery.data[0].lastModified);
+        if(lastRequestedOrderDate === undefined) {
+            setLastRequestedOrderDate(newDate == undefined ? null : newDate);
+            return;
+        }
+
         if(newDate == undefined) {
             return;
         }
-        if(lastRequestedOrderDate == undefined || newDate > lastRequestedOrderDate) {
-            if(lastRequestedOrderDate != undefined) {
-                newOrderAudio.muted = false;
-                newOrderAudio.play();
-            }
+
+        if(lastRequestedOrderDate === null || newDate > lastRequestedOrderDate) {
+            newOrderAudio.muted = false;
+            newOrderAudio.play();
             setLastRequestedOrderDate(newDate)
         }
     }, [dateHelper, lastRequestedOrderDate, requestedOrdersQuery.data])
