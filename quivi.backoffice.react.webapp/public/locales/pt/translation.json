@@ -59,6 +59,7 @@
         "close": "Fechar",
         "openLink": "Abrir ligação",
         "operations": {
+            "pluralNew": "Novos {{name}}",
             "new": "Novo {{name}}",
             "edit": "Editar {{name}}",
             "delete": "Eliminar {{name}}",

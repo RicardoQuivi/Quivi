@@ -173,7 +173,7 @@ export const ChannelsPage = () => {
                         onClick={() => setAddChannelsModalOpen(true)}
                     >
                         {
-                            t("common.operations.new", {
+                            t("common.operations.pluralNew", {
                                 name: t("common.entities.channels")
                             })
                         }

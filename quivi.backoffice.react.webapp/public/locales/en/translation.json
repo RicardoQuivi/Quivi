@@ -59,6 +59,7 @@
         "close": "Close",
         "openLink": "Open link",
         "operations": {
+            "pluralNew": "New {{name}}",
             "new": "New {{name}}",
             "edit": "Save {{name}}",
             "delete": "Delete {{name}}",
