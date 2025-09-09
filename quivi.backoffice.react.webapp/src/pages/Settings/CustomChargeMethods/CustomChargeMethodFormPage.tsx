@@ -39,11 +39,13 @@ export const CustomChargeMethodFormPage = () => {
         if(customChargeMethod == undefined) {
             await mutator.create({
                 name: state.name,
+                logoUrl: state.logoUrl,
             })
             toast.success(t("common.operations.success.new"));
         } else {
             await mutator.patch(customChargeMethod, {
                 name: state.name,
+                logoUrl: state.logoUrl,
             })
             toast.success(t("common.operations.success.edit"));
         }
