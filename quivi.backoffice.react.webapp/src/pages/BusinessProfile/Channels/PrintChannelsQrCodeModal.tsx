@@ -41,10 +41,15 @@ export const PrintChannelsQrCodeModal = (props: Props) => {
             })
 
             const base64String = response.base64Content;
-            const blob = Files.base64ToBlob(base64String, 'application/pdf;base64');
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            setTimeout(() => URL.revokeObjectURL(url), 100);
+            Files.saveBase64File(base64String, "qrcodes.pdf", 'application/pdf;base64');
+            // const blob = Files.base64ToBlob(base64String, 'application/pdf;base64');
+            // const url = URL.createObjectURL(blob);
+            // window.open(url, '_blank');
+            // const newWindow = window.open(url, '_blank');
+            // if (newWindow != null) {
+            //     newWindow.addEventListener('unload', () => URL.revokeObjectURL(url));
+            // }
+
             props.onClose();
         } catch {
             toast.error(t("common.operations.failure.generic"));
