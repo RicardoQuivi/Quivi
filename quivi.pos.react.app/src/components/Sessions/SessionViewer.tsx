@@ -114,7 +114,6 @@ export const SessionViewer: React.FC<Props> = ({
     });
     const profile = useMemo(() => profilesQuery.data.length == 0 ? undefined : profilesQuery.data[0], [profilesQuery.data]);
 
-
     const pendingOrdersQuery = useOrdersQuery(!pos.cartSession.channelId ? undefined : {
         channelIds: [pos.cartSession.channelId],
         states: [OrderState.PendingApproval],
@@ -145,6 +144,7 @@ export const SessionViewer: React.FC<Props> = ({
 
     const itemsQuery = useMenuItemsQuery(itemsIds.length == 0 ? undefined : {
         ids: itemsIds,
+        includeDeleted: true,
         page: 0,
     })
     const itemsMap = useMemo(() => CollectionFunctions.toMap(itemsQuery.data, item => item.id), [itemsQuery.data]);
@@ -246,10 +246,15 @@ export const SessionViewer: React.FC<Props> = ({
                         }
                     </Box>
                 }
-                <Divider variant="fullWidth" sx={{flex: "0 0 auto"}}/>
+                <Divider
+                    variant="fullWidth"
+                    sx={{
+                        flex: 0,
+                    }}
+                />
                 <Box
                     sx={{
-                        flex: "1 1 auto",
+                        flex: 1,
                         overflow: "hidden auto",
                     }}
                 >
@@ -265,7 +270,9 @@ export const SessionViewer: React.FC<Props> = ({
                                 justifyContent: "center",
                             }}
                         >
-                            <p style={{ textAlign: "center", fontSize: "16px" }}>{ t("session.empty")}</p>
+                            <Typography variant="subtitle1">
+                                {t("session.empty")}
+                            </Typography>
                         </Box>
                         :
                         <List sx={{ bgcolor: 'background.paper'}}>
@@ -433,6 +440,18 @@ const SessionItemComponent = (props : {
                 transition: "background-color 0.5s ease",
                 borderRadius: 0,
                 padding: "0 0 0 1rem",
+                width: "100%", 
+
+                cursor: modifiers.length > 0 ? "pointer" : undefined,
+                backgroundColor: !!props.showBackground && props.recentlyChanged == false ? "ghostwhite" : undefined,
+
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignContent: "center",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "0.75rem",
 
                 "& .MuiListItemSecondaryAction-root": {
                     position: "unset",
@@ -455,20 +474,6 @@ const SessionItemComponent = (props : {
                 },
             }}
             className={props.recentlyChanged ? "active" : ""}
-            style={{
-                width: "100%", 
-                transition: "background-color 0.5s ease",
-                cursor: modifiers.length > 0 ? "pointer" : undefined,
-                backgroundColor: !!props.showBackground && props.recentlyChanged == false ? "ghostwhite" : undefined,
-
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                alignContent: "center",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "0.75rem"
-            }}
             secondaryAction={secondaryActions()}>
             <ListItemAvatar>
                 {
@@ -646,10 +651,15 @@ const OrderItemComponent = (props : {
     <Card sx={{ margin: "1rem", cursor: "pointer", transition: "background-color 0.5s ease",}}>
         <CardHeader avatar={
                 <Tooltip title={t("pendingApproval")}>
-                    <Chip size="small" variant="outlined" color="info" label={<>
+                    <Chip
+                        size="small"
+                        variant="outlined"
+                        color="info"
+                        label={<>
                             <ExclamationIcon height={16} width={16} aria-hidden="true" fill="#0288d1" />
                             {dateHelper.getTimeAgo(now, props.order.lastModified)}
-                        </>}/>
+                        </>}
+                    />
                 </Tooltip>
             }
             action={secondaryActions()}
