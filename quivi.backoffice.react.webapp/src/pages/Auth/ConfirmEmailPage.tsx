@@ -9,6 +9,7 @@ import { ApiException } from "../../hooks/api/exceptions/ApiException";
 import Button from "../../components/ui/button/Button";
 import AuthLayout from "./AuthPageLayout";
 import { Spinner } from "../../components/spinners/Spinner";
+import { Countdown } from "../../components/common/Countdown";
 
 enum ConfirmState {
     Confirming,
@@ -21,30 +22,18 @@ export const ConfirmEmailPage = () => {
     const [confirmState, setConfirmState] = useState<ConfirmState>(ConfirmState.Confirming);
     const [searchParams] = useSearchParams();
     const [state, setState] = useState({
-        email: undefined as string | undefined,
-        code: undefined as string | undefined,
+        email: searchParams.get('email') ?? undefined as string | undefined,
+        code: searchParams.get('code') ?? undefined as string | undefined,
     })
 
-    useEffect(() => {
-        const email = searchParams.get('email');
-        const code = searchParams.get('code');
-        if(email == null) {
-            return;
-        }
-
-        if(code == null) {
-            return;
-        }
-
-        setState({
-            email: email,
-            code: code,
-        })
-    }, [searchParams])
+    useEffect(() => setState({
+        email: searchParams.get('email') ?? undefined as string | undefined,
+        code: searchParams.get('code') ?? undefined as string | undefined,
+    }), [searchParams])
 
     const getBody = (confirmState: ConfirmState): React.ReactNode => {
         switch(confirmState){
-            case ConfirmState.Confirming: 
+            case ConfirmState.Confirming:
                 return <ConfirmingEmail
                     email={state.email}
                     code={state.code}
@@ -59,6 +48,7 @@ export const ConfirmEmailPage = () => {
                  />
         }
     }
+    
     return <>
         <PageMeta
             title={t("pages.signUpConfirm.title")}
@@ -111,7 +101,8 @@ const ConfirmingEmail = (props: ConfirmingEmailProps) => {
         }
 
         if(props.email == undefined || props.code == undefined) {
-            return;
+            const timeout = setTimeout(props.onExpired, 3000);
+            return () => clearTimeout(timeout);
         }
 
         confirmEmail(props.email, props.code);
@@ -156,6 +147,7 @@ const TokenExpired = (props: TokenExpiredProps) => {
     const { t } = useTranslation();
     const userApi = useUserApi();
 
+    const [cooldownEnd, setCooldownEnd] = useState<Date | undefined>(() => new Date(new Date().getTime() + 30000));
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const submit = async () => {
@@ -166,7 +158,7 @@ const TokenExpired = (props: TokenExpiredProps) => {
         try {
             setIsSubmitting(true);
             await userApi.register(props.email);
-            //Implement loader after submitting
+            setCooldownEnd(new Date(new Date().getTime() + 30000));
         } finally {
             setIsSubmitting(false);
         }
@@ -205,21 +197,33 @@ const TokenExpired = (props: TokenExpiredProps) => {
                 {t("pages.signUpConfirm.tokenExpiredDescription")}
             </p>
         </div>
-        <Button
-            size="md" 
-            variant="primary"
-            className="w-full"
-            onClick={submit}
-            disabled={isSubmitting}
-        >
-            {
-                isSubmitting
-                ?
-                <Spinner />
-                :
-                t("pages.signUpConfirm.resendConfirmation")
-            }
-        </Button>
+        {
+            cooldownEnd != undefined
+            ?
+            <Countdown
+                targetDate={cooldownEnd}
+                onComplete={() => setCooldownEnd(undefined)}
+                footer={<p className="text-sm text-gray-500 dark:text-gray-400">
+                    {t("common.resendEmailTimerDescription")}
+                </p>}
+            />
+            :
+            <Button
+                size="md" 
+                variant="primary"
+                className="w-full"
+                onClick={submit}
+                disabled={isSubmitting}
+            >
+                {
+                    isSubmitting
+                    ?
+                    <Spinner />
+                    :
+                    t("pages.signUpConfirm.resendConfirmation")
+                }
+            </Button>
+        }
     </>
 }
 

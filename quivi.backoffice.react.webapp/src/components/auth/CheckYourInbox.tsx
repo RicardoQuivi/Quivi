@@ -3,6 +3,7 @@ import Button from "../ui/button/Button";
 import { useToast } from "../../layout/ToastProvider";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "../spinners/Spinner";
+import { Countdown } from "../common/Countdown";
 
 interface CheckYourInboxProps {
     readonly title: string;
@@ -12,14 +13,16 @@ interface CheckYourInboxProps {
 }
 export const CheckYourInbox = (props: CheckYourInboxProps) => {
     const { t } = useTranslation();
+    const [cooldownEnd, setCooldownEnd] = useState<Date | undefined>(() => new Date(new Date().getTime() + 30000));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const toast = useToast();
-
+    
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            await props.onResend();
+            //await props.onResend();
             toast.success(t("pages.signUp.resendConfirmationSent"));
+            setCooldownEnd(new Date(new Date().getTime() + 30000));
         } catch {
             toast.error(t("common.operations.failure.generic"));
         } finally {
@@ -60,20 +63,32 @@ export const CheckYourInbox = (props: CheckYourInboxProps) => {
                 {props.description}
             </p>
         </div>
-        <Button
-            size="md" 
-            variant="primary"
-            className="w-full"
-            onClick={submit}
-            disabled={isSubmitting}
-        >
-            {
-                isSubmitting
-                ?
-                <Spinner />
-                :
-                props.buttonText
-            }
-        </Button>
+        {
+            cooldownEnd != undefined
+            ?
+            <Countdown
+                targetDate={cooldownEnd}
+                onComplete={() => setCooldownEnd(undefined)}
+                footer={<p className="text-sm text-gray-500 dark:text-gray-400">
+                    {t("common.resendEmailTimerDescription")}
+                </p>}
+            />
+            :
+            <Button
+                size="md" 
+                variant="primary"
+                className="w-full"
+                onClick={submit}
+                disabled={isSubmitting}
+            >
+                {
+                    isSubmitting
+                    ?
+                    <Spinner />
+                    :
+                    props.buttonText
+                }
+            </Button>
+        }
     </>
 }

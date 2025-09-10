@@ -66,6 +66,7 @@
         "confirm": "Confirm",
         "close": "Close",
         "openLink": "Open link",
+        "resendEmailTimerDescription": "until requesting a new email is available.",
         "operations": {
             "pluralNew": "New {{name}}",
             "new": "New {{name}}",
