@@ -51,14 +51,8 @@ export const OrdersTable = ({
         includeDeleted: true,
     })
     const channelsMap = useMemo(() => CollectionFunctions.toMap(channelsQuery.data, q => q.id), [channelsQuery.data])
-    const profileIds = useMemo(() => {
-        const set = new Set<string>();
-        for(const c of channelsQuery.data) {
-            set.add(c.channelProfileId)
-        }
-        return Array.from(set.values());
-    }, [channelsQuery.data]);
-
+    const profileIds = useMemo(() => Array.from(CollectionFunctions.toSet(channelsQuery.data, q => q.channelProfileId)), [channelsQuery.data])
+    
     const profilesQuery = useChannelProfilesQuery(profileIds.length == 0 ? undefined : {
         ids: profileIds,
         page: 0,

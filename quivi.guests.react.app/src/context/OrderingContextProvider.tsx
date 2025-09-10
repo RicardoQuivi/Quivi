@@ -58,13 +58,14 @@ export const OrderingContextProvider = (props: {
     const jobsApi = useJobsApi();
 
     const storage = useBrowserStorageService();
-    const orderId = storage.getOrderId();
+    const storedOrderId = storage.getOrderId();
+
+    const [orderId, setOrderId] = useState(() => storedOrderId);
     const channelId = appContext?.channelId;
     const merchantId = appContext?.merchantId;
 
     const orderQuery = useOrdersQuery(!orderId || !channelId ? undefined : {
         ids: [orderId],
-        channelIds: [channelId],
         page: 0,
         pageSize: 1,
     });
@@ -167,7 +168,7 @@ export const OrderingContextProvider = (props: {
                     ...s,
                     orderId: response.id,
                 }))
-                storage.saveOrderId(response.id);
+                setOrderId(response.id);
                 return response;
             }
         } else {
@@ -385,18 +386,20 @@ export const OrderingContextProvider = (props: {
         pageSize: modifierIds.length,
     })
     
+    useEffect(() => storage.saveOrderId(orderId), [orderId])
+    
     useEffect(() => {
-        if(orderQuery.isFirstLoading || merchantId == undefined || channelId == undefined) {
+        if(order == undefined && orderQuery.isFirstLoading == false) {
+            setOrderId(null);
             return;
         }
-
-        const order = orderQuery.data.length == 0 ? undefined : orderQuery.data[0];
-        if(order == undefined) {
+        
+        if(order == undefined || merchantId == undefined || channelId == undefined) {
             return;
         }
 
         if(merchantId != order.merchantId || channelId != order.channelId || order.state != OrderState.Draft) {
-            storage.saveOrderId(null);
+            setOrderId(null);
             return;
         }
 
@@ -444,7 +447,7 @@ export const OrderingContextProvider = (props: {
             orderId: order.id,
         }))
     }, [
-        orderQuery.isFirstLoading, orderQuery.data,
+        orderQuery.isFirstLoading, order,
         merchantId, 
         channelId,
         baseItemsQuery.data, baseItemsQuery.isFirstLoading,
@@ -582,10 +585,12 @@ export const OrderingContextProvider = (props: {
     }), [state.orderId, state.items, state.fields, state.atDate])
 
     return (
-        <OrderingContext.Provider value={{
-            orders: orders,
-            cart: cart,
-        }}>
+        <OrderingContext.Provider
+            value={{
+                orders: orders,
+                cart: cart,
+            }}
+        >
             {props.children}
         </OrderingContext.Provider>
     );

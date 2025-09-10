@@ -4,6 +4,7 @@ import { Link, useNavigate, useNavigationType } from "react-router";
 import { ArrowLeftIcon, HomeIcon } from "../../icons";
 import { NavActions } from "./NavActions";
 import { useMemo } from "react";
+import { Box } from "@mui/material";
 
 interface Props {
     readonly title?: string;
@@ -25,25 +26,39 @@ export const TableNav: React.FC<Props> = ({
     const canGoBack = useMemo(() => navType === "PUSH", [navType])
 
     return (
-        <div className="container" style={{height: "fit-content"}}>
-            <div className="page-title">
+        <Box
+            className="container"
+            sx={{
+                height: "fit-content",
+            }}
+        >
+            <Box className="page-title">
                 {
                     title
                     ?
-                        <div className="page-title__content" onClick={() => canGoBack && navigate(-1)} style={{ cursor: canGoBack ? "pointer" : undefined }}>
-                            {
-                                canGoBack &&
-                                <div className="nav__menu">
-                                    <ArrowLeftIcon width="60%" height="60%" />
-                                </div>
-                            }
+                        <Box
+                            className="page-title__content"
+                            onClick={() => {
+                                if(canGoBack) {
+                                    navigate(-1);
+                                    return;
+                                }
+                                navigate(!appContext?.channelId ? "/user/home" : `/c/${appContext.channelId}`);
+                            }} 
+                            sx={{
+                                cursor: canGoBack ? "pointer" : undefined,
+                            }}
+                        >
+                            <Box className="nav__menu">
+                                <ArrowLeftIcon width="60%" height="60%" />
+                            </Box>
                             <h2>{title}</h2>
-                        </div>
+                        </Box>
                     :
                     <Link to={!appContext?.channelId ? "/user/home" : `/c/${appContext.channelId}`}>
-                        <div className="nav__menu nav__menu--not-auth">
+                        <Box className="nav__menu nav__menu--not-auth">
                             <HomeIcon fill={theme.primaryColor.hex} width="60%" height="60%" />
-                        </div>
+                        </Box>
                     </Link>
                 }
                 <NavActions
@@ -51,7 +66,7 @@ export const TableNav: React.FC<Props> = ({
                     hideOrder={hideOrder}
                     hideFlag={hideFlag}
                 />
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

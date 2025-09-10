@@ -647,11 +647,18 @@ const OrderItemComponent = (props : {
     }
 
     return (
-    <Card sx={{ margin: "1rem", cursor: "pointer", transition: "background-color 0.5s ease",}}>
-        <CardHeader avatar={
+    <Card
+        sx={{
+            margin: "1rem",
+            cursor: "pointer",
+            transition: "background-color 0.5s ease",
+        }}
+    >
+        <CardHeader
+            avatar={
                 <Tooltip title={t("pendingApproval")}>
                     <Chip
-                        size="small"
+                        size="medium"
                         variant="outlined"
                         color="info"
                         label={<>

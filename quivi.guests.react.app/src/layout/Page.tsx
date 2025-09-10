@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 import { pageTransition, pageVariants } from "../pages/transitions";
 import { TableNav } from "./Navbar/TableNav";
+import { Box } from "@mui/material";
 
 interface HeaderProps {
     readonly hideCart?: boolean;
@@ -23,35 +24,54 @@ export const Page = ({
     headerProps,
 }: PageProps) => {
     return <motion.div initial='initial' animate='in' exit='out' transition={pageTransition} variants={pageVariants}>
-        <div className="body" style={{display: "flex", height: "100dvh", flexWrap: "nowrap", justifyContent: "space-between", flexDirection: "column",}}>
+        <Box 
+            className="body"
+            sx={{
+                display: "flex",
+                height: "100dvh",
+                flexWrap: "nowrap",
+                justifyContent: "space-between",
+                flexDirection: "column",
+            }}
+        >
             <TableNav
                 title={title}
                 hideCart={headerProps?.hideCart}
                 hideOrder={headerProps?.hideOrder}
                 hideFlag={headerProps?.hideFlag}
             />
-            <div className="container" style={{display: "flex", flexDirection: "column", paddingBottom: 0, flexGrow: 1}}>
+            <Box 
+                className="container"
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    paddingBottom: 0,
+                    flexGrow: 1
+                }}
+            >
                 {children}
-            </div>
+            </Box>
             {
                 footer != undefined &&
-                <div style={{
-                    alignSelf: "flex-end",
+                <Box
+                    sx={{
+                        alignSelf: "flex-end",
 
-                    zIndex: 3,
-                    position: "sticky",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    margin: 0,
-                    paddingBottom: "1.5rem",
-                    width: "100%",
-                }}>
-                    <div className="container">
+                        zIndex: 3,
+                        position: "sticky",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        margin: 0,
+                        paddingBottom: "1.5rem",
+                        width: "100%",
+                    }}
+                >
+                    <Box className="container">
                         {footer}
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             }
-        </div>
+        </Box>
     </motion.div>
 }
