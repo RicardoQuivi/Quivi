@@ -283,13 +283,16 @@ export const ImageInput: React.FC<Props> = ({
                                                 imageSrc: s.edit.imageSrc,
                                             },
                                         }))}
+                                        className='dark:text-gray-900 text-white'
                                     >
                                         <PencilIcon className="h-6 w-6" />
                                     </IconButton>
                                 </Tooltip>
                             }
                             <Tooltip message={t("imageEditor.upload")}>
-                                <IconButton>
+                                <IconButton
+                                    className='dark:text-gray-900 text-white cursor-pointer'
+                                >
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/gif,image/png"
@@ -309,6 +312,7 @@ export const ImageInput: React.FC<Props> = ({
                                             onUploadHandlerChanged(undefined);
                                             setState(s => ({ ...s, image: { ...s.image, url: value, }, edit: { ...s.edit, imageSrc: "" } }));
                                         }}
+                                        className='dark:text-gray-900 text-white'
                                     >
                                         <UndoIcon className="h-6 w-6" />
                                     </IconButton>
@@ -330,6 +334,7 @@ export const ImageInput: React.FC<Props> = ({
                                             const saveFunction = !value ? undefined : async () => image;
                                             onUploadHandlerChanged(saveFunction == undefined ? undefined : new UploadHandler(saveFunction));
                                         }}
+                                        className='dark:text-gray-900 text-white'
                                     >
                                         <TrashBinIcon className="h-6 w-6"/>
                                     </IconButton>

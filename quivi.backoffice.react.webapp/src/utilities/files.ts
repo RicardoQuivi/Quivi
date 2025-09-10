@@ -14,7 +14,7 @@ export class Files {
                 byteNumbers[i] = slice.charCodeAt(i);
             }
             
-            var byteArray = new Uint8Array(byteNumbers);
+            const byteArray = new Uint8Array(byteNumbers);
             byteArrays.push(byteArray);
         }
         return byteArrays;

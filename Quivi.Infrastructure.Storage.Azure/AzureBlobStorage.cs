@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs.Models;
 using Quivi.Infrastructure.Abstractions.Storage;
 using Quivi.Infrastructure.Extensions;
+using System.Web;
 
 namespace Quivi.Infrastructure.Storage.Azure
 {
@@ -127,7 +128,8 @@ namespace Quivi.Infrastructure.Storage.Azure
             BlobContainerClient merchantContainerClient = blobServiceClient.GetBlobContainerClient(VirtualDirectory);
             await merchantContainerClient.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
 
-            var fullName = string.Join("/", (folderHierarchy ?? []).Append(name.Replace("/", "")));
+            var decodedName = HttpUtility.UrlDecode(name.Replace("/", ""));
+            var fullName = string.Join("/", (folderHierarchy ?? []).Append(decodedName));
             return merchantContainerClient.GetBlobClient(fullName);
         }
     }
