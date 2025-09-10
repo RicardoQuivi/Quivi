@@ -415,7 +415,6 @@ const SessionItemComponent = (props : {
 
         return <ButtonGroup 
             variant="outlined"
-
         >
             { buttons }
         </ButtonGroup>
@@ -664,7 +663,11 @@ const OrderItemComponent = (props : {
             }
             action={secondaryActions()}
             onClick={() => setIsOpen(s => !s)}
-            title={<b>{t("order")} {props.order.sequenceNumber}</b>} 
+            title={
+                <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    {t("order")} {props.order.sequenceNumber}
+                </Typography>
+            } 
             subheader={<CurrencySpan value={Items.getTotalPrice(props.order.items)} />}
         />
         <Collapse in={isOpen} timeout="auto">
