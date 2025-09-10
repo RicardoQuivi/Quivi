@@ -17,10 +17,18 @@
         "apiErrors": {
             "InvalidValue": "O valor introduzido não é válido",
             "InvalidEmail": "O email é inválido",
-            "InvalidPassword": "A password é inválida.\nTamanho mínimo: {{requiredLength}} caractéres",
+            "InvalidPassword": "A password é inválida.<br/><list/>",
             "InvalidCredentials": "As credenciais introduzidas são inválidas",
             "Duplicate": "Já existe um registo com este valor",
             "NoBalance": "O seu balanço atual não é suficiente para proceder a esta operação."
+        },
+        "passwordRequirements": {
+            "RequiredLength": "Tamanho mínimo: {{value}}",
+            "RequiredUniqueChars": "Mínimo de caracteres únicos: {{value}}",
+            "RequireNonAlphanumeric": "Pelo menos 1 carácter alfanumérico",
+            "RequireLowercase": "Pelo menos 1 minúscula",
+            "RequireUppercase": "Pelo menos 1 maíscula",
+            "RequireDigit": "Pelo menos 1 número"
         },
         "all": "Todos",
         "settings": "Definições",

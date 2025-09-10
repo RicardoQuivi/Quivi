@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Quivi.Application.Commands.Users;
+using Quivi.Application.Extensions;
 using Quivi.Backoffice.Api.Requests.Users;
 using Quivi.Backoffice.Api.Responses.Users;
 using Quivi.Backoffice.Api.Validations;
@@ -30,7 +31,11 @@ namespace Quivi.Backoffice.Api.Controllers
 
                 OnEmailAlreadyExists = () => validator.AddError(m => m.Email, ValidationError.InvalidEmail),
                 OnInvadidEmail = () => validator.AddError(m => m.Email, ValidationError.InvalidEmail),
-                OnInvalidPassword = (passwordOptions) => validator.AddError(m => m.Password, ValidationError.InvalidPassword, passwordOptions),
+                OnInvalidPassword = (passwordOptions, errors) =>
+                {
+                    var context = errors.ToErrorContext(passwordOptions);
+                    validator.AddError(m => m.Password, ValidationError.InvalidPassword, context);
+                },
             });
 
             return new CreateUserResponse

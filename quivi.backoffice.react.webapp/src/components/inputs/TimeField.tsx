@@ -1,13 +1,14 @@
 import { TimeIcon } from "../../icons";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { InputErrorMessage } from "./InputErrorMessage";
 
 interface TimeFieldProps {
     readonly label?: string;
     readonly value?: Date;
     readonly placeholder?: string;
     readonly onChange?: (v: Date) => any;
-    readonly errorMessage?: string;
+    readonly errorMessage?: React.ReactNode;
     readonly name?: string;
     readonly disabled?: boolean;
     readonly autoComplete?: string;
@@ -55,14 +56,7 @@ export const TimeField = (props: TimeFieldProps) => {
                 <TimeIcon className="size-6" />
             </span>
         </div>
-        {
-            props.errorMessage != undefined && 
-            <p
-                className={'mt-1.5 text-xs text-error-500'}
-            >
-                {props.errorMessage}
-            </p>
-        }
+        <InputErrorMessage message={props.errorMessage} />
     </div>
     )
 }

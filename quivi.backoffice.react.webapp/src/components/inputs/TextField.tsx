@@ -1,11 +1,12 @@
 import Label from "../form/Label";
+import { InputErrorMessage } from "./InputErrorMessage";
 
 interface TextFieldProps {
     readonly label?: string;
     readonly value?: string;
     readonly placeholder?: string;
     readonly onChange?: (v: string) => any;
-    readonly errorMessage?: string;
+    readonly errorMessage?: React.ReactNode;
     readonly name?: string;
     readonly disabled?: boolean;
     readonly autoComplete?: string;
@@ -42,15 +43,7 @@ export const TextField = (props: TextFieldProps) => {
                 placeholder={props.placeholder}
                 className={inputClasses}
             />
-
-            {
-                props.errorMessage != undefined && 
-                <p
-                    className={'mt-1.5 text-xs text-error-500'}
-                >
-                    {props.errorMessage}
-                </p>
-            }
+            <InputErrorMessage message={props.errorMessage} />
         </div>
     </div>
     )

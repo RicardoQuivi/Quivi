@@ -17,10 +17,18 @@
         "apiErrors": {
             "InvalidValue": "The provided value is not valid",
             "InvalidEmail": "Email is invalid",
-            "InvalidPassword": "The password is invalid.\nMinimum Lenght: {{requiredLength}} characters",
+            "InvalidPassword": "The password is invalid.",
             "InvalidCredentials": "The provided credentials are invalid",
             "Duplicate": "A entry with this value already exists",
             "NoBalance": "Your current balance is not enough to perform this refund."
+        },
+        "passwordRequirements": {
+            "RequiredLength": "Minimum Lenght: {{value}}",
+            "RequiredUniqueChars": "Minimum unique characters: {{value}}",
+            "RequireNonAlphanumeric": "At least 1 alphanumeric character",
+            "RequireLowercase": "At least 1 lowercase",
+            "RequireUppercase": "At least 1 uppercase",
+            "RequireDigit": "At least one number"
         },
         "all": "All",
         "settings": "Settings",

@@ -25,7 +25,7 @@ namespace Quivi.Application.Commands.Users
 
         public required Action OnInvadidEmail { get; init; }
         public required Action OnEmailAlreadyExists { get; init; }
-        public required Action<PasswordOptions> OnInvalidPassword { get; init; }
+        public required Action<PasswordOptions, IEnumerable<IdentityError>> OnInvalidPassword { get; init; }
     }
 
     public class CreateUserAsyncCommandHandler : ICommandHandler<CreateUserAsyncCommand, Task<ApplicationUser?>>
@@ -87,7 +87,7 @@ namespace Quivi.Application.Commands.Users
 
                     if (!passwordChangeResult.Succeeded)
                     {
-                        command.OnInvalidPassword(identityOptions.Value.Password);
+                        command.OnInvalidPassword(identityOptions.Value.Password, passwordChangeResult.Errors);
                         return null;
                     }
                 }
@@ -115,12 +115,6 @@ namespace Quivi.Application.Commands.Users
                 return applicationUser;
             }
 
-            if (command.Password == null)
-            {
-                command.OnInvalidPassword(identityOptions.Value.Password);
-                return null;
-            }
-
             var now = dateTimeProvider.GetUtcNow();
             applicationUser = new ApplicationUser
             {
@@ -137,10 +131,10 @@ namespace Quivi.Application.Commands.Users
                 },
             };
 
-            var createResult = await userManager.CreateAsync(applicationUser, command.Password);
+            var createResult = await userManager.CreateAsync(applicationUser, command.Password ?? string.Empty);
             if (!createResult.Succeeded)
             {
-                command.OnInvalidPassword(identityOptions.Value.Password);
+                command.OnInvalidPassword(identityOptions.Value.Password, createResult.Errors);
                 return null;
             }
 

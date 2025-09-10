@@ -4,5 +4,6 @@
     {
         Guid Guid();
         string String(int length);
+        string Password(int minLenght);
     }
 }

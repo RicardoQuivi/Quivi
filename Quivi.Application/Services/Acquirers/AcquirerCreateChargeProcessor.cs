@@ -516,14 +516,14 @@ namespace Quivi.Application.Services.Acquirers
                 var applicationUser = await commandProcessor.Execute(new CreateUserAsyncCommand
                 {
                     Email = command.Email,
-                    Password = randomGenerator.String(32),
+                    Password = randomGenerator.Password(32),
                     PersonData = new CreateUserAsyncCommand.CreatePersonData
                     {
                         VatNumber = command.VatNumber,
                     },
                     OnEmailAlreadyExists = () => throw new Exception("This should never happen, because we already checked for existing email."),
                     OnInvadidEmail = () => throw new Exception("This should never happen, because we already checked for valid email."),
-                    OnInvalidPassword = (passwordOptions) => throw new Exception("This should never happen, because we generate a random password."),
+                    OnInvalidPassword = (passwordOptions, errors) => throw new Exception("This should never happen, because we generate a random password."),
                 });
                 if (applicationUser == null)
                     throw new Exception("Failed to create user for guest charge.");

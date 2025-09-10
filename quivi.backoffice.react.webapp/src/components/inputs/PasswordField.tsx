@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Label from "../form/Label";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
+import { InputErrorMessage } from "./InputErrorMessage";
 
 interface PasswordFieldProps {
     readonly label?: string;
     readonly placeholder?: string;
     readonly value?: string;
     readonly onChange?: (v: string) => any;
-    readonly errorMessage?: string;
+    readonly errorMessage?: React.ReactNode;
     readonly name?: string;
     readonly disabled?: boolean;
     readonly autoComplete?: string;
@@ -62,14 +63,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
                 }
                 </span>
             </div>
-            {
-                props.errorMessage != undefined && 
-                <p
-                    className={'mt-1.5 text-xs text-error-500'}
-                >
-                    {props.errorMessage}
-                </p>
-            }
+            <InputErrorMessage message={props.errorMessage} />
         </div>
     </div>
     )

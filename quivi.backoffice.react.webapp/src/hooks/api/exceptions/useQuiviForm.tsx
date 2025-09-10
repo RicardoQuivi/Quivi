@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { ApiException } from "./ApiException";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import * as Yup from 'yup';
+import { ValidationErrorCode } from "./InvalidModelResponse";
 
 function camelCase(str: string) {
     // Using replace method with regEx
@@ -11,7 +12,7 @@ function camelCase(str: string) {
 }
 
 export interface ErrorMessage {
-    readonly message: string;
+    readonly message: React.ReactNode;
 }
 
 interface FormResult<TModel> {
@@ -126,9 +127,15 @@ export const useQuiviForm = <TModel extends Yup.Maybe<Yup.AnyObject>, TTransform
                                 const map = new Map<string, ErrorMessage>();
                                 for(const e of ex.errors) {
                                     const aux: Record<string, string> = { ...(e.context ?? {}) };
-                                    map.set(camelCase(e.property), {
-                                        message: t(`common.apiErrors.${e.errorCode}`, aux)
-                                    });
+                                    if(e.errorCode == ValidationErrorCode.InvalidPassword) {
+                                        map.set(camelCase(e.property), {
+                                            message: <InvalidPasswordMessage context={aux} />
+                                        });
+                                    } else {
+                                        map.set(camelCase(e.property), {
+                                            message: t(`common.apiErrors.${e.errorCode}`, aux)
+                                        });
+                                    }
                                 }
                                 return map;
                             });
@@ -164,4 +171,40 @@ export const useQuiviForm = <TModel extends Yup.Maybe<Yup.AnyObject>, TTransform
     }, [errors, isSubmitting, touchedFields]);
 
     return result;
+}
+
+
+
+interface InvalidPasswordMessageProps {
+    readonly context: Record<string, any>
+}
+const InvalidPasswordMessage = (props: InvalidPasswordMessageProps) => {
+    const { t } = useTranslation();
+
+    return <Trans
+        t={t}
+        i18nKey="common.apiErrors.InvalidPassword"
+        shouldUnescape={true}
+        components={{
+            br: <br/>,
+            list: (
+                <ul className="flex flex-col">
+                {
+                    Object.keys(props.context)
+                        .map(key => (
+                            props.context[key] != null &&
+                            <li key={key} className="flex items-center gap-2 px-3">
+                                <span className="ml-2 block h-[3px] w-[3px] rounded-full bg-error-500"></span>
+                                <span>
+                                {t(`common.passwordRequirements.${key}`, {
+                                    value: props.context[key],
+                                })}
+                                </span>
+                            </li>
+                        ))
+                }
+                </ul>
+            )
+        }}
+    />
 }

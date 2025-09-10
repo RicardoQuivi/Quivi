@@ -1,10 +1,11 @@
 import Label from "../form/Label";
+import { InputErrorMessage } from "./InputErrorMessage";
 
 interface Props {
     readonly label?: string;
     readonly value: boolean;
     readonly onChange?: (active: boolean) => any;
-    readonly errorMessage?: string;
+    readonly errorMessage?: React.ReactNode;
 }
 
 export const ToggleSwitch = (props: Props) => {
@@ -24,14 +25,6 @@ export const ToggleSwitch = (props: Props) => {
                 <Label>{props.label}</Label>
             }
         </label>
-
-        {
-            props.errorMessage != undefined && 
-            <p
-                className={'mt-1.5 text-xs text-error-500'}
-            >
-                {props.errorMessage}
-            </p>
-        }
+        <InputErrorMessage message={props.errorMessage} />
     </div>
 }
