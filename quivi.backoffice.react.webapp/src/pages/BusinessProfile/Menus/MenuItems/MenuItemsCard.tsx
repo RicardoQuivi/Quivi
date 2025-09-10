@@ -6,12 +6,10 @@ import { MenuItem } from "../../../../hooks/api/Dtos/menuItems/MenuItem";
 import { useMemo, useState } from "react";
 import { useMenuItemsQuery } from "../../../../hooks/queries/implementations/useMenuItemsQuery";
 import { useLocalsQuery } from "../../../../hooks/queries/implementations/useLocalsQuery";
-import { Local } from "../../../../hooks/api/Dtos/locals/Local";
 import { useMenuCategoriesQuery } from "../../../../hooks/queries/implementations/useMenuCategoriesQuery";
-import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCategory";
 import ComponentCard from "../../../../components/common/ComponentCard";
 import Button from "../../../../components/ui/button/Button";
-import { PencilIcon, PlusIcon, SearchIcon, TrashBinIcon } from "../../../../icons";
+import { CopyIcon, PencilIcon, PlusIcon, SearchIcon, TrashBinIcon } from "../../../../icons";
 import Avatar from "../../../../components/ui/avatar/Avatar";
 import Badge from "../../../../components/ui/badge/Badge";
 import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
@@ -19,6 +17,7 @@ import CurrencySpan from "../../../../components/currency/CurrencySpan";
 import { DeleteEntityModal } from "../../../../components/modals/DeleteEntityModal";
 import { Entity } from "../../../../hooks/EntitiesName";
 import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
+import { Collections } from "../../../../utilities/Collectionts";
 
 interface ItemsCardProps {
     readonly categoryId: string | undefined | null;   
@@ -53,24 +52,12 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
         ids: localIds,
         page: 0,
     })
-    const localsMap = useMemo(() => {
-        const map = new Map<string, Local>();
-        for(const l of localsQuery.data) {
-            map.set(l.id, l);
-        }
-        return map;
-    }, [localsQuery.data])
+    const localsMap = useMemo(() => Collections.toMap(localsQuery.data, c => c.id), [localsQuery.data])
 
     const categoriesQuery = useMenuCategoriesQuery({
         page: 0,
     })
-    const categoriesMap = useMemo(() => {
-        const result = new Map<string, MenuCategory>();
-        for(const c of categoriesQuery.data) {
-            result.set(c.id, c);
-        }
-        return result;
-    }, [categoriesQuery.data])
+    const categoriesMap = useMemo(() => Collections.toMap(categoriesQuery.data, c => c.id), [categoriesQuery.data])
 
     return <ComponentCard
         title={t("common.entities.menuItems")}
@@ -215,6 +202,12 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                     },
                 ]}
                 actions={[
+                    {
+                        render: () => <CopyIcon className="size-5" />,
+                        key: "copy",
+                        label: t("pages.menuItems.copy"),
+                        onClick: d => navigate(`/businessProfile/menumanagement/items/${d.id}/clone`)
+                    },
                     {
                         render: () => <PencilIcon className="size-5" />,
                         key: "edit",

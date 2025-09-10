@@ -34,7 +34,7 @@ const fromSize = (size: ModalSize | undefined): string => {
 interface ModalProps {
     readonly isOpen: boolean;
     readonly onOpen?: () => any;
-    readonly onClose: () => any;
+    readonly onClose?: () => any;
     readonly title?: string | React.ReactNode;
     readonly children: React.ReactNode;
     readonly footer?: React.ReactNode;
@@ -52,7 +52,7 @@ export const Modal = (props: ModalProps) => {
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                props.onClose();
+                props.onClose?.();
             }
         };
 

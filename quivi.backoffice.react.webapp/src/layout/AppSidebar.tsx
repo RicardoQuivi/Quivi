@@ -124,22 +124,22 @@ const items: NavItem[] = [
         name: "sidebar.settings.",
         show: (u) => u.merchantActivated == true,
         subItems: [
-            { 
+            {
                 name: "sidebar.settings.locals",
                 path: "/settings/locals",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
                 name: "sidebar.settings.chargeMethods",
                 path: "/settings/chargemethods",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
                 name: "sidebar.settings.employees",
                 path: "/settings/employees",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
-            { 
+            {
                 name: "sidebar.settings.printers",
                 path: "/settings/printersmanagement",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
@@ -202,17 +202,12 @@ const AppSidebar = () => {
         }
     }, [openSubmenu]);
 
-    const handleSubmenuToggle = (index: number) => {
-        setOpenSubmenu((prevOpenSubmenu) => {
-            if (
-                prevOpenSubmenu &&
-                prevOpenSubmenu.index === index
-            ) {
-                return null;
-            }
-            return { index };
-        });
-    };
+    const handleSubmenuToggle = (index: number) => setOpenSubmenu((prevOpenSubmenu) => {
+        if (prevOpenSubmenu && prevOpenSubmenu.index === index) {
+            return null;
+        }
+        return { index };
+    });
 
     const onLinkClick = () => {
         if(isMobileOpen) {

@@ -30,6 +30,8 @@
             "RequireUppercase": "Pelo menos 1 maíscula",
             "RequireDigit": "Pelo menos 1 número"
         },
+        "yes": "Sim",
+        "no": "Não",
         "all": "Todos",
         "settings": "Definições",
         "refunded": "Reembolso",
@@ -545,7 +547,12 @@
         },
         "menuItems": {
             "title": "Item",
-            "locationDescription": "Defina o local onde o item será enviado e impresso quando enviado para preparação. Caso o item não tenha um local definido terá de definir um local a cada pedido de preparação."
+            "locationDescription": "Defina o local onde o item será enviado e impresso quando enviado para preparação. Caso o item não tenha um local definido terá de definir um local a cada pedido de preparação.",
+            "copy": "Copiar",
+            "copyItemModal": {
+                "title": "O item foi adicionado",
+                "description": "Deseja criar a criar um novo registo com os dados deste novo item como referência?"
+            }
         },
         "locals": {
             "title": "Locais"

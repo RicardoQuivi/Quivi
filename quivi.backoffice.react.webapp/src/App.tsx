@@ -94,6 +94,7 @@ export const App = () => {
                     <Route path="/businessProfile/menumanagement/categories/:id/edit" element={<MenuCategoryFormPage />} />
                     <Route path="/businessProfile/menumanagement/items/add" element={<MenuItemFormPage />} />
                     <Route path="/businessProfile/menumanagement/items/:id/edit" element={<MenuItemFormPage />} />
+                    <Route path="/businessProfile/menumanagement/items/:id/clone" element={<MenuItemFormPage clone />} />
                     <Route path="/businessProfile/menumanagement/modifiers/add" element={<ModifierGroupFormPage />} />
                     <Route path="/businessProfile/menumanagement/modifiers/:id/edit" element={<ModifierGroupFormPage />} />
 

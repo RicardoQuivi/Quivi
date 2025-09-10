@@ -30,6 +30,8 @@
             "RequireUppercase": "At least 1 uppercase",
             "RequireDigit": "At least one number"
         },
+        "yes": "Yes",
+        "no": "No",
         "all": "All",
         "settings": "Settings",
         "refunded": "Refunded",
@@ -545,7 +547,12 @@
         },
         "menuItems": {
             "title": "Item",
-            "locationDescription": "Set the location where this item will be printed and sent for preparation. In case the item doesn't have a location, you will need to set it at each preparation request."
+            "locationDescription": "Set the location where this item will be printed and sent for preparation. In case the item doesn't have a location, you will need to set it at each preparation request.",
+            "copy": "Copy",
+            "copyItemModal": {
+                "title": "Item was added",
+                "description": "Do you want to continue creating a new entry with the data of this newly added item as reference?"
+            }
         },
         "locals": {
             "title": "Locals"
