@@ -4,10 +4,11 @@ import { useMemo } from "react";
 import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../../components/common/ComponentCard";
-import { ModifierGroupForm, ModifierGroupFormState } from "./ModifierGroupForm";
+import { ModifierGroupForm } from "./ModifierGroupForm";
 import { useToast } from "../../../../layout/ToastProvider";
 import { useModifierGroupMutator } from "../../../../hooks/mutators/useModifierGroupMutator";
 import { useModifierGroupsQuery } from "../../../../hooks/queries/implementations/useModifierGroupsQuery";
+import { ModifierGroupFormState } from "./ModifierGroupBaseForm";
 
 export const ModifierGroupFormPage = () => {
     const { id } = useParams();
@@ -22,7 +23,7 @@ export const ModifierGroupFormPage = () => {
         name: t("common.entities.modifierGroup")
     });
 
-    const itemsQuery = useModifierGroupsQuery(id == undefined ? undefined : {
+    const modifierQuery = useModifierGroupsQuery(id == undefined ? undefined : {
         ids: [ id ],
         page: 0,
     })
@@ -31,11 +32,11 @@ export const ModifierGroupFormPage = () => {
         if(id == undefined) {
             return undefined;
         }
-        if(itemsQuery.data.length == 0) {
+        if(modifierQuery.data.length == 0) {
             return undefined;
         }
-        return itemsQuery.data[0];
-    }, [id, itemsQuery.data])
+        return modifierQuery.data[0];
+    }, [id, modifierQuery.data])
 
     const submit = async (state: ModifierGroupFormState) => {
         if(item == undefined) {

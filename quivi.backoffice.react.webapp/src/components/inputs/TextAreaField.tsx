@@ -32,7 +32,7 @@ export const TextAreaField = (props: TextFieldProps) => {
         <div className="relative flex flex-col flex-1">
             <textarea
                 name={props.name}
-                value={props.value}
+                value={props.value ?? ""}
                 onChange={(e) => props.onChange?.(e.target.value)}
                 disabled={props.disabled}
                 autoComplete={props.autoComplete}

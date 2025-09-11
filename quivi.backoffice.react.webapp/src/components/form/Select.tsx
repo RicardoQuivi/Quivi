@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ChevronDownIcon } from "../../icons";
 
 interface Option {
     readonly value: string;
@@ -22,8 +23,6 @@ const Select: React.FC<SelectProps> = ({
     value: selectedValue = "",
     disabled,
 }) => {
-    // Manage the selected value
-
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         onChange(value); // Trigger parent handler
@@ -62,13 +61,10 @@ const Select: React.FC<SelectProps> = ({
                     </option>
                 ))}
             </select>
-            <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-4 top-1/2 dark:text-gray-400">
-                <svg className="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                </svg>
+            <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-4 top-1/2 dark:text-gray-400 pointer-events-none">
+                <ChevronDownIcon className="size-5"/>
             </span>
         </div>
     );
 };
-
 export default Select;

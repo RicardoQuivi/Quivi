@@ -51,30 +51,30 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.IncludeModifierGroups)
             {
-                query = query.Include(x => x.MenuItemModifierGroups!)
-                            .ThenInclude(mg => mg.MenuItemModifierGroup!)
-                            .ThenInclude(x => x.MenuItemModifiers!)
-                            .ThenInclude(m => m.MenuItem!);
+                query = query.Include(x => x.MenuItemModifierGroups!);
+                //.ThenInclude(mg => mg.MenuItemModifierGroup!)
+                //.ThenInclude(x => x.MenuItemModifiers!)
+                //.ThenInclude(m => m.MenuItem!);
 
-                if (criteria.IncludeTranslations)
-                {
-                    query = query.Include(g => g.MenuItemModifierGroups!)
-                                    .ThenInclude(g => g.MenuItemModifierGroup)
-                                    .ThenInclude(g => g.ItemsModifierGroupTranslations);
+                //if (criteria.IncludeTranslations)
+                //{
+                //    query = query.Include(g => g.MenuItemModifierGroups!)
+                //                    .ThenInclude(g => g.MenuItemModifierGroup)
+                //                    .ThenInclude(g => g.ItemsModifierGroupTranslations);
 
-                    query = query.Include(x => x.MenuItemModifierGroups!)
-                                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
-                                    .ThenInclude(mg => mg.MenuItemModifiers!)
-                                    .ThenInclude(m => m.MenuItem!)
-                                    .ThenInclude(m => m.MenuItemTranslations!);
-                }
+                //    query = query.Include(x => x.MenuItemModifierGroups!)
+                //                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
+                //                    .ThenInclude(mg => mg.MenuItemModifiers!)
+                //                    .ThenInclude(m => m.MenuItem!)
+                //                    .ThenInclude(m => m.MenuItemTranslations!);
+                //}
 
-                if (criteria.IncludeWeeklyAvailabilities)
-                    query = query.Include(x => x.MenuItemModifierGroups!)
-                                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
-                                    .ThenInclude(mg => mg.MenuItemModifiers!)
-                                    .ThenInclude(m => m.MenuItem!)
-                                    .ThenInclude(m => m.MenuItemWeeklyAvailabilities!);
+                //if (criteria.IncludeWeeklyAvailabilities)
+                //    query = query.Include(x => x.MenuItemModifierGroups!)
+                //                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
+                //                    .ThenInclude(mg => mg.MenuItemModifiers!)
+                //                    .ThenInclude(m => m.MenuItem!)
+                //                    .ThenInclude(m => m.MenuItemWeeklyAvailabilities!);
             }
 
             if (criteria.IncludeTranslations)

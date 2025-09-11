@@ -15,6 +15,7 @@ namespace Quivi.Backoffice.Api.Requests.MenuItems
         public Optional<string> LocationId { get; init; }
         public IDictionary<Language, PatchMenuItemLanguage>? Translations { get; init; }
         public IEnumerable<string>? MenuCategoryIds { get; init; }
+        public IEnumerable<string>? ModifierGroupIds { get; init; }
     }
 
     public class PatchMenuItemLanguage

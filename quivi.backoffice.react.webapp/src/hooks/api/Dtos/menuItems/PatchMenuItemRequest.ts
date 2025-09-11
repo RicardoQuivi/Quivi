@@ -12,6 +12,7 @@ export interface PatchMenuItemRequest {
     readonly locationId?: string | null;
     readonly translations?: Record<Language, PatchMenuItemTranslation | undefined>;
     readonly menuCategoryIds?: string[];
+    readonly modifierGroupIds?: string[];
 }
 
 export interface PatchMenuItemTranslation {

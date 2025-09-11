@@ -20,8 +20,8 @@ namespace Quivi.Application.Queries.MenuItems
         public bool? HiddenFromGuestsApp { get; init; }
         public bool IncludeWeeklyAvailabilities { get; init; }
         public bool IncludeMenuItemCategoryAssociations { get; init; }
-        public bool IncludeModifierGroups { get; init; }
         public bool IncludeTranslations { get; init; }
+        public bool IncludeModifierGroups { get; init; }
         public bool IncludeMenuItemModifiers { get; init; }
     }
 

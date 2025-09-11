@@ -13,6 +13,7 @@ namespace Quivi.Backoffice.Api.Requests.MenuItems
         public decimal VatRate { get; init; }
         public string? LocationId { get; init; }
         public IEnumerable<string>? MenuCategoryIds { get; init; }
+        public IEnumerable<string>? ModifierGroupIds { get; init; }
         public IDictionary<Language, CreateMenuItemLanguage>? Translations { get; init; }
     }
 

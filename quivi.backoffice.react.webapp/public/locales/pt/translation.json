@@ -12,7 +12,8 @@
         "errors": {
             "required": "Este campo é obrigatório",
             "minLength": "Este campo tem de ter pelo menos {{min}} caractéres",
-            "notAnEmail": "O valor introduzido não é um email"
+            "notAnEmail": "O valor introduzido não é um email",
+            "minEntries": "Este campo tem de ter pelo menos {{min}} entradas"
         },
         "apiErrors": {
             "InvalidValue": "O valor introduzido não é válido",
@@ -32,6 +33,7 @@
         },
         "yes": "Sim",
         "no": "Não",
+        "options": "Opções",
         "all": "Todos",
         "settings": "Definições",
         "refunded": "Reembolso",

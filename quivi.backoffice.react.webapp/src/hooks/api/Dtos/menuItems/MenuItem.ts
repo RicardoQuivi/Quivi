@@ -15,6 +15,7 @@ export interface MenuItem {
     readonly imageUrl?: string;
     readonly translations: Record<Language, MenuItemTranslation>;
     readonly menuCategoryIds: string[];
+    readonly modifierGroupIds: string[];
 }
 
 export interface MenuItemTranslation {

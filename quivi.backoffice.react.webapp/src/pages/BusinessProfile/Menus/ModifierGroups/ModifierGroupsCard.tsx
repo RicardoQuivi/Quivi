@@ -36,7 +36,7 @@ export const ModifierGroupsCard = () => {
                         size="md"
                         variant="primary"
                         startIcon={<PlusIcon />}
-                        onClick={() => navigate("add")}
+                        onClick={() => navigate("/businessProfile/menumanagement/modifiers/add")}
                     >
                         {
                             t("common.operations.new", {
@@ -53,6 +53,23 @@ export const ModifierGroupsCard = () => {
                             label: t("common.name"),
                             render: (d) => d.name,
                         }}
+                        columns={[
+                            {
+                                key: "count",
+                                label: t("pages.modifierGroups.minSelection"),
+                                render: d => d.minSelection,
+                            },
+                            {
+                                key: "count",
+                                label: t("pages.modifierGroups.maxSelection"),
+                                render: d => d.maxSelection,
+                            },
+                            {
+                                key: "count",
+                                label: t("common.options"),
+                                render: d => Object.keys(d.items).length,
+                            }
+                        ]}
                         actions={[
                             {
                                 render: () => <PencilIcon className="size-5" />,

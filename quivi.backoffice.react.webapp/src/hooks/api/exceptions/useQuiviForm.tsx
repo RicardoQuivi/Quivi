@@ -96,6 +96,7 @@ export const useQuiviForm = <TModel extends Yup.Maybe<Yup.AnyObject>, TTransform
             case "min": return t("common.errors.minLength", error.params);
             case "email": return t("common.errors.notAnEmail", error.params);
             case "nullable": return "";
+            case "minEntries": return t("common.errors.minEntries", error.params);
         }
         throw new Error(`Unkown type ${error.type}! Implement me!`);
     }
@@ -172,8 +173,6 @@ export const useQuiviForm = <TModel extends Yup.Maybe<Yup.AnyObject>, TTransform
 
     return result;
 }
-
-
 
 interface InvalidPasswordMessageProps {
     readonly context: Record<string, any>

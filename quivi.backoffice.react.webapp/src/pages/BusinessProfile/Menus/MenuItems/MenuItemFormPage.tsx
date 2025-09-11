@@ -57,6 +57,7 @@ export const MenuItemFormPage = (props: Props) => {
                 imageUrl: state.imageUrl,
                 translations: state.translations,
                 menuCategoryIds: state.menuCategoryIds,
+                modifierGroupIds: state.modifierGroupIds,
             })
             toast.success(t("common.operations.success.edit"));
             navigate("/businessProfile/menuManagement")
@@ -71,6 +72,7 @@ export const MenuItemFormPage = (props: Props) => {
                 locationId: state.locationId,
                 translations: state.translations,
                 menuCategoryIds: state.menuCategoryIds,
+                modifierGroupIds: state.modifierGroupIds,
             })
             toast.success(t("common.operations.success.new"));
             setCloneItemModalItem(item[0]);

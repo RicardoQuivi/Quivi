@@ -32,6 +32,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 Stock = model.Stock,
                 VatRate = model.VatRate,
                 MenuCategoryIds = model.MenuItemCategoryAssociations?.Select(s => idConverter.ToPublicId(s.ItemCategoryId)) ?? [],
+                ModifierGroupIds = model.MenuItemModifierGroups?.Select(s => idConverter.ToPublicId(s.MenuItemModifierGroupId)) ?? [],
                 Translations = model.MenuItemTranslations?.ToDictionary(s => s.Language, mapper.Map<Dtos.MenuItemTranslation>) ?? [],
             };
         }

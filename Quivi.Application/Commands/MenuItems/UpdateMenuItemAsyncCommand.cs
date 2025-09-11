@@ -22,6 +22,11 @@ namespace Quivi.Application.Commands.MenuItems
         public int Id { get; }
     }
 
+    public interface IUpdatableModifierGroup : IUpdatableEntity
+    {
+        public int Id { get; }
+    }
+
     public interface IUpdatableMenuItem : IUpdatableEntity
     {
         int MerchantId { get; }
@@ -38,6 +43,7 @@ namespace Quivi.Application.Commands.MenuItems
 
         IUpdatableTranslations<IMenuItemTranslation> Translations { get; }
         IUpdatableRelationship<IUpdatableItemCategory, int> Categories { get; }
+        IUpdatableRelationship<IUpdatableModifierGroup, int> ModifierGroups { get; }
     }
 
 
@@ -119,10 +125,35 @@ namespace Quivi.Application.Commands.MenuItems
             }
         }
 
+        private class UpdatableModifierGroup : IUpdatableModifierGroup
+        {
+            public readonly ItemsModifierGroupsAssociation Model;
+            private readonly bool isNew;
+
+            public UpdatableModifierGroup(ItemsModifierGroupsAssociation model)
+            {
+                this.Model = model;
+                isNew = model.MenuItemId == 0;
+            }
+            public int Id => Model.MenuItemModifierGroupId;
+
+            public bool HasChanges
+            {
+                get
+                {
+                    if (isNew)
+                        return true;
+
+                    return false;
+                }
+            }
+        }
+
         private class UpdatableMenuItem : AUpdatableTranslatableEntity<MenuItemTranslation, UpdatableMenuItemTranslation, IMenuItemTranslation>, IUpdatableMenuItem
         {
             private readonly MenuItem model;
             private readonly UpdatableRelationshipEntity<MenuItemCategoryAssociation, IUpdatableItemCategory, int> updatableCategories;
+            private readonly UpdatableRelationshipEntity<ItemsModifierGroupsAssociation, IUpdatableModifierGroup, int> updatableGroups;
             private readonly string originalName;
             private readonly string? originalDescription;
             private readonly decimal originalPrice;
@@ -153,6 +184,15 @@ namespace Quivi.Application.Commands.MenuItems
                     CreatedDate = now,
                     ModifiedDate = now,
                 });
+                this.updatableGroups = new UpdatableRelationshipEntity<ItemsModifierGroupsAssociation, IUpdatableModifierGroup, int>(model.MenuItemModifierGroups!, m => m.MenuItemModifierGroupId, t => new UpdatableModifierGroup(t), (id) => new ItemsModifierGroupsAssociation
+                {
+                    MenuItemModifierGroupId = id,
+                    MenuItem = this.model,
+                    MenuItemId = this.model.Id,
+                    SortIndex = 0,
+                    CreatedDate = now,
+                    ModifiedDate = now,
+                });
                 originalName = model.Name;
                 originalDescription = model.Description;
                 originalPrice = model.Price;
@@ -176,6 +216,7 @@ namespace Quivi.Application.Commands.MenuItems
             public int SortIndex { get => model.SortIndex; set => model.SortIndex = value; }
             public bool HasStock { get => model.Stock; set => model.Stock = value; }
             public IUpdatableRelationship<IUpdatableItemCategory, int> Categories => updatableCategories;
+            public IUpdatableRelationship<IUpdatableModifierGroup, int> ModifierGroups => updatableGroups;
 
             public override bool HasChanges
             {
@@ -224,6 +265,7 @@ namespace Quivi.Application.Commands.MenuItems
             {
                 IncludeTranslations = true,
                 IncludeMenuItemCategoryAssociations = true,
+                IncludeModifierGroups = true,
                 IsDeleted = false,
             });
             if (!entities.Any())

@@ -49,9 +49,10 @@ namespace Quivi.Backoffice.Api.Controllers
                 ItemCategoryIds = request.ItemCategoryId == null ? null : [idConverter.FromPublicId(request.ItemCategoryId)],
                 HasCategory = request.HasCategory,
                 Search = request.Search,
-                
+
                 IncludeTranslations = true,
                 IncludeMenuItemCategoryAssociations = true,
+                IncludeModifierGroups = true,
 
                 IsDeleted = false,
                 PageIndex = request.Page,
@@ -85,6 +86,7 @@ namespace Quivi.Backoffice.Api.Controllers
                     Description = t.Value.Description,
                 }),
                 MenuItemCategoryIds = request.MenuCategoryIds?.Select(idConverter.FromPublicId) ?? [],
+                ModifierGroupIds = request.ModifierGroupIds?.Select(idConverter.FromPublicId) ?? [],
                 LocationId = string.IsNullOrWhiteSpace(request.LocationId) ? null : idConverter.FromPublicId(request.LocationId),
             });
 
@@ -142,18 +144,18 @@ namespace Quivi.Backoffice.Api.Controllers
                             {
                                 translation.Name = e.Value.Name;
 
-                                if(e.Value.Description.IsSet)
+                                if (e.Value.Description.IsSet)
                                     translation.Description = e.Value.Description.Value;
                             });
                         }
                     }
 
-                    if(request.MenuCategoryIds != null)
+                    if (request.MenuCategoryIds != null)
                     {
                         HashSet<int> categories = request.MenuCategoryIds.Select(idConverter.FromPublicId).ToHashSet();
                         foreach (var c in item.Categories.ToList())
                         {
-                            if(categories.Contains(c.Id))
+                            if (categories.Contains(c.Id))
                             {
                                 categories.Remove(c.Id);
                                 continue;
@@ -162,9 +164,32 @@ namespace Quivi.Backoffice.Api.Controllers
                             item.Categories.Remove(c.Id);
                         }
 
-                        foreach(var newCategory in categories)
+                        foreach (var newCategory in categories)
                         {
                             item.Categories.Upsert(newCategory, t =>
+                            {
+                                //Nothing to update
+                            });
+                        }
+                    }
+
+                    if (request.ModifierGroupIds != null)
+                    {
+                        HashSet<int> modifierGroups = request.ModifierGroupIds.Select(idConverter.FromPublicId).ToHashSet();
+                        foreach (var c in item.ModifierGroups.ToList())
+                        {
+                            if (modifierGroups.Contains(c.Id))
+                            {
+                                modifierGroups.Remove(c.Id);
+                                continue;
+                            }
+
+                            item.ModifierGroups.Remove(c.Id);
+                        }
+
+                        foreach (var newModifierGroup in modifierGroups)
+                        {
+                            item.ModifierGroups.Upsert(newModifierGroup, t =>
                             {
                                 //Nothing to update
                             });

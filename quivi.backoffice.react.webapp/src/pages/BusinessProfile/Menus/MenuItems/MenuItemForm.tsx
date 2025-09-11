@@ -22,6 +22,10 @@ import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCate
 import { useMenuCategoryMutator } from "../../../../hooks/mutators/useMenuCategoryMutator";
 import { Spinner } from "../../../../components/spinners/Spinner";
 import { CurrencyField } from "../../../../components/inputs/CurrencyField";
+import { useModifierGroupsQuery } from "../../../../hooks/queries/implementations/useModifierGroupsQuery";
+import { ModifierGroup } from "../../../../hooks/api/Dtos/modifierGroups/ModifierGroup";
+import { CreateModifierGroupModal } from "./CreateModifierGroupModal";
+import { Collections } from "../../../../utilities/Collectionts";
 
 const schema = yup.object<MenuItemFormState>({
     name: yup.string().required(),
@@ -42,6 +46,7 @@ export interface MenuItemFormState {
     readonly locationId?: string;
     readonly translations?: Record<Language, Translation>;
     readonly menuCategoryIds?: string[];
+    readonly modifierGroupIds?: string[];
 }
 interface Translation {
     readonly name: string;
@@ -109,6 +114,30 @@ const getCategories = (previousValues: MenuCategory[] | undefined, model: MenuIt
     return result;
 }
 
+const getModifierGroups = (previousValues: ModifierGroup[] | undefined, model: MenuItem | undefined, map: Map<string, ModifierGroup> | undefined) => {
+    if(previousValues != undefined) {
+        return previousValues;
+    }
+
+    if(map == undefined) {
+        return undefined;
+    }
+
+    if(model == undefined) {
+        return undefined;
+    }
+
+    const result = [] as ModifierGroup[];
+    for(const id of model.modifierGroupIds) {
+        const cat = map.get(id);
+        if(cat == undefined) {
+            continue;
+        }
+        result.push(cat);
+    }
+    return result;
+}
+
 interface Props {
     readonly model?: MenuItem;
     readonly onSubmit: (state: MenuItemFormState) => Promise<any>;
@@ -129,15 +158,8 @@ export const MenuItemForm = (props: Props) => {
             return undefined;
         }
 
-        const map = new Map<string, MenuCategory>();
+        const map = Collections.toMap(categoriesQuery.data, c => c.id);
         let defaultCategory = undefined as MenuCategory | undefined;
-        
-        if(categoriesQuery.data.length > 0) {
-            for(const l of categoriesQuery.data) {
-                map.set(l.id, l);
-            }
-        }
-
         if(props.categoryId != undefined) {
             defaultCategory = map.get(props.categoryId)
         }
@@ -146,24 +168,31 @@ export const MenuItemForm = (props: Props) => {
             map: map,
             default: defaultCategory,
         };
-    }, [categoriesQuery.data, props.categoryId])
+    }, [categoriesQuery.isFirstLoading, categoriesQuery.data, props.categoryId])
+
+    const modifierGroupsQuery = useModifierGroupsQuery({
+        page: 0,
+        pageSize: undefined,
+    });
+    const modifierGroupsMap = useMemo(() => {
+        if(modifierGroupsQuery.isFirstLoading) {
+            return undefined;
+        }
+
+        return Collections.toMap(modifierGroupsQuery.data, m => m.id);
+    }, [modifierGroupsQuery.isFirstLoading, modifierGroupsQuery.data])
 
     const localsQuery = useLocalsQuery({
         page: 0,
     })
     const localsInfo = useMemo(() => {
-        const map = new Map<string, Local>();
         let defaultLocal = undefined as Local | undefined;
-        
         if(localsQuery.data.length > 0) {
             defaultLocal = localsQuery.data[0];
-            for(const l of localsQuery.data) {
-                map.set(l.id, l);
-            }
         }
 
         return {
-            map: map,
+            map: Collections.toMap(localsQuery.data, l => l.id),
             default: defaultLocal,
         };
     }, [localsQuery.data])
@@ -183,10 +212,13 @@ export const MenuItemForm = (props: Props) => {
     }, [t])
     
 
+    const [createModifierNameModal, setCreateModifierNameModal] = useState<string>();
     const [logoUploadHandler, setLogoUploadHandler] = useState<UploadHandler<string>>();
     const [currentLanguage, setCurrentLanguage] = useState(Language.Portuguese);
     const [local, setLocal] = useState<Local | undefined>(() => getLocal(undefined, props.model, localsInfo.map, localsInfo.default));
     const [categories, setCategories] = useState<MenuCategory[] | undefined>(() => getCategories(undefined, props.model, categoriesInfo?.map, categoriesInfo?.default));
+    const [modifierGroups, setModifierGroups] = useState<ModifierGroup[] | undefined>(() => getModifierGroups(undefined, props.model, modifierGroupsMap));
+
     const [state, setState] = useState(() => ({
         ...getState(props.model),
         apiErrors: [],
@@ -199,7 +231,8 @@ export const MenuItemForm = (props: Props) => {
     })), [props.model]);
     useEffect(() => setLocal(p => getLocal(p, props.model, localsInfo.map, localsInfo.default)), [props.model, localsInfo])
     useEffect(() => setCategories(p => getCategories(p, props.model, categoriesInfo?.map, categoriesInfo?.default)), [props.model, categoriesInfo])
-
+    useEffect(() => setModifierGroups(p => getModifierGroups(p, props.model, modifierGroupsMap)), [props.model, modifierGroupsMap])
+    
     const form = useQuiviForm(state, schema);
 
     const createAndAssignCategory = async (name: string) => {
@@ -225,6 +258,7 @@ export const MenuItemForm = (props: Props) => {
             locationId: local?.id,
             translations: state.translations,
             menuCategoryIds: categories?.map(s => s.id) ?? [],
+            modifierGroupIds: modifierGroups?.map(s => s.id) ?? [],
         })
     }, () => toast.error(t("common.operations.failure.generic")))
 
@@ -278,6 +312,16 @@ export const MenuItemForm = (props: Props) => {
                     getId={c => c.id}
 
                     onCreateOption={createAndAssignCategory}
+                />
+                <MultiSelect
+                    label={t("common.entities.modifierGroups")}
+                    options={modifierGroupsQuery.data}
+                    values={modifierGroups ?? []}
+                    onChange={setModifierGroups}
+                    render={c => c.name}
+                    getId={c => c.id}
+
+                    onCreateOption={setCreateModifierNameModal}
                 />
                 <TextAreaField
                     label={t("common.description")}
@@ -372,7 +416,13 @@ export const MenuItemForm = (props: Props) => {
                 </div>
             </div>
         </div>
-
+            
+        <CreateModifierGroupModal
+            isOpen={createModifierNameModal != undefined}
+            initialName={createModifierNameModal ?? ""}
+            onSave={(m) => setModifierGroups(s => [...(s ?? []), m])}
+            onClose={() => setCreateModifierNameModal(undefined)}
+        />
         <Button
             size="md"
             onClick={save}

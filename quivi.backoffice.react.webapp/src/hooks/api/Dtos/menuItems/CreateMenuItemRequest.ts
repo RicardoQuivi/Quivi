@@ -11,6 +11,7 @@ export interface CreateMenuItemRequest {
     readonly locationId?: string;
     readonly translations?: Record<Language, CreateMenuItemTranslation>;
     readonly menuCategoryIds?: string[];
+    readonly modifierGroupIds?: string[];
 }
 
 interface CreateMenuItemTranslation {

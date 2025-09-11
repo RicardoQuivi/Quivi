@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import Label from "../form/Label";
 import Select from "../form/Select";
+import { Collections } from "../../utilities/Collectionts";
 
 interface Props<T,> {
     readonly label?: React.ReactNode,
@@ -15,10 +16,7 @@ interface Props<T,> {
 }
 
 export const SingleSelect = <T,>(props: Props<T>) => {
-    const itemsMap = useMemo(() => props.options.reduce((r, o) => {
-        r.set(props.getId(o), o);
-        return r;
-    }, new Map<string, T>), [props.options, props.getId])
+    const itemsMap = useMemo(() => Collections.toMap(props.options, props.getId), [props.options, props.getId])
 
     return <div className="grid grid-cols-1 cursor-pointer">
         { props.label != undefined && <Label>{props.label}</Label> }

@@ -35,6 +35,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MenuItemIds != null)
                 query = query.Where(r => r.ItemsModifierGroupsAssociation!.Any(s => criteria.MenuItemIds.Contains(s.MenuItemId)));
 
+            if (criteria.IsDeleted.HasValue)
+                query = query.Where(x => x.DeletedDate.HasValue == criteria.IsDeleted.Value);
+
             return query.OrderBy(r => r.CreatedDate);
         }
     }

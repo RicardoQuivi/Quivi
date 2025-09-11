@@ -17,6 +17,7 @@ namespace Quivi.Backoffice.Api.Dtos
         public int SortIndex { get; init; }
         public string? LocationId { get; init; }
         public required IEnumerable<string> MenuCategoryIds { get; init; }
+        public required IEnumerable<string> ModifierGroupIds { get; init; }
         public required IReadOnlyDictionary<Language, MenuItemTranslation> Translations { get; init; }
     }
 

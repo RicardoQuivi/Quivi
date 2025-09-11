@@ -12,7 +12,8 @@
         "errors": {
             "required": "This field is required",
             "minLength": "Minimum lenght for this field is {{min}}",
-            "notAnEmail": "Provided value isn't an email"
+            "notAnEmail": "Provided value isn't an email",
+            "minEntries": "This field requires at least {{min}} entries"
         },
         "apiErrors": {
             "InvalidValue": "The provided value is not valid",
@@ -32,6 +33,7 @@
         },
         "yes": "Yes",
         "no": "No",
+        "options": "Options",
         "all": "All",
         "settings": "Settings",
         "refunded": "Refunded",

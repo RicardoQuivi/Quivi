@@ -18,6 +18,7 @@ interface PatchMutator {
     readonly locationId?: string | null;
     readonly translations?: Record<Language, PatchMenuItemTranslation | undefined>;
     readonly menuCategoryIds?: string[];
+    readonly modifierGroupIds?: string[];
 }
 export const useMenuItemMutator = () => {
     const api = useMenuItemsApi();

@@ -393,7 +393,7 @@ export const OrderingContextProvider = (props: {
             setOrderId(null);
             return;
         }
-        
+
         if(order == undefined || merchantId == undefined || channelId == undefined) {
             return;
         }
@@ -453,91 +453,6 @@ export const OrderingContextProvider = (props: {
         baseItemsQuery.data, baseItemsQuery.isFirstLoading,
         modifierItemsQuery.data, modifierItemsQuery.data
     ]);
-
-    const getCartItems = (order: Order, baseItems: MenuItem[], modifierItems: MenuItem[]) => {
-        if(order.items.length == 0) {
-            return {
-                cartItems: [],
-                unavailableItems: [],
-            };
-        }
-
-        const mappedItems = [...baseItems, ...modifierItems].reduce((map, obj) => {
-            map.set(obj.id, obj);
-            return map;
-        }, new Map<string, MenuItem>());
-        
-        const cartItems: ICartItem[] = [];
-        const unavailableItems: OrderItem[] = [];
-        order.items.forEach(orderItem => {
-            const apiItem = mappedItems.get(orderItem.id);
-            if(apiItem == undefined) {
-                unavailableItems.push(orderItem);
-                return;
-            }
-
-            const modifiersMap = apiItem.modifiers.reduce((r, m) => {
-                r.set(m.id, m);
-                return r;
-            }, new Map<string, MenuItemModifierGroup>())
-            
-            try {
-                const itemToAdd = {
-                    id: apiItem.id,
-                    quantity: orderItem.quantity,
-                    name: apiItem.name,
-                    description: apiItem.description,
-                    imageUrl: apiItem.imageUrl,
-                    price: apiItem.price,
-                    priceType: apiItem.priceType,
-                    isAvailable: apiItem.isAvailable,
-                    modifiers: orderItem.modifiers?.map(m => {
-                        const mod = modifiersMap.get(m.id);
-                        if(mod == undefined) {
-                            throw Error("This item is not available");
-                        }
-        
-                        const selectedOptions = m.selectedOptions.map(opt => {
-                            const o = mappedItems.get(opt.id);
-                            if(o == undefined) {
-                                throw Error("This item is not available");
-                            }
-
-                            return {
-                                ...o,
-                                price: opt.amount,
-                                quantity: opt.quantity,
-                                modifiers: [],
-
-                                id: o.id,
-                                name: o.name,
-                                description: o.description,
-                                imageUrl: o.imageUrl,
-                                priceType: o.priceType,
-                                isAvailable: o.isAvailable,
-                            };
-                        });
-                        return {
-                            id: mod.id,
-                            name: mod.name,
-                            minSelection: mod.minSelection,
-                            maxSelection: mod.maxSelection,
-                            selectedOptions: selectedOptions,
-                            options: mod.options,
-                        };
-                    }) ?? [],
-                }
-                cartItems.push(itemToAdd);
-            } catch {
-                unavailableItems.push(orderItem);
-                return;
-            }
-        });
-        return {
-            cartItems: cartItems,
-            unavailableItems: unavailableItems,
-        }
-    }
 
     useEffect(() => {
         const outOfSyncTimeout = state.outOfSyncTimeout;
@@ -653,4 +568,89 @@ const getCartQuantity = (item: IBaseItem | ICartItem, exact: boolean, items: ICa
 
     const baseItems = items?.filter(it => it.id === item.id) ?? [];
     return baseItems.reduce((sum, current) => sum + current.quantity, 0);
+}
+
+const getCartItems = (order: Order, baseItems: MenuItem[], modifierItems: MenuItem[]) => {
+    if(order.items.length == 0) {
+        return {
+            cartItems: [],
+            unavailableItems: [],
+        };
+    }
+
+    const mappedItems = [...baseItems, ...modifierItems].reduce((map, obj) => {
+        map.set(obj.id, obj);
+        return map;
+    }, new Map<string, MenuItem>());
+    
+    const cartItems: ICartItem[] = [];
+    const unavailableItems: OrderItem[] = [];
+    order.items.forEach(orderItem => {
+        const apiItem = mappedItems.get(orderItem.id);
+        if(apiItem == undefined) {
+            unavailableItems.push(orderItem);
+            return;
+        }
+
+        const modifiersMap = apiItem.modifiers.reduce((r, m) => {
+            r.set(m.id, m);
+            return r;
+        }, new Map<string, MenuItemModifierGroup>())
+        
+        try {
+            const itemToAdd = {
+                id: apiItem.id,
+                quantity: orderItem.quantity,
+                name: apiItem.name,
+                description: apiItem.description,
+                imageUrl: apiItem.imageUrl,
+                price: apiItem.price,
+                priceType: apiItem.priceType,
+                isAvailable: apiItem.isAvailable,
+                modifiers: orderItem.modifiers?.map(m => {
+                    const mod = modifiersMap.get(m.id);
+                    if(mod == undefined) {
+                        throw Error("This item is not available");
+                    }
+    
+                    const selectedOptions = m.selectedOptions.map(opt => {
+                        const o = mappedItems.get(opt.id);
+                        if(o == undefined) {
+                            throw Error("This item is not available");
+                        }
+
+                        return {
+                            ...o,
+                            price: opt.amount,
+                            quantity: opt.quantity,
+                            modifiers: [],
+
+                            id: o.id,
+                            name: o.name,
+                            description: o.description,
+                            imageUrl: o.imageUrl,
+                            priceType: o.priceType,
+                            isAvailable: o.isAvailable,
+                        };
+                    });
+                    return {
+                        id: mod.id,
+                        name: mod.name,
+                        minSelection: mod.minSelection,
+                        maxSelection: mod.maxSelection,
+                        selectedOptions: selectedOptions,
+                        options: mod.options,
+                    };
+                }) ?? [],
+            }
+            cartItems.push(itemToAdd);
+        } catch {
+            unavailableItems.push(orderItem);
+            return;
+        }
+    });
+    return {
+        cartItems: cartItems,
+        unavailableItems: unavailableItems,
+    }
 }

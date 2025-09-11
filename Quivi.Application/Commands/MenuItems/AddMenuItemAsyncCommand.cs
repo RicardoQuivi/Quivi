@@ -25,7 +25,8 @@ namespace Quivi.Application.Commands.MenuItems
         public PriceType PriceType { get; init; }
         public decimal VatRate { get; init; }
         public int? LocationId { get; init; }
-        public required IEnumerable<int> MenuItemCategoryIds { get; init; }
+        public IEnumerable<int>? MenuItemCategoryIds { get; init; }
+        public IEnumerable<int>? ModifierGroupIds { get; init; }
         public IReadOnlyDictionary<Language, AddMenuItemTranslation>? Translations { get; init; }
     }
 
@@ -66,6 +67,14 @@ namespace Quivi.Application.Commands.MenuItems
                 MenuItemCategoryAssociations = command.MenuItemCategoryIds?.Select((s, i) => new MenuItemCategoryAssociation
                 {
                     ItemCategoryId = s,
+                    SortIndex = i,
+
+                    CreatedDate = now,
+                    ModifiedDate = now,
+                }).ToList(),
+                MenuItemModifierGroups = command.ModifierGroupIds?.Select((m, i) => new ItemsModifierGroupsAssociation
+                {
+                    MenuItemModifierGroupId = m,
                     SortIndex = i,
 
                     CreatedDate = now,
