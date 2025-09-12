@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalsQuery } from "../hooks/queries/implementations/useLocalsQuery";
 import useDebouncedState from "../hooks/useDebouncedState";
-import { EmployeeAvatar } from "./Employees/EmployeeAvatar";
+import { EmployeeAvatar } from "./Avatars/EmployeeAvatar";
 import { MenuIcon, SearchIcon, SwapIcon } from "../icons";
 import { ChangeLocalModal } from "./Locals/ChangeLocalModal";
 import { usePosSession } from "../context/pos/PosSessionContextProvider";

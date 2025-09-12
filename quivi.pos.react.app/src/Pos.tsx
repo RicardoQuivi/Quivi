@@ -10,7 +10,7 @@ import { useStoredState } from "./hooks/useStoredState";
 import { ChannelsOverview } from "./components/ChannelsOverview";
 import { EmployeeRestriction } from "./hooks/api/Dtos/employees/Employee";
 import { Channel } from "./hooks/api/Dtos/channels/Channel";
-import { ItemsSelector } from "./components/ItemsSelector";
+import { ItemsSelector } from "./components/Items/ItemsSelector";
 import { MenuItem } from "./hooks/api/Dtos/menuitems/MenuItem";
 import { usePosSession } from "./context/pos/PosSessionContextProvider";
 import { NewOrderAudioPlayer } from "./components/Orders/NewOrderAudioPlayer";
@@ -32,7 +32,7 @@ export const Pos = () => {
     const { t } = useTranslation();
     const toast = useToast();
 
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string>();
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined | null>(undefined);
     const [transferChannel, setTransferChannel] = useState<Channel>();
 
     const { } = useNoSleepMonitor(true);
@@ -197,7 +197,17 @@ export const Pos = () => {
                                 search={searchTxt}
                                 onItemSelect={onItemAdded}
                                 selectedCategoryId={selectedCategoryId}
-                                onCategoryChanged={(category) => setSelectedCategoryId(category?.id)}
+                                onCategoryChanged={(category) => setSelectedCategoryId(() => {
+                                    if(category === null) {
+                                        return null;
+                                    }
+
+                                    if(category === undefined) {
+                                        return undefined;
+                                    }
+                                    
+                                    return category.id;
+                                })}
                             />
                         }
                         {

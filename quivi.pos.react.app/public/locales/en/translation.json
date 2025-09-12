@@ -156,6 +156,8 @@
         "takeaway": "Take-away"
     },
     "itemsTab": {
+        "categories": "Categories",
+        "allCategories": "All",
         "itemConfigurator": "Item configuration",
         "addConfiguredItem": "Add for <price/>",
         "optionalItem": "Optional",

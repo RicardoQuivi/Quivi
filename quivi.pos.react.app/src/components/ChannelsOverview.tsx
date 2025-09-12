@@ -14,7 +14,7 @@ import { CloseIcon, GridIcon, LayersIcon, QrCodeIcon, SwitchIcon } from "../icon
 import { PaginationFooter } from "./Pagination/PaginationFooter";
 import { useEmployeesQuery } from "../hooks/queries/implementations/useEmployeesQuery";
 import { useAllowedActions } from "../hooks/pos/useAllowedActions";
-import { EmployeeAvatar } from "./Employees/EmployeeAvatar";
+import { EmployeeAvatar } from "./Avatars/EmployeeAvatar";
 import CustomModal, { ModalSize } from "./Modals/CustomModal";
 import LoadingButton from "./Buttons/LoadingButton";
 import { useSessionsQuery } from "../hooks/queries/implementations/useSessionsQuery";
