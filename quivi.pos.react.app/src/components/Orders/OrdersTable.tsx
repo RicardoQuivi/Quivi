@@ -38,7 +38,6 @@ export const OrdersTable = ({
             if(o.employeeId == undefined) {
                 continue;
             }
-
             set.add(o.employeeId)
         }
         return Array.from(set.values());

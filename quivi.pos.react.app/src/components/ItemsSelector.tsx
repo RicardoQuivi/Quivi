@@ -7,6 +7,9 @@ import { MenuCategory } from "../hooks/api/Dtos/menucategories/MenuCategory";
 import { useMenuCategoriesQuery } from "../hooks/queries/implementations/useMenuCategoriesQuery";
 import { useMenuItemsQuery } from "../hooks/queries/implementations/useMenuItemsQuery";
 import { useGenerateImage } from "../hooks/useGenerateImage";
+import { ItemWithModifiersSelectorModal } from "./Items/ItemWithModifiersSelectorModal";
+import { CollectionFunctions } from "../helpers/collectionsHelper";
+import { MenuItemWithExtras } from "../hooks/pos/session/ICartSession";
 
 const ListItem = (props: {
     readonly image?: string;
@@ -30,11 +33,13 @@ const ListItem = (props: {
         if(props.image == undefined) {
             return generatedImageUrl;
         }
-        return props.image.replace("_full.", "_thumbnail.");
+        return props.image;
     }, [props.image, generatedImageUrl])
 
     return (
-        <ButtonBase onClick={props.onClick}>
+        <ButtonBase
+            onClick={props.onClick}
+        >
             <ImageListItem
                 sx={{
                     cursor: "pointer",
@@ -98,7 +103,7 @@ const ListItem = (props: {
 
 interface Props {
     readonly search: string; 
-    readonly onItemSelect: (item: MenuItem) => any;
+    readonly onItemSelect: (item: MenuItem | MenuItemWithExtras) => any;
     readonly selectedCategoryId?: string;
     readonly onCategoryChanged: (category: MenuCategory | undefined) => any;
 }
@@ -120,13 +125,10 @@ export const ItemsSelector: React.FC<Props> = ({
         page: 0,
     });
 
-    const categoriesMap = useMemo(() => categoriesQuery.data.reduce((r, c) => {
-        r.set(c.id, c);
-        return r;
-    }, new Map<string, MenuCategory>()), [categoriesQuery.data])
+    const categoriesMap = useMemo(() => CollectionFunctions.toMap(categoriesQuery.data, c => c.id), [categoriesQuery.data])
 
     const [currentPage, setCurrentPage] = useState<number>(0);
-    const [_selectedItemWithModifier, setSelectedItemWithModifier] = useState<MenuItem>();
+    const [selectedItemWithModifier, setSelectedItemWithModifier] = useState<MenuItem>();
 
     const selectedCategory = useMemo(() => {
         if(selectedCategoryId == undefined) {
@@ -297,7 +299,11 @@ export const ItemsSelector: React.FC<Props> = ({
                     <PaginationFooter currentPage={currentPage} numberOfPages={menuItemsQuery.totalPages} onPageChanged={setCurrentPage} />
                 </Box>
             }
-            {/* <ItemWithModifiersSelectorModal onSelect={onItemSelect} item={selectedItemWithModifier} onClose={() => setSelectedItemWithModifier(undefined)} /> */}
+            <ItemWithModifiersSelectorModal
+                onSelect={onItemSelect}
+                item={selectedItemWithModifier}
+                onClose={() => setSelectedItemWithModifier(undefined)}
+            />
         </Paper>
     )
 }

@@ -9,5 +9,15 @@ export interface MenuItem {
 }
 
 export interface ModifierGroup {
+    readonly id: string;
+    readonly name: string;
+    readonly minSelection: number;
+    readonly maxSelection: number;
+    readonly options: ModifierGroupOption[];
+}
 
+export interface ModifierGroupOption {
+    readonly id: string;
+    readonly menuItemId: string;
+    readonly price: number;
 }

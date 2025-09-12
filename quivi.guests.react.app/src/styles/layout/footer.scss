@@ -4,8 +4,8 @@
 .footer {
     display: flex;
     align-items: center;
-    margin-top: rem(48);
-    margin-bottom: rem(24);
+    margin-top: rem(24);
+    margin-bottom: rem(12);
 
     p {
         color: $primary-color;
@@ -25,7 +25,7 @@
         align-items: center;
 
         svg {
-            height: rem(14);
+            height: rem(7);
             width: auto;
             margin-top: -2px;
         }

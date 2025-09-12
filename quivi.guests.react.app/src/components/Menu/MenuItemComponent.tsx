@@ -1,8 +1,6 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuiviTheme, type IColor } from "../../hooks/theme/useQuiviTheme";
-import makeStyles from "@mui/styles/makeStyles";
-import { Avatar, Chip, Grid, ImageList, ImageListItem, Skeleton, type Theme } from "@mui/material";
+import { Avatar, Box, Chip, Grid, ImageList, ImageListItem, Skeleton, Typography } from "@mui/material";
 import type { IItem } from "../../context/cart/item";
 import type { ICartItem } from "../../context/cart/ICartItem";
 import { useCart } from "../../context/OrderingContextProvider";
@@ -11,131 +9,6 @@ import { ItemsHelper } from "../../helpers/ItemsHelper";
 import { Formatter } from "../../helpers/formatter";
 import { QuantitySelector } from "../Quantity/QuantitySelector";
 
-interface StyleProps {
-    readonly primarycolor: IColor,
-    readonly padding?: string;
-}
-
-const useStyles = makeStyles<Theme, StyleProps>(() => ({
-    container: {
-        cursor: "pointer",
-        backgroundColor: "#F1F3F1",
-        borderRadius: "5px",
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        boxShadow: "0 0px 8px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19)",
-        opacity: "1",
-        
-        "&.unavailable": {
-            opacity: "0.6",
-        }
-    },
-    photo: {
-        height: "100%",
-        width: "95px",
-        borderRadius: props => props.padding ? "5px" : "5px 0 0 5px",
-        objectFit: "cover",
-        marginLeft: props => props.padding ? props.padding : "0",
-        aspectRatio: 1,
-    },
-    infoContainer: {
-        display: "flex",
-        flexDirection: "column",
-        width: props => `calc(100% - 95px - ${props.padding || "0px"})`,
-        padding: "0 10px",
-        paddingLeft: "20px",
-    },
-    nameContainer: {
-        display: "flex",
-        fontSize: "1rem",
-    },
-    badgesContainer: {
-        borderColor: "inherit",
-        color: "inherit",
-        maxWidth: "100%",
-
-        '& .MuiImageList-root::-webkit-scrollbar': {
-            display: 'none',
-            "-ms-overflow-style": "none",
-            scrollbarWidth: "none",
-        },
-
-        '& .MuiImageList-root': {
-            flexWrap: "nowrap",
-            transform: "translateZ(0)",
-
-            '& .MuiImageListItem-root': {
-                height: "auto !important",
-                width: "auto !important",
-
-                '& .MuiImageListItem-item': {
-                    height: "auto",
-                }
-            },
-        },
-
-        '& .MuiChip-outlined': {
-            borderColor: "inherit",
-        },
-
-        '& .MuiChip-root': {
-            color: "inherit",
-
-            '& .MuiChip-label': {
-                color: "inherit",
-            }
-        },
-    },
-    nameTxt: {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-    },
-    priceContainer: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: "space-between",
-        paddingTop: "6px",
-    },
-    priceTxt: {
-        fontWeight: 600,
-    },
-    qtyRemoveContainer: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginTop: "10px",
-    },
-    removeTxt: {
-        fontSize: "0.85rem",
-        textDecoration: "underline",
-        cursor: "pointer",
-    },
-    quantityComponent: {
-        display: "inline-flex",
-        alignItems: "center",
-        margin: "-12px 0",
-    },
-    quantityTxt: {
-        fontSize: "1.3rem",
-        fontWeight: 400,
-    },
-    quantityBtn: {
-        width: "26px",
-        height: "26px",
-        backgroundColor: "#E9F8F5",
-        fill: props => props.primarycolor.hex,
-    },
-    outOfStockLabel: {
-        // border: "1px transparent solid",
-        // borderRadius: "10px",
-        // background: "lightgray",
-        // margin: "0",
-        // padding: "6px",
-    }
-}));
 
 interface Props {
     readonly menuItem: IItem | ICartItem | null;
@@ -146,8 +19,6 @@ interface Props {
 }
 
 export const MenuItemComponent: React.FC<Props> = (props: Props) => {
-    const theme = useQuiviTheme();
-    const classes = useStyles({ primarycolor: theme.primaryColor});
     const cart = useCart();
     const { t } = useTranslation();
 
@@ -202,82 +73,189 @@ export const MenuItemComponent: React.FC<Props> = (props: Props) => {
         return false;
     }
 
-    const getSelectedModifierOptions = (): ICartItem[] => {
+    const selectedModifierOptions = useMemo(() => {
         if(props.menuItem == null) {
             return [];
         }
 
-        if('modifiers' in props.menuItem) {
-            return (props.menuItem.modifiers ?? []).map(s => 'selectedOptions' in s ? s.selectedOptions: []).reduce<ICartItem[]>((r, a) => {
-                if(!a) {
-                    return r;
-                }
-                return [...r, ...a];
-            }, []);
+        if('modifiers' in props.menuItem == false) {
+            return [];
         }
         
-        return [];
-    }
+        const result = [] as ICartItem[]
+        for(const s of props.menuItem.modifiers ?? []) {
+            if('selectedOptions' in s) {
+                for(const item of s.selectedOptions) {
+                    result.push(item);
+                }
+            }
+        }
+
+        return result;
+    }, [props.menuItem])
 
     const loading = isPhotoLoaded == false || props.menuItem == null;
-    
     return <>
-        <div className={`${classes.container} ${props.menuItem?.isAvailable != true ? "unavailable" : ""}`} onClick={props.onItemSelected}>
-            {
-                loading &&
-                <Skeleton variant="rectangular" animation="pulse" className={classes.photo} height="95px" width="95px" />
-            }
-            {
-                props.menuItem != null &&
-                <img className={classes.photo} src={!props.menuItem.imageUrl ? merchantLogo : props.menuItem.imageUrl} style={{display: !loading ? "unset" : "none"}} onLoad={() => setIsPhotoLoaded(true)} />
-            }
-            
-            <div className={classes.infoContainer}>
+        <Box
+            sx={{
+                cursor: "pointer",
+                backgroundColor: "#F1F3F1",
+                borderRadius: "5px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                boxShadow: "0 0px 8px 0 rgba(0, 0, 0, 0.1), 0 0px 20px 0 rgba(0, 0, 0, 0.19)",
+                opacity: props.menuItem?.isAvailable != true ? "0.6" : "1",
+            }}
+            onClick={props.onItemSelected}
+        >
+            <Box
+                sx={{
+                    height: "100%",
+                    width: "95px",
+                    borderRadius: "5px 0 0 5px",
+                    objectFit: "cover",
+                    marginLeft: "0",
+                    aspectRatio: 1,
+                }}
+            >
+                {
+                    loading &&
+                    <Skeleton
+                        variant="rectangular"
+                        animation="pulse"
+                        height="100%"
+                        width="100%"
+                    />
+                }
+                {
+                    props.menuItem != null &&
+                    <img
+                        src={!props.menuItem.imageUrl ? merchantLogo : props.menuItem.imageUrl}
+                        style={{
+                            display: !loading ? "unset" : "none",
+                            height: "100%",
+                            width: "100%",
+                        }}
+                        onLoad={() => setIsPhotoLoaded(true)}
+                    />
+                }
+            </Box>
+
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "calc(100% - 95px)",
+                    padding: "0 10px",
+                    paddingLeft: "20px",
+                }}
+            >
                 <Grid container spacing={0}>
-                    <Grid size={12}>
-                        <div className={classes.nameContainer}>
-                            {
-                                loading
-                                ?
-                                <Skeleton variant="text" animation="wave" height="1.5rem" width="70%" className={classes.nameTxt} />
-                                :
-                                <p className={classes.nameTxt} title={props.menuItem.name}>{props.menuItem.name}</p>
-                            }
-                        </div>
-                    </Grid>
-                    <Grid size={12}>
-                        <div className={classes.badgesContainer}>
+                    <Grid 
+                        size={12}
+                        display="flex"
+                        fontSize="1rem"
+                    >
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                width: "100%"
+                            }}
+                            gutterBottom
+                        >
                         {
-                            loading == false && 
-                            hasModifiers() && 
-                            <ImageList>
-                                {
-                                    getSelectedModifierOptions().map((o, index) => 
-                                        <ImageListItem key={`${o.id}-${index}`}>
-                                            <Chip label={<span>{o.quantity > 1 && <b>{o.quantity} x </b>}{o.name}</span>} variant="outlined" size="small" avatar={!o.imageUrl ? undefined : <Avatar src={o.imageUrl}/>}/>
-                                        </ImageListItem>
-                                    )
-                                }
-                            </ImageList>
+                            loading
+                            ?
+                            <Skeleton variant="text" animation="wave" height="1.5rem" width="70%" />
+                            :
+                            props.menuItem.name
                         }
-                        </div>
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        size={12}
+                        sx={{
+                            borderColor: "inherit",
+                            color: "inherit",
+                            maxWidth: "100%",
+
+                            '& .MuiImageList-root::-webkit-scrollbar': {
+                                display: 'none',
+                                "-ms-overflow-style": "none",
+                                scrollbarWidth: "none",
+                            },
+
+                            '& .MuiImageList-root': {
+                                flexWrap: "nowrap",
+                                transform: "translateZ(0)",
+                                display: "flex",
+                                margin: 0,
+                                
+                                '& .MuiImageListItem-root': {
+                                    height: "auto !important",
+                                    width: "auto !important",
+
+                                    '& .MuiImageListItem-item': {
+                                        height: "auto",
+                                    }
+                                },
+                            },
+
+                            '& .MuiChip-outlined': {
+                                borderColor: "inherit",
+                            },
+
+                            '& .MuiChip-root': {
+                                color: "inherit",
+
+                                '& .MuiChip-label': {
+                                    color: "inherit",
+                                }
+                            },
+                        }}
+                    >
+                    {
+                        loading == false && 
+                        selectedModifierOptions.length > 0 &&
+                        hasModifiers() &&
+                        <ImageList>
+                            {
+                                selectedModifierOptions.map((o, index) => 
+                                    <ImageListItem key={`${o.id}-${index}`}>
+                                        <Chip label={<span>{o.quantity > 1 && <b>{o.quantity} x </b>}{o.name}</span>} variant="outlined" size="small" avatar={!o.imageUrl ? undefined : <Avatar src={o.imageUrl}/>}/>
+                                    </ImageListItem>
+                                )
+                            }
+                        </ImageList>
+                    }
                     </Grid>
                     <Grid size={12}>
-                        <div className={classes.priceContainer}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: 'row',
+                                justifyContent: "space-between",
+                                paddingTop: "6px",
+                            }}
+                        >
                             {
                                 loading
                                 ?
                                 <Skeleton variant="text" animation="wave" height="1.5rem" width="20%" />
                                 :
                                 <>
-                                    <span className={classes.priceTxt} >{Formatter.price(ItemsHelper.getItemPrice(props.menuItem), "€")}</span>
+                                    <span style={{ fontWeight: 600 }}>{Formatter.price(ItemsHelper.getItemPrice(props.menuItem), "€")}</span>
                                     {
                                         props.menuItem != null &&
                                         <>
                                             {
                                                 props.menuItem.isAvailable == false
                                                 ? 
-                                                    <span className={classes.outOfStockLabel}>{t("digitalMenu.unavailable")}</span>
+                                                    <span>{t("digitalMenu.unavailable")}</span>
                                                 :
                                                     (
                                                         props.disableQuickCart != true &&
@@ -293,10 +271,10 @@ export const MenuItemComponent: React.FC<Props> = (props: Props) => {
                                     }
                                 </>
                             }
-                        </div>
+                        </Box>
                     </Grid>
                 </Grid>
-            </div>
-        </div>
+            </Box>
+        </Box>
     </>
 }

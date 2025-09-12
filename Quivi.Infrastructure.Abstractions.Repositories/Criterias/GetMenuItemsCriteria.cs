@@ -17,7 +17,9 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 
         public bool IncludeWeeklyAvailabilities { get; init; }
         public bool IncludeMenuItemCategoryAssociations { get; init; }
-        public bool IncludeModifierGroups { get; init; }
+        public bool IncludeModifierGroupsAssociations { get; init; }
+        public bool IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers { get; init; }
+        public bool IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem { get; init; }
         public bool IncludeTranslations { get; init; }
         public bool IncludeMenuItemModifiers { get; init; }
 

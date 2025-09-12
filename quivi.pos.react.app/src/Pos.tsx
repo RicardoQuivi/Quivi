@@ -21,6 +21,7 @@ import { TransferSessionModal } from "./components/Sessions/TransferSessionModal
 import { OrdersOverview } from "./components/Orders/OrdersOverview";
 import { SessionAdditionalFieldsModal } from "./components/SessionAdditionalFieldsModal";
 import { useSessionAdditionalInformationsQuery } from "./hooks/queries/implementations/useSessionAdditionalInformationsQuery";
+import { MenuItemWithExtras } from "./hooks/pos/session/ICartSession";
 
 export const Pos = () => {
     const theme = useTheme();
@@ -74,7 +75,7 @@ export const Pos = () => {
         }
     }
 
-    const onItemAdded = async (item: MenuItem) => {
+    const onItemAdded = async (item: MenuItem | MenuItemWithExtras) => {
         setSearchTxt("");
         pos.cartSession.addItem(item, 1);
     }

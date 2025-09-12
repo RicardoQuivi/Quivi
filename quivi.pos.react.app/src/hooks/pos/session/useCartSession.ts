@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ICartSession } from "./ICartSession";
+import { ICartSession, MenuItemWithExtras } from "./ICartSession";
 import { BaseSessionItem, SessionItem } from "../../api/Dtos/sessions/SessionItem";
 import { MenuItem } from "../../api/Dtos/menuitems/MenuItem";
 import { BaseCreateOrderItem, CreateOrder, CreateOrderItem } from "../../api/Dtos/orders/CreateOrdersRequest";
@@ -80,36 +80,38 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         }
     })
 
-    const addItem = (item: MenuItem | SessionItem, quantity: number) => setState(s => {
+    const addItem = (item: MenuItem | MenuItemWithExtras | SessionItem, quantity: number) => setState(s => {
         if(channelId == undefined) {
             return s;
         }
 
-        const isDigitalMenuItem = 'menuItemId' in item == false;
-        const idToFind = isDigitalMenuItem ? item.id : item.menuItemId;
-        const discountToApply = !isDigitalMenuItem ? item.discountPercentage : 0;
-        const price = isDigitalMenuItem ? item.price : item.originalPrice;
+        const isMenuItem = 'menuItemId' in item == false;
+        const idToFind = isMenuItem ? item.id : item.menuItemId;
+        const discountToApply = !isMenuItem ? item.discountPercentage : 0;
+        const price = isMenuItem ? item.price : item.originalPrice;
         
         let extras: BaseCreateOrderItem[] | undefined = undefined;
-        // if(isDigitalMenuItem && 'extras' in item) {
-        //     extras = [];
-        //     for(const [, selection] of item.extras) {
-        //         selection.map(s => ({
-        //             itemId: s.menuItem.id,
-        //             quantity: 1,
-        //             price: s.price,
-        //         })).forEach(s => extras?.push(s));
-        //     }
-        // } else if('extras' in item && item.extras != undefined && item.extras.length > 0) {
-        //     extras = [];
-        //     for(const extra of item.extras) {
-        //         extras.push({
-        //             menuItemId: extra.menuItemId,
-        //             quantity: extra.quantity,
-        //             price: extra.originalPrice,
-        //         })
-        //     }
-        // }
+        if(isMenuItem && 'selectedOptions' in item) {
+            extras = [];
+            for(const [, selections] of item.selectedOptions) {
+                for(const selection of selections) {
+                    extras.push({
+                        menuItemId: selection.menuItemId,
+                        price: selection.price,
+                        quantity: 1,
+                    })
+                }
+            }
+        } else if('extras' in item && item.extras.length > 0) {
+            extras = [];
+            for(const extra of item.extras) {
+                extras.push({
+                    menuItemId: extra.menuItemId,
+                    quantity: extra.quantity,
+                    price: extra.originalPrice,
+                })
+            }
+        }
 
         const operationsToSync = [...s.operationsToSync, {
             channelId: channelId,
@@ -386,7 +388,6 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
                     const job = completedJobs.has(jobId);
                     if(job != undefined && item.synced == false) {
                         item.synced = true;
-                        console.log("Synced at: ", new Date().getTime());
                         hasChanges = true;
                     }
                 }

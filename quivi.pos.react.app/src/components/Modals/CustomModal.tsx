@@ -1,4 +1,4 @@
-import { Box, Breakpoint, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, styled } from "@mui/material";
+import { Box, Breakpoint, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import React, { ReactNode, useEffect } from "react";
 import { CloseIcon } from "../../icons";
 
@@ -11,15 +11,6 @@ export enum ModalSize {
     ExtraLarge="xl",
     FullScreen="false",
 }
-
-const BootstrapDialog = styled(Dialog)(({ }) => ({
-    '& .MuiDialogContent-root': {
-        padding: 2,
-    },
-    '& .MuiDialogActions-root': {
-        padding: 1,
-    },
-}));
 
 export interface CustomModalProps {
     readonly isOpen: boolean;
@@ -61,7 +52,15 @@ const CustomModal: React.FC<CustomModalProps> = ({
     }, [isOpen])
 
     return (
-        <BootstrapDialog
+        <Dialog
+            sx={{
+                '& .MuiDialogContent-root': {
+                    padding: 1,
+                },
+                '& .MuiDialogActions-root': {
+                    padding: 1,
+                },
+            }}
             maxWidth={getModalSizeValue(size ?? ModalSize.Small)}
             fullWidth
             fullScreen={size == ModalSize.FullScreen}
@@ -110,9 +109,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 </IconButton>
             }
             <DialogContent dividers>
-                <Box sx={{padding: 2}}>
-                    {children}
-                </Box>
+                {children}
             </DialogContent>
             
             {
@@ -121,7 +118,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                     {footer}
                 </DialogActions>
             }
-        </BootstrapDialog>
+        </Dialog>
     );
 }
 export default CustomModal;

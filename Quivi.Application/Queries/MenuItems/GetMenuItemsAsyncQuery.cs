@@ -21,7 +21,9 @@ namespace Quivi.Application.Queries.MenuItems
         public bool IncludeWeeklyAvailabilities { get; init; }
         public bool IncludeMenuItemCategoryAssociations { get; init; }
         public bool IncludeTranslations { get; init; }
-        public bool IncludeModifierGroups { get; init; }
+        public bool IncludeModifierGroupsAssociations { get; init; }
+        public bool IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers { get; init; }
+        public bool IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem { get; init; }
         public bool IncludeMenuItemModifiers { get; init; }
     }
 
@@ -50,7 +52,9 @@ namespace Quivi.Application.Queries.MenuItems
 
                 IncludeMenuItemCategoryAssociations = query.IncludeMenuItemCategoryAssociations,
                 IncludeMenuItemModifiers = query.IncludeMenuItemModifiers,
-                IncludeModifierGroups = query.IncludeModifierGroups,
+                IncludeModifierGroupsAssociations = query.IncludeModifierGroupsAssociations,
+                IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers = query.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers,
+                IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem = query.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem,
                 IncludeTranslations = query.IncludeTranslations,
                 IncludeWeeklyAvailabilities = query.IncludeWeeklyAvailabilities,
 

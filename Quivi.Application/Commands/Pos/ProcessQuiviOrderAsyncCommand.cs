@@ -315,7 +315,7 @@ namespace Quivi.Application.Commands.Pos
         private async Task ProcessOrderToSession(AQuiviSyncStrategy syncStrategy, OrderData orderData)
         {
             var order = orderData.Order;
-            if (order.SessionId.HasValue || new[] { OrderState.ScheduledRequested, OrderState.Accepted }.Contains(orderData.NextState))
+            if (order.SessionId.HasValue || new[] { OrderState.ScheduledRequested, OrderState.Accepted, OrderState.PendingApproval }.Contains(orderData.NextState))
                 return;
 
             if (order.PayLater && order.Channel!.ChannelProfile!.Features.HasFlag(ChannelFeature.AllowsSessions) == false)

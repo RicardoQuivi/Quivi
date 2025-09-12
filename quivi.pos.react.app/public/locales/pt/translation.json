@@ -14,6 +14,7 @@
     "confirmPin": "Confirmar Pin",
     "pinCodesDontMatch": "Os Pins não coincidem",
     "invalidPinDescription": "O Pin é inválido",
+    "item": "Item",
     "items": "Itens",
     "channels": "Canais",
     "channel": "Canal",
@@ -150,8 +151,18 @@
         "other": "Outro",
         "doubleClickToToggleStatus": "Duplo clique para trocar o estado",
         "toggleToUnavailable": "Trocar para indisponível",
-        "toggleToAvailable": "Trocar para disponível"
+        "toggleToAvailable": "Trocar para disponível",
+        "additionalNotes": "Notas adicionais",
+        "takeaway": "Take-away"
     },
+    "itemsTab": {
+        "itemConfigurator": "Configuração do item",
+        "addConfiguredItem": "Adicionar por <price/>",
+        "optionalItem": "Opcional",
+        "selectionRange": "Selecione de {{min}} até {{max}} opções",
+        "selectExactly": "Selecione {{caption}}"
+    },
+    "prepaid": "Pré-pago",
     "accept": "Aceitar",
     "yes": "Sim",
     "no": "Não",

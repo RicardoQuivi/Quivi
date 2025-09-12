@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from "react"
-import { Alert, AlertTitle, Card, CardActionArea, CardActions, CardContent, CardHeader, Divider, keyframes, Paper, Skeleton, styled, Tooltip, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, Divider, keyframes, Paper, Skeleton, styled, Tooltip, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Order } from "../../hooks/api/Dtos/orders/Order";
 import { useDateHelper } from "../../helpers/dateHelper";
@@ -129,25 +129,48 @@ export const OrderCard = (props: OrderCardProps) => {
 
         const additionalInfo: ReactNode[] = [];
         if(props.order.fields.length > 0) {
-            additionalInfo.push(<Tooltip title={t("WebDashboard.AdditionalNotes")} key="notification">
+            additionalInfo.push(<Tooltip title={t("ordersTab.additionalNotes")} key="notification">
                 <NotificationIcon />
             </Tooltip>)
         }
         if(props.order.isTakeAway) {
-            additionalInfo.push(<Tooltip title={t("Resources.Takeaway")} key="takeaway">
+            additionalInfo.push(<Tooltip title={t("ordersTab.takeaway")} key="takeaway">
                 <TakeAwayIcon />
             </Tooltip>)
         }
         if(props.order.items.every(i => i.isPaid)) {
-            additionalInfo.push(<Tooltip title={t("WebDashboard.PrePaid")} key="prepaid">
+            additionalInfo.push(<Tooltip title={t("prepaid")} key="prepaid">
                 <CashCoinIcon />
             </Tooltip>)
         }
 
-        return <div style={{display: "flex", flexDirection: "row", width: "100%"}}>
-            <b style={{flex: "0 0 auto"}}>{props.order.sequenceNumber}</b>
-            <div style={{flex: "1 1 auto", display: "flex", justifyContent: "flex-end", gap: "0.5rem"}}>{additionalInfo}</div>
-        </div>;
+        return <Box
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+            }}
+        >
+            <Typography
+                variant="subtitle1"
+                sx={{
+                    flex: 0,
+                    fontWeight: "bold",
+                }}
+            >
+                {props.order.sequenceNumber}
+            </Typography>
+            <Box
+                sx={{
+                    flex: 1,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "0.5rem",
+                }}
+            >
+                {additionalInfo}
+            </Box>
+        </Box>;
     }
 
     const getSubTitle = () => {
@@ -181,7 +204,7 @@ export const OrderCard = (props: OrderCardProps) => {
             return (
                 <StyledAlert variant="outlined" severity="info">
                     <time className="timeago">
-                        {t("WebDashboard.PickUpAt", { day: day, month: month, time: time})}
+                        {t("ordersTab.pickUpAt", { day: day, month: month, time: time})}
                     </time>
                 </StyledAlert>
             )
@@ -222,14 +245,22 @@ export const OrderCard = (props: OrderCardProps) => {
     }
 
     return <Paper elevation={16} style={{height: "100%"}}>
-        <Card onClick={() => props.order != undefined && props.onCardClicked?.(props.order)} sx={{
-            border: isDelayed ? "2px solid #d26806" : undefined,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            cursor: "pointer",
-        }}>
-            <CardActionArea onClick={() => props.order != undefined && props.onCardClicked?.(props.order)} style={{flex: "0 0 auto"}}>
+        <Card
+            onClick={() => props.order != undefined && props.onCardClicked?.(props.order)}
+            sx={{
+                border: isDelayed ? "2px solid #d26806" : undefined,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                cursor: "pointer",
+            }}
+        >
+            <CardActionArea
+                onClick={() => props.order != undefined && props.onCardClicked?.(props.order)}
+                sx={{
+                    flex: 0,
+                }}
+            >
                 <CardHeader
                     title={getTitle()}
                     subheader={getSubTitle()}
@@ -240,8 +271,8 @@ export const OrderCard = (props: OrderCardProps) => {
                     }}
                 />
             </CardActionArea>
-            <Divider style={{flex: "0 0 auto"}}/>
-            <CardContent sx={{ paddingTop: "0.5rem", paddingBottom: "0 !important"}} style={{flex: "1 1 auto"}}>
+            <Divider sx={{flex: 0}}/>
+            <CardContent sx={{ paddingTop: "0.5rem", paddingBottom: "0 !important", flex: 1}}>
                 <CardItemDetails 
                     items={props.order == undefined ? undefined : props.order.items} 
 
@@ -269,9 +300,18 @@ export const OrderCard = (props: OrderCardProps) => {
                 props.order?.fields.map(f => {
                     const configurableField = fieldsMap.get(f.id);
                     return (
-                        <CardContent key={f.id} sx={{ marginTop: "0.5rem", paddingTop: "0", paddingBottom: "0.5rem !important"}} >
+                        <CardContent
+                            key={f.id}
+                            sx={{ 
+                                marginTop: "0.5rem",
+                                paddingTop: "0",
+                                paddingBottom: "0.5rem !important"
+                            }}
+                        >
                             <StyledAlert variant="outlined" severity="info">
-                                <AlertTitle sx={{textAlign: "left"}}>{configurableField == undefined ? <Skeleton animation="wave" width="100%" /> : configurableField.name}</AlertTitle>
+                                <AlertTitle sx={{textAlign: "left"}}>
+                                    {configurableField == undefined ? <Skeleton animation="wave" width="100%" /> : configurableField.name}
+                                </AlertTitle>
                                 {
                                     configurableField == undefined
                                     ? 
@@ -290,10 +330,10 @@ export const OrderCard = (props: OrderCardProps) => {
                     );
                 })
             }
-            <CardContent sx={{ marginTop: "0.5rem", paddingTop: "0", paddingBottom: "0.5rem !important"}} style={{flex: "0 0 auto"}}>
+            <CardContent sx={{ marginTop: "0.5rem", paddingTop: "0", paddingBottom: "0.5rem !important", flex: 0}}>
                 {getTimeBadge()}
             </CardContent>
-            <CardActions disableSpacing style={{flex: "0 0 auto"}}>
+            <CardActions disableSpacing sx={{flex: 0}}>
                 {
                     showNextStateButton(props.order, OrderState.Processing) &&
                     <ConfirmButton primaryButton onAction={() => props.order != undefined && props.onNextStateClicked?.(props.order)} confirmText={`${t("confirm")}?`} style={{width: "100%"}}>

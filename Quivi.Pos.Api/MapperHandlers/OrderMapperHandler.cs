@@ -27,8 +27,12 @@ namespace Quivi.Pos.Api.MapperHandlers
                 State = model.State,
                 IsTakeAway = model.OrderType == OrderType.TakeAway,
                 OrderOrigin = model.Origin,
-                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(model.OrderMenuItems)!,
-                Fields = [],
+                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(model.OrderMenuItems?.Where(omi => omi.ParentOrderMenuItemId.HasValue == false) ?? [])!,
+                Fields = model.OrderAdditionalInfos?.Select(f => new Dtos.OrderFieldValue
+                {
+                    Id = idConverter.ToPublicId(f.OrderConfigurableFieldId),
+                    Value = f.Value,
+                }) ?? [],
                 CreatedDate = new DateTimeOffset(model.CreatedDate, TimeSpan.Zero),
                 LastModified = new DateTimeOffset(model.ModifiedDate, TimeSpan.Zero),
             };

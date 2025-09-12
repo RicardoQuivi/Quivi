@@ -202,50 +202,64 @@ export const SessionViewer: React.FC<Props> = ({
                 overflow: "hidden auto",
             }}
         >
-            <Box
+            <Stack
+                direction="column"
                 sx={{
                     height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
                 }}
             >
-                {
-                    channel == undefined || profile == undefined
-                    ?
-                    <Skeleton animation="wave" sx={{ width: "96%", alignSelf: "center" }}/>
-                    :
-                    <Box
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        height: "48px",
+                    }}
+                >
+                    {
+                        onSessionAdditionalInfoClicked != undefined &&
+                        !!pos.cartSession.sessionId &&
+                        pos.cartSession.closedAt == undefined &&
+                        <Tooltip title={t("sessionInformation")}>
+                            <IconButton size="large" onClick={onSessionAdditionalInfoClicked}>
+                                <InfoIcon height={18} width={18} />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                    <Typography
+                        variant="h6"
                         sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            height: "48px",
+                            textAlign: "center",
+                            width: "100%",
                         }}
                     >
                         {
-                            onSessionAdditionalInfoClicked != undefined &&
-                            !!pos.cartSession.sessionId &&
-                            pos.cartSession.closedAt == undefined &&
-                            <Tooltip title={t("sessionInformation")}>
-                                <IconButton size="large" onClick={onSessionAdditionalInfoClicked}>
-                                    <InfoIcon height={18} width={18} />
-                                </IconButton>
-                            </Tooltip>
+                            channel == undefined || profile == undefined
+                            ?
+                            <Skeleton
+                                animation="wave"
+                                sx={{
+                                    marginLeft: "1.5rem",
+                                    marginRight: "1.5rem",
+                                    width: "90%",
+                                    alignSelf: "center",
+                                }}
+                            />
+                            :
+                            <>{profile.name} {channel.name}</>
                         }
-                        <Typography variant="h6" sx={{textAlign: "center", width: "100%"}}>
-                            {profile.name} {channel.name}
-                        </Typography>
-                        {
-                            canAddItems && canRemoveItems &&
-                            <Tooltip title={t("transferSession")}>
-                                <IconButton size="large" disabled={!!pos.cartSession.isSyncing} onClick={() => onTransferSessionClicked(channelsQuery.data[0])}>
-                                    <SwitchIcon height={18} width={18} />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                    </Box>
-                }
+                    </Typography>
+                    {
+                        canAddItems && canRemoveItems &&
+                        <Tooltip title={t("transferSession")}>
+                            <IconButton size="large" disabled={!!pos.cartSession.isSyncing} onClick={() => onTransferSessionClicked(channelsQuery.data[0])}>
+                                <SwitchIcon height={18} width={18} />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                </Box>
+
                 <Divider
                     variant="fullWidth"
                     sx={{
@@ -275,7 +289,11 @@ export const SessionViewer: React.FC<Props> = ({
                             </Typography>
                         </Box>
                         :
-                        <List sx={{ bgcolor: 'background.paper'}}>
+                        <List
+                            sx={{
+                                bgcolor: 'background.paper',
+                            }}
+                        >
                             {
                                 itemStatusFilter == false &&
                                 pendingOrdersQuery.data.map(item =>
@@ -333,23 +351,23 @@ export const SessionViewer: React.FC<Props> = ({
                         icon={<CurrencySpan value={Items.getTotalPrice(itemsState.allItems)} />}
                     />
                 </BottomNavigation>
-            </Box>
-            <EditSessionItemModal
-                item={editItem}
-                onClose={() => setEditItem(undefined)}
-                onSubmit={onEditItem}
-            />
-            <PickItemQuantityModal
-                item={pickItemQuantity}
-                canAdd={canAddItems}
-                canApplyDiscounts={canApplyDiscounts}
-                canRemove={canRemoveItems}
-                onClose={() => setPickItemQuantity(undefined)}
-                onSubmit={changeQuantity}
-                itemsMap={itemsMap}
-            />
+            </Stack>
         </Paper>
 
+        <EditSessionItemModal
+            item={editItem}
+            onClose={() => setEditItem(undefined)}
+            onSubmit={onEditItem}
+        />
+        <PickItemQuantityModal
+            item={pickItemQuantity}
+            canAdd={canAddItems}
+            canApplyDiscounts={canApplyDiscounts}
+            canRemove={canRemoveItems}
+            onClose={() => setPickItemQuantity(undefined)}
+            onSubmit={changeQuantity}
+            itemsMap={itemsMap}
+        />
         <SessionButtons
             canPay={pos.permissions.data.allowsPayments}
             canAddItems={canAddItems}
@@ -379,7 +397,32 @@ const SessionItemComponent = (props : {
     const [isOpen, setIsOpen] = useState(false);
 
     const isItemDisabled = (): boolean => props.itemStatusFilter == undefined && ('isPaid' in props.item && props.item.isPaid);
-    const secondaryActions = (): React.ReactNode => {
+
+    const secondaryActions = () => {
+        const buttonGroup = getButtons();
+        const chip = modifiers.length > 0 ? <Chip
+                                                size="medium"
+                                                label={t("modifiers")}
+                                                color="success"
+                                                variant="filled"
+                                                onClick={() => modifiers.length > 0 && setIsOpen(p => !p)}
+                                            /> : undefined;
+        
+        if(buttonGroup == undefined && chip == undefined) {
+            return undefined;
+        }
+
+        return <Stack
+            direction="row"
+            gap={2}
+            alignItems="center"
+        >
+            {chip}
+            {buttonGroup}
+        </Stack>
+    }
+
+    const getButtons = (): React.ReactNode => {
         const buttons: React.ReactNode[] = [];
 
         if(props.itemStatusFilter == false) {
@@ -398,8 +441,10 @@ const SessionItemComponent = (props : {
 
                     if(icon != undefined) {
                         buttons.push(<Button
-                                key={"change-quantity-button"}
-                                sx={{height: "32px"}}
+                                key="change-quantity-button"
+                                sx={{
+                                    height: "32px",
+                                }}
                                 aria-label="reduce"
                                 onClick={() => action(item)}
                             >
@@ -475,19 +520,20 @@ const SessionItemComponent = (props : {
             className={props.recentlyChanged ? "active" : ""}
             secondaryAction={secondaryActions()}>
             <ListItemAvatar>
-                {
-                    props.showQuantityBadge?.(props.item.quantity) != false &&
-                    <Chip label={Currency.toDecimalFormat({culture: i18n.language, value: props.item.quantity, maxDecimalPlaces: 2})} size="small" />
-                }
+            {
+                props.showQuantityBadge?.(props.item.quantity) != false &&
+                <Chip
+                    label={Currency.toDecimalFormat({culture: i18n.language, value: props.item.quantity, maxDecimalPlaces: 2})}
+                    size="medium"
+                />
+            }
             </ListItemAvatar>
             <ListItemText 
-                primary={
-                <Stack
-                    direction="row"
-                    spacing={2}
-                >
+                primary={(
                     <Box
-                        sx={{ flexGrow: 1 }}
+                        sx={{
+                            flexGrow: 1,
+                        }}
                     >
                         {
 
@@ -498,18 +544,14 @@ const SessionItemComponent = (props : {
                             name
                         }
                     </Box>
-
-                    {
-                        modifiers.length > 0 &&
-                        <>
-                            &nbsp;
-                            <Chip size="small" label={t("modifiers")} color="success" variant="outlined" onClick={() => modifiers.length > 0 && setIsOpen(p => !p)} />
-                        </>
-                    }
-                </Stack>} 
+                )} 
                 secondary={
                     <ButtonBase 
-                        sx={{borderRadius: 2, fontSize: "0.8rem"}}
+                        sx={{
+                            borderRadius: 2,
+                            fontSize: "0.8rem",
+                            gap: 1,
+                        }}
                         onClick={() => {
                             if(props.item == undefined) {
                                 return;
@@ -523,14 +565,11 @@ const SessionItemComponent = (props : {
                         <CurrencySpan value={getPrice()} />
                         {
                             'discountPercentage' in props.item && props.item.discountPercentage > 0 &&
-                            <>
-                                &nbsp;
-                                <Chip size="small" label={`${Currency.toDecimalFormat({culture: i18n.language, value: props.item.discountPercentage, maxDecimalPlaces: 2})} %`} color="success" variant="outlined" />
-                            </>
+                            <Chip size="small" label={`${Currency.toDecimalFormat({culture: i18n.language, value: props.item.discountPercentage, maxDecimalPlaces: 2})} %`} color="success" variant="outlined" />
                         }
                         {
                             !props.isModifier && props.onClickEdit != undefined && item != undefined &&
-                            <PencilIcon width={18} height={18} style={{marginLeft: "0.5rem"}} />
+                            <PencilIcon width={18} height={18} />
                         }
                     </ButtonBase>
                 }
@@ -539,17 +578,23 @@ const SessionItemComponent = (props : {
         {
             modifiers.length > 0 &&
             <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding sx={{ pl: 4 }}>
+                <List
+                    component="div"
+                    disablePadding
+                    sx={{
+                        pl: 4,
+                    }}
+                >
                     {
                         modifiers.map((m, i) => (
-                        <SessionItemComponent
-                            key={i}
-                            item={m}
-                            isModifier={true}
-                            showQuantityBadge={q => q > 1}
-                            recentlyChanged={props.recentlyChanged}
-                            itemsMap={props.itemsMap}
-                        />
+                            <SessionItemComponent
+                                key={i}
+                                item={m}
+                                isModifier={true}
+                                showQuantityBadge={q => q > 1}
+                                recentlyChanged={props.recentlyChanged}
+                                itemsMap={props.itemsMap}
+                            />
                         ))
                     }
                 </List>
@@ -572,7 +617,8 @@ const OrderItemComponent = (props : {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const acceptOrder = async () => {
+    const acceptOrder = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation();
         setIsLoading(true);
         try {
             const jobId = await orderMutator.process(props.order, {})
@@ -584,7 +630,8 @@ const OrderItemComponent = (props : {
         }
     }
 
-    const declineOrder = async () => {
+    const declineOrder = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation();
         setIsLoading(true);
         try {
             const jobId = await orderMutator.decline(props.order, {})
@@ -596,52 +643,50 @@ const OrderItemComponent = (props : {
         }
     }
 
-    const secondaryActions = (): React.ReactNode => {
+        const primaryActions = (): React.ReactNode => {
         const buttons: React.ReactNode[] = [];
 
-        let variant: 'text' | 'outlined' | 'contained' = "outlined";
-        variant = "text";
-
-        buttons.push(<Button
-            key={"expand-button"}
-            sx={{height: "32px"}}
-            aria-label="reduce"
-            onClick={() => setIsOpen(p => !p)}
-            >
-            {
-                isOpen
-                ?
-                <ExpandIcon height={16} width={16} onClick={() => setIsOpen(p => !p)} fill="black"/>
-                :
-                <CollapseIcon height={16} width={16} onClick={() => setIsOpen(p => !p)} fill="black"/>
-            }
-        </Button>)
-
         if(isLoading == false) {
-            buttons.push(<Button
-                key={"accept-button"}
-                sx={{height: "32px"}}
-                aria-label="reduce"
-                onClick={acceptOrder}
+            buttons.push((
+                <Button
+                    key={"accept-button"}
+                    sx={{
+                        height: "32px",
+                    }}
+                    aria-label="reduce"
+                    onClick={acceptOrder}
                 >
-                <CheckIcon height={16} width={16} aria-hidden="true" fill="green" />
-            </Button>);
+                    <CheckIcon height={16} width={16} aria-hidden="true" fill="green" />
+                </Button>
+            ));
 
-            buttons.push(<Button
-                key={"decline-button"}
-                sx={{height: "32px"}}
-                aria-label="reduce"
-                onClick={declineOrder}
+            buttons.push((
+                <Button
+                    key={"decline-button"}
+                    sx={{
+                        height: "32px",
+                    }}
+                    aria-label="reduce"
+                    onClick={declineOrder}
                 >
-                <UncheckIcon height={16} width={16} aria-hidden="true" fill="red" />
-            </Button>);
+                    <UncheckIcon height={16} width={16} aria-hidden="true" fill="red" />
+                </Button>
+            ));
         } else {
-            buttons.push(<Box sx={{ display: 'flex' }} key="loading">
-                <CircularProgress />
-            </Box>)
+            buttons.push((
+                <IconButton
+                    sx={{
+                        display: 'flex',
+                    }}
+                    key="loading"
+                    disabled
+                >
+                    <CircularProgress />
+                </IconButton>
+            ));
         }
 
-        return <ButtonGroup variant={variant}>
+        return <ButtonGroup variant="outlined">
             { buttons }
         </ButtonGroup>
     }
@@ -652,10 +697,16 @@ const OrderItemComponent = (props : {
             margin: "1rem",
             cursor: "pointer",
             transition: "background-color 0.5s ease",
+            border: "unset",
+            boxShadow: "unset"
         }}
     >
         <CardHeader
-            avatar={
+            avatar={primaryActions()}
+            action={<Stack
+                direction="row"
+                gap={2}
+            >
                 <Tooltip title={t("pendingApproval")}>
                     <Chip
                         size="medium"
@@ -667,8 +718,20 @@ const OrderItemComponent = (props : {
                         </>}
                     />
                 </Tooltip>
-            }
-            action={secondaryActions()}
+                <IconButton
+                    sx={{
+                        height: "32px",
+                    }}
+                >
+                    {
+                        isOpen
+                        ?
+                        <ExpandIcon height={16} width={16} fill="black"/>
+                        :
+                        <CollapseIcon height={16} width={16} fill="black"/>
+                    }
+                </IconButton>
+            </Stack>}
             onClick={() => setIsOpen(s => !s)}
             title={
                 <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>

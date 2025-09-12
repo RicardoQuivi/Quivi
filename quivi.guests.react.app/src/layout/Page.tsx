@@ -63,7 +63,6 @@ export const Page = ({
                         left: 0,
                         right: 0,
                         margin: 0,
-                        paddingBottom: "1.5rem",
                         width: "100%",
                     }}
                 >

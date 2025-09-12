@@ -52,7 +52,7 @@ namespace Quivi.Backoffice.Api.Controllers
 
                 IncludeTranslations = true,
                 IncludeMenuItemCategoryAssociations = true,
-                IncludeModifierGroups = true,
+                IncludeModifierGroupsAssociations = true,
 
                 IsDeleted = false,
                 PageIndex = request.Page,

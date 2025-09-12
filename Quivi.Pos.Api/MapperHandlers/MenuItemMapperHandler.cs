@@ -8,10 +8,12 @@ namespace Quivi.Pos.Api.MapperHandlers
     public class MenuItemMapperHandler : IMapperHandler<MenuItem, Dtos.MenuItem>
     {
         private readonly IIdConverter idConverter;
+        private readonly IMapper mapper;
 
-        public MenuItemMapperHandler(IIdConverter idConverter)
+        public MenuItemMapperHandler(IIdConverter idConverter, IMapper mapper)
         {
             this.idConverter = idConverter;
+            this.mapper = mapper;
         }
 
         public Dtos.MenuItem Map(MenuItem model)
@@ -22,7 +24,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 Name = model.Name,
                 ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Price = model.Price,
-                ModifierGroups = [],
+                ModifierGroups = mapper.Map<Dtos.ModifierGroup>((model.MenuItemModifierGroups ?? []).OrderBy(o => o.SortIndex).Select(o => o.MenuItemModifierGroup!)),
                 HasStock = model.Stock,
                 IsDeleted = model.DeletedDate.HasValue,
             };

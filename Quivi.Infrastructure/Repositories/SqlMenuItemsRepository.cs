@@ -49,7 +49,7 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeMenuItemModifiers)
                 query = query.Include(x => x.MenuItemModifiers);
 
-            if (criteria.IncludeModifierGroups)
+            if (criteria.IncludeModifierGroupsAssociations)
             {
                 query = query.Include(x => x.MenuItemModifierGroups!);
                 //.ThenInclude(mg => mg.MenuItemModifierGroup!)
@@ -76,6 +76,12 @@ namespace Quivi.Infrastructure.Repositories
                 //                    .ThenInclude(m => m.MenuItem!)
                 //                    .ThenInclude(m => m.MenuItemWeeklyAvailabilities!);
             }
+
+            if (criteria.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers)
+                query = query.Include(x => x.MenuItemModifierGroups!).ThenInclude(q => q.MenuItemModifierGroup).ThenInclude(q => q.MenuItemModifiers!);
+
+            if (criteria.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem)
+                query = query.Include(x => x.MenuItemModifierGroups!).ThenInclude(q => q.MenuItemModifierGroup).ThenInclude(q => q.MenuItemModifiers!).ThenInclude(q => q.MenuItem);
 
             if (criteria.IncludeTranslations)
                 query = query.Include(x => x.MenuItemTranslations);

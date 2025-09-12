@@ -265,7 +265,7 @@ namespace Quivi.Application.Commands.MenuItems
             {
                 IncludeTranslations = true,
                 IncludeMenuItemCategoryAssociations = true,
-                IncludeModifierGroups = true,
+                IncludeModifierGroupsAssociations = true,
                 IsDeleted = false,
             });
             if (!entities.Any())

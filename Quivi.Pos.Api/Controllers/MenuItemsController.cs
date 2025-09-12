@@ -48,6 +48,7 @@ namespace Quivi.Pos.Api.Controllers
                 Search = string.IsNullOrWhiteSpace(request.Search) ? null : request.Search,
                 IsDeleted = request.IncludeDeleted ? null : false,
 
+                IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers = true,
                 PageSize = request.PageSize,
                 PageIndex = request.Page,
             });
@@ -71,6 +72,9 @@ namespace Quivi.Pos.Api.Controllers
                 {
                     Ids = stockMap.Keys,
                     MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+
+
+                    IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers = true,
                 },
                 UpdateAction = item =>
                 {

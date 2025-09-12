@@ -97,14 +97,14 @@ const ModifierOption = (props: ModifierOptionProps) => {
     }
 
     return <>
-        <FormLabel style={{color: "#585858", display: "inline-block"}}>
+        <FormLabel sx={{color: "#585858", display: "inline-block"}}>
             {props.modifier.name}
         </FormLabel>
         {
             hasError &&
             <>
                 &nbsp;
-                <FormHelperText style={{color: "#585858", display: "inline-block"}}>({getErrorMessage()})</FormHelperText>
+                <FormHelperText sx={{color: "#585858", display: "inline-block"}}>({getErrorMessage()})</FormHelperText>
             </>
         }
         <FormControl
@@ -152,30 +152,57 @@ const ModifierOption = (props: ModifierOptionProps) => {
                 }
             }}
         >
-            <FormGroup style={{marginTop: "1rem", padding: "0 0.5rem",}}>
-                <Grid container spacing={1} style={{margin: 0}}>
+            <FormGroup
+                sx={{
+                    marginTop: "1rem",
+                    padding: "0 0.5rem",
+                }}
+            >
+                <Grid 
+                    container
+                    spacing={1}
+                    sx={{
+                        margin: 0,
+                    }}
+                >
                     {
                         props.modifier.options.map(m => (
                             <Grid size={{xs: 12, sm: 12, md: 6, lg: 6, xl:4 }} key={m.id}>
-                                <ButtonBase onClick={() => props.modifier.maxSelection == 1 && handleChange(m.id, !selectedOptions.includes(m.id))} 
-                                    style={{
-                                            display: "flex", 
-                                            flexDirection: "row", 
-                                            width: "100%", 
-                                            justifyContent: "space-between",
-                                            boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
-                                            height: "100%",
-                                        }}>
+                                <ButtonBase 
+                                    onClick={() => props.modifier.maxSelection == 1 && handleChange(m.id, !selectedOptions.includes(m.id))} 
+                                    sx={{
+                                        display: "flex", 
+                                        flexDirection: "row", 
+                                        width: "100%", 
+                                        justifyContent: "space-between",
+                                        boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
+                                        height: "100%",
+                                    }}
+                                >
                                     { getAvatar(m) }
-                                    <ListItemText style={{flexGrow: 1, padding: "0 0.5rem", alignSelf: "center"}} primary={m.name} secondary={m.price > 0 ? `+ ${Formatter.price(m.price, "€")}` : undefined} />
-                                    <div style={{
+                                    <ListItemText
+                                        sx={{
+                                            flexGrow: 1,
+                                            padding: "0 0.5rem",
+                                            alignSelf: "center",
+                                        }}
+                                        primary={m.name}
+                                        secondary={m.price > 0 ? `+ ${Formatter.price(m.price, "€")}` : undefined}
+                                    />
+                                    <Box
+                                        sx={{
                                             height: "100%", 
                                             alignSelf: "center", 
                                             marginRight: "1rem",
                                             display: "flex",
                                             flexWrap: "wrap",
                                             alignContent: "center",
-                                        }}>
+
+                                            "& .Mui-checked.MuiCheckbox-root": {
+                                                color: theme.primaryColor.hex,
+                                            }
+                                        }}
+                                    >
                                         {
                                             props.modifier.maxSelection == 1
                                             ?
@@ -186,16 +213,22 @@ const ModifierOption = (props: ModifierOptionProps) => {
                                                     value={m.id}
                                                 />
                                             :
-                                                <ButtonBase style={{padding: "9px 0px"}}>
-                                                    <QuantitySelector quantity={selectedOptions.filter(s => s == m.id).length} 
-                                                        onDecrement={() => handleChange(m.id, false)} 
-                                                        onIncrement={() => handleChange(m.id, true)} 
-                                                        shouldCollapse={false} 
+                                                <ButtonBase
+                                                    sx={{
+                                                        padding: "9px 0px",
+                                                    }}
+                                                >
+                                                    <QuantitySelector 
+                                                        quantity={selectedOptions.filter(s => s == m.id).length}
+                                                        onDecrement={() => handleChange(m.id, false)}
+                                                        onIncrement={() => handleChange(m.id, true)}
+                                                        shouldCollapse={false}
                                                         alwaysOpened={true}
-                                                        pixelSize={24}/>
+                                                        pixelSize={24}
+                                                    />
                                                 </ButtonBase>
                                         }
-                                    </div>
+                                    </Box>
                                 </ButtonBase>
                             </Grid>
                         ))

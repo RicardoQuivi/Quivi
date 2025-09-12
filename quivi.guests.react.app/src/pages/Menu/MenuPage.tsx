@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { Page } from "../../layout/Page";
 import { ButtonsSection } from "../../layout/ButtonsSection";
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import type { MenuCategory } from "../../hooks/api/Dtos/menuCategories/MenuCategory";
 import { PageMode, usePageMode } from "../../hooks/usePageMode";
@@ -20,10 +20,6 @@ import { MenuItemDetailDialog } from "./MenuItemDetailDialog";
 import { useNavigate } from "react-router";
 
 const useStyles = makeStyles({
-    pageContainer: {
-        display: "flex", 
-        flexGrow: 1,
-    },
     checkoutBtn: {
         color: "white",
         border: 0,
@@ -84,19 +80,12 @@ const useStyles = makeStyles({
             },
         }
     },
-    categoriesContainer: {
-        flex: 1,
-        flexGrow: 1,
-    },
     categoryPhoto: {
         width: "100%",
         height: "unset",
         borderRadius: "5px 0 0 5px",
         filter: "drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5))",
     },
-    categoryName: {
-        fontFamily: "unset",
-    }
 });
 
 const getSelectedCategory = (sortedCategories: MenuCategory[], map: Map<string, boolean>, pickedCategoryId?: string) => {
@@ -295,64 +284,92 @@ export const MenuPage: React.FC<Props> = ({
     }
 
     return <Page title="Menu" footer={getFooter()}>
-        <Box sx={{height: "100%"}}>
-            {
-                categoriesQuery.isFirstLoading
-                ?
-                    <LoadingContainer />
-                :
-                <Grid container className={classes.pageContainer} spacing={pageMode == PageMode.Kiosk ? 6 : 0}>
-                    <Grid
-                        size={{xs: 12, sm: 12, md: 2, lg: 2, xl: 2}}
-                        className={`${classes.categoriesHeader} ${pageMode == PageMode.Kiosk ? "kiosk" : "mobile"} ${categoriesHeaderPinned ? classes.categoriesHeaderPinned : ""}`}
-                        ref={categoriesHeaderRef}
-                        style={{
-                            paddingTop: pageMode == PageMode.Kiosk ? 0 : undefined,
-                            paddingBottom: pageMode == PageMode.Kiosk ? 0 : undefined,
-                        }}
-                    >
-                        <TabOptions 
-                            orientation={pageMode == PageMode.Kiosk ? "vertical" : "horizontal"}
-                            tabs={categoriesQuery.data} 
-                            selectedTab={tabSettings.currentCategory} 
-                            onTabSelected={goToAnchor}
-                            getKey={t => t.id}
-                            getValue={t => <Grid container spacing={1}>
-                                {
-                                    pageMode == PageMode.Kiosk &&
-                                    <Grid size={12} style={{margin: "0.5rem"}}>
-                                        <AvatarImage src={t.imageUrl} name={t.name} className={classes.categoryPhoto} style={{aspectRatio: t.imageUrl == undefined ? "1" : undefined}}/>
-                                    </Grid>
-                                }
-                                <Grid size={12}>
-                                    <Typography noWrap variant="body2">{t.name}</Typography>
-                                </Grid>
-                            </Grid>}
-                        />
-                    </Grid>
-                    <Grid size={{xs: 12, sm: 12, md: 10, lg: 10, xl: 10}} className={classes.categoriesContainer} ref={containerRef}>
-                        {
-                            categoriesQuery.data.map((c) => (
-                                <div
-                                    key={c.id}
-                                    ref={el => {
-                                        categorySections.idsMap.set(c.id, el!);
-                                        categorySections.elementsMap.set(el!, c.id)
-                                    }}
-                                >
-                                    <MenuCategorySection
-                                        category={c}
-                                        onItemSelect={(item) => setSelectedItem({...item, imageUrl: item.imageUrl ?? channelContext.logoUrl})}
-                                        atTimestamp={atTimestamp}
-                                        shouldLoad={tabSettings.categoriesVisibilityMap.get(c.id) == true}
+        {
+            categoriesQuery.isFirstLoading
+            ?
+                <LoadingContainer />
+            :
+            <Grid
+                container
+                spacing={pageMode == PageMode.Kiosk ? 6 : 0}
+                sx={{
+                    display: "flex", 
+                    flexGrow: 1,
+                    flexDirection: pageMode == PageMode.Kiosk ? "row" : "column"
+                }}
+            >
+                <Grid
+                    size={{xs: 12, sm: 12, md: 2, lg: 2, xl: 2}}
+                    className={`${classes.categoriesHeader} ${pageMode == PageMode.Kiosk ? "kiosk" : "mobile"} ${categoriesHeaderPinned ? classes.categoriesHeaderPinned : ""}`}
+                    ref={categoriesHeaderRef}
+                    sx={{
+                        paddingTop: pageMode == PageMode.Kiosk ? 0 : undefined,
+                        paddingBottom: pageMode == PageMode.Kiosk ? 0 : undefined,
+                    }}
+                >
+                    <TabOptions 
+                        orientation={pageMode == PageMode.Kiosk ? "vertical" : "horizontal"}
+                        tabs={categoriesQuery.data} 
+                        selectedTab={tabSettings.currentCategory} 
+                        onTabSelected={goToAnchor}
+                        getKey={t => t.id}
+                        getValue={t => <Grid container spacing={1}>
+                            {
+                                pageMode == PageMode.Kiosk &&
+                                <Grid size={12} sx={{margin: "0.5rem"}}>
+                                    <AvatarImage
+                                        src={t.imageUrl}
+                                        name={t.name}
+                                        className={classes.categoryPhoto}
+                                        style={{aspectRatio: t.imageUrl == undefined ? "1" : undefined}}
                                     />
-                                </div>
-                            ))
-                        }
-                    </Grid>
+                                </Grid>
+                            }
+                            <Grid size={12}>
+                                <Typography noWrap variant="body2">{t.name}</Typography>
+                            </Grid>
+                        </Grid>}
+                    />
                 </Grid>
-            }
-        </Box>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 12,
+                        md: 10,
+                        lg: 10,
+                        xl: 10,
+                    }}
+                    ref={containerRef}
+                    sx={{
+                        flex: 1,
+                        flexGrow: 1,
+
+                        '&:last-of-type': {
+                            marginBottom: '1.5rem',
+                        },
+                    }}
+                >
+                    {
+                        categoriesQuery.data.map((c) => (
+                            <div
+                                key={c.id}
+                                ref={el => {
+                                    categorySections.idsMap.set(c.id, el!);
+                                    categorySections.elementsMap.set(el!, c.id)
+                                }}
+                            >
+                                <MenuCategorySection
+                                    category={c}
+                                    onItemSelect={(item) => setSelectedItem({...item, imageUrl: item.imageUrl ?? channelContext.logoUrl})}
+                                    atTimestamp={atTimestamp}
+                                    shouldLoad={tabSettings.categoriesVisibilityMap.get(c.id) == true}
+                                />
+                            </div>
+                        ))
+                    }
+                </Grid>
+            </Grid>
+        }
         <MenuItemDetailDialog menuItem={selectedItem ?? null} onClose={() => setSelectedItem(undefined)} />
     </Page>
 }

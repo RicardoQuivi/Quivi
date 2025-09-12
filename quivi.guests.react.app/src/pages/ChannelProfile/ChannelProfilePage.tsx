@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { Page } from "../../layout/Page";
 import Footer from "../../layout/Footer";
 import { ButtonsSection } from "../../layout/ButtonsSection";
-import { Alert, Grid } from "@mui/material";
+import { Alert, Box, Grid } from "@mui/material";
 import { MethodsIcon, SecureIcon } from "../../icons";
 import { MenuSelector } from "../../components/Menu/MenuSelector";
 import MerchantHeader from "../../layout/MerchantHeader";
@@ -45,15 +45,21 @@ export const ChannelProfilePage = () => {
                     </Link>
                 }
             </ButtonsSection>
-            <Grid container spacing={2} style={{justifyContent: "center"}}>
-                <Grid size={{xs: 12 }}>
-                    <div className='home__secure'>
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    justifyContent: "center",
+                }}
+            >
+                <Grid size={{ xs: 12 }}>
+                    <Box className='home__secure'>
                         <SecureIcon height={16} width={16} />
                         <span>{t("home.secure")}</span>
-                        <div className="home__methods" style={{ height: "1.5rem" }}>
+                        <Box className="home__methods" sx={{ height: "1.5rem" }}>
                             <MethodsIcon style={{ height: "100%", aspectRatio: "452 / 62" }} />
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
                 </Grid>
             </Grid>
             <Footer />

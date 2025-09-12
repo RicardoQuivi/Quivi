@@ -206,7 +206,8 @@ namespace Quivi.Guests.Api.Controllers
             {
                 MerchantIds = [order.MerchantId],
                 Ids = decodedItems.Select(d => d.Id),
-                IncludeModifierGroups = true,
+                IncludeModifierGroupsAssociations = true,
+                IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem = true,
                 AvailableAt = new Availability
                 {
                     UtcDate = dateTimeProvider.GetUtcNow(),
@@ -261,7 +262,6 @@ namespace Quivi.Guests.Api.Controllers
                     throw new Exception();
 
                 foreach (var g in item.MenuItemModifierGroups!)
-                {
                     foreach (var requestedItemModifiers in requestedItemModifiersPerItem)
                     {
                         requestedItemModifiers.TryGetValue(g.MenuItemModifierGroupId, out var requestedSelectedModifiers);
@@ -281,7 +281,6 @@ namespace Quivi.Guests.Api.Controllers
                                 throw new Exception();
                         }
                     }
-                }
             }
         }
     }

@@ -14,6 +14,7 @@
     "confirmPin": "Confirm Pin",
     "pinCodesDontMatch": "Pin codes don't match",
     "invalidPinDescription": "The pin is invalid",
+    "item": "Item",
     "items": "Items",
     "channels": "Channels",
     "channel": "Channel",
@@ -150,8 +151,18 @@
         "other": "Other",
         "doubleClickToToggleStatus": "Double click to toggle status",
         "toggleToUnavailable": "Toggle to unavailable",
-        "toggleToAvailable": "Toggle to available"
+        "toggleToAvailable": "Toggle to available",
+        "additionalNotes": "Additional notes",
+        "takeaway": "Take-away"
     },
+    "itemsTab": {
+        "itemConfigurator": "Item configuration",
+        "addConfiguredItem": "Add for <price/>",
+        "optionalItem": "Optional",
+        "selectionRange": "Select from {{min}} and up to {{max}} options",
+        "selectExactly": "Select {{caption}}"
+    },
+    "prepaid": "Prepaid",
     "accept": "Accept",
     "yes": "Yes",
     "no": "No",
