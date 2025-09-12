@@ -7,10 +7,15 @@
         public decimal Price { get; init; }
     }
 
+    public record SessionExtraItem : BaseSessionItem
+    {
+        public required int ModifierGroupId { get; init; }
+    }
+
     public record SessionItem : BaseSessionItem
     {
         public decimal Discount { get; init; }
-        public required IEnumerable<BaseSessionItem> Extras { get; init; }
+        public required IEnumerable<SessionExtraItem> Extras { get; init; }
     }
 
     public record PaidSessionItem : SessionItem

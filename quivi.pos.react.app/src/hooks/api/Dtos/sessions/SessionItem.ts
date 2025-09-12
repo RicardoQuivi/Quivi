@@ -5,9 +5,13 @@ export interface BaseSessionItem {
     readonly originalPrice: number;
 }
 
+export interface SessionExtraItem extends BaseSessionItem {
+    readonly modifierGroupId: string;
+}
+
 export interface SessionItem extends BaseSessionItem {
     readonly id: string;
-    readonly extras: BaseSessionItem[];
+    readonly extras: SessionExtraItem[];
     readonly isPaid: boolean;
     readonly discountPercentage: number;
     readonly lastModified: string;

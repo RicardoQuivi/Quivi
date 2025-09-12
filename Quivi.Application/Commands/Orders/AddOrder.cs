@@ -19,9 +19,14 @@
         public decimal? Price { get; init; }
     }
 
+    public record AddOrderExtraItem : BaseAddOrderItem
+    {
+        public required int ModifierGroupId { get; init; }
+    }
+
     public record AddOrderItem : BaseAddOrderItem
     {
         public decimal Discount { get; init; }
-        public required IEnumerable<BaseAddOrderItem> Extras { get; init; }
+        public required IEnumerable<AddOrderExtraItem> Extras { get; init; }
     }
 }

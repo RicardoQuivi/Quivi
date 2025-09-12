@@ -134,12 +134,13 @@ namespace Quivi.Application.Commands.PreparationGroups
                 Discount = 0, //Discount is irrelevant for preparation
                 Price = 0, //Price is irrelevant for preparation
                 Quantity = i.Quantity,
-                Extras = childrenDictionary.TryGetValue(i.Id, out var extras) ? extras.Select(e => new BaseSessionItem
+                Extras = childrenDictionary.TryGetValue(i.Id, out var extras) ? extras.Select(e => new SessionExtraItem
                 {
+                    ModifierGroupId = e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"),
                     MenuItemId = e.MenuItemId,
                     Price = 0, //Price is irrelevant for preparation
                     Quantity = e.Quantity / i.Quantity,
-                }) : Enumerable.Empty<BaseSessionItem>(),
+                }) : Enumerable.Empty<SessionExtraItem>(),
             }).Compress();
 
             //If from compression no items exist, then it means the orders cancel each other.
@@ -162,8 +163,9 @@ namespace Quivi.Application.Commands.PreparationGroups
                     Discount = 0.0m, //Discount is irrelevant for preparation
                     Price = 0.0m, //Price is irrelevant for preparation
                     Quantity = item.RemainingQuantity,
-                    Extras = item.Extras?.Select(e => new BaseSessionItem
+                    Extras = item.Extras?.Select(e => new SessionExtraItem
                     {
+                        ModifierGroupId = 0, //ModifierGroupId is irrelevant for preparation
                         MenuItemId = e.MenuItemId,
                         Price = 0, //Price is irrelevant for preparation
                         Quantity = e.RemainingQuantity,

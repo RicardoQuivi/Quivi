@@ -122,8 +122,9 @@ namespace Quivi.Guests.Api.Controllers
                         Discount = s.DiscountPercentage,
                         Price = s.OriginalPrice,
                         Quantity = s.Quantity,
-                        Extras = s.Extras.Select(e => new Infrastructure.Abstractions.Pos.BaseSessionItem
+                        Extras = s.Extras.Select(e => new Infrastructure.Abstractions.Pos.SessionExtraItem
                         {
+                            ModifierGroupId = idConverter.FromPublicId(e.ModifierGroupId),
                             MenuItemId = idConverter.FromPublicId(e.MenuItemId),
                             Price = e.OriginalPrice,
                             Quantity = e.Quantity,

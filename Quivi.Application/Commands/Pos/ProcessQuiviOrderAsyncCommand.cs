@@ -1,4 +1,5 @@
-﻿using Quivi.Application.Extensions.Pos;
+﻿using Quivi.Application.Extensions;
+using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Pos;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
@@ -486,9 +487,7 @@ namespace Quivi.Application.Commands.Pos
 
         private bool HasPendingItems(Session session)
         {
-            OrderState[] validOrderStates = [OrderState.Processing, OrderState.Completed, OrderState.Accepted];
-
-            var sessionItems = session.Orders!.Where(o => validOrderStates.Contains(o.State)).SelectMany(o => o.OrderMenuItems!).AsPaidSessionItems();
+            var sessionItems = session.GetValidOrderMenuItems().AsPaidSessionItems();
             foreach (var model in sessionItems)
             {
                 var unpaidQuantity = model.Quantity - model.PaidQuantity;

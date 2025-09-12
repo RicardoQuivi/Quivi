@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ICartSession, MenuItemWithExtras } from "./ICartSession";
-import { BaseSessionItem, SessionItem } from "../../api/Dtos/sessions/SessionItem";
+import { SessionExtraItem, SessionItem } from "../../api/Dtos/sessions/SessionItem";
 import { MenuItem } from "../../api/Dtos/menuitems/MenuItem";
-import { BaseCreateOrderItem, CreateOrder, CreateOrderItem } from "../../api/Dtos/orders/CreateOrdersRequest";
+import { CreateOrder, CreateOrderExtraItem, CreateOrderItem } from "../../api/Dtos/orders/CreateOrdersRequest";
 import { Session } from "../../api/Dtos/sessions/Session";
 import { useOrdersApi } from "../../api/useOrdersApi";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import { BackgroundJob } from "../../api/Dtos/backgroundjobs/BackgroundJob";
 
 interface ItemToSync {
     readonly channelId: string;
-    readonly item: MenuItem | SessionItem;
+    readonly item: MenuItem | MenuItemWithExtras | SessionItem;
     readonly patch: CreateOrderItem;
     processingOperation?: {
         jobId: string;
@@ -90,22 +90,24 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         const discountToApply = !isMenuItem ? item.discountPercentage : 0;
         const price = isMenuItem ? item.price : item.originalPrice;
         
-        let extras: BaseCreateOrderItem[] | undefined = undefined;
+        let extras: CreateOrderExtraItem[] | undefined = undefined;
         if(isMenuItem && 'selectedOptions' in item) {
             extras = [];
-            for(const [, selections] of item.selectedOptions) {
+            for(const [modifierGroupId, selections] of item.selectedOptions) {
                 for(const selection of selections) {
                     extras.push({
+                        modifierGroupId: modifierGroupId,
                         menuItemId: selection.menuItemId,
                         price: selection.price,
                         quantity: 1,
                     })
                 }
             }
-        } else if('extras' in item && item.extras.length > 0) {
+        } else if('extras' in item) {
             extras = [];
             for(const extra of item.extras) {
                 extras.push({
+                    modifierGroupId: extra.modifierGroupId,
                     menuItemId: extra.menuItemId,
                     quantity: extra.quantity,
                     price: extra.originalPrice,
@@ -141,9 +143,10 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         const discountApplied = discount ?? 0;
         const idToFind = item.menuItemId;
 
-        const extras = [] as BaseSessionItem[];
+        const extras = [] as SessionExtraItem[];
         for(const extra of item.extras) {
             extras.push({
+                modifierGroupId: extra.modifierGroupId,
                 originalPrice: extra.originalPrice,
                 menuItemId: extra.menuItemId,
                 quantity: extra.quantity,
@@ -177,9 +180,10 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         }
 
         const idToFind = item.menuItemId;
-        const extras = [] as BaseSessionItem[];
+        const extras = [] as SessionExtraItem[];
         for(const extra of item.extras) {
             extras.push({
+                modifierGroupId: extra.modifierGroupId,
                 originalPrice: extra.originalPrice,
                 menuItemId: extra.menuItemId,
                 quantity: extra.quantity,
@@ -252,6 +256,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
             }
 
             const extras = item.extras.map(extra => ({
+                modifierGroupId: extra.modifierGroupId,
                 menuItemId: extra.menuItemId,
                 quantity: extra.quantity,
                 price: extra.originalPrice,
@@ -500,39 +505,31 @@ const getItems = (items: SessionItem[], itemsToSync: ItemToSync[]): SessionItem[
         const isMenuItem = 'menuItemId' in item == false;
         const idToFind = isMenuItem ? item.id : item.menuItemId;
         const discountToApply = itemToSync.patch.discount ?? (!isMenuItem ? item.discountPercentage : 0);
-        //const hasDigitalExtras = isMenuItem && 'extras' in item;
-        //const hasSessionExtras = !isMenuItem && item.extras.length > 0;
 
-        const extras: BaseSessionItem[] = [];
-        // if(hasDigitalExtras) {
-        //     for(const [, selection] of item.extras) {
-        //         for(const extra of selection) {
-        //             extras.push({
-        //                 id: `${extra.menuItem.id}-${1}-${extra.price}-${discountToApply}`,
-        //                 menuItemId: extra.menuItem.id,
-        //                 isPaid: false,
-        //                 lastModified: "",
-        //                 price: extra.price,
-        //                 originalPrice: extra.price,
-        //                 quantity: 1,
-        //                 discountPercentage: discountToApply,
-        //             })
-        //         }
-        //     }
-        // } else if(hasSessionExtras) {
-        //     for(const modifier of item.extras ?? []) {
-        //         extras.push({
-        //             id: `${modifier.menuItemId}-${1}-${modifier.price}-${discountToApply}`,
-        //             menuItemId: `${modifier.menuItemId}-${1}-${modifier.price}-${discountToApply}`,
-        //             isPaid: false,
-        //             price: modifier.price,
-        //             originalPrice: modifier.price,
-        //             quantity: modifier.quantity,
-        //             discountPercentage: discountToApply,
-        //             lastModified: "",
-        //         })
-        //     }
-        // }
+        const extras: SessionExtraItem[] = [];
+        if(isMenuItem && 'selectedOptions' in item) {
+            for(const [modifierGroupId, selection] of item.selectedOptions) {
+                for(const extra of selection) {
+                    extras.push({
+                        modifierGroupId: modifierGroupId,
+                        menuItemId: extra.menuItemId,
+                        price: extra.price,
+                        originalPrice: extra.price,
+                        quantity: 1,
+                    })
+                }
+            }
+        } else if(!isMenuItem) {
+            for(const modifier of item.extras) {
+                extras.push({
+                    modifierGroupId: modifier.modifierGroupId,
+                    menuItemId: modifier.menuItemId,
+                    quantity: modifier.quantity,
+                    price: modifier.price,
+                    originalPrice: modifier.originalPrice,
+                })
+            }
+        }
 
         result.unshift({
             id: [`${idToFind}-${false}-${item.price ?? 0}`, ...(extras.map(m => `${m.menuItemId}-${m.quantity}-${m.price}-${m.originalPrice}`) ?? [])].join('-'),
@@ -549,7 +546,7 @@ const getItems = (items: SessionItem[], itemsToSync: ItemToSync[]): SessionItem[
     return result.filter(p => p.quantity > 0);
 }
 
-const isSameItem = (existingItem: SessionItem, item: SessionItem | MenuItem, discount?: number) => {
+const isSameItem = (existingItem: SessionItem, item: SessionItem | MenuItem | MenuItemWithExtras, discount?: number) => {
     const isMenuItem = 'menuItemId' in item == false;
     const idToFind = isMenuItem ? item.id : item.menuItemId;
     const discountToApply = discount ?? (!isMenuItem ? item.discountPercentage : 0);
@@ -568,40 +565,39 @@ const isSameItem = (existingItem: SessionItem, item: SessionItem | MenuItem, dis
         return maps;
     }, new Map<string, number>()) ?? new Map<string, number>();
 
-    // if(isMenuItem && 'extras' in item && item.extras.size > 0) {
-    //     for(const [, selection] of item.extras) {
-    //         for(const extra of selection) {
-    //             const extraPrice = extra.price ?? extra.menuItem.price ?? 0;
-    //             const key = getKey(extra.menuItem.id, discountToApply, extraPrice)
+    if(isMenuItem && 'selectedOptions' in item) {
+        for(const [, selection] of item.selectedOptions) {
+            for(const extra of selection) {
+                const key = getKey(extra.menuItemId, discountToApply, extra.price)
 
-    //             const foundQuantity = itemsQuantityMap.get(key);
-    //             if(foundQuantity == undefined) {
-    //                 return false;
-    //             }
+                const foundQuantity = itemsQuantityMap.get(key);
+                if(foundQuantity == undefined) {
+                    return false;
+                }
 
-    //             if(foundQuantity > 1) {
-    //                 itemsQuantityMap.set(key, foundQuantity - 1);
-    //             } else {
-    //                 itemsQuantityMap.delete(key);
-    //             }
-    //         }
-    //     }
-    // } else if('extras' in item && item.extras != undefined && item.extras.length > 0) {
-    //     for(const extra of item.extras) {
-    //         const key = getKey(extra.menuItemId, extra.discountPercentage, extra.originalPrice)
+                if(foundQuantity > 1) {
+                    itemsQuantityMap.set(key, foundQuantity - 1);
+                } else {
+                    itemsQuantityMap.delete(key);
+                }
+            }
+        }
+    } else if('extras' in item) {
+        for(const extra of item.extras) {
+            const key = getKey(extra.menuItemId, item.discountPercentage, extra.originalPrice)
 
-    //         const foundQuantity = itemsQuantityMap.get(key);
-    //         if(foundQuantity == undefined) {
-    //             return false;
-    //         }
+            const foundQuantity = itemsQuantityMap.get(key);
+            if(foundQuantity == undefined) {
+                return false;
+            }
 
-    //         if(foundQuantity - extra.quantity > 0) {
-    //             itemsQuantityMap.set(key, foundQuantity - extra.quantity);
-    //         } else {
-    //             itemsQuantityMap.delete(key);
-    //         }
-    //     }
-    // }
+            if(foundQuantity - extra.quantity > 0) {
+                itemsQuantityMap.set(key, foundQuantity - extra.quantity);
+            } else {
+                itemsQuantityMap.delete(key);
+            }
+        }
+    }
     
     return itemsQuantityMap.size == 0;
 }

@@ -15,8 +15,7 @@ namespace Quivi.Pos.Api.MapperHandlers
         private readonly IIdConverter idConverter;
         private readonly IHasher hasher;
 
-        public OrderMenuItemsMapperHandler(IIdConverter idConverter,
-                                    IHasher hasher)
+        public OrderMenuItemsMapperHandler(IIdConverter idConverter, IHasher hasher)
         {
             this.idConverter = idConverter;
             this.hasher = hasher;
@@ -41,17 +40,19 @@ namespace Quivi.Pos.Api.MapperHandlers
             }
         }
 
-        private Dtos.SessionItem GetItem(int multiplier, SessionItem<OrderMenuItem> model, OrderMenuItem first, decimal unpaidQuantity, bool isPaid)
+        private Dtos.SessionItem GetItem(int multiplier, SessionItem<OrderMenuItem, OrderMenuItem> model, OrderMenuItem first, decimal unpaidQuantity, bool isPaid)
         {
             var extras = model.Extras.Select(e =>
             {
                 var extra = e.Source.First();
-                int[] key = [extra.MenuItemId, (int)(extra.FinalPrice * multiplier), (int)(extra.OriginalPrice * multiplier)];
+                int modifierGroupId = extra.MenuItemModifierGroupId ?? throw new Exception($"{nameof(OrderMenuItem)} is used as an extra and as such must have a {nameof(extra.MenuItemModifierGroup)} set");
+                int[] key = [extra.MenuItemId, (int)(extra.FinalPrice * multiplier), (int)(extra.OriginalPrice * multiplier), modifierGroupId];
                 return new
                 {
                     Key = key,
-                    Item = new Dtos.BaseSessionItem
+                    Item = new Dtos.SessionExtraItem
                     {
+                        ModifierGroupId = idConverter.ToPublicId(modifierGroupId),
                         OriginalPrice = extra.OriginalPrice,
                         MenuItemId = idConverter.ToPublicId(e.MenuItemId),
                         Price = e.Price,

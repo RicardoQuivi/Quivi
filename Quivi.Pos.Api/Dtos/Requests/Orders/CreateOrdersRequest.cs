@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Quivi.Pos.Api.Dtos.Requests.Orders
+﻿namespace Quivi.Pos.Api.Dtos.Requests.Orders
 {
     public class CreateOrdersRequest : ARequest
     {
@@ -28,9 +26,14 @@ namespace Quivi.Pos.Api.Dtos.Requests.Orders
         public decimal? Price { get; init; }
     }
 
+    public class OrderExtraItem : BaseOrderItem
+    {
+        public required string ModifierGroupId { get; init; }
+    }
+
     public class OrderItem : BaseOrderItem
     {
         public decimal Discount { get; init; }
-        public required IEnumerable<BaseOrderItem> Extras { get; init; } = [];
+        public required IEnumerable<OrderExtraItem> Extras { get; init; } = [];
     }
 }

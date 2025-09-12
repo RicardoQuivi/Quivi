@@ -7,7 +7,7 @@ export class JobPromise implements Promise<void>, JobListener {
     private wrappedPromise: Promise<void>;
     private resolver?: (value: void | PromiseLike<void>) => void;
     private rejecter?: (reason?: any) => void;
-    private intervalTimer: number; 
+    private intervalTimer: NodeJS.Timeout; 
     private timerCalls: number = 0;
     private state: JobState;
 

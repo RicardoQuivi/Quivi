@@ -85,8 +85,9 @@ namespace Quivi.Pos.Api.Controllers
                     Discount = i.Discount,
                     Price = i.Price,
                     Quantity = i.Quantity,
-                    Extras = i.Extras.Select(e => new BaseAddOrderItem
+                    Extras = i.Extras.Select(e => new AddOrderExtraItem
                     {
+                        ModifierGroupId = idConverter.FromPublicId(e.ModifierGroupId),
                         MenuItemId = idConverter.FromPublicId(e.MenuItemId),
                         Price = e.Price,
                         Quantity = e.Quantity,

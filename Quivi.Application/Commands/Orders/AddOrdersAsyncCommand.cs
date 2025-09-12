@@ -27,7 +27,6 @@ namespace Quivi.Application.Commands.Orders
         private readonly IChannelsRepository channelsRepository;
         private readonly IMenuItemsRepository menuItemsRepository;
         private readonly IOrdersRepository ordersRepository;
-        private readonly IOrderSequencesRepository sequencesRepository;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IEventService eventService;
         private readonly IPosSyncService posSyncService;
@@ -37,8 +36,7 @@ namespace Quivi.Application.Commands.Orders
                                             IOrdersRepository ordersRepository,
                                             IDateTimeProvider dateTimeProvider,
                                             IEventService eventService,
-                                            IPosSyncService posSyncService,
-                                            IOrderSequencesRepository orderSequencesRepository)
+                                            IPosSyncService posSyncService)
         {
             this.channelsRepository = channelsRepository;
             this.menuItemsRepository = menuItemsRepository;
@@ -46,7 +44,6 @@ namespace Quivi.Application.Commands.Orders
             this.dateTimeProvider = dateTimeProvider;
             this.eventService = eventService;
             this.posSyncService = posSyncService;
-            this.sequencesRepository = orderSequencesRepository;
         }
 
         public async Task<string?> Handle(AddOrdersAsyncCommand command)
@@ -68,13 +65,6 @@ namespace Quivi.Application.Commands.Orders
 
             var now = dateTimeProvider.GetUtcNow();
             var addedOrders = new List<Order>();
-
-            var lastOrderOfMerchantQuery = await sequencesRepository.GetAsync(new GetOrderSequencesCriteria
-            {
-                MerchantIds = [command.MerchantId],
-                PageSize = 1,
-            });
-            var nextSequence = lastOrderOfMerchantQuery.SingleOrDefault()?.SequenceNumber ?? 1;
             foreach (var channel in channelsQuery)
             {
                 bool isTakeAway = channel.ChannelProfile!.Features.HasFlag(ChannelFeature.IsTakeAwayOnly) == true;
@@ -92,7 +82,6 @@ namespace Quivi.Application.Commands.Orders
                     CreatedDate = now,
                     ModifiedDate = now,
                 };
-                nextSequence += 1;
                 PopulateOrderItems(menuItemDictionary, itemsPerChannelWithDefaultPrice[channel.Id], order);
                 ordersRepository.Add(order);
                 addedOrders.Add(order);
@@ -150,8 +139,9 @@ namespace Quivi.Application.Commands.Orders
                     Quantity = s.Quantity,
                     Discount = s.Discount,
                     Price = s.Price ?? menuItemDictionary[s.MenuItemId].Price,
-                    Extras = s.Extras.Select(extra => new BaseSessionItem
+                    Extras = s.Extras.Select(extra => new SessionExtraItem
                     {
+                        ModifierGroupId = extra.ModifierGroupId,
                         MenuItemId = extra.MenuItemId,
                         Quantity = extra.Quantity,
                         Price = extra.Price ?? menuItemDictionary[extra.MenuItemId].Price,
@@ -202,7 +192,7 @@ namespace Quivi.Application.Commands.Orders
                             PriceType = PriceType.Unit,
                             VatRate = extraDbItem.VatRate,
                             Modifiers = [],
-                            MenuItemModifierGroupId = null, //This could be populated, but a refactor needs to be performed
+                            MenuItemModifierGroupId = m.ModifierGroupId,
                             CreatedDate = order.CreatedDate,
                             ModifiedDate = order.ModifiedDate,
                         };
@@ -213,7 +203,7 @@ namespace Quivi.Application.Commands.Orders
             }).ToList();
         }
 
-        public static IEnumerable<SessionItem<AddOrderItem>> ConvertToSessionItems(IEnumerable<AddOrderItem> items)
+        public static IEnumerable<SessionItem<AddOrderItem, AddOrderExtraItem>> ConvertToSessionItems(IEnumerable<AddOrderItem> items)
         {
             var result = SessionItemComparer<AddOrderItem>.Compress(items, s => new SessionItem
             {
@@ -221,20 +211,23 @@ namespace Quivi.Application.Commands.Orders
                 Price = s.Price ?? -1,
                 Quantity = s.Quantity,
                 Discount = s.Discount,
-                Extras = s.Extras?.Select(e => new BaseSessionItem
+                Extras = s.Extras?.Select(e => new SessionExtraItem
                 {
+                    ModifierGroupId = e.ModifierGroupId,
                     MenuItemId = e.MenuItemId,
                     Price = e.Price ?? -1,
                     Quantity = e.Quantity,
                 }) ?? [],
-            }, s => s.Extras.Select(e => new AddOrderItem
+            },
+            s => s.Extras,
+            e => new SessionExtraItem
             {
+                ModifierGroupId = e.ModifierGroupId,
                 MenuItemId = e.MenuItemId,
-                Discount = 0.0m,
-                Extras = [],
-                Price = s.Price ?? -1,
-                Quantity = s.Quantity,
-            }) ?? []);
+                Price = e.Price ?? -1,
+                Quantity = e.Quantity,
+            },
+            e => e.ModifierGroupId);
             return result;
         }
     }

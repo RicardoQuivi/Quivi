@@ -13,7 +13,12 @@ export interface BaseCreateOrderItem {
     readonly price?: number;
 }
 
+
+export interface CreateOrderExtraItem extends BaseCreateOrderItem{
+    readonly modifierGroupId: string;
+}
+
 export interface CreateOrderItem extends BaseCreateOrderItem {
     readonly discount: number;
-    readonly extras: BaseCreateOrderItem[];
+    readonly extras: CreateOrderExtraItem[];
 }
