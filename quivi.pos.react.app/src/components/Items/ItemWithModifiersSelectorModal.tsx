@@ -159,6 +159,7 @@ export const ItemWithModifiersSelectorModal = (props: Props) => {
                         onClick={props.onClose}
                         style={{
                             width: "100%",
+                            height: "100%",
                         }}
                     >
                         {t("cancel")}
@@ -169,6 +170,7 @@ export const ItemWithModifiersSelectorModal = (props: Props) => {
                         onClick={() => setState(s => ({ ...s, currentModifierIndex: s.currentModifierIndex - 1 }))}
                         style={{
                             width: "100%",
+                            height: "100%",
                         }}
                     >
                         {t("back")}
@@ -186,6 +188,7 @@ export const ItemWithModifiersSelectorModal = (props: Props) => {
                         disabled={canSubmit == false}
                         style={{
                             width: "100%",
+                            height: "100%",
                         }}
                     >
                         <Trans
@@ -203,7 +206,10 @@ export const ItemWithModifiersSelectorModal = (props: Props) => {
                         primaryButton
                         onClick={() => setState(s => ({ ...s, currentModifierIndex: s.currentModifierIndex + 1 }))}
                         disabled={modifiers.length == 0 || canGoForth(state.currentModifierIndex, modifiers, modifiersSelectionMap) == false}
-                        style={{width: "100%"}}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                        }}
                     >
                         {t("next")}
                     </LoadingButton>

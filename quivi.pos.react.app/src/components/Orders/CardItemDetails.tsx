@@ -1,4 +1,4 @@
-import { Divider, List, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton } from "@mui/material";
+import { Box, Divider, List, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton } from "@mui/material";
 import React from "react";
 
 interface CardItemDetailsProps<T> {
@@ -82,23 +82,25 @@ const CardListItem = <T,>(props: CardListItemProps<T>) => {
             return undefined;
         }
                  
-        return <>
-            <div style={{marginLeft: "2.5rem"}}>
-                <CardItemDetails 
-                    items={extras}
-                    hideQuantityAndActionsIfZero={props.hideQuantityAndActionsIfZero}
+        return <Box 
+            sx={{
+                marginLeft: "1.5rem",
+            }}
+        >
+            <CardItemDetails 
+                items={extras}
+                hideQuantityAndActionsIfZero={props.hideQuantityAndActionsIfZero}
 
-                    getId={props.getId}
-                    getQuantity={props.getQuantity} 
-                    getSubItems={undefined}
+                getId={props.getId}
+                getQuantity={props.getQuantity} 
+                getSubItems={undefined}
 
-                    renderName={props.renderName}
-                    renderExtraAction={props.renderExtraAction} 
+                renderName={props.renderName}
+                renderExtraAction={props.renderExtraAction} 
 
-                    onItemClicked={props.onItemClick} 
-                />
-            </div>
-        </>
+                onItemClicked={props.onItemClick} 
+            />
+        </Box>
     }
     
     const extraAction = props.item != undefined && props.renderExtraAction?.(props.item);
