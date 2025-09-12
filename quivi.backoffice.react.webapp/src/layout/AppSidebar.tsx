@@ -358,7 +358,7 @@ const AppSidebar = () => {
                             {
                                 isExpanded || isHovered || isMobileOpen 
                                 ?
-                                    "Menu"
+                                <></>
                                 :
                                     <HorizontaLDots className="size-6" />
                             }

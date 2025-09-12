@@ -83,14 +83,14 @@ export const MenuManagementPage = (props: Props) => {
                 tab == Tabs.Items
                 ?
                 <>
-                    <div className="col-span-12 lg:col-span-4 h-full">
+                    <div className="col-span-12 md:col-span-12 lg:col-span-4 h-full">
                         <CategoriesCard
                             categoryId={selectedCategory}
                             onCategoryChanged={changeCategory}
                         />
                     </div>
 
-                    <div className="col-span-12 lg:col-span-8 h-full">
+                    <div className="col-span-12 md:col-span-12 lg:col-span-8 h-full">
                         <MenuItemsCard
                             categoryId={selectedCategory}
                         />

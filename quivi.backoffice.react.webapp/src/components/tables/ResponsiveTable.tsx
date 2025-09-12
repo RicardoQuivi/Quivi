@@ -109,7 +109,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                             {
                                 props.actions != undefined &&
                                 <Popover
-                                    position={"left"}
+                                    position="left"
                                     trigger={<ThreeDotsVertical className="dark:fill-white" />}
                                 >
                                     <Dropdown
@@ -159,7 +159,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                 props.name != undefined &&
                                 <TableCell
                                     isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                    className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                 >
                                     {props.name.label}
                                 </TableCell>
@@ -169,7 +169,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                     <TableCell
                                         key={header.key}
                                         isHeader
-                                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                        className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                     >
                                         {header.label}
                                     </TableCell>
@@ -179,7 +179,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                 props.actions != undefined &&
                                 <TableCell
                                     isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                    className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                 >
                                     &nbsp;
                                 </TableCell>
@@ -192,7 +192,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                             ?
                             <TableRow>
                                 <TableCell cellSpan={(props.name != undefined ? 1 : 0) + (props.columns?.length ?? 0) + (props.actions != undefined ? 1 : 0)}>
-                                    <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-3">
+                                    <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
                                         {t("common.noDataAvailable")}
                                     </p>
                                 </TableCell>
@@ -206,7 +206,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.name != undefined &&
                                             <TableCell
-                                                className="px-5 py-4 sm:px-6 text-start"
+                                                className="px-2 py-2 text-start"
                                             >
                                                 <Skeleton className="w-full" />
                                             </TableCell>
@@ -215,7 +215,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                             props.columns?.map(column => 
                                                 <TableCell
                                                     key={column.key}
-                                                    className="px-5 py-4 sm:px-6 text-start"
+                                                    className="px-2 py-2 text-start"
                                                 >
                                                     <Skeleton className="w-full" />
                                                 </TableCell>
@@ -224,7 +224,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.actions != undefined &&
                                             <TableCell
-                                                className="px-5 py-4 sm:px-6 text-start"
+                                                className="px-2 py-2 text-start"
                                             >
                                                 <Skeleton className="w-full" />
                                             </TableCell>
@@ -255,7 +255,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                 props.name != undefined &&
                                 <TableCell
                                     isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                    className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                 >
                                     {props.name.label}
                                 </TableCell>
@@ -265,7 +265,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                     <TableCell
                                         key={header.key}
                                         isHeader
-                                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                        className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                     >
                                         {header.label}
                                     </TableCell>
@@ -275,7 +275,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                 props.actions != undefined &&
                                 <TableCell
                                     isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                    className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                                 >
                                     &nbsp;
                                 </TableCell>
@@ -288,7 +288,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                             ?
                             <TableRow>
                                 <TableCell cellSpan={(props.name != undefined ? 1 : 0) + (props.columns?.length ?? 0) + (props.actions != undefined ? 1 : 0)}>
-                                    <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-3">
+                                    <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
                                         {t("common.noDataAvailable")}
                                     </p>
                                 </TableCell>
@@ -302,7 +302,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.name != undefined &&
                                             <TableCell
-                                                className="px-5 py-4 sm:px-6 text-start"
+                                                className="px-2 py-2 text-start"
                                             >
                                                 <Skeleton className="w-full" />
                                             </TableCell>
@@ -311,7 +311,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                             props.columns?.map(column => 
                                                 <TableCell
                                                     key={column.key}
-                                                    className="px-5 py-4 sm:px-6 text-start"
+                                                    className="px-2 py-2 text-start"
                                                 >
                                                     <Skeleton className="w-full" />
                                                 </TableCell>
@@ -320,7 +320,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.actions != undefined &&
                                             <TableCell
-                                                className="px-5 py-4 sm:px-6 text-start"
+                                                className="px-2 py-2 text-start"
                                             >
                                                 <Skeleton className="w-full" />
                                             </TableCell>
@@ -337,7 +337,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.name != undefined &&
                                             <TableCell
-                                                className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400"
+                                                className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
                                             >
                                                 {props.name.render(d)}
                                             </TableCell>
@@ -347,7 +347,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                                 <React.Fragment key={`row_${column.key}`}>
                                                     {
                                                         <TableCell
-                                                            className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400"
+                                                            className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
                                                         >
                                                             {column.render(d)}
                                                         </TableCell>
@@ -358,25 +358,23 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                                         {
                                             props.actions != undefined &&
                                             <TableCell
-                                                className="px-4 sm:px-6 py-3.5"
+                                                className="px-2 sm:pr-5 py-2 flex items-center gap-1 justify-end"
                                             >
-                                                <div className="flex items-center w-full gap-2 justify-end">
-                                                    {
-                                                        props.actions.map(a => (
-                                                            <Tooltip 
-                                                                message={a.label}
-                                                                key={a.key}
-                                                            >
-                                                                <IconButton
-                                                                    onClick={e => rowAction(e, () => a.onClick?.(d))}
-                                                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                                                >
-                                                                    {a.render(d)}
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        ))
-                                                    }
-                                                </div>
+                                            {
+                                                props.actions.map(a => (
+                                                    <Tooltip 
+                                                        message={a.label}
+                                                        key={a.key}
+                                                    >
+                                                        <IconButton
+                                                            onClick={e => rowAction(e, () => a.onClick?.(d))}
+                                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
+                                                        >
+                                                            {a.render(d)}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ))
+                                            }
                                             </TableCell>
                                         }
                                     </TableRow>
@@ -423,14 +421,14 @@ const CollapsibleRow = <T,>(props: CollapsibleRowProps<T>) => {
             >
                 {
                     props.name != undefined &&
-                    <TableCell className="px-4 sm:px-6 py-3.5">
+                    <TableCell className="px-4 py-2.5">
                         {props.name.render(props.data)}
                     </TableCell>
                 }
                 {
                     props.columns?.map(column => 
                         <React.Fragment key={column.key}>
-                            <TableCell className="px-4 sm:px-6 py-3.5">
+                            <TableCell className="px-4 py-2.5">
                                 {column.render(props.data)}
                             </TableCell>
                         </React.Fragment>
@@ -438,7 +436,7 @@ const CollapsibleRow = <T,>(props: CollapsibleRowProps<T>) => {
                 }
                 {
                     props.actions != undefined &&
-                    <TableCell className="px-4 sm:px-6 py-3.5">
+                    <TableCell className="px-4 py-2.5">
                         &nbsp;
                     </TableCell>
                 }
