@@ -334,7 +334,7 @@ const ListItem = (props: {
                     ?
                     <Box
                         sx={{
-                            aspectRatio: "4/3" 
+                            aspectRatio: "4/3",
                         }}
                     >
                         <Skeleton

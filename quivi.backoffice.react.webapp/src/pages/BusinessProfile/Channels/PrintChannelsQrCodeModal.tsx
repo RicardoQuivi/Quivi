@@ -8,6 +8,7 @@ import { TextField } from "../../../components/inputs/TextField";
 import { useChannelsApi } from "../../../hooks/api/useChannelsApi";
 import { Files } from "../../../utilities/files";
 import { useToast } from "../../../layout/ToastProvider";
+import { ToggleSwitch } from "../../../components/inputs/ToggleSwitch";
 
 enum QrCodeFormat {
     Rectangular,
@@ -28,6 +29,7 @@ export const PrintChannelsQrCodeModal = (props: Props) => {
         format: QrCodeFormat.Rectangular,
         mainText: "Ver a conta e pagar",
         secondaryText: "Check your bill and pay here",
+        cardPerPage: false,
         isSubmiting: false,
     })
 
@@ -38,6 +40,7 @@ export const PrintChannelsQrCodeModal = (props: Props) => {
                 channelIds: props.applyToAll == true ? undefined : props.channelIds,
                 mainText: state.mainText,
                 secondaryText: state.secondaryText,
+                cardPerPage: state.cardPerPage,
             })
 
             const base64String = response.base64Content;
@@ -108,6 +111,11 @@ export const PrintChannelsQrCodeModal = (props: Props) => {
                 label={t("pages.channels.qrCode.secondary")}
                 value={state.secondaryText}
                 onChange={v => setState(s => ({...s, secondaryText: v }))}
+            />
+            <ToggleSwitch
+                value={state.cardPerPage}
+                onChange={p => setState(s => ({...s, cardPerPage: p}))}
+                label={t("pages.channels.cardPerPage")}
             />
         </div>
     </Modal>

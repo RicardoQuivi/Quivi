@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Alert, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Chip, Divider, Grid, keyframes, Paper, Skeleton, styled, Typography } from "@mui/material";
+import { Alert, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Chip, Divider, Grid, keyframes, Paper, Skeleton, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { BasePreparationGroupItem, PreparationGroup, PreparationGroupItem } from "../../../hooks/api/Dtos/preparationgroups/PreparationGroup";
 import { Order } from "../../../hooks/api/Dtos/orders/Order";
@@ -234,15 +234,21 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
     });
     
     const getTitle = () => {
-        return <div style={{display: "flex", flexDirection: "row", width: "100%"}}>
+        return <Box
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+            }}
+        >
             {
                 channel == undefined  || profile == undefined
                 ?
                 <Skeleton animation="wave" sx={{width: "100%"}} />
                 :
-                <b style={{flex: "0 0 auto"}}>{profile.name} {channel.name}</b>
+                <Typography variant="body1" fontWeight="bold" flex="0 0 auto">{profile.name} {channel.name}</Typography>
             }
-        </div>;
+        </Box>;
     }
     
     const getItemsForLocation = (localId: string | undefined) => {

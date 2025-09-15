@@ -529,7 +529,8 @@
             "qrCode": {
                 "main": "Texto principal",
                 "secondary": "Texto secundário"
-            }
+            },
+            "cardPerPage": "Um cartão por página"
         },
         "termsAndConditions": {
             "title": "Termos e condições"

@@ -160,6 +160,7 @@ namespace Quivi.Backoffice.Api.Controllers
                 ChannelIds = request.ChannelIds?.Select(idConverter.FromPublicId),
                 MainText = request.MainText,
                 SecondaryText = request.SecondaryText,
+                PageSize = request.CardPerPage == true ? QrCodePageSize.Card : QrCodePageSize.A4,
             });
 
             return new GenerateChannelQrCodesResponse

@@ -1,4 +1,4 @@
-import { Box, Divider, List, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton } from "@mui/material";
+import { Box, Divider, List, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Skeleton, Typography } from "@mui/material";
 import React from "react";
 
 interface CardItemDetailsProps<T> {
@@ -135,7 +135,7 @@ const CardListItem = <T,>(props: CardListItemProps<T>) => {
                             ?
                                 <Skeleton animation="wave" />
                             :
-                                <b style={{color: "black"}}>{quantity}</b>
+                                <Typography variant="body1" color="black" fontWeight="bold">{quantity}</Typography>
                         }
                     </ListItemIcon>
                 }
