@@ -101,7 +101,7 @@ export const TransferSessionModal = ({
     }, [profilesQuery.data])
 
 
-    const itemIds = getItemIds(sourceSession, targetSession);
+    const itemIds = useMemo(() => getItemIds(sourceSession, targetSession), [sourceSession, targetSession]);
     const itemsQuery = useMenuItemsQuery(itemIds.length == 0 ? undefined : {
         ids: itemIds,
         page: 0,
@@ -127,57 +127,7 @@ export const TransferSessionModal = ({
 
     const isLoading = !state.isSubmitting && (openedSessionsQuery.isFirstLoading || channelsQuery.isFirstLoading || (sourceSession.isSyncing && openedSessionsQuery.data.length > 0))
 
-    //#region Helpers and User Actions
-    const resetData = () => setState(s => ({
-        ...s,
-        isSubmitting: false,
-        sourceOptions: {
-            selected: undefined,
-            data: [],
-        },
-        targetOptions: {
-            selected: undefined,
-            data: [],
-        },
-        selectedItems: [],
-        unselectedItems: [],
-    }))
-
-    const onLoadOptions = (openedChannels: Channel[], closeChannels: Channel[], selectedChannelId: string) => {
-        const openedQrCode = openedChannels.find(q => q.id == selectedChannelId);
-        if (openedQrCode != undefined) {
-            const availableQrCodes = sort([...closeChannels, ...openedChannels.filter(q => q != openedQrCode)]);
-            setState(s => ({
-                ...s,
-                sourceOptions: {
-                    data: [openedQrCode],
-                    selected: openedQrCode,
-                },
-                targetOptions: {
-                    data: availableQrCodes,
-                    selected: availableQrCodes.length > 0 ? availableQrCodes[0] : undefined,
-                },
-            }))
-            return;
-        }
-        const closedQrCode = closeChannels.find(q => q.id == selectedChannelId);
-        if(closedQrCode != undefined) {
-            const availableQrCodes = sort(openedChannels);
-            setState(s => ({
-                ...s,
-                sourceOptions: {
-                    data: availableQrCodes,
-                    selected: availableQrCodes.length > 0 ? availableQrCodes[0] : undefined,
-                },
-                targetOptions: {
-                    data: [closedQrCode],
-                    selected: closedQrCode,
-                },
-            }))
-        }
-    }
-
-    const getNotAllowedReason = () => {
+    const notAllowedReason = useMemo(() => {
         const result = [];
         if (state.sourceOptions.data.length == 0) {
             result.push(t("noOpenSessions")!);
@@ -251,6 +201,69 @@ export const TransferSessionModal = ({
         }
 
         return result;
+    }, [
+        state.sourceOptions,
+        state.targetOptions,
+
+        integrationSourceQuery.isFirstLoading,
+        integrationSourceQuery.data,
+
+        integrationTargetQuery.isFirstLoading,
+        integrationTargetQuery.data,
+
+        t,
+        profilesMap,
+        targetSession,
+    ])
+
+    //#region Helpers and User Actions
+    const resetData = () => setState(s => ({
+        ...s,
+        isSubmitting: false,
+        sourceOptions: {
+            selected: undefined,
+            data: [],
+        },
+        targetOptions: {
+            selected: undefined,
+            data: [],
+        },
+        selectedItems: [],
+        unselectedItems: [],
+    }))
+
+    const onLoadOptions = (openedChannels: Channel[], closeChannels: Channel[], selectedChannelId: string) => {
+        const openedQrCode = openedChannels.find(q => q.id == selectedChannelId);
+        if (openedQrCode != undefined) {
+            const availableQrCodes = sort([...closeChannels, ...openedChannels.filter(q => q != openedQrCode)]);
+            setState(s => ({
+                ...s,
+                sourceOptions: {
+                    data: [openedQrCode],
+                    selected: openedQrCode,
+                },
+                targetOptions: {
+                    data: availableQrCodes,
+                    selected: availableQrCodes.length > 0 ? availableQrCodes[0] : undefined,
+                },
+            }))
+            return;
+        }
+        const closedQrCode = closeChannels.find(q => q.id == selectedChannelId);
+        if(closedQrCode != undefined) {
+            const availableQrCodes = sort(openedChannels);
+            setState(s => ({
+                ...s,
+                sourceOptions: {
+                    data: availableQrCodes,
+                    selected: availableQrCodes.length > 0 ? availableQrCodes[0] : undefined,
+                },
+                targetOptions: {
+                    data: [closedQrCode],
+                    selected: closedQrCode,
+                },
+            }))
+        }
     }
 
     const getFromSourceItemsLabel = () => {
@@ -403,7 +416,6 @@ export const TransferSessionModal = ({
     }, [sourceSession.items, sourceSession.isSyncing])
     //#endregion
 
-    const notAllowedReason = getNotAllowedReason();
     const isLoadingAnything = isLoading || sourceSession.isSyncing || integrationSourceQuery.isFirstLoading || integrationTargetQuery.isFirstLoading || targetSession.isSyncing;
     return (
         <CustomModal

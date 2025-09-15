@@ -134,7 +134,10 @@ export const GenericItemPicker = <T,>({
 
                         "& .MuiButtonBase-root": {
                             "& .MuiTypography-root": {
-                                transform: "rotate(90deg)",
+                                transform: {
+                                    xs :"rotate(90deg)",
+                                    sm: "unset"
+                                }
                             }
                         }
                     }}
