@@ -71,8 +71,8 @@ namespace Quivi.Application.Commands.Channels
                     await s.CopyToAsync(merchantLogo);
             }
 
-            var methodsImg = Assembly.GetExecutingAssembly().GetManifestResourceStream("Quivi.Application.Resources.methods.png") ?? throw new Exception();
-            var quiviLogo = Assembly.GetExecutingAssembly().GetManifestResourceStream("Quivi.Application.Resources.logo.png") ?? throw new Exception();
+            var methodsImg = ReadResourceAsText("Quivi.Application.Resources.methods.svg") ?? throw new Exception();
+            var quiviLogo = ReadResourceAsText("Quivi.Application.Resources.logo.svg") ?? throw new Exception();
 
             try
             {
@@ -110,8 +110,8 @@ namespace Quivi.Application.Commands.Channels
                                     var card = new CardComponent
                                     {
                                         MerchantLogo = merchantLogo,
-                                        MethodsImg = methodsImg,
-                                        QuiviLogo = quiviLogo,
+                                        MethodsSvg = methodsImg,
+                                        QuiviSvg = quiviLogo,
                                         Channel = channel,
                                         HostsSettings = hostsSettings,
                                         IdConverter = idConverter,
@@ -145,12 +145,14 @@ namespace Quivi.Application.Commands.Channels
                     merchantLogo.Dispose();
                     await merchantLogo.DisposeAsync();
                 }
-                methodsImg.Dispose();
-                quiviLogo.Dispose();
-
-                await methodsImg.DisposeAsync();
-                await quiviLogo.DisposeAsync();
             }
+        }
+
+        private static string ReadResourceAsText(string resourceName)
+        {
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName) ?? throw new Exception($"Resource {resourceName} not found.");
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
 
         private class PageConfiguration
@@ -193,8 +195,8 @@ namespace Quivi.Application.Commands.Channels
             public required Channel Channel { get; init; }
             public required IAppHostsSettings HostsSettings { get; init; }
             public required IIdConverter IdConverter { get; init; }
-            public required Stream MethodsImg { get; init; }
-            public required Stream QuiviLogo { get; init; }
+            public required string MethodsSvg { get; init; }
+            public required string QuiviSvg { get; init; }
             public required string? MainText { get; init; }
             public required string? SecondaryText { get; init; }
 
@@ -252,12 +254,13 @@ namespace Quivi.Application.Commands.Channels
                                         //        text.AlignCenter();
                                         //    });
 
-                                        var qrCode = GetQRCode(HostsSettings.GuestsApp.CombineUrl($"/c/{IdConverter.ToPublicId(Channel.Id)}"));
+                                        var qrCode = GetQrCode(HostsSettings.GuestsApp.CombineUrl($"/c/{IdConverter.ToPublicId(Channel.Id)}"));
                                         c.Item()
                                             .Height((float)(rowHeight), Unit.Centimetre)
                                             .AlignBottom()
                                             .AlignCenter()
-                                            .Image(qrCode).FitArea();
+                                            .Svg(qrCode)
+                                            .FitArea();
 
                                         //c.Item()
                                         //    .AlignCenter()
@@ -300,11 +303,10 @@ namespace Quivi.Application.Commands.Channels
                             .Height(0.6f, Unit.Centimetre)
                             .Row(row =>
                             {
-                                MethodsImg.Seek(0, SeekOrigin.Begin);
                                 row.ConstantItem(2.3f, Unit.Centimetre)
                                     .AlignMiddle()
                                     .AlignBottom()
-                                    .Image(MethodsImg).FitArea();
+                                    .Svg(MethodsSvg).FitArea();
 
                                 row.RelativeItem()
                                     .AlignCenter()
@@ -317,21 +319,20 @@ namespace Quivi.Application.Commands.Channels
                                             .FontSize(8);
                                     });
 
-                                QuiviLogo.Seek(0, SeekOrigin.Begin);
                                 row.ConstantItem(1.6f, Unit.Centimetre)
                                     .AlignCenter()
                                     .AlignBottom()
-                                    .Image(QuiviLogo).FitArea();
+                                    .Svg(QuiviSvg).FitArea();
                             });
                     });
             }
 
-            private static byte[] GetQRCode(string qrCodeStr)
+            private static string GetQrCode(string qrCodeStr)
             {
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodeStr, QRCodeGenerator.ECCLevel.Q);
-                PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-                return qrCode.GetGraphic(pixelsPerModule: 20, drawQuietZones: false);
+                SvgQRCode qrCode = new SvgQRCode(qrCodeData);
+                return qrCode.GetGraphic(20, System.Drawing.Color.Black, System.Drawing.Color.White, false);
             }
         }
     }

@@ -13,13 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\logo.png" />
-    <None Remove="Resources\methods.png" />
+    <None Remove="Resources\logo.svg" />
+    <None Remove="Resources\methods.svg" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\logo.png" />
-    <EmbeddedResource Include="Resources\methods.png" />
+    <EmbeddedResource Include="Resources\logo.svg" />
+    <EmbeddedResource Include="Resources\methods.svg" />
   </ItemGroup>
 
   <ItemGroup>
