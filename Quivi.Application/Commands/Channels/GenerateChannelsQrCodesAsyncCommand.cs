@@ -81,30 +81,27 @@ namespace Quivi.Application.Commands.Channels
                 {
                     var auxContainer = container;
 
-                    int itemsPerRow = command.PageSize == QrCodePageSize.Card ? 1 : 3;
-                    int itemsPerColumn = command.PageSize == QrCodePageSize.Card ? 1 : 3;
-
+                    var pageConfiguration = new PageConfiguration(command.PageSize);
                     var cardSize = new PageSize((float)CardComponent.Width_Cm, (float)CardComponent.Height_cm, Unit.Centimetre);
-                    foreach (var channels in channelsQuery.Chunk(itemsPerRow * itemsPerColumn))
-                    {
+
+                    var availableSpaceXBetweenCards = pageConfiguration.Size.Width - (pageConfiguration.ItemsPerRow * cardSize.Width);
+                    var availableSpaceYBetweenCards = pageConfiguration.Size.Height - (pageConfiguration.ItemsPerColumn * cardSize.Height);
+                    var marginXBetweenCard = availableSpaceXBetweenCards / (pageConfiguration.ItemsPerRow * 2);
+                    var marginYBetweenCard = availableSpaceYBetweenCards / (pageConfiguration.ItemsPerColumn * 2);
+
+                    foreach (var channels in channelsQuery.Chunk(pageConfiguration.ItemsPerRow * pageConfiguration.ItemsPerColumn))
                         auxContainer = auxContainer.Page(page =>
                         {
-                            var pageSize = GetPageSize(command.PageSize);
-                            page.Size(pageSize);
+                            page.Size(pageConfiguration.Size);
                             page.PageColor(Colors.White);
                             page.DefaultTextStyle(x => x.FontFamily("Poppins"));
-
-                            var availableSpaceXBetweenCards = pageSize.Width - (itemsPerRow * cardSize.Width);
-                            var availableSpaceYBetweenCards = pageSize.Height - (itemsPerColumn * cardSize.Height);
-                            var marginXBetweenCard = availableSpaceXBetweenCards / (itemsPerRow * 2);
-                            var marginYBetweenCard = availableSpaceYBetweenCards / (itemsPerColumn * 2);
 
                             page.Content().Table(table =>
                             {
                                 // Define columns
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    for (int i = 0; i < itemsPerRow; i++)
+                                    for (int i = 0; i < pageConfiguration.ItemsPerRow; i++)
                                         columns.ConstantColumn(cardSize.Width + marginXBetweenCard * 2);
                                 });
 
@@ -135,7 +132,6 @@ namespace Quivi.Application.Commands.Channels
                                 }
                             });
                         });
-                    }
                 });
 
                 using var ms = new MemoryStream();
@@ -157,25 +153,41 @@ namespace Quivi.Application.Commands.Channels
             }
         }
 
-        public PageSize GetPageSize(QrCodePageSize pageSize)
+        private class PageConfiguration
         {
-            return pageSize switch
+            public PageSize Size { get; }
+            public int ItemsPerRow { get; }
+            public int ItemsPerColumn { get; }
+
+            public PageConfiguration(QrCodePageSize pageSize)
             {
-                QrCodePageSize.Card => new PageSize((float)CardComponent.Width_Cm, (float)CardComponent.Height_cm, Unit.Centimetre),
-                QrCodePageSize.A4 => PageSizes.A4.Landscape(),
-                _ => throw new NotImplementedException(),
-            };
+                switch (pageSize)
+                {
+                    case QrCodePageSize.Card:
+                        Size = new PageSize((float)CardComponent.Width_Cm, (float)CardComponent.Height_cm, Unit.Centimetre);
+                        ItemsPerColumn = 1;
+                        ItemsPerRow = 1;
+                        break;
+                    case QrCodePageSize.A4:
+                        Size = PageSizes.A4.Landscape();
+                        ItemsPerRow = 3;
+                        ItemsPerColumn = 3;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
         }
 
-        public class CardComponent : IComponent
+        private class CardComponent : IComponent
         {
             public static readonly decimal Width_Cm = 8.5M;
             public static readonly decimal Height_cm = 5.5M;
 
-            const decimal marginX_cm = 0.3M;
-            const decimal marginY_cm = 0.6M;
+            const decimal marginX_cm = 0.45M;
+            const decimal marginY_cm = 0.45M;
             const decimal line1_cm = 3.30M;
-            const decimal line0_cm = line1_cm + 2.45M;
+            const decimal line0_cm = line1_cm + 2.35M;
 
             public required Stream? MerchantLogo { get; init; }
             public required Channel Channel { get; init; }
@@ -189,8 +201,8 @@ namespace Quivi.Application.Commands.Channels
             public void Compose(IContainer container)
             {
                 container
-                    .Width((float)(Width_Cm), Unit.Centimetre)
-                    .Height((float)(Height_cm), Unit.Centimetre)
+                    .Width((float)Width_Cm, Unit.Centimetre)
+                    .Height((float)Height_cm, Unit.Centimetre)
                     .PaddingLeft((float)marginX_cm, Unit.Centimetre)
                     .PaddingRight((float)marginX_cm, Unit.Centimetre)
                     .PaddingTop((float)marginY_cm, Unit.Centimetre)
@@ -216,6 +228,7 @@ namespace Quivi.Application.Commands.Channels
 
                                 row.RelativeItem()
                                     .AlignBottom()
+                                    .PaddingRight(0.3f, Unit.Centimetre) //Small padding so the text won't touch the QR Code
                                     .Text(t =>
                                     {
                                         t.AlignEnd();
@@ -225,39 +238,42 @@ namespace Quivi.Application.Commands.Channels
                                     });
 
                                 row.ConstantItem((float)rowHeight, Unit.Centimetre)
-                                    .AlignMiddle()
+                                    .AlignBottom()
                                     .AlignCenter()
                                     .Column(c =>
                                     {
                                         c.Spacing(0);
-                                        c.Item()
-                                            .AlignCenter()
-                                            .AlignMiddle()
-                                            .Height(0.3f, Unit.Centimetre)
-                                            .Text(text =>
-                                            {
-                                                text.AlignCenter();
-                                            });
+                                        //c.Item()
+                                        //    .AlignCenter()
+                                        //    .AlignMiddle()
+                                        //    .Height(0.3f, Unit.Centimetre)
+                                        //    .Text(text =>
+                                        //    {
+                                        //        text.AlignCenter();
+                                        //    });
 
                                         var qrCode = GetQRCode(HostsSettings.GuestsApp.CombineUrl($"/c/{IdConverter.ToPublicId(Channel.Id)}"));
                                         c.Item()
-                                            .Height((float)(rowHeight - 0.3M - 0.3M), Unit.Centimetre)
+                                            .Height((float)(rowHeight), Unit.Centimetre)
                                             .AlignBottom()
                                             .AlignCenter()
                                             .Image(qrCode).FitArea();
 
-                                        c.Item()
-                                            .AlignCenter()
-                                            .AlignMiddle()
-                                            .Height(0.3f, Unit.Centimetre)
-                                            .Text(text =>
-                                            {
-                                                text.AlignCenter();
-                                            });
+                                        //c.Item()
+                                        //    .AlignCenter()
+                                        //    .AlignMiddle()
+                                        //    .Height(0.3f, Unit.Centimetre)
+                                        //    .Text(text =>
+                                        //    {
+                                        //        text.AlignCenter();
+                                        //    });
                                     });
                             });
 
                         column.Item().Text("\n").FontSize(3);
+                        column.Item().Text("\n").FontSize(3);
+                        column.Item().Text("\n").FontSize(3);
+
                         column.Item()
                             .Text(text =>
                             {
@@ -267,13 +283,14 @@ namespace Quivi.Application.Commands.Channels
                                     .FontSize(12);
                             });
 
+                        column.Item().Text("\n").FontSize(2);
                         column.Item()
                             .Text(text =>
                             {
                                 text.AlignCenter();
                                 text.Span(SecondaryText)
                                     .FontColor("#A9A9A9")
-                                    .FontSize(8);
+                                    .FontSize(10);
                             });
 
                         column.Item().Text("\n").FontSize(3);
@@ -286,12 +303,12 @@ namespace Quivi.Application.Commands.Channels
                                 MethodsImg.Seek(0, SeekOrigin.Begin);
                                 row.ConstantItem(2.3f, Unit.Centimetre)
                                     .AlignMiddle()
-                                    .AlignCenter()
+                                    .AlignBottom()
                                     .Image(MethodsImg).FitArea();
 
                                 row.RelativeItem()
                                     .AlignCenter()
-                                    .AlignMiddle()
+                                    .AlignBottom()
                                     .Text(t =>
                                     {
                                         t.AlignCenter();
@@ -303,7 +320,7 @@ namespace Quivi.Application.Commands.Channels
                                 QuiviLogo.Seek(0, SeekOrigin.Begin);
                                 row.ConstantItem(1.6f, Unit.Centimetre)
                                     .AlignCenter()
-                                    .AlignMiddle()
+                                    .AlignBottom()
                                     .Image(QuiviLogo).FitArea();
                             });
                     });
