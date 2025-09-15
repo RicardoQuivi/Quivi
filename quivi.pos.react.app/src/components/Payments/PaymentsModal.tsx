@@ -85,19 +85,18 @@ export const PaymentsModal: React.FC<Props> = ({
         localId: localId,
     })
 
-    const getChannelName = (profile: ChannelProfile, channel: Channel) => `${profile.name} ${channel.name}`;
-    const getBill = () => !items ? 0 : Items.getTotalPrice(items.filter(item => item.isPaid == false));
-    const getModalTitle = (profile: ChannelProfile, channel: Channel) => `${getChannelName(profile, channel)} - ${state.activeStep >= steps.length ? steps[state.activeStep - 1].label : steps[state.activeStep].label}`;
+    const getModalTitle = (profile: ChannelProfile, channel: Channel) => `${profile.name} ${channel.name} - ${state.activeStep >= steps.length ? steps[state.activeStep - 1].label : steps[state.activeStep].label}`;
 
-    const getAmountToPay = (): number => {
+    const bill = useMemo(() => !items ? 0 : Items.getTotalPrice(items.filter(item => item.isPaid == false)), [items]);
+    const amountToPay = useMemo(() => {
         switch (state.amountType) {
             case PaymentAmountType.ItemsSelection:
                 return Items.getTotalPrice(state.selectedItems.map(s => ({...s.item, quantity: s.quantity})));
             case PaymentAmountType.Price:
             default:
-                return state.partialAmount ?? getBill();
+                return state.partialAmount ?? bill;
         }
-    }
+    }, [state.amountType, state.partialAmount, state.selectedItems]);
 
     const steps = [
         {
@@ -108,7 +107,7 @@ export const PaymentsModal: React.FC<Props> = ({
                 {
                     provided => (
                         <PaymentAmount
-                            bill={getBill()}
+                            bill={bill}
                             unpaidItems={items.filter(item => item.isPaid == false)}
                             selectedItems={state.selectedItems}
                             partialAmount={state.partialAmount}
@@ -129,7 +128,7 @@ export const PaymentsModal: React.FC<Props> = ({
         },
         {
             step: PaymentStep.selectPaymentMethod,
-            label: Currency.toCurrencyFormat({value: getAmountToPay(), culture: i18n.language, currencyIso: "EUR" }) ,
+            label: Currency.toCurrencyFormat({value: amountToPay, culture: i18n.language, currencyIso: "EUR" }) ,
             component: 
                 <StepperContext.Consumer>
                 {
@@ -138,7 +137,7 @@ export const PaymentsModal: React.FC<Props> = ({
                             localId={state.localId}
                             onLocalChanged={l => setState(s => ({...s, localId: l}))}
 
-                            total={getAmountToPay()}
+                            total={amountToPay}
 
                             tip={state.tip}
                             onTipChanged={v => setState(s => ({...s, tip: v}))}
@@ -182,8 +181,6 @@ export const PaymentsModal: React.FC<Props> = ({
             return;
         }
 
-        const amount = getAmountToPay();
-
         const successCallback = () => {
             onClose();
             resetData();
@@ -199,7 +196,7 @@ export const PaymentsModal: React.FC<Props> = ({
             email: state.email,
             observations: state.observations,
             amountType: state.amountType,
-            amount: amount,
+            amount: amountToPay,
             selectedItems: state.selectedItems?.map(i => ({
                 ...i.item,
                 quantity: i.quantity,
@@ -208,7 +205,7 @@ export const PaymentsModal: React.FC<Props> = ({
             tip: state.tip,
             localId: state.localId,
         })
-        .then(() => successCallback())
+        .then(successCallback)
         .catch(() => toast.error(t("paymentError")))
         .finally(() => setState(s => ({
             ...s,
@@ -233,7 +230,10 @@ export const PaymentsModal: React.FC<Props> = ({
                     footer={
                         <Stack
                             direction="row"
-                            sx={{width: "100%", marginY: "0.25rem"}}
+                            sx={{
+                                width: "100%",
+                                marginY: "0.25rem",
+                            }}
                             spacing={2}
                         >
                             <MobileStepper

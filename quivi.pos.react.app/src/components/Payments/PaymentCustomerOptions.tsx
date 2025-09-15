@@ -1,6 +1,5 @@
-import { Box, Card, CardActionArea, CardMedia, Divider, Grid, Skeleton, TextField, Typography, styled } from "@mui/material";
+import { Box, Card, CardActionArea, CardMedia, Divider, Grid, Skeleton, TextField, Typography } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react"
-import { Html } from "../../helpers/htmlHelper";
 import { useLocalsQuery } from "../../hooks/queries/implementations/useLocalsQuery";
 import { Local } from "../../hooks/api/Dtos/locals/Local";
 import { useCustomChargeMethodsQuery } from "../../hooks/queries/implementations/useCustomChargeMethodsQuery";
@@ -10,13 +9,7 @@ import { SingleSelect } from "../Inputs/SingleSelect";
 import { Enumerable } from "../../helpers/arrayHelper";
 import { CustomChargeMethod } from "../../hooks/api/Dtos/customchargemethods/CustomChargeMethod";
 import useValidatorService from "../../hooks/useValidator";
-
-const StyleCard = styled(Card)(({ theme }) => ({
-    "&.active": {
-        borderColor: theme.palette.primary.main,
-        backgroundColor: Html.hexToRgbaColor(theme.palette.primary.main, 0.08),
-    }
-}));
+import { Html } from "../../helpers/htmlHelper";
 
 interface Props {
     readonly localId: string | undefined;
@@ -38,8 +31,8 @@ interface Props {
 
     readonly paymentMethodId?: string;
 
-    onPaymentMethodChanged: (id: string) => void;
-    onIsValidChanged: (isValid: boolean) => void;
+    readonly onPaymentMethodChanged: (id: string) => void;
+    readonly onIsValidChanged: (isValid: boolean) => void;
 }
 
 export const PaymentCustomerOptions: React.FC<Props> = (props) => {
@@ -275,11 +268,15 @@ const PaymentMethodCard = ({
     }, [item])
 
     return (
-        <StyleCard
+        <Card
             variant="outlined"
             className={selected ? "active" : ""}
             onClick={onClick}
             sx={{
+                "&.active": {
+                    borderColor: t => t.palette.primary.main,
+                    backgroundColor: t => Html.hexToRgbaColor(t.palette.primary.main, 0.08),
+                },
                 display: "flex",
                 flexGrow: 1,
                 width: "100%",
@@ -299,9 +296,14 @@ const PaymentMethodCard = ({
             >
                 <Box
                     sx={{
-                        flex: "1 1 auto",
+                        flex: 1,
                         padding: "0.75rem 0.25rem",
                         width: "100%",
+                        display: "flex",
+                        alignContent: "center",
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                        alignItems: "center",
                     }}
                 >
                     {
@@ -319,8 +321,8 @@ const PaymentMethodCard = ({
                         <CardMedia 
                             component="div"
                             sx={{
-                                width: "100%",
-                                height: "100%",
+                                width: `calc(100% - 0.75rem)`,
+                                height: `calc(100% - 0.75rem)`,
 
                                 backgroundImage: `url("${item.logoUrl}")`,
                                 backgroundRepeat: "no-repeat",
@@ -337,7 +339,7 @@ const PaymentMethodCard = ({
                     sx={{
                         width: "100%",
                         display: "flex",
-                        justifyContent: "center"
+                        justifyContent: "center",
                     }}
                 >
                     {
@@ -349,6 +351,6 @@ const PaymentMethodCard = ({
                     }
                 </Typography>
             </CardActionArea>
-        </StyleCard>
+        </Card>
     )
 }
