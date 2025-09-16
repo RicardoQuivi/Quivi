@@ -450,7 +450,7 @@
         },
         "onboarding": {
             "title": "Onboarding",
-            "description": "Some steps are still required before using Quivi. Bellow you will find a list of things you need to complete to unlock Quivi.",
+            "description": "To start using Quivi, you need to complete a short initial setup. Below is the list of steps you must complete to activate our PoS.",
             "todo": "Todo",
             "taskRequires": "Complete the following steps first:",
 
