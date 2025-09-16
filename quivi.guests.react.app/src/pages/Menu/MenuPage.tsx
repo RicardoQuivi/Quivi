@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Page } from "../../layout/Page";
 import { ButtonsSection } from "../../layout/ButtonsSection";
@@ -277,6 +277,40 @@ export const MenuPage: React.FC<Props> = ({
         </ButtonsSection>
     }
 
+    const renderTab = useCallback((t: MenuCategory) => {
+        return <Stack
+            sx={{
+                width: pageMode == PageMode.Kiosk ? "100%" : undefined,
+            }}
+            direction="column"
+            gap={1}
+        >
+            {
+                pageMode == PageMode.Kiosk &&
+                <Box
+                    sx={{
+                        margin: "0.5rem",
+                        width: "100%",
+                        "& .MuiAvatar-root": {
+                            width: "100%",
+                            height: "unset",
+                            borderRadius: "5px 0 0 5px ",
+                            filter: "drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5))",
+                            aspectRatio: t.imageUrl == undefined ? "1" : undefined,
+                        }
+                    }}
+                >
+                    <AvatarImage
+                        src={t.imageUrl}
+                        name={t.name}
+                        style={{aspectRatio: t.imageUrl == undefined ? "1" : undefined}}
+                    />
+                </Box>
+            }
+            <Typography noWrap variant="body2">{t.name}</Typography>
+        </Stack>
+    }, [pageMode]);
+
     return <Page title="Menu" footer={getFooter()}>
         {
             categoriesQuery.isFirstLoading
@@ -293,7 +327,13 @@ export const MenuPage: React.FC<Props> = ({
                 }}
             >
                 <Grid
-                    size={{xs: 12, sm: 12, md: 2, lg: 2, xl: 2}}
+                    size={{
+                        xs: 12,
+                        sm: 12,
+                        md: 2,
+                        lg: 2,
+                        xl: 2,
+                    }}
                     className={`${classes.categoriesHeader} ${pageMode == PageMode.Kiosk ? "kiosk" : "mobile"} ${categoriesHeaderPinned ? classes.categoriesHeaderPinned : ""}`}
                     ref={categoriesHeaderRef}
                     sx={{
@@ -306,38 +346,8 @@ export const MenuPage: React.FC<Props> = ({
                         tabs={categoriesQuery.data} 
                         selectedTab={tabSettings.currentCategory} 
                         onTabSelected={goToAnchor}
-                        getKey={t => t.id}
-                        getValue={t => <Stack
-                            sx={{
-                                width: pageMode == PageMode.Kiosk ? "100%" : undefined,
-                            }}
-                            direction="column"
-                            gap={1}
-                        >
-                            {
-                                pageMode == PageMode.Kiosk &&
-                                <Box
-                                    sx={{
-                                        margin: "0.5rem",
-                                        width: "100%",
-                                        "& .MuiAvatar-root": {
-                                            width: "100%",
-                                            height: "unset",
-                                            borderRadius: "5px 0 0 5px ",
-                                            filter: "drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5))",
-                                            aspectRatio: t.imageUrl == undefined ? "1" : undefined,
-                                        }
-                                    }}
-                                >
-                                    <AvatarImage
-                                        src={t.imageUrl}
-                                        name={t.name}
-                                        style={{aspectRatio: t.imageUrl == undefined ? "1" : undefined}}
-                                    />
-                                </Box>
-                            }
-                            <Typography noWrap variant="body2">{t.name}</Typography>
-                        </Stack>}
+                        getKey={getCategoryId}
+                        getValue={renderTab}
                     />
                 </Grid>
                 <Grid
@@ -382,3 +392,5 @@ export const MenuPage: React.FC<Props> = ({
         <MenuItemDetailDialog menuItem={selectedItem ?? null} onClose={() => setSelectedItem(undefined)} />
     </Page>
 }
+
+const getCategoryId = (t: MenuCategory) => t.id;

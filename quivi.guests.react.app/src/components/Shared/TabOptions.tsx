@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useMemo } from "react";
 import { useQuiviTheme, type IColor } from "../../hooks/theme/useQuiviTheme";
-import { Paper, styled, Tab, Tabs, type TabsActions } from "@mui/material";
+import { Paper, styled, Tab, Tabs } from "@mui/material";
 
 interface StyledPaperProps {
     readonly primarycolor: IColor;
@@ -148,31 +148,20 @@ const TabOptions = <T,>({
     getValue,
 }: Props<T>) => {
     const theme = useQuiviTheme();
-    const ref = useRef<TabsActions>(null);
 
-    useEffect(() => {
-        if(!ref.current) {
-            return;
+    const tabsMap = useMemo(() => {
+        const map = new Map<string, T>();
+        for(const t of tabs) {
+            map.set(getKey(t), t);
         }
-
-        //Workaround: MUI has an issue with animations
-        //which cause the first time tabs are rendered
-        //the indicator will not appear. Here we explicitly
-        //tell MUI to update indicator each second. Allegedly solved in V5.
-        const timeout = setInterval(() => {
-            ref.current?.updateIndicator()
-        }, 1000);
-        return () => {
-            clearInterval(timeout);
-        }
-    }, [ref]);
+        return map;
+    }, [tabs, getKey])
 
     return (
         <StyledPaper primarycolor={theme.primaryColor}>
             <Tabs
-                action={ref}
                 value={selectedTab != undefined ? (getKey(selectedTab) ?? false) : false}
-                onChange={(_, v: string) => onTabSelected?.(tabs.find(t => getKey(t) == v)!)}
+                onChange={(_, v: string) => onTabSelected?.(tabsMap.get(v)!)}
                 indicatorColor="primary"
                 textColor="primary"
                 variant="scrollable"

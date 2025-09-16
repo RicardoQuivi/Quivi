@@ -16,8 +16,9 @@ export const fromHex = (hex: string): IColor => {
     }
 }
 
+const theme = {
+    primaryColor: fromHex("#4C9A2A"),
+};
 export const useQuiviTheme = () => {
-    return ({
-        primaryColor: fromHex("#4C9A2A"),
-    });
+    return theme;
 };
