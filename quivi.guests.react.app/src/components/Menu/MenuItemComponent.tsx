@@ -185,7 +185,7 @@ export const MenuItemComponent: React.FC<Props> = (props: Props) => {
 
                             '& .MuiImageList-root::-webkit-scrollbar': {
                                 display: 'none',
-                                "-ms-overflow-style": "none",
+                                msOverflowStyle: "none",
                                 scrollbarWidth: "none",
                             },
 

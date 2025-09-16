@@ -36,7 +36,7 @@ export const App = () => {
                     <BrowserRouter>
                         <Routes>
                             <Route element={<AppContextsRoute/>}>
-                                <Route path={"/scancode"} element={<ScanQrCode />} />
+                                <Route path="/scancode" element={<ScanQrCode />} />
 
                                 <Route path="/user/login" element={<></>} />
                                 <Route path="/user/profile" element={<></>} />

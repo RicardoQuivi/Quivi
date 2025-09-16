@@ -31,31 +31,29 @@ const Dialog = (props: DialogProps) => {
         props.onClose?.();
     }
     
-    return (
-        <>
-            {
-                props.isOpen && props.showCloseButton === true &&
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    sx={{
-                        zIndex: 999999,
-                        position: 'absolute',
-                        right: 20,
-                        top: 20,
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-            }
-            {
-                pageMode == PageMode.Kiosk 
-                ? 
-                    <Modal {...props} onClose={onClose}/>
-                :
-                    <Drawer {...props} onClose={onClose}/>
-            }
-        </>
-    );
+    return <>
+        {
+            props.isOpen && props.showCloseButton === true &&
+            <IconButton
+                aria-label="close"
+                onClick={onClose}
+                sx={{
+                    zIndex: 999999,
+                    position: 'absolute',
+                    right: 20,
+                    top: 20,
+                }}
+            >
+                <CloseIcon />
+            </IconButton>
+        }
+        {
+            pageMode == PageMode.Kiosk 
+            ? 
+                <Modal {...props} onClose={onClose}/>
+            :
+                <Drawer {...props} onClose={onClose}/>
+        }
+    </>
 };
 export default Dialog;

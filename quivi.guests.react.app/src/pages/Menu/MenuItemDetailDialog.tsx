@@ -1,9 +1,9 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Dialog from "../../components/Shared/Dialog";
 import BigNumber from "bignumber.js";
 import { motion } from "framer-motion";
-import { IconButton, type Theme } from "@mui/material";
+import { Box, Divider, IconButton, type Theme } from "@mui/material";
 import { useQuiviTheme, type IColor } from "../../hooks/theme/useQuiviTheme";
 import type { IItem, IItemModifierGroup } from "../../context/cart/item";
 import type { ICartItem, ICartModifier } from "../../context/cart/ICartItem";
@@ -199,7 +199,6 @@ export const MenuItemDetailDialog = (props: Props) => {
     const { t } = useTranslation();
     
     const channelContext = useChannelContext();
-    const orderingFeatures = channelContext.features.ordering;
     const cartService = useCart();
     const pageMode = usePageMode();
 
@@ -217,15 +216,45 @@ export const MenuItemDetailDialog = (props: Props) => {
         trackMouse: true,
     });
     const [isSticky, setIsSticky] = useState(false);
-    const [isOpen, setIsOpen] = useState(props.menuItem != null);
     const [itemsQty, setItemsQty] = useState(1);
-    const [itemsQtyTotal, setItemsQtyTotal] = useState(0);
-    const [allowToOrder, setAllowToOrder] = useState(true);
-    const [availableModifiers, setAvailableModifiers] = useState<Map<string, IItemModifierGroup>>(new Map<string, IItemModifierGroup>())
     const [selectedModifiers, setSelectedModifiers] = useState<{
         [index: string]: ICartItem[];
     }>({});
-    const [extraPrice, setExtraPrice] = useState(0);
+
+    const availableModifiers = useMemo(() => {
+        const map = new Map<string, IItemModifierGroup>();
+        for(let item of props.menuItem?.modifiers ?? []) {
+            map.set(item.id, item);
+        }
+        return map;
+    }, [props.menuItem]);
+
+    const [isOpen, setIsOpen] = useState(props.menuItem != null);
+    
+    const allowToOrder = useMemo(() => {
+        const isAvailable = props.menuItem?.isAvailable == true;
+        return props.menuItem != null && channelContext.features.ordering.isActive && isAvailable;
+    }, [props.menuItem, channelContext.features.ordering]);
+
+    const itemsQtyTotal = useMemo(() => {
+        let extraPrice = 0;
+        
+        for(const k of Object.keys(selectedModifiers)) {
+            for(const m of selectedModifiers[k]) {
+                extraPrice += ItemsHelper.getItemPrice(m);
+            }
+        }
+
+        const itemPrice = props.menuItem?.price ?? 0;
+        return BigNumber(itemsQty).multipliedBy(BigNumber(itemPrice).plus(extraPrice)).toNumber();
+    }, [props.menuItem, itemsQty, selectedModifiers]);
+
+    //#region Effects
+    useEffect(() => setIsOpen(props.menuItem != null), [props.menuItem]);
+    useEffect(() => setItemsQty(props.menuItem != null && 'quantity' in props.menuItem ? props.menuItem.quantity : 1), [props.menuItem])
+    useEffect(() => setSelectedModifiers(s => props.menuItem == null ? {} : s), [props.menuItem]);
+    useEffect(() => setIsSticky(false), [isOpen])
+    //#endregion
 
     const addToCart = () => {
         if(props.menuItem == null) {
@@ -261,58 +290,59 @@ export const MenuItemDetailDialog = (props: Props) => {
         setIsOpen(false);
     }
 
-    //#region Effects
-    useEffect(() => setIsOpen(props.menuItem != null), [props.menuItem]);
-    useEffect(() => {
-        if(props.menuItem == null) {
-            setSelectedModifiers({});
-            setAvailableModifiers(new Map<string, IItemModifierGroup>());
-            return;
-        }
-
-        const map = new Map<string, IItemModifierGroup>();
-        for(let item of props.menuItem.modifiers ?? []) {
-            map.set(item.id, item);
-        }
-        setAvailableModifiers(map);
-    }, [props.menuItem]);
-
-    useEffect(() => setItemsQty(props.menuItem != null && 'quantity' in props.menuItem ? props.menuItem.quantity : 1), [props.menuItem])
-
-    useEffect(() => {
-        const isAvailable = props.menuItem?.isAvailable == true;
-        setAllowToOrder(props.menuItem != null && orderingFeatures.isActive && isAvailable);
-    }, [props.menuItem]);
-
-    useEffect(() => {
-        const itemPrice = props.menuItem?.price ?? 0;
-        setItemsQtyTotal(BigNumber(itemsQty).multipliedBy(BigNumber(itemPrice).plus(extraPrice)).toNumber());
-    }, [props.menuItem, itemsQty, extraPrice]);
-
-    useEffect(() => {
-        let modidiersTotal = 0;
-        
-        for(const k of Object.keys(selectedModifiers)) {
-            for(const m of selectedModifiers[k]) {
-                modidiersTotal += ItemsHelper.getItemPrice(m);
-            }
-        }
-        setExtraPrice(modidiersTotal);
-    }, [selectedModifiers])
-
-    useEffect(() => setIsSticky(false), [isOpen])
-    //#endregion
-
     const duration = 0.3;
     return (
-        <Dialog isOpen={isOpen} className={`${classes.dialog} ${isSticky ? "fullview" : ""}`} showCloseButton={!isSticky || pageMode == PageMode.Kiosk} onClose={() => props.onClose()} style={{backgroundColor: "transparent", boxShadow: "unset", ...(isSticky ? {top: 0} : {})}}>
-            <div className={classes.headerContainer} {...handlers} >
-                <motion.div layout initial={false} transition={{duration: duration}} className={`${classes.headerPivotContainer} ${isSticky ? "fullview" : ""}`}>
-                    <motion.div layout initial={false} transition={{duration: duration}} className={`${classes.photoContainer} ${isSticky ? "fullview" : ""}`}>
+        <Dialog
+            isOpen={isOpen}
+            className={`${classes.dialog} ${isSticky ? "fullview" : ""}`}
+            showCloseButton={!isSticky || pageMode == PageMode.Kiosk}
+            onClose={props.onClose}
+            style={{
+                backgroundColor: "transparent",
+                boxShadow: "unset",
+                ...(isSticky ? {top: 0} : {})
+            }}
+        >
+            <Box 
+                className={classes.headerContainer}
+                {...handlers}
+            >
+                <motion.div
+                    layout
+                    initial={false}
+                    transition={{
+                        duration: duration,
+                    }}
+                    className={`${classes.headerPivotContainer} ${isSticky ? "fullview" : ""}`}
+                >
+                    <motion.div
+                        layout
+                        initial={false}
+                        transition={{
+                            duration: duration,
+                        }}
+                        className={`${classes.photoContainer} ${isSticky ? "fullview" : ""}`}
+                    >
                         <motion.div layout initial={false} transition={{duration: duration}} className={`${classes.photo} ${isSticky ? "fullview" : ""}`} />
                     </motion.div>
-                    <motion.p layout initial={false} transition={{duration: duration}} className={classes.name}>{props.menuItem?.name}</motion.p>
-                    <motion.div layout initial={false} transition={{duration: duration}} className={`${classes.closeBtn} ${isSticky ? "fullview" : ""}`} >
+                    <motion.p
+                        layout
+                        initial={false}
+                        transition={{
+                            duration: duration,
+                        }}
+                        className={classes.name}
+                    >
+                        {props.menuItem?.name}
+                    </motion.p>
+                    <motion.div
+                        layout
+                        initial={false}
+                        transition={{
+                            duration: duration,
+                        }}
+                        className={`${classes.closeBtn} ${isSticky ? "fullview" : ""}`}
+                    >
                         <IconButton aria-label="close" onClick={() => setIsOpen(false)}>
                             <CloseIcon />
                         </IconButton>
@@ -327,31 +357,31 @@ export const MenuItemDetailDialog = (props: Props) => {
                         toggle={c => <b style={{cursor: "pointer"}}>{t(c ? "readMore" : "readLess")}</b>}
                     />
                 }
-                <hr style={{width: "100%", margin: "0.75rem auto"}}/>
-                <div className={classes.priceInfo}>
+                <Divider sx={{ width: "100%", margin: "0.75rem auto"}}/>
+                <Box className={classes.priceInfo}>
                     <p className={classes.priceTxt}>{Formatter.price(itemsQtyTotal, "€")}</p>
                     {
                         allowToOrder &&
-                        <div className={classes.quantityContainer}>
-                            <div className={classes.quantityComponent}>
-                                <div style={{opacity: itemsQty > 1 ? 1 : 0.5}}>
+                        <Box className={classes.quantityContainer}>
+                            <Box className={classes.quantityComponent}>
+                                <Box sx={{opacity: itemsQty > 1 ? 1 : 0.5}}>
                                     <IconButton disabled={itemsQty == 1} onClick={() => setItemsQty(prev => Math.max(prev - 1, 1))} title={t("digitalMenu.decrementQty")}>
                                         <DashCircleIcon className={classes.quantityBtn} />
                                     </IconButton>
-                                </div>
+                                </Box>
                                 <span className={classes.quantityTxt}>{itemsQty}</span>
                                 <IconButton onClick={() => setItemsQty(prev => prev + 1)} title={t("digitalMenu.incrementQty")}>
                                     <PlusCircleIcon className={classes.quantityBtn} />
                                 </IconButton>
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                     }
-                </div>
+                </Box>
 
-                <div onClick={() => setIsOpen(false)} className={classes.transparentOverhead} />
-                <div className={`${classes.whiteOverhead} ${isSticky ? "fullview" : ""}`} style={{transition: `top ${duration}s`}} />
-            </div>
-            <div
+                <Box onClick={() => setIsOpen(false)} className={classes.transparentOverhead} />
+                <Box className={`${classes.whiteOverhead} ${isSticky ? "fullview" : ""}`} sx={{transition: `top ${duration}s`}} />
+            </Box>
+            <Box
                 className={classes.contentBackground}
                 onScroll={(el) => {
                     const target = el.currentTarget;
@@ -368,13 +398,13 @@ export const MenuItemDetailDialog = (props: Props) => {
                     });
                 }}
             >
-                <div className={`container ${classes.contentContainer}`}>
+                <Box className={`container ${classes.contentContainer}`}>
                 {
                     allowToOrder && props.menuItem != null &&
                     <MenuItemSelector item={props.menuItem} onModifiersChanged={(_, m) => setSelectedModifiers(m)} onAddToCart={addToCart}/>
                 }
-                </div>
-            </div>
+                </Box>
+            </Box>
         </Dialog>
     );
 }
