@@ -58,9 +58,11 @@ export const LockPage = () => {
         <Box
             width="100%"
             maxWidth="md"
-            mx="auto"
-            mb={2}
-            pt={{ sm: 10 }}
+            sx={{
+                mx: "auto",
+                mb: 2,
+                pt: "1rem",
+            }}
         >
             {
                 selectedEmployee == undefined

@@ -21,10 +21,10 @@ const getPinFromValue = (pin: string, totalInputs: number) => {
 }
 export const PinCodeInput = (props: Props) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [currentDigit, setCurrentDigit] = useState<number | undefined>();
-    const inputItems = Array.from({length: totalInputs}, () => useRef<HTMLInputElement>(null));
-
     const input = useMemo(() => getPinFromValue(props.pin, totalInputs), [totalInputs, props.pin]);
+
+    const [currentDigit, setCurrentDigit] = useState<number | undefined>(() => input.trim().length);
+    const inputItems = Array.from({length: totalInputs}, () => useRef<HTMLInputElement>(null));
 
     useEffect(() => ref.current?.focus(), [ref.current])
     useEffect(() => setCurrentDigit(input.trim().length), [input])
@@ -171,104 +171,126 @@ export const PinCodeInput = (props: Props) => {
 
     const loading = props.loading;
     return <Box
-        onKeyDownCapture={(e) => onKeyPadPress(e.key)}
-        tabIndex={-1}
-        ref={ref}
         sx={{
-            outlineColor: "transparent",
-            aspectRatio: 1,
+            display: "flex",
+            justifyContent: "center",
+            width: "100%"            
         }}
     >
         <Box
+            onKeyDownCapture={(e) => onKeyPadPress(e.key)}
+            ref={ref}
             sx={{
-                marginBottom: "1.5rem",
-                paddingX: "1rem",
-                display: "flex",
-                flexDirection: "column",
-            }}
-            rowGap={1}
-        >
-            <Grid
-                container
-                gap={2}
-            >
-                {
-                    getInputArray().map((c, i) => <Grid
-                        key={i} 
-                        size="grow"
-                    >
-                        <Box
-                            sx={{
-                                border: p => `2px solid ${currentDigit == i ? p.palette.primary.main : "gray"}`,
-                                boxShadow: currentDigit == i ? p => `0 0 0.25rem rgba(${p.palette.primary.main}, 0.5)` : undefined,
-                                transitionProperty: "color, border, box-shadow, transform",
-                                position: "relative",
-                            }}
-                        >
-                            <input
-                                ref={inputItems[i]}
-                                type={inputItems[i].current?.type ?? "text"}
-                                autoCapitalize="off" 
-                                autoCorrect="off" 
-                                autoComplete="off" 
-                                inputMode="numeric" 
-                                aria-required="true" 
-                                value={loading && !c ? " " : c}
-                                style={{
-                                    border: `none`,
-                                    fontSize: "2rem",
-                                    outline: "none",
-                                    textAlign: "center",
-                                    transitionDuration: "250ms",
-                                    width: "100%",
-                                    aspectRatio: 1,
-                                    visibility: loading ? "collapse" : undefined,
-                                }}
-                                disabled
-                            />
-                        </Box>
-                    </Grid>)
+                outlineColor: "transparent",
+                aspectRatio: 1,
+                width: {
+                    xs: "inherit",
+                    sm: "inherit",
+                    md: "80%",
+                    lg: "80%",
+                    xl: "80%",
                 }
-            </Grid>
-
-            <LinearProgress
+            }}
+        >
+            <Box
                 sx={{
-                    visibility: loading ? "visible" : "hidden",
-                    height: {
-                        xs: 5,
-                        sm: 5,
-                        md: 10,
-                        lg: 10,
-                        xl: 10,
-                    },
-                    borderRadius: 1,
+                    marginBottom: "1.5rem",
+                    paddingX: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
                 }}
+                rowGap={1}
+            >
+                <Grid
+                    container
+                    gap={2}
+                >
+                    {
+                        getInputArray().map((c, i) => <Grid
+                            key={i} 
+                            size="grow"
+                        >
+                            <Box
+                                sx={{
+                                    border: p => `2px solid ${currentDigit == i ? p.palette.primary.main : "gray"}`,
+                                    boxShadow: currentDigit == i ? p => `0 0 0.25rem rgba(${p.palette.primary.main}, 0.5)` : undefined,
+                                    transitionProperty: "color, border, box-shadow, transform",
+                                    position: "relative",
+                                    borderRadius: 2,
+
+                                    "& input": {
+                                        border: `none`,
+                                        fontSize: {
+                                            xs: "1.5rem",
+                                            sm: "2rem",
+                                            md: "3rem",
+                                            lg: "3rem",
+                                            xl: "3rem",
+                                        },
+                                        outline: "none",
+                                        textAlign: "center",
+                                        transitionDuration: "250ms",
+                                        width: "100%",
+                                        aspectRatio: 1,
+                                        visibility: loading ? "collapse" : undefined,
+                                    }
+                                }}
+                            >
+                                <input
+                                    ref={inputItems[i]}
+                                    type={inputItems[i].current?.type ?? "text"}
+                                    autoCapitalize="off" 
+                                    autoCorrect="off" 
+                                    autoComplete="off" 
+                                    inputMode="numeric" 
+                                    aria-required="true" 
+                                    value={loading && !c ? " " : c}
+                                    disabled
+                                />
+                            </Box>
+                        </Grid>)
+                    }
+                </Grid>
+
+                <LinearProgress
+                    sx={{
+                        visibility: loading ? "visible" : "hidden",
+                        height: {
+                            xs: 5,
+                            sm: 5,
+                            md: 10,
+                            lg: 10,
+                            xl: 10,
+                        },
+                        borderRadius: 1,
+                    }}
+                />
+            </Box>
+            <Keyboard
+                layoutName="default"
+                theme="hg-theme-default hg-theme-numeric hg-layout-numeric numeric-theme hg-font-large"
+                layout={{
+                    default: ["1 2 3", "4 5 6", "7 8 9", "{clear} 0 {bksp}"],
+                }}
+                display={{
+                    "{clear}": "Clear",
+                    "{bksp}": "←",
+                }}
+                onKeyReleased={onKeyPadPress}
             />
+
+            <style>
+            {`
+                .hg-font-large .hg-button {
+                    font-size: 24px;
+                }
+
+                .hg-theme-default.hg-layout-numeric .hg-button {
+                    height: auto !important;
+                    aspect-ratio: 2 !important;
+                }
+            `}
+            </style>
         </Box>
-        <Keyboard
-            layoutName="default"
-            theme="hg-theme-default hg-theme-numeric hg-layout-numeric numeric-theme hg-font-large"
-            layout={{
-                default: ["1 2 3", "4 5 6", "7 8 9", "{clear} 0 {bksp}"],
-            }}
-            display={{
-                "{clear}": "Clear",
-                "{bksp}": "←",
-            }}
-            onKeyReleased={onKeyPadPress}
-        />
-
-        <style>
-        {`
-            .hg-font-large .hg-button {
-                font-size: 24px;
-            }
-
-            .hg-theme-default.hg-layout-numeric .hg-button {
-                height: auto !important;
-                aspect-ratio: 2 !important;
-            }
-        `}
-        </style>
     </Box>
 }
