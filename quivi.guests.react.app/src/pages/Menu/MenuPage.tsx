@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { Page } from "../../layout/Page";
 import { ButtonsSection } from "../../layout/ButtonsSection";
-import { Grid, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import type { MenuCategory } from "../../hooks/api/Dtos/menuCategories/MenuCategory";
 import { PageMode, usePageMode } from "../../hooks/usePageMode";
@@ -79,12 +79,6 @@ const useStyles = makeStyles({
                 right: 0,
             },
         }
-    },
-    categoryPhoto: {
-        width: "100%",
-        height: "unset",
-        borderRadius: "5px 0 0 5px",
-        filter: "drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5))",
     },
 });
 
@@ -313,22 +307,37 @@ export const MenuPage: React.FC<Props> = ({
                         selectedTab={tabSettings.currentCategory} 
                         onTabSelected={goToAnchor}
                         getKey={t => t.id}
-                        getValue={t => <Grid container spacing={1}>
+                        getValue={t => <Stack
+                            sx={{
+                                width: pageMode == PageMode.Kiosk ? "100%" : undefined,
+                            }}
+                            direction="column"
+                            gap={1}
+                        >
                             {
                                 pageMode == PageMode.Kiosk &&
-                                <Grid size={12} sx={{margin: "0.5rem"}}>
+                                <Box
+                                    sx={{
+                                        margin: "0.5rem",
+                                        width: "100%",
+                                        "& .MuiAvatar-root": {
+                                            width: "100%",
+                                            height: "unset",
+                                            borderRadius: "5px 0 0 5px ",
+                                            filter: "drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5))",
+                                            aspectRatio: t.imageUrl == undefined ? "1" : undefined,
+                                        }
+                                    }}
+                                >
                                     <AvatarImage
                                         src={t.imageUrl}
                                         name={t.name}
-                                        className={classes.categoryPhoto}
                                         style={{aspectRatio: t.imageUrl == undefined ? "1" : undefined}}
                                     />
-                                </Grid>
+                                </Box>
                             }
-                            <Grid size={12}>
-                                <Typography noWrap variant="body2">{t.name}</Typography>
-                            </Grid>
-                        </Grid>}
+                            <Typography noWrap variant="body2">{t.name}</Typography>
+                        </Stack>}
                     />
                 </Grid>
                 <Grid
