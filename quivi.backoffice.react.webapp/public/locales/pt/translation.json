@@ -450,7 +450,7 @@
         },
         "onboarding": {
             "title": "Onboarding",
-            "description": "Para utilizar o Quivi, é necessário configurar algumas coisas. Abaixo encontra-se uma lista que terá de completar para utilizar o nosso PoS.",
+            "description": "Para começar a utilizar o Quivi, é necessário concluir uma breve configuração inicial. Abaixo encontra a lista de passos que deve completar para ativar o nosso PoS.",
             "todo": "Por completar",
             "taskRequires": "Complete os seguintes passos primeiro:",
 
