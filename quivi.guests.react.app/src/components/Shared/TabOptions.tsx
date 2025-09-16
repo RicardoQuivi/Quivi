@@ -107,13 +107,13 @@ const StyledPaper = styled(Paper)(({
                     marginTop: '0px',
                     marginBottom: '0px',
     
-                    '& .MuiTab-wrapper': {
+                    '& .MuiStack-root': {
                         textTransform: 'capitalize',
                         padding: '5px'
                     },
     
                     '&.Mui-selected': {
-                        '& > .MuiTab-wrapper': {
+                        '& > .MuiStack-root': {
                             background: `rgba(${primarycolor.r}, ${primarycolor.g}, ${primarycolor.b}, 0.15)`,
                             borderRadius: '4px',
                         },
