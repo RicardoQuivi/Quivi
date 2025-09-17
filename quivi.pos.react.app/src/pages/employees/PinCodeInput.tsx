@@ -178,8 +178,6 @@ export const PinCodeInput = (props: Props) => {
         }}
     >
         <Box
-            onKeyDownCapture={(e) => onKeyPadPress(e.key)}
-            ref={ref}
             sx={{
                 outlineColor: "transparent",
                 aspectRatio: 1,
@@ -189,8 +187,14 @@ export const PinCodeInput = (props: Props) => {
                     md: "80%",
                     lg: "80%",
                     xl: "80%",
-                }
+                },
+                "&:focus": {
+                    outline: "none",
+                },
             }}
+            onKeyDownCapture={(e) => onKeyPadPress(e.key)}
+            ref={ref}
+            tabIndex={0}
         >
             <Box
                 sx={{
