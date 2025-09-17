@@ -37,12 +37,7 @@ namespace Quivi.Pos.Api.Controllers
 
         public async Task<GetSessionsResponse> Get([FromQuery] GetSessionsRequest request)
         {
-            IEnumerable<SessionStatus> states = request.IsOpen.HasValue
-            ?
-            [request.IsOpen.Value ? SessionStatus.Ordering : SessionStatus.Closed]
-            :
-            request.Ids == null ? [SessionStatus.Ordering] : [SessionStatus.Closed, SessionStatus.Ordering];
-
+            IEnumerable<SessionStatus> states = [SessionStatus.Closed, SessionStatus.Ordering];
             var sessionsQuery = await queryProcessor.Execute(new GetSessionsAsyncQuery
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
@@ -55,7 +50,7 @@ namespace Quivi.Pos.Api.Controllers
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
             });
-            
+
             return new GetSessionsResponse
             {
                 Data = mapper.Map<Dtos.Session>(sessionsQuery),

@@ -34,8 +34,7 @@ export const useSessionsQuery = (request: GetSessionsRequest | undefined) : Quer
         getId: (e: Session) => e.id,
         query: async r => {
             const request = r.request;
-
-                const allData = r.entities.filter((d) => {
+            const allData = r.entities.filter((d) => {
                 if(request.channelIds != undefined && request.channelIds.includes(d.channelId) == false) {
                     return false;
                 }

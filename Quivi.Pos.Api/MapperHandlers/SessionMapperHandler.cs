@@ -18,6 +18,7 @@ namespace Quivi.Pos.Api.MapperHandlers
 
         public Dtos.Session Map(Session model)
         {
+            var validOrders = model.GetValidOrders();
             return new Dtos.Session
             {
                 Id = idConverter.ToPublicId(model.Id),
@@ -26,7 +27,8 @@ namespace Quivi.Pos.Api.MapperHandlers
                 IsOpen = model.Status == SessionStatus.Ordering,
                 IsDeleted = model.Status == SessionStatus.Unknown,
                 ClosedAt = model.EndDate.HasValue ? new DateTimeOffset(model.EndDate.Value, TimeSpan.Zero) : null,
-                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(model.GetValidOrderMenuItems())!,
+                Items = mapper.Map<IEnumerable<OrderMenuItem>, IEnumerable<Dtos.SessionItem>>(validOrders.GetValidOrderMenuItems())!,
+                OrderIds = validOrders.Select(o => idConverter.ToPublicId(o.Id)),
             };
         }
     }

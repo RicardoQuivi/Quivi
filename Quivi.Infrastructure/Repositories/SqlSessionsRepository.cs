@@ -57,16 +57,16 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.LatestSessionsOnly)
             {
-                //We should refactor this. We should have a table "ActiveSession" in which a
+                //TODO: We should refactor this. We should have a table "ActiveSession" in which a
                 //Channel could only have one active (Open) session. Then we could make a more efficient search.
                 //In this refactor, SessinState would disappear, and we would also have a Soft Delete solumn instead of Unknown status.
 
                 var status = criteria.Statuses ?? [SessionStatus.Closed, SessionStatus.Ordering];
-                var sessionIds = Set.GroupBy(q => q.ChannelId).Select(g => g.OrderByDescending(s => s.CreateDate)
-                                                                                            .Where(s => status.Contains(s.Status))
-                                                                                            .FirstOrDefault())
-                                                                            .Where(s => s != null)
-                                                                            .Select(s => s.Id);
+                var sessionIds = Set.Where(s => status.Contains(s.Status)).GroupBy(q => q.ChannelId)
+                                                                            .Select(g => g.OrderByDescending(s => s.StartDate)
+                                                                                            .Select(s => s.Id)
+                                                                                            .FirstOrDefault()
+                                                                            );
                 query = query.Where(q => sessionIds.Contains(q.Id));
             }
 

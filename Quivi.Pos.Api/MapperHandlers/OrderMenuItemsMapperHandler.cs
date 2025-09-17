@@ -29,7 +29,7 @@ namespace Quivi.Pos.Api.MapperHandlers
             foreach (var item in sessionItems)
             {
                 var first = item.Source.First();
-                var paidQuantity = item.Source.SelectMany(s => s.PosChargeInvoiceItems!).Sum(s => s.Quantity);
+                var paidQuantity = item.Source.SelectMany(s => s.PosChargeInvoiceItems ?? []).Sum(s => s.Quantity);
                 var unpaidQuantity = item.Quantity - paidQuantity;
 
                 if (unpaidQuantity > 0)

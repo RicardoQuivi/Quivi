@@ -41,6 +41,7 @@ namespace Quivi.Application.Commands.Sessions
                 ChannelIds = query.ChannelIds,
                 Statuses = query.Statuses,
                 PreparationGroupIds = query.PreparationGroupIds,
+                LatestSessionsOnly = query.LatestSessionsOnly,
 
                 IncludePreparationGroups = query.IncludePreparationGroups,
                 IncludeOrders = query.IncludeOrders,

@@ -6,6 +6,7 @@ export interface Session {
     readonly channelId: string;
     readonly employeeId?: string;
     readonly items: SessionItem[];
+    readonly orderIds: string[];
     readonly closedDate?: string;
     readonly isDeleted: boolean;
 }

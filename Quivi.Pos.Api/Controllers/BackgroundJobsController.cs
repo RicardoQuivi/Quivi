@@ -36,6 +36,9 @@ namespace Quivi.Pos.Api.Controllers
             foreach (var id in request.Ids)
             {
                 var jobData = storageConnection.GetJobData(id);
+                if (jobData == null)
+                    continue;
+
                 jobs.Add(new Dtos.BackgroundJob
                 {
                     Id = id,

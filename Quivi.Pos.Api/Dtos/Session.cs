@@ -9,5 +9,6 @@
         public DateTimeOffset? ClosedAt { get; init; }
         public bool IsDeleted { get; init; }
         public required IEnumerable<SessionItem> Items { get; init; }
+        public required IEnumerable<string> OrderIds { get; init; }
     }
 }

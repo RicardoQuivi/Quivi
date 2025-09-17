@@ -362,14 +362,6 @@ namespace Quivi.Application.Commands.Pos
                 sessionsRepo.Add(session);
                 await OnSessionAdded(order, session);
             }
-            else
-                AddSessionEvent(session, s => new OnSessionOperationEvent
-                {
-                    Operation = EntityOperation.Update,
-                    ChannelId = s.ChannelId,
-                    Id = s.Id,
-                    MerchantId = order.MerchantId,
-                });
 
             session.Orders!.Add(order);
             order.Session = session;
@@ -663,8 +655,7 @@ namespace Quivi.Application.Commands.Pos
             return result;
         }
 
-
-        protected async Task OnSessionAdded(Order order, Session session)
+        private async Task OnSessionAdded(Order order, Session session)
         {
             AddOrderEvent(order, o => new OnSessionOperationEvent
             {

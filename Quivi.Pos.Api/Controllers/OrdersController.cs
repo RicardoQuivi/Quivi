@@ -96,7 +96,7 @@ namespace Quivi.Pos.Api.Controllers
             }).ToList();
 
             //TODO: Validate Insertion
-            var jobId = await commandProcessor.Execute(new AddOrdersAsyncCommand
+            var result = await commandProcessor.Execute(new AddOrdersAsyncCommand
             {
                 MerchantId = User.SubMerchantId(idConverter)!.Value,
                 EmployeeId = User.EmployeeId(idConverter)!.Value,
@@ -106,7 +106,8 @@ namespace Quivi.Pos.Api.Controllers
 
             return new CreateOrdersResponse
             {
-                Data = jobId,
+                JobId = result.SyncJobId,
+                Data = mapper.Map<Dtos.Order>(result.Orders),
             };
         }
 

@@ -12,7 +12,13 @@ using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.Orders
 {
-    public class AddOrdersAsyncCommand : ICommand<Task<string?>>
+    public class AddOrdersResult
+    {
+        public required IEnumerable<Order> Orders { get; init; }
+        public string? SyncJobId { get; init; }
+    }
+
+    public class AddOrdersAsyncCommand : ICommand<Task<AddOrdersResult>>
     {
         public int MerchantId { get; init; }
         public int EmployeeId { get; init; }
@@ -20,7 +26,7 @@ namespace Quivi.Application.Commands.Orders
         public required IEnumerable<AddOrder> Orders { get; init; }
     }
 
-    public class AddOrdersAsyncCommandHandler : ICommandHandler<AddOrdersAsyncCommand, Task<string?>>
+    public class AddOrdersAsyncCommandHandler : ICommandHandler<AddOrdersAsyncCommand, Task<AddOrdersResult>>
     {
         const int maxDecimalPlaces = 6;
 
@@ -46,11 +52,15 @@ namespace Quivi.Application.Commands.Orders
             this.posSyncService = posSyncService;
         }
 
-        public async Task<string?> Handle(AddOrdersAsyncCommand command)
+        public async Task<AddOrdersResult> Handle(AddOrdersAsyncCommand command)
         {
             var itemsPerChannel = GetItemsPerChannel(command.Orders);
             if (itemsPerChannel.Count == 0)
-                return null;
+                return new AddOrdersResult
+                {
+                    SyncJobId = null,
+                    Orders = [],
+                };
 
             var channelsQuery = await channelsRepository.GetAsync(new GetChannelsCriteria
             {
@@ -61,7 +71,11 @@ namespace Quivi.Application.Commands.Orders
 
             var (menuItemDictionary, itemsPerChannelWithDefaultPrice) = await GetMenuItemsAndPopulateDefaultPrice(command.MerchantId, itemsPerChannel);
             if (itemsPerChannelWithDefaultPrice.Count == 0)
-                return null;
+                return new AddOrdersResult
+                {
+                    SyncJobId = null,
+                    Orders = [],
+                };
 
             var now = dateTimeProvider.GetUtcNow();
             var addedOrders = new List<Order>();
@@ -101,7 +115,12 @@ namespace Quivi.Application.Commands.Orders
                 });
             }
 
-            return await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Accepted, false);
+            var jobId = await posSyncService.ProcessOrders(orderIds, command.MerchantId, OrderState.Accepted, false);
+            return new AddOrdersResult
+            {
+                SyncJobId = jobId,
+                Orders = addedOrders,
+            };
         }
 
         private IReadOnlyDictionary<int, IEnumerable<AddOrderItem>> GetItemsPerChannel(IEnumerable<AddOrder> orders)

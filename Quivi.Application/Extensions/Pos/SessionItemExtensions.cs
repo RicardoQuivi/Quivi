@@ -243,14 +243,14 @@ namespace Quivi.Application.Extensions.Pos
                     ModifierGroupId = e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"),
                     MenuItemId = e.MenuItemId,
                     Price = e.FinalPrice,
-                    Quantity = e.Quantity / e.ParentOrderMenuItem!.Quantity,
+                    Quantity = e.ParentOrderMenuItem!.Quantity == 0 ? 0 : e.Quantity / e.ParentOrderMenuItem!.Quantity,
                 }) ?? [],
             }, s => s.Modifiers ?? [], e => new SessionExtraItem
             {
                 ModifierGroupId = e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"),
                 MenuItemId = e.MenuItemId,
                 Price = e.FinalPrice,
-                Quantity = e.Quantity / e.ParentOrderMenuItem!.Quantity,
+                Quantity = e.ParentOrderMenuItem!.Quantity == 0 ? 0 : e.Quantity / e.ParentOrderMenuItem!.Quantity,
             }, e => e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"));
             return result;
         }
