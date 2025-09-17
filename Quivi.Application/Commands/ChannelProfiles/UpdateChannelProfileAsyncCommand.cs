@@ -138,7 +138,10 @@ namespace Quivi.Application.Commands.ChannelProfiles
 
         public async Task<IEnumerable<ChannelProfile>> Handle(UpdateChannelProfileAsyncCommand command)
         {
-            var entities = await repository.GetAsync(command.Criteria);
+            var entities = await repository.GetAsync(command.Criteria with
+            {
+                IncludeAssociatedOrderConfigurableFields = true,
+            });
             if (!entities.Any())
                 return entities;
 

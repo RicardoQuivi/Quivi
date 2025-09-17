@@ -13,6 +13,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public bool? IsDeleted { get; init; } = false;
 
         public bool IncludeChannels { get; init; }
+        public bool IncludeAssociatedOrderConfigurableFields { get; init; }
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }
     }

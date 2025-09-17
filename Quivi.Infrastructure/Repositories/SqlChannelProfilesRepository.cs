@@ -19,6 +19,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeChannels)
                 query = query.Include(q => q.Channels);
 
+            if (criteria.IncludeAssociatedOrderConfigurableFields)
+                query = query.Include(q => q.AssociatedOrderConfigurableFields);
+
             if (criteria.Ids != null)
                 query = query.Where(q => criteria.Ids.Contains(q.Id));
 
@@ -30,7 +33,7 @@ namespace Quivi.Infrastructure.Repositories
 
             if (criteria.PreparationGroupIds != null)
                 query = query.Where(q => q.Channels!.SelectMany(qr => qr.Sessions!)
-                                                        .SelectMany(s => s.PreparationGroups)
+                                                        .SelectMany(s => s.PreparationGroups!)
                                                         .Any(s => criteria.PreparationGroupIds.Contains(s.Id)));
 
             if (criteria.Flags.HasValue)
