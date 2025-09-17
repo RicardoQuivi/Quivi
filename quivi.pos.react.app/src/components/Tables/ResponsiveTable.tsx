@@ -184,7 +184,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
         >
             {
                 hasInnerRows() == true
-                    ?
+                ?
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -253,7 +253,7 @@ export const ResponsiveTable = <T,>(props: Props<T>) => {
                             }
                         </TableBody>
                     </Table>
-                    :
+                :
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -428,11 +428,12 @@ const CollapsibleRow = <T,>(props: CollapsibleRowProps<T>) => {
                 }
             </TableRow>
             {
-                children.map((innerRow, index) => (
+                isCollapse == false && children.map((innerRow) => (
                     <TableRow
                         key={props.getKey(innerRow)}
-                        className={`settlement--child ${index + 1 != children!.length ? "settlement--bchild" : ""} ${isCollapse ? "collapse" : "show"}`}
-                        style={{ cursor: props.onRowClick != undefined ? "pointer" : "unset" }}
+                        sx={{
+                            cursor: props.onRowClick != undefined ? "pointer" : "unset",
+                        }}
                         onClick={() => props.onRowClick?.(innerRow)}
                     >
                         {
@@ -442,15 +443,15 @@ const CollapsibleRow = <T,>(props: CollapsibleRowProps<T>) => {
                             </TableCell>
                         }
                         {
-                            props.columns?.map((column, ci) => (
-                                <TableCell key={column.key} className={props.name == undefined && ci == 0 ? "details payment-method" : "details"}>
+                            props.columns?.map((column) => (
+                                <TableCell key={column.key}>
                                     {column.render(innerRow)}
                                 </TableCell>
                             ))
                         }
                         {
                             props.actions != undefined &&
-                            <TableCell className={"details payment-method"}>
+                            <TableCell>
                                 {
                                     props.actions.map(a => {
                                         const render = a.render(innerRow);
@@ -464,7 +465,6 @@ const CollapsibleRow = <T,>(props: CollapsibleRowProps<T>) => {
                                         >
                                             <IconButton
                                                 onClick={e => rowAction(e, () => a.onClick?.(innerRow))}
-                                                className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
                                             >
                                                 {render}
                                             </IconButton>

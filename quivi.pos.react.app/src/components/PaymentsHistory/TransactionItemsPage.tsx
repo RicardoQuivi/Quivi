@@ -71,7 +71,7 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
                 },
                 {
                     key: "unit-price",
-                    label: t("unitPrice"),
+                    label: t("paymentHistory.unitPrice"),
                     render: d => <CurrencySpan value={d.item.originalPrice + (!d.isExpanded ? getModifiersTotal(1, d.item.modifiers) : 0)} />
                 },
                 {

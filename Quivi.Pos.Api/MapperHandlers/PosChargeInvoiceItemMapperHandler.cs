@@ -27,15 +27,15 @@ namespace Quivi.Pos.Api.MapperHandlers
                 AppliedDiscountPercentage = PriceHelper.CalculateDiscountPercentage(model.OrderMenuItem!.OriginalPrice, model.OrderMenuItem!.FinalPrice),
                 CreatedDate = new DateTimeOffset(model.CreatedDate, TimeSpan.Zero),
                 LastModified = new DateTimeOffset(model.ModifiedDate, TimeSpan.Zero),
-                Modifiers = model.ChildrenPosChargeInvoiceItems?.Select(MapToBase) ?? [],
+                Modifiers = model.ChildrenPosChargeInvoiceItems?.Select(p => MapToBase(p, model.Quantity)) ?? [],
             };
         }
 
-        private Dtos.BaseTransactionItem MapToBase(PosChargeInvoiceItem model, int parentQuantity) => new Dtos.BaseTransactionItem
+        private Dtos.BaseTransactionItem MapToBase(PosChargeInvoiceItem model, decimal parentQuantity) => new Dtos.BaseTransactionItem
         {
             Id = idConverter.ToPublicId(model.Id),
             TransactionId = idConverter.ToPublicId(model.PosChargeId),
-            Quantity = model.Quantity / parentQuantity,
+            Quantity = parentQuantity == 0 ? 0 : model.Quantity / parentQuantity,
             Name = model.OrderMenuItem!.Name,
             Price = model.OrderMenuItem!.FinalPrice,
             OriginalPrice = model.OrderMenuItem!.OriginalPrice,

@@ -160,7 +160,7 @@ namespace Quivi.Pos.Api.Controllers
                 Page = result.CurrentPage,
                 TotalPages = result.NumberOfPages,
                 TotalItems = result.TotalItems,
-                Data = mapper.Map<Dtos.TransactionItem>(result),
+                Data = mapper.Map<Dtos.TransactionItem>(result.Where(r => r.ParentPosChargeInvoiceItemId.HasValue == false)),
             };
         }
 

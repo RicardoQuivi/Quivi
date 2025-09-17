@@ -103,7 +103,7 @@ namespace Quivi.Application.Commands.Pos
             Session session = await GetSession(posCharge);
 
             var itemsToBePaid = GetAndProcessPayingItems(posCharge, session);
-            decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.Item.FinalPrice * p.Quantity), maxDecimalPlaces);
+            decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.Item.AsSessionItem().GetUnitPrice() * p.Quantity), maxDecimalPlaces);
 
             if (HasPendingItems(session) == false)
             {
@@ -151,7 +151,7 @@ namespace Quivi.Application.Commands.Pos
             IEnumerable<(OrderMenuItem PayingItem, decimal Quantity)> payingItems = GetPayingItems(posCharge, session);
             var now = dateTimeProvider.GetUtcNow();
 
-            var orderMenuItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).ToDictionary(e => e.Id, e => e);
+            var orderMenuItems = session.GetValidOrderMenuItems().SelectMany(o => (o.Modifiers ?? []).Prepend(o)).ToDictionary(e => e.Id, e => e);
             posCharge.PosChargeInvoiceItems = new List<PosChargeInvoiceItem>();
             foreach (var s in payingItems)
             {
@@ -173,6 +173,7 @@ namespace Quivi.Application.Commands.Pos
                         OrderMenuItemId = e.Id,
                         CreatedDate = now,
                         ModifiedDate = now,
+                        ParentPosChargeInvoiceItem = item,
                     };
                     item.ChildrenPosChargeInvoiceItems.Add(extra);
                     posCharge.PosChargeInvoiceItems.Add(extra);
@@ -196,7 +197,7 @@ namespace Quivi.Application.Commands.Pos
         private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItems(PosCharge charge, Session session)
         {
             var comparer = new SessionItemComparer();
-            var availableItems = session.Orders!.SelectMany(o => o.OrderMenuItems!)
+            var availableItems = session.GetValidOrderMenuItems()
                                                 .Select(omi => new ExtendedOrderMenuItem
                                                 {
                                                     OrderMenuItem = omi,
@@ -306,11 +307,12 @@ namespace Quivi.Application.Commands.Pos
 
         private void ProcessInvoice(ProcessQuiviSyncChargeAsyncCommand command, PosCharge posCharge, decimal paymentAmount, IEnumerable<(OrderMenuItem, decimal)> itemsToBePaid)
         {
-            var itemsToBePaidData = itemsToBePaid.Select(i => new
-            {
-                OrderMenuItem = i.Item1,
-                QuantityToBePaid = i.Item2,
-            });
+            var itemsToBePaidData = itemsToBePaid.SelectMany(e => (e.Item1.Modifiers ?? []).Select(m => (m, e.Item2 * m.Quantity)).Prepend(e))
+                                                .Select(i => new
+                                                {
+                                                    OrderMenuItem = i.Item1,
+                                                    QuantityToBePaid = i.Item2,
+                                                });
 
             List<AQuiviSyncStrategy.InvoiceItem> items = itemsToBePaidData.Select(i => new AQuiviSyncStrategy.InvoiceItem
             {
