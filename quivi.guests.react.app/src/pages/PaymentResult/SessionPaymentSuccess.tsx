@@ -6,7 +6,7 @@ import { useBrowserStorageService } from "../../hooks/useBrowserStorageService";
 import type { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { useAuth } from "../../context/AuthContext";
-import { CheckIcon, DownloadIcon, SuccessIcon } from "../../icons";
+import { CheckIcon, DownloadIcon } from "../../icons";
 import { useTransactionInvoicesQuery } from "../../hooks/queries/implementations/useTransactionInvoicesQuery";
 import { useChannelContext } from "../../context/AppContextProvider";
 import ActionButton from "../../components/Buttons/ActionButton";
@@ -164,7 +164,6 @@ export const SessionPaymentSuccess: React.FC<Props> = ({
                                 </div>
                             :
                                 <div className="flex flex-fd-c flex-ai-c mt-6">
-                                    <SuccessIcon />
                                     <h2 className="mb-3 mt-5 ta-c">{t("paymentResult.reviewSent")}</h2>
                                     <p className="ta-c">{t("paymentResult.reviewThanks")}</p>
                                     {

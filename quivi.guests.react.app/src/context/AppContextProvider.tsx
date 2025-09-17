@@ -201,6 +201,7 @@ export const AppContextProvider = (props: {
             onSessionUpdatedEvent: (evt: OnSessionUpdatedEvent) => invalidator.invalidate(Entity.Sessions, evt.id),
             onOrderOperationEvent: (evt: OnOrderOperationEvent) => invalidator.invalidate(Entity.Orders, evt.id),
             onPosChargeOperation: (evt: OnPosChargeOperationEvent) => invalidator.invalidate(Entity.Transactions, evt.id),
+            onPosChargeSyncAttemptEvent: (evt) => invalidator.invalidate(Entity.Transactions, evt.posChargeId),
         }
         webEvents.client.addChannelListener(listener);
         return () => webEvents.client.removeChannelListener(listener);

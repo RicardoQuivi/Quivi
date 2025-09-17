@@ -316,8 +316,8 @@ export const OrderingContextProvider = (props: {
     const submit = async (payLater?: boolean): Promise<Order> => {
         let _order: Order | null = null;
         let outOfSyncTimeout = state.outOfSyncTimeout;
-        let orderId = state.orderId;
-        if(orderId == undefined) {
+        let _orderId = state.orderId ?? orderId;
+        if(_orderId == undefined) {
             throw new Error("This should never happen");
         }
 
@@ -329,7 +329,7 @@ export const OrderingContextProvider = (props: {
 
         if(payLater == true) {
             try {
-                const result = await orderMutator.submit(orderId);
+                const result = await orderMutator.submit(_orderId);
                 _order = result.order;
 
                 const promise = new JobPromise(result.jobId, webEvents.client, async (jobId) => {

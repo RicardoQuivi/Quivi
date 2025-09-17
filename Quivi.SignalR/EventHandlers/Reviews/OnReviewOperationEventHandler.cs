@@ -37,6 +37,12 @@ namespace Quivi.SignalR.EventHandlers.Reviews
             {
                 await g.Client.OnReviewOperation(evt);
             });
+
+
+            await guestsHub.WithTransactionId(evt.Id, async g =>
+            {
+                await g.Client.OnReviewOperation(evt);
+            });
         }
     }
 }

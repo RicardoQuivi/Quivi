@@ -48,6 +48,7 @@ namespace Quivi.SignalR.EventHandlers.MerchantInvoiceDocuments
                 {
                     Id = evt.Id,
                     MerchantId = evt.MerchantId,
+                    PosChargeId = evt.PosChargeId,
                 });
             });
         }

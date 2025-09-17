@@ -14,7 +14,7 @@ import type { ReceiptLine } from "../../components/Receipt/ReceiptLine";
 import type { ReceiptSubTotalLine } from "../../components/Receipt/ReceiptSubTotalLine";
 import Receipt from "../../components/Receipt/Receipt";
 import ActionButton from "../../components/Buttons/ActionButton";
-import { DownloadIcon, SuccessIcon } from "../../icons";
+import { DownloadIcon } from "../../icons";
 import { Files } from "../../helpers/files";
 import { Link } from "react-router";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
@@ -233,7 +233,7 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
                         order.state == OrderState.Completed && transaction != undefined &&
                         <div className="mb-8">
                             {
-                                invoicesQuery.data.length == 0 && features.ordering.invoiceIsDownloadable &&
+                                invoicesQuery.data.length > 0 && features.ordering.invoiceIsDownloadable &&
                                 <ActionButton onClick={downloadInvoices} primaryButton={false} style={{ marginTop: "20px", marginBottom: "20px" }}>
                                     <DownloadIcon />
                                     <span style={{marginLeft: "10px"}}>{t("paymentResult.downloadInvoice")}</span>
@@ -244,15 +244,16 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
                                 (
                                     review != undefined
                                     ?
-                                    <div className="flex flex-fd-c flex-ai-c mt-6">
-                                        <SuccessIcon />
+                                    <Box
+                                        className="flex flex-fd-c flex-ai-c mt-6"
+                                    >
                                         <h2 className="mb-3 mt-5 ta-c">{t("paymentResult.reviewSent")}</h2>
                                         <p className="ta-c">{t("paymentResult.reviewThanks")}</p>
                                         {
                                             auth.user == undefined &&
                                             <Link to={`/c/${order.channelId}`} className="secondary-button mt-6">{t("paymentResult.home")}</Link>
                                         }
-                                    </div>
+                                    </Box>
                                     :
                                     <Review transactionId={transaction.id} />
                                 )

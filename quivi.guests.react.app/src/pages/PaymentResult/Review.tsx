@@ -67,7 +67,7 @@ export const Review = (props: Props) => {
                     {
                         state.textReviewIsTouched && state.stars < 4 && state.textReview.length === 0 &&
                         <Alert variant="outlined" severity="warning">
-                                {t("form.requiredField")}
+                            {t("form.requiredField")}
                         </Alert>
                     }
                 </div>

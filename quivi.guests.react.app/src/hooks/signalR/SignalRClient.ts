@@ -11,6 +11,8 @@ import type { OnTransactionInvoiceOperationEvent } from "./dtos/OnTransactionInv
 import type { MerchantListener } from "./MerchantListener";
 import type { OnConfigurableFieldOperation } from "./dtos/OnConfigurableFieldOperation";
 import type { OnConfigurableFieldAssociationOperation } from "./dtos/OnConfigurableFieldAssociationOperation";
+import type { OnReviewOperationEvent } from "./dtos/OnReviewOperationEvent";
+import type { OnPosChargeSyncAttemptEvent } from "./dtos/OnPosChargeSyncAttemptEvent";
 
 export interface IWebClient {
     addMerchantListener(listener: MerchantListener): void;
@@ -129,6 +131,9 @@ export class SignalRClient implements IWebClient {
         this.connection.off('OnPosChargeOperation');
         this.connection.on('OnPosChargeOperation', (evt: OnPosChargeOperationEvent) => this.channelListeners.forEach(l => l.onPosChargeOperation?.(evt)));
 
+        this.connection.off('OnPosChargeSyncAttemptOperation');
+        this.connection.on('OnPosChargeSyncAttemptOperation', (evt: OnPosChargeSyncAttemptEvent) => this.channelListeners.forEach(l => l.onPosChargeSyncAttemptEvent?.(evt)));
+
         this.channelListeners.forEach(l => this.connection.invoke('JoinChannelEvents', l.channelId));
     }
 
@@ -146,17 +151,22 @@ export class SignalRClient implements IWebClient {
     }
 
     private connectToTransactionEvents() {
-        if(this.jobListeners.size == 0) {
-            return;
-        }
-
         this.connection.off('OnTransactionInvoiceOperation');
         this.connection.on('OnTransactionInvoiceOperation', (evt: OnTransactionInvoiceOperationEvent) => this.transactionListeners.forEach(l => {
-            if(l.transactionId != evt.id) {
+            if(l.transactionId != evt.posChargeId) {
                 return;
             }
 
             l.onTransactionInvoiceOperation?.(evt);
+        }));
+
+        this.connection.off('OnReviewOperation');
+        this.connection.on('OnReviewOperation', (evt: OnReviewOperationEvent) => this.transactionListeners.forEach(l => {
+            if(l.transactionId != evt.id) {
+                return;
+            }
+
+            l.onReviewOperation?.(evt);
         }));
         
         this.jobListeners.forEach(l => this.connection.invoke('JoinTransactionEvents', l.jobId));
