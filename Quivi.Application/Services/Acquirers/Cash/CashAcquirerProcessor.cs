@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Quivi.Application.Queries.Merchants;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Merchants;
 using Quivi.Infrastructure.Abstractions.Converters;
+using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Abstractions.Services.Charges.Results;
 
@@ -11,6 +13,7 @@ namespace Quivi.Application.Services.Acquirers.Cash
     {
         private readonly IHostEnvironment hostEnvironment;
         private readonly IIdConverter idConverter;
+        private readonly IQueryProcessor queryProcessor;
 
         private class CashInitiateResult : IInitiateResult
         {
@@ -32,10 +35,11 @@ namespace Quivi.Application.Services.Acquirers.Cash
         }
 
 
-        public CashAcquirerProcessor(IHostEnvironment hostEnvironment, IIdConverter idConverter)
+        public CashAcquirerProcessor(IHostEnvironment hostEnvironment, IIdConverter idConverter, IQueryProcessor queryProcessor)
         {
             this.hostEnvironment = hostEnvironment;
             this.idConverter = idConverter;
+            this.queryProcessor = queryProcessor;
         }
 
         public ChargePartner ChargePartner => ChargePartner.Quivi;
@@ -48,12 +52,51 @@ namespace Quivi.Application.Services.Acquirers.Cash
         });
 
         public Task<IInitiateResult> Initiate(Charge charge) => Task.FromResult<IInitiateResult>(new CashInitiateResult());
-        public Task<IProcessResult> Process(Charge charge) => hostEnvironment.IsProduction() ? throw new Exception("Cash charge processing is not supported in production mode.") : Task.FromResult<IProcessResult>(new CashProcessResult
+        public async Task<IProcessResult> Process(Charge charge)
         {
-            GatewayId = idConverter.ToPublicId(charge.Id),
-        });
+            if (hostEnvironment.IsProduction() == false)
+                return new CashProcessResult
+                {
+                    GatewayId = idConverter.ToPublicId(charge.Id),
+                };
 
-        public Task Refund(Charge charge, decimal amount) => hostEnvironment.IsProduction() ? throw new Exception("Cash charge processing is not supported in production mode.") : Task.CompletedTask;
+            if (charge.PosCharge == null)
+                throw new Exception("Cash charge processing is not supported in production mode.");
+
+            var merchantQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
+            {
+                Ids = [charge.PosCharge.MerchantId],
+                PageSize = 1,
+            });
+            var merchant = merchantQuery.FirstOrDefault();
+            if (merchant?.IsDemo == true)
+                return new CashProcessResult
+                {
+                    GatewayId = idConverter.ToPublicId(charge.Id),
+                };
+
+            throw new Exception("Cash charge processing is not supported in production mode.");
+        }
+
+        public async Task Refund(Charge charge, decimal amount)
+        {
+            if (hostEnvironment.IsProduction() == false)
+                return;
+
+            if (charge.PosCharge == null)
+                throw new Exception("Cash charge processing is not supported in production mode.");
+
+            var merchantQuery = await queryProcessor.Execute(new GetMerchantsAsyncQuery
+            {
+                Ids = [charge.PosCharge.MerchantId],
+                PageSize = 1,
+            });
+            var merchant = merchantQuery.FirstOrDefault();
+            if (merchant?.IsDemo == true)
+                return;
+
+            throw new Exception("Cash charge processing is not supported in production mode.");
+        }
 
         public Task OnSetup(MerchantAcquirerConfiguration configuration) => Task.CompletedTask;
         public Task OnTearDown(MerchantAcquirerConfiguration configuration) => Task.CompletedTask;

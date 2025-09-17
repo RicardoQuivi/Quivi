@@ -26,7 +26,7 @@ namespace Quivi.Application.Queries.Merchants
     {
         private readonly IMerchantsRepository repository;
 
-        public GetMerchantsAsyncQueryHandler(IMerchantsRepository repository) 
+        public GetMerchantsAsyncQueryHandler(IMerchantsRepository repository)
         {
             this.repository = repository;
         }

@@ -392,7 +392,7 @@ namespace Quivi.Application.Extensions
 
         private static IServiceCollection RegisterChargeMethods(this IServiceCollection serviceCollection)
         {
-            serviceCollection.RegisterSingleton<CashAcquirerProcessor>();
+            serviceCollection.RegisterScoped<CashAcquirerProcessor>();
             serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessor>();
             serviceCollection.RegisterScoped<PaybyrdMbWayAcquirerProcessor>();
             serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessor>>(p => [
