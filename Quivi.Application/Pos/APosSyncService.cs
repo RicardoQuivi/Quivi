@@ -490,7 +490,7 @@ namespace Quivi.Application.Pos
                 {
                     Events = events,
                 });
-                if (new[] { OrderState.Draft, OrderState.Accepted, OrderState.Scheduled }.Contains(fromState))
+                if (new[] { OrderState.Draft, OrderState.PendingApproval, OrderState.Accepted, OrderState.Scheduled }.Contains(fromState))
                     backgroundJobHandler.Enqueue(() => UpdatePreparationGroup(merchantId, orderIds));
             }
             catch (NotSupportedException)
