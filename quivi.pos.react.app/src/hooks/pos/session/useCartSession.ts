@@ -477,7 +477,6 @@ const getAssignedOrdersSet = (data: Order[]) => {
     return set;
 }
 
-
 const getClosedSession = (channelId: string | undefined, closeDate: string): Session => ({
     id: "",
     items: [],
