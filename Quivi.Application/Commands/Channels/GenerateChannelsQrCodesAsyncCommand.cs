@@ -298,9 +298,11 @@ namespace Quivi.Application.Commands.Channels
 
                         column.Item().Text("\n").FontSize(3);
                         column.Item().Text("\n").FontSize(3);
+                        column.Item().Text("\n").FontSize(3);
+                        column.Item().Text("\n").FontSize(3);
 
                         column.Item()
-                            .Height(0.6f, Unit.Centimetre)
+                            .Height(0.4f, Unit.Centimetre)
                             .Row(row =>
                             {
                                 row.ConstantItem(2.3f, Unit.Centimetre)
