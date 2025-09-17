@@ -290,18 +290,17 @@ export const ImageInput: React.FC<Props> = ({
                                 </Tooltip>
                             }
                             <Tooltip message={t("imageEditor.upload")}>
-                                <IconButton
-                                    className='dark:text-gray-900 text-white cursor-pointer'
+                                <label
+                                    className='"fill-white dark:fill-gray-800 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white dark:text-gray-900 text-white cursor-pointer'
                                 >
                                     <input
                                         type="file"
                                         accept="image/jpeg,image/gif,image/png"
                                         onChange={onImageChange}
-                                        className='absolute top-0 bottom-0 left-0 right-0 size-full border-none cursor-pointer opacity-0 text-[0] z-[2]'
-                                        value=""
+                                        className="hidden"
                                     />
                                     <UploadIcon className="h-6 w-6" />
-                                </IconButton>
+                                </label>
                             </Tooltip>
 
                             {
