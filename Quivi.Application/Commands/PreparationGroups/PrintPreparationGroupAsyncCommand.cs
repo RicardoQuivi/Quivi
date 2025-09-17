@@ -185,7 +185,7 @@ namespace Quivi.Application.Commands.PreparationGroups
                             RequestedAt = null,
                             FinishedAt = null,
                             Status = AuditStatus.Pending,
-                            PrinterNotificationsContactId = entry.Key.PrinterId,
+                            PrinterNotificationsContactId = printerId,
                         },
                     ],
                     CreatedDate = now,
@@ -201,7 +201,7 @@ namespace Quivi.Application.Commands.PreparationGroups
 
             await repository.SaveChangesAsync();
 
-            foreach(var entity in addedEntities)
+            foreach (var entity in addedEntities)
             {
                 await eventService.Publish(new OnPrinterNotificationMessageOperationEvent
                 {
@@ -223,7 +223,7 @@ namespace Quivi.Application.Commands.PreparationGroups
 
         private string? GetOrderPlaceholder(PreparationGroup group)
         {
-            if(group.Orders?.Count != 1)
+            if (group.Orders?.Count != 1)
                 return null;
             var order = group.Orders.Single();
             return $"Pedido {order.OrderSequence?.SequenceNumber.ToString() ?? idConverter.ToPublicId(order.Id)}";

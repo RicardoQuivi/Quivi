@@ -316,7 +316,7 @@ const ChannelCard = (props: {
     const sessionEmployee = sessionEmployeesQuery.data.length > 0 ? sessionEmployeesQuery.data[0] : undefined;
 
     const permissionsQuery = useAllowedActions(props.channel?.id);
-
+    
     return (
         <Card
             sx={{
@@ -415,6 +415,7 @@ const ChannelCard = (props: {
 interface CloseSessionModalState {
     readonly isOpen: boolean;
     readonly channel: Channel;
+    readonly channelProfile: ChannelProfile;
 }
 
 interface CloseSessionModalProps {
@@ -431,40 +432,45 @@ const CloseSessionModal = (props: CloseSessionModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if(props.isOpen) {
-            if(props.channel != undefined) {
-                setState({
-                    isOpen: true,
-                    channel: props.channel,
-                })
-                return;
-            }
-            props.onClose();
+        if(props.isOpen == false) {
+            setState(s => {
+                if(s == undefined) {
+                    return s;
+                }
+
+                return {
+                    ...s,
+                    isOpen: false,
+                }
+            })
             return;
         }
 
-        setState(s => {
-            if(s == undefined) {
-                return s;
-            }
+        if(props.channel != undefined && props.channelProfile != undefined) {
+            setState({
+                isOpen: true,
+                channel: props.channel,
+                channelProfile: props.channelProfile,
+            })
+            return;
+        }
 
-            return {
-                ...s,
-                isOpen: false,
-            }
-        })
-    }, [props.isOpen, props.channel])
+        props.onClose();
+    }, [props.isOpen, props.channel, props.channelProfile])
 
     useEffect(() => {
         if(isLoading == false) {
             return;
         }
 
-        session?.forceSync().then(() => {
-            setIsLoading(false);
-            props.onClose();
-        })
-    }, [isLoading])
+        if(session.isSyncing) {
+            session.forceSync();
+            return;
+        }
+
+        setIsLoading(false);
+        props.onClose();
+    }, [isLoading, session.isSyncing, session.forceSync])
 
     if(state == undefined) {
         return <></>
@@ -478,27 +484,37 @@ const CloseSessionModal = (props: CloseSessionModalProps) => {
             onClose={props.onClose}
             size={ModalSize.Default}
             footer={
-                <Grid container sx={{width: "100%", margin: "1rem 0.25rem"}} spacing={1}>
+                <Grid
+                    container
+                    sx={{
+                        width: "100%",
+                        margin: "1rem 0.25rem",
+                    }}
+                    spacing={1}
+                >
                     <Grid size="grow">
-                        <LoadingButton isLoading={false} onClick={props.onClose} style={{width: "100%"}}>
+                        <LoadingButton
+                            isLoading={false}
+                            onClick={props.onClose}
+                            style={{width: "100%"}}
+                            disabled={isLoading}
+                        >
                             {t("close")}
                         </LoadingButton>
                     </Grid>
                     <Grid size="grow">
                         <LoadingButton
-                            isLoading={isLoading || session == undefined}
+                            isLoading={isLoading}
                             primaryButton 
-                            onClick={async () => {
-                                if(session == undefined) {
-                                    return;
-                                }
-
+                            onClick={() => {
                                 for(const item of session.items) {
                                     session.removeItem(item, item.quantity);
                                 }
                                 setIsLoading(true);
                             }}
-                            style={{width: "100%"}}
+                            style={{
+                                width: "100%",
+                            }}
                         >
                             {t("confirm")}
                         </LoadingButton>
@@ -511,7 +527,7 @@ const CloseSessionModal = (props: CloseSessionModalProps) => {
                 i18nKey="closeSessionQuestion"
                 shouldUnescape={true}
                 values={{
-                    name: `${props.channelProfile?.name} ${props.channel?.name}`
+                    name: `${state.channelProfile?.name} ${state.channel?.name}`
                 }}
                 components={{
                     bold: <b/>,

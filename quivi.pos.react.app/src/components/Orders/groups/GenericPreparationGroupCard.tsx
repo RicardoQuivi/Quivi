@@ -126,6 +126,7 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
     const profilesQuery = useChannelProfilesQuery(channel == undefined ? undefined : {
         ids: [channel.channelProfileId],
         page: 0,
+        pageSize: 1,
     })
     const profile = useMemo(() => profilesQuery.data.length == 0 ? undefined : profilesQuery.data[0], [profilesQuery.data])
 

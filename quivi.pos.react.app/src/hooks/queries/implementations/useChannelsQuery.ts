@@ -17,6 +17,7 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) : Page
         queryName: "useInternalChannelsQuery",
         entityType: getEntityType(Entity.Channels),
         request: {
+            sessionIds: request?.sessionIds,
             includeDeleted : true,
             page: 0,
         } as GetChannelsRequest,
@@ -104,17 +105,7 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) : Page
                         return false;
                     }
                 }
-
-                if(request.sessionIds != undefined) {
-                    if(session == undefined) {
-                        return false;
-                    }
-
-                    if(request.sessionIds.includes(session.id) == false) {
-                        return false;
-                    }
-                }
-
+                
                 return true;
             });
 

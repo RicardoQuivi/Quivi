@@ -183,7 +183,6 @@ const PreparationGroupCard = (props: PreparationGroupCardProps) => {
                 }, {} as Record<string, number>),
                 isPrepared: asComplete,
             })
-
             await awaiter.job(jobId);
         } catch {
             toast.error(t('unexpectedErrorHasOccurred'));
@@ -216,8 +215,13 @@ const PreparationGroupCard = (props: PreparationGroupCardProps) => {
                 edge="end"
                 size="small"
                 checked={totalItemChecked == Object.keys(itemsCheck).length}
-                sx={{margin: "0 0.5rem"}}
-                onClick={(evt) => {evt.stopPropagation(); onAllChecked()}}
+                sx={{
+                    margin: "0 0.5rem",
+                }}
+                onClick={(evt) => {
+                    evt.stopPropagation();
+                    onAllChecked();
+                }}
             />
         }
         footerButtons={[

@@ -309,7 +309,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
     });
 
     const forceSync = async () => {
-        if (!outOfSyncTimeout) {
+        if (outOfSyncTimeout == undefined) {
             return;
         }
 
@@ -462,7 +462,7 @@ export const useCartSession = (channelId: string | undefined): ICartSession => {
         transferSession: transferSession,
         forceSync: forceSync,
         sessionId: state.session.id,
-    }), [channelId, sessionsQuery.isFirstLoading, state.operationsToSync, state.pendingOrderIds, state.session.id, items])
+    }), [channelId, sessionsQuery.isFirstLoading, state.operationsToSync, state.pendingOrderIds, state.session.id, items, outOfSyncTimeout])
 
     return result;
 }
