@@ -75,7 +75,7 @@ export const ExpandedMenu = (props: Props) => {
                 <div className="container">
                     <div className="nav__container nav__container--expanded">
                         <button type="button" onClick={goHome} className="nav__logo">
-                            <QuiviFullIcon color={theme.primaryColor.hex} />
+                            <QuiviFullIcon fill={theme.primaryColor.hex} />
                         </button>
                         <button type="button" className="nav__close" onClick={props.onClose}>
                             <CloseIcon />

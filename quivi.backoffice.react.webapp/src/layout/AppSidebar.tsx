@@ -338,7 +338,10 @@ const AppSidebar = () => {
                 {
                     isExpanded || isHovered || isMobileOpen 
                     ?
-                    <QuiviFullIcon width="70%" className="h-auto" />
+                        <QuiviFullIcon
+                            width="70%"
+                            className="h-auto py-4 fill-brand-700 dark:fill-brand-700"
+                        />
                     :
                     <QuiviIcon width="100%" className="h-auto" />
                 }

@@ -185,9 +185,17 @@ const RightSidePanel = () => {
                 }}
             >
                 <Box 
-                    sx={{ mb: 2 }}
+                    sx={{
+                        mb: 2,
+                        "& svg": {
+                            fill: t => t.palette.primary.light,
+                        }
+                    }}
                 >
-                    <QuiviFullIcon height="auto" width={231} />
+                    <QuiviFullIcon
+                        height="auto"
+                        width={231}
+                    />
                 </Box>
 
                 <Typography

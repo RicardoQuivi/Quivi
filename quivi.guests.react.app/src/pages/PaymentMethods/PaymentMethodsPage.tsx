@@ -7,7 +7,7 @@ import { useQuiviTheme } from "../../hooks/theme/useQuiviTheme";
 import { isOrderAndPay, isPayAtTheTable, type OrderAndPayData, type PayAtTheTableData } from "../Pay/paymentTypes";
 import { Navigate, useNavigate } from "react-router";
 import { useChannelContext, useCurrentMerchant } from "../../context/AppContextProvider";
-import { InfoIcon, QuiviFullIcon } from "../../icons";
+import { InfoIcon, QuiviIcon } from "../../icons";
 import { Formatter } from "../../helpers/formatter";
 import { Grid, Tooltip } from "@mui/material";
 import { LoadingAnimation } from "../../components/LoadingAnimation/LoadingAnimation";
@@ -158,11 +158,14 @@ export const PaymentMethodsPage = (props: Props) => {
                 overflowY: "hidden",
             }}
         >
-            <QuiviFullIcon color={theme.primaryColor.hex} style={{
-                flexGrow: 1,
-                maxHeight: "3rem",
-                maxWidth: "80%",
-            }}/>
+            <QuiviIcon
+                fill={theme.primaryColor.hex}
+                style={{
+                    flexGrow: 1,
+                    maxHeight: "3rem",
+                    maxWidth: "80%",
+                }}
+            />
             <span>
                 <b>{t("userHome.balance")}: </b>{Formatter.price(wallet.balance, "€")}
             </span>

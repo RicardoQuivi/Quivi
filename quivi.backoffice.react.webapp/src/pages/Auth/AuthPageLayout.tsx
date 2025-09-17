@@ -21,7 +21,11 @@ export default function AuthLayout(props: AuthLayoutProps) {
                     <GridShape />
                     <div className="flex flex-col items-center max-w-xs">
                         <Link to="/" className="block mb-4">
-                            <QuiviFullIcon height="auto" width={231} />
+                            <QuiviFullIcon
+                                height="auto"
+                                width={231}
+                                className="fill-brand-50 dark:fill-brand-700"
+                            />
                         </Link>
                         <p className="text-center text-gray-400 dark:text-white/60">
                             {t("quivi.product.description")}
