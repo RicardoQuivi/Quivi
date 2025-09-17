@@ -40,21 +40,21 @@ export const useOrdersApi = () => {
     }
 
     const create = (request: CreateOrderRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/orders`;
+        const url = new URL(`api/orders`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<CreateOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }
 
     const update = (request: UpdateOrderRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/orders`;
+        const url = new URL(`api/orders`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPut<UpdateOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }
 
     const submit = (request: SubmitOrderRequest) => {
-        let url = `${import.meta.env.VITE_API_URL}api/orders/${request.id}/submit`;
+        const url = new URL(`api/orders/${request.id}/submit`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPost<SubmitOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
