@@ -144,6 +144,7 @@ export const ChannelsPage = () => {
                                 variant="outline"
                                 onClick={onPrintSelectedItems}
                                 startIcon={<PrinterIcon className="size-5" />}
+                                className="w-full"
                             >
                                 {t("common.print")}
                             </Button>,
@@ -151,6 +152,7 @@ export const ChannelsPage = () => {
                                 variant="outline"
                                 onClick={onEditSelectedItems}
                                 startIcon={<PencilIcon className="size-5" />}
+                                className="w-full"
                             >
                                 {t("common.edit")}
                             </Button>,
@@ -158,6 +160,7 @@ export const ChannelsPage = () => {
                                 variant="outline" 
                                 onClick={onDeleteSelectedItems}
                                 startIcon={<TrashBinIcon className="size-5" />}
+                                className="w-full"
                             >
                                 {t("common.delete")}
                             </Button>,

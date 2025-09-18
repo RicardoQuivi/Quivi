@@ -18,6 +18,10 @@ export const NewOrderAudioPlayer = () => {
     const [lastRequestedOrderDate, setLastRequestedOrderDate] = useState<Date | undefined | null>(undefined);
 
     useEffect(() => {
+        if(requestedOrdersQuery.isFirstLoading) {
+            return;
+        }
+        
         const newDate = requestedOrdersQuery.data.length == 0 ? undefined : dateHelper.toDate(requestedOrdersQuery.data[0].lastModified);
         if(lastRequestedOrderDate === undefined) {
             setLastRequestedOrderDate(newDate == undefined ? null : newDate);
@@ -33,7 +37,7 @@ export const NewOrderAudioPlayer = () => {
             newOrderAudio.play();
             setLastRequestedOrderDate(newDate)
         }
-    }, [dateHelper, lastRequestedOrderDate, requestedOrdersQuery.data])
+    }, [dateHelper, lastRequestedOrderDate, requestedOrdersQuery.data, requestedOrdersQuery.isFirstLoading])
     
     return <>
     </>

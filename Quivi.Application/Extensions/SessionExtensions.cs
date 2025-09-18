@@ -19,10 +19,7 @@ namespace Quivi.Application.Extensions
             public IEnumerator<Order> GetEnumerator() => orders.GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => orders.GetEnumerator();
 
-            public IEnumerable<OrderMenuItem> GetValidOrderMenuItems()
-            {
-                return orders.SelectMany(o => o.OrderMenuItems ?? []).Where(o => o.ParentOrderMenuItemId.HasValue == false) ?? [];
-            }
+            public IEnumerable<OrderMenuItem> GetValidOrderMenuItems() => orders.SelectMany(o => o.OrderMenuItems ?? []).Where(o => o.ParentOrderMenuItemId.HasValue == false) ?? [];
         }
 
         public static ValidSessionOrders GetValidOrders(this Session session) => session.Orders.GetValidOrders();

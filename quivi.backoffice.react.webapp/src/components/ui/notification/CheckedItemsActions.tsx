@@ -43,12 +43,14 @@ export const CheckedItemsActions: React.FC<CheckedItemsActionsProps> = (props: C
                 }
             </p>
 
+            
             <div className="flex flex-col justify-end gap-6 sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex items-center w-full gap-3 sm:w-auto">
+                <div className="flex gap-3 sm:flex-nowrap flex-wrap">
                     {
                         props.actions.map((node, index) => !!node && (
                             <div
                                 key={index}
+                                className="flex-1 shrink-0 sm:w-full"
                             >
                                 {node}
                             </div>

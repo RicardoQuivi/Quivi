@@ -102,24 +102,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
         private Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
         {
-            var groupedItem = command.InvoiceItems.GroupBy(i => new
-            {
-                i.MenuItemId,
-                i.Name,
-                i.UnitPrice,
-                i.VatRate,
-                i.DiscountPercentage,
-            }).Select(g => new AQuiviSyncStrategy.InvoiceItem
-            {
-                MenuItemId = g.Key.MenuItemId,
-                Name = g.Key.Name,
-                UnitPrice = g.Key.UnitPrice,
-                VatRate = g.Key.VatRate,
-                DiscountPercentage = g.Key.DiscountPercentage,
-                Quantity = g.Sum(x => x.Quantity),
-            }).ToList();
-
-            var invoiceItems = groupedItem.Select(g => new InvoiceItem(g.Type)
+            var invoiceItems = command.InvoiceItems.Select(g => new InvoiceItem(g.Type)
             {
                 Reference = idConverter.ToPublicId(g.MenuItemId),
                 CorrelationId = idConverter.ToPublicId(g.MenuItemId),
