@@ -5,7 +5,7 @@ import './i18n';
 import { AuthProvider } from './context/AuthContextProvider.tsx'
 import { WebEventsProvider } from './hooks/signalR/useWebEvents.tsx'
 import { QueryContextProvider } from './context/QueryContextProvider.tsx'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { alpha, createTheme, ThemeProvider } from '@mui/material/styles'
 import { ToastProvider } from './context/ToastProvider.tsx'
 import { App } from './App.tsx'
 import { EmployeeProvider } from './context/employee/EmployeeContextProvider.tsx';
@@ -26,7 +26,13 @@ const theme = createTheme({
             "700": "#2F631C",
             "800": "#3B7D22",
             "900": "#E0F1DB",
-        }
+        },
+        error: {
+            main: "#FF0000",
+            dark: alpha('#ff0000', 0.3),
+            contrastText: undefined,
+            light: undefined,
+        },
     }
 });
 

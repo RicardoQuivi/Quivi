@@ -223,8 +223,8 @@ export const ChannelsOverview: React.FC<Props> = ({
                                     >
                                         <ChannelCard
                                             cardProps={{
-                                                backgroundColor: session?.isOpen == true ? "rgba(255, 0, 0, 0.3)" : undefined,
-                                                borderColor: "red",
+                                                backgroundColor: t => session?.isOpen == true ? t.palette.error.dark : undefined,
+                                                borderColor: t => t.palette.error.main,
                                             }}
                                             subtitle={
                                                 sessionsQuery.isLoading

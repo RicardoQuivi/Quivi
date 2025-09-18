@@ -248,7 +248,9 @@ export const OrderCard = (props: OrderCardProps) => {
         <Card
             onClick={() => props.order != undefined && props.onCardClicked?.(props.order)}
             sx={{
-                border: isDelayed ? "2px solid #d26806" : undefined,
+                borderStyle: isDelayed ? "solid" : undefined,
+                borderColor: t => isDelayed ? t.palette.warning.main : undefined,
+                borderWidth: isDelayed ? "2px" : undefined,
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",

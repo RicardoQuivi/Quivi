@@ -12,7 +12,7 @@ export const NoEmployeeLayout = (props: Props) => {
             position="relative"
             zIndex={1}
             sx={{
-                bgcolor: 'white',
+                bgcolor: t => t.palette.background.paper
             }}
         >
             <Grid
@@ -25,7 +25,6 @@ export const NoEmployeeLayout = (props: Props) => {
                 sx={{
                     width: '100%',
                     height: '100vh',
-                    bgcolor: 'white',
                     p: {
                         xs: 0,
                         sm: 0,

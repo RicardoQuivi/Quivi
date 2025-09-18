@@ -264,8 +264,8 @@ export const SessionButtons = ({
                 <Badge
                     sx={{
                         "& .MuiBadge-badge": {
-                            backgroundColor: '#6c757d',
-                            color: '#fff',
+                            backgroundColor: t => t.palette.primary.main,
+                            color: t => t.palette.primary.light,
                             fontSize: '0.875rem',
                             minHeight: '1rem',
                         }

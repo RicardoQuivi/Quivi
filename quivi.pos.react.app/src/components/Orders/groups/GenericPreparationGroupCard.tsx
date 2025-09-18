@@ -330,15 +330,22 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
             maxWidth: "100%",
         }}
     >
-        <Card sx={{
-            border: isDelayed ? "2px solid #d26806" : undefined,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-        }}>
+        <Card
+            sx={{
+                borderStyle: isDelayed ? "solid" : undefined,
+                borderColor: t => isDelayed ? t.palette.warning.main : undefined,
+                borderWidth: isDelayed ? "2px" : undefined,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
             <CardActionArea 
                 onClick={() => props.group != undefined && props.onCardClicked?.(props.group)} 
-                style={{flex: "0 0 auto", cursor: "pointer"}}
+                sx={{
+                    flex: "0 0 auto",
+                    cursor: "pointer",
+                }}
             >
                 <CardHeader 
                     title={getTitle()} 
