@@ -11,9 +11,9 @@ namespace Quivi.Application.Extensions
         {
             private readonly IEnumerable<Order> orders;
 
-            public ValidSessionOrders(Session session)
+            public ValidSessionOrders(IEnumerable<Order>? orders)
             {
-                orders = session.Orders?.Where(o => validOrderStates.Contains(o.State)) ?? [];
+                this.orders = orders?.Where(o => validOrderStates.Contains(o.State)) ?? [];
             }
 
             public IEnumerator<Order> GetEnumerator() => orders.GetEnumerator();
@@ -25,8 +25,10 @@ namespace Quivi.Application.Extensions
             }
         }
 
-        public static ValidSessionOrders GetValidOrders(this Session session) => new ValidSessionOrders(session);
+        public static ValidSessionOrders GetValidOrders(this Session session) => session.Orders.GetValidOrders();
+        public static ValidSessionOrders GetValidOrders(this IEnumerable<Order>? orders) => new ValidSessionOrders(orders);
 
         public static IEnumerable<OrderMenuItem> GetValidOrderMenuItems(this Session session) => session.GetValidOrders().GetValidOrderMenuItems();
+        public static IEnumerable<OrderMenuItem> GetValidOrderMenuItems(this IEnumerable<Order>? orders) => orders.GetValidOrders().GetValidOrderMenuItems();
     }
 }

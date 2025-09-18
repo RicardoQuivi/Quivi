@@ -206,11 +206,11 @@ namespace Quivi.Application.Extensions.Pos
                 ModifierGroupId = e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"),
                 MenuItemId = e.MenuItemId,
                 Price = e.FinalPrice,
-                Quantity = e.Quantity,
+                Quantity = s.Quantity == 0 ? 0 : e.Quantity / s.Quantity,
             }) ?? [],
         };
 
-        public static IEnumerable<SessionItem> AsSessionItems(this IEnumerable<OrderMenuItem> items) => SessionItemComparer.Compress(items.Select(AsSessionItem));
+        public static IEnumerable<SessionItem> AsSessionItems(this IEnumerable<OrderMenuItem> items) => SessionItemComparer.Compress(items.Where(i => i.ParentOrderMenuItemId.HasValue == false).Select(AsSessionItem));
 
         public static IEnumerable<SessionItem> AsSessionItems(this IEnumerable<PosChargeInvoiceItem> items)
         {
@@ -232,7 +232,7 @@ namespace Quivi.Application.Extensions.Pos
 
         public static IEnumerable<SessionItem<OrderMenuItem, OrderMenuItem>> AsConvertedSessionItems(this IEnumerable<OrderMenuItem> items)
         {
-            var result = SessionItemComparer<OrderMenuItem>.Compress(items, s => new SessionItem
+            var result = SessionItemComparer<OrderMenuItem>.Compress(items.Where(i => i.ParentOrderMenuItemId.HasValue == false), s => new SessionItem
             {
                 MenuItemId = s.MenuItemId,
                 Price = s.FinalPrice,

@@ -15,8 +15,7 @@ namespace Quivi.Guests.Api.MapperHandlers
         private readonly IIdConverter idConverter;
         private readonly IHasher hasher;
 
-        public OrderMenuItemsMapperHandler(IIdConverter idConverter,
-                                    IHasher hasher)
+        public OrderMenuItemsMapperHandler(IIdConverter idConverter, IHasher hasher)
         {
             this.idConverter = idConverter;
             this.hasher = hasher;

@@ -128,6 +128,7 @@ namespace Quivi.Application.Commands.PreparationGroups
             var childrenDictionary = itemsToAdd.Where(g => g.ParentOrderMenuItemId.HasValue)
                                 .GroupBy(g => g.ParentOrderMenuItemId!.Value)
                                 .ToDictionary(g => g.Key, g => g.AsEnumerable());
+
             var compressedSessionItems = itemsToAdd.Where(g => g.ParentOrderMenuItemId.HasValue == false).Select(i => new SessionItem
             {
                 MenuItemId = i.MenuItemId,
@@ -139,7 +140,7 @@ namespace Quivi.Application.Commands.PreparationGroups
                     ModifierGroupId = e.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.MenuItemModifierGroup)}"),
                     MenuItemId = e.MenuItemId,
                     Price = 0, //Price is irrelevant for preparation
-                    Quantity = e.Quantity / i.Quantity,
+                    Quantity = i.Quantity == 0 ? 0 : e.Quantity / i.Quantity,
                 }) : Enumerable.Empty<SessionExtraItem>(),
             }).Compress();
 

@@ -16,8 +16,8 @@ namespace Quivi.SignalR.EventHandlers.MerchantInvoiceDocuments
         private readonly IIdConverter idConverter;
 
         public OnMerchantInvoiceDocumentOperationEventHandler(IHubContext<BackofficeHub, IBackofficeClient> backofficeHub,
-                                                IHubContext<GuestsHub, IGuestClient> guestsHub,
-                                                IIdConverter idConverter)
+                                                                IHubContext<GuestsHub, IGuestClient> guestsHub,
+                                                                IIdConverter idConverter)
         {
             this.backofficeHub = backofficeHub;
             this.guestsHub = guestsHub;

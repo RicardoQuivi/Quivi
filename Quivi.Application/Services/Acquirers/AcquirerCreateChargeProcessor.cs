@@ -340,7 +340,7 @@ namespace Quivi.Application.Services.Acquirers
 
         private bool ValidatePayAtTheTablePayment(CreateParameters command, Session session)
         {
-            var items = session.Orders!.SelectMany(o => o.OrderMenuItems!).AsConvertedSessionItems();
+            var items = session.GetValidOrderMenuItems().AsConvertedSessionItems();
             var totals = items.Aggregate((total: 0.0M, totalPaid: 0.0M), (r, item) =>
             {
                 var first = item.Source.First();
