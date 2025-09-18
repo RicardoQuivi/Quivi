@@ -4,6 +4,51 @@
             "description": "Um PoS moderno e revolucionário para impulsionar o seu negócio"
         }
     },
+    "dateHelper": {
+        "at": "às",
+        "units": {
+            "justNow": "Há instantes",
+            "timeAgo": "Há {{value}} {{time}}",
+            "minute": "Minuto",
+            "minutes": "Minutos",
+            "hour": "Hora",
+            "hours": "Horas",
+            "day": "Dia",
+            "days": "Dias",
+            "month": "Mês",
+            "months": "Meses"
+        },
+        "months": {
+            "full": {
+                "january": "Janeiro",
+                "february": "Fevereiro",
+                "march": "Março",
+                "april": "Abril",
+                "may": "Maio",
+                "june": "Junho",
+                "july": "Julho",
+                "august": "Agosto",
+                "september": "Setembro",
+                "october": "Outubro",
+                "november": "Novembro",
+                "december": "Dezembro"
+            },
+            "short": {
+                "january": "Jan",
+                "february": "Fev",
+                "march": "Mar",
+                "april": "Abr",
+                "may": "Mai",
+                "june": "Jun",
+                "july": "Jul",
+                "august": "Ago",
+                "september": "Set",
+                "october": "Out",
+                "november": "Nov",
+                "december": "Dez"
+            }
+        }
+    },
     "common": {
         "admin": {
             "settings": "Definições de administração",

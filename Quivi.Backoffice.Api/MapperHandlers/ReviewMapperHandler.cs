@@ -20,6 +20,8 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 Id = idConverter.ToPublicId(model.PosChargeId),
                 Comment = string.IsNullOrWhiteSpace(model.Comment) ? null : model.Comment,
                 Stars = model.Stars,
+                CreatedDate = new DateTimeOffset(model.CreatedDate, TimeSpan.Zero),
+                ModifiedDate = new DateTimeOffset(model.ModifiedDate, TimeSpan.Zero),
             };
         }
     }

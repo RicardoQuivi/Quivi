@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-export const useNow = (intervalMs?: number) => {
-    const [now, setNow] = useState<Date>(new Date());
+export const useNow = (intervalMs: number | undefined) => {
+    const [now, setNow] = useState<Date>(() => new Date());
     
     useEffect(() => {
         if(intervalMs == undefined) {

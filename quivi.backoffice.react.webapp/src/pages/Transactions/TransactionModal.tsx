@@ -4,7 +4,7 @@ import { PublicId } from "../../components/publicids/PublicId";
 import Button from "../../components/ui/button/Button";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
 import { useEffect, useMemo, useState } from "react";
-import { DownloadIcon, FeesIcon, PrinterIcon, QuiviIcon } from "../../icons";
+import { DownloadIcon, FeesIcon, PrinterIcon, QuiviIcon, StarIcon } from "../../icons";
 import { Skeleton } from "../../components/ui/skeleton/Skeleton";
 import { DateUtils } from "../../utilities/dateutils";
 import { useMerchantsQuery } from "../../hooks/queries/implementations/useMerchantsQuery";
@@ -27,6 +27,9 @@ import * as yup from 'yup';
 import { useSearchParams } from "react-router";
 import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import { CurrencyField } from "../../components/inputs/CurrencyField";
+import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
+import { useDateHelper } from "../../utilities/dateHelper";
+import { useNow } from "../../hooks/useNow";
 
 enum Tabs {
     Details = "Details",
@@ -114,7 +117,16 @@ const Details = ({
     transaction
 }: PageProps) => {
     const { t } = useTranslation();
+    const dateHelper = useDateHelper();
     const user = useAuthenticatedUser();
+    const now = useNow(1000);
+
+    const reviewsQuery = useReviewsQuery(transaction == undefined ? undefined : {
+        ids: [transaction.id],
+        page: 0,
+        pageSize: undefined,
+    })
+    const review = useMemo(() => reviewsQuery.data.length == 0 ? undefined : reviewsQuery.data[0], [reviewsQuery.data]);
 
     const customChargeMethodQuery = useCustomChargeMethodsQuery(transaction?.customChargeMethodId == undefined ? undefined : {
         ids: [transaction.customChargeMethodId],
@@ -180,7 +192,47 @@ const Details = ({
     }
 
     return <>
-        <div className="mb-10 flex flex-wrap items-center justify-end gap-3.5">
+        <div className="mb-10 flex flex-wrap items-center justify-between gap-3.5">
+            <div>
+            {
+                review != undefined &&
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
+                    <h2 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
+                        {t("common.entities.review")}
+                    </h2>
+
+                    <div className="relative pb-7 pl-11">
+                        <div className="absolute top-0 left-0 z-10 flex h-12 w-12 items-center justify-center text-gray-700 dark:text-gray-400">
+                            <Badge 
+                                variant="solid"
+                                color={review.stars > 3 ? "success" : "warning"}
+                                startIcon={<StarIcon fill="currentColor" />}
+                            >
+                                {review.stars}
+                            </Badge>
+                        </div>
+
+                        <div className="ml-4 flex justify-between gap-6">
+                            <div>
+                                <h4 className="font-medium text-gray-800 dark:text-white/90">
+                                    {t("common.comment")}
+                                </h4>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {review.comment}
+                                </p>
+                            </div>
+
+                            <div>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">{dateHelper.toLocalString(review.modifiedDate, "HH:MM DD/MM/YYYY")}</span>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {dateHelper.getTimeAgo(now, review.modifiedDate)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
             <Button>
                 <PrinterIcon />
                 {t("common.print")}
