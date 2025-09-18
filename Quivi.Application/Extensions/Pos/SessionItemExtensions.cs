@@ -119,6 +119,11 @@ namespace Quivi.Application.Extensions.Pos
         public required IEnumerable<T> Source { get; init; }
     }
 
+    public record PaidSessionItem<T, TExtra> : SessionItem<T, TExtra>
+    {
+        public decimal PaidQuantity { get; init; }
+    }
+
     public class SessionItemComparer<T> : SessionItemComparer, IEqualityComparer<ConvertedTuple<SessionItem, T>>
     {
         private class ExtraSessionItemComparer<TChild> : SessionItemComparer, IEqualityComparer<ConvertedTuple<SessionExtraItem, TChild>>
@@ -225,7 +230,7 @@ namespace Quivi.Application.Extensions.Pos
                     ModifierGroupId = e.OrderMenuItem!.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.OrderMenuItem.MenuItemModifierGroup)}"),
                     MenuItemId = e.OrderMenuItem!.Id,
                     Price = e.OrderMenuItem!.FinalPrice,
-                    Quantity = e.Quantity,
+                    Quantity = e.ParentPosChargeInvoiceItem!.Quantity == 0 ? 0 : e.Quantity / e.ParentPosChargeInvoiceItem!.Quantity,
                 }) ?? [],
             }));
         }
@@ -255,7 +260,32 @@ namespace Quivi.Application.Extensions.Pos
             return result;
         }
 
-        public static IEnumerable<PaidSessionItem> AsPaidSessionItems(this IEnumerable<OrderMenuItem> items)
+        public static IEnumerable<SessionItem<PosChargeInvoiceItem, PosChargeInvoiceItem>> AsConvertedSessionItems(this IEnumerable<PosChargeInvoiceItem> items)
+        {
+            var result = SessionItemComparer<PosChargeInvoiceItem>.Compress(items.Where(i => i.ParentPosChargeInvoiceItemId.HasValue == false), s => new SessionItem
+            {
+                MenuItemId = s.OrderMenuItem!.MenuItemId,
+                Price = s.OrderMenuItem!.FinalPrice,
+                Quantity = s.Quantity,
+                Discount = PriceHelper.CalculateDiscountPercentage(s.OrderMenuItem!.OriginalPrice, s.OrderMenuItem!.FinalPrice),
+                Extras = s.ChildrenPosChargeInvoiceItems?.Select(e => new SessionExtraItem
+                {
+                    ModifierGroupId = e.OrderMenuItem!.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.OrderMenuItem.MenuItemModifierGroup)}"),
+                    MenuItemId = e.OrderMenuItem!.MenuItemId,
+                    Price = e.OrderMenuItem!.FinalPrice,
+                    Quantity = e.ParentPosChargeInvoiceItem!.Quantity == 0 ? 0 : e.Quantity / e.ParentPosChargeInvoiceItem!.Quantity,
+                }) ?? [],
+            }, s => s.ChildrenPosChargeInvoiceItems ?? [], e => new SessionExtraItem
+            {
+                ModifierGroupId = e.OrderMenuItem!.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.OrderMenuItem.MenuItemModifierGroup)}"),
+                MenuItemId = e.OrderMenuItem!.MenuItemId,
+                Price = e.OrderMenuItem!.FinalPrice,
+                Quantity = e.ParentPosChargeInvoiceItem!.Quantity == 0 ? 0 : e.Quantity / e.ParentPosChargeInvoiceItem!.Quantity,
+            }, e => e.OrderMenuItem!.MenuItemModifierGroupId ?? throw new Exception($"The extra needs to belong to a {nameof(e.OrderMenuItem.MenuItemModifierGroup)}"));
+            return result;
+        }
+
+        public static IEnumerable<PaidSessionItem<OrderMenuItem, OrderMenuItem>> AsPaidSessionItems(this IEnumerable<OrderMenuItem> items)
         {
             var sessionItems = items.AsConvertedSessionItems();
 
@@ -265,8 +295,9 @@ namespace Quivi.Application.Extensions.Pos
                 var paidQuantity = model.Source.SelectMany(s => s.PosChargeInvoiceItems ?? []).Sum(s => s.Quantity);
                 var unpaidQuantity = model.Quantity - paidQuantity;
 
-                yield return new PaidSessionItem
+                yield return new PaidSessionItem<OrderMenuItem, OrderMenuItem>
                 {
+                    Source = model.Source,
                     MenuItemId = model.MenuItemId,
                     Price = model.Price,
                     Quantity = model.Quantity,

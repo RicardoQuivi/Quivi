@@ -123,7 +123,13 @@ export const TransactionDetails = ({
                 />
             </HighlightMessage>
         }
-        <Grid container style={{ marginTop: "1rem" }}>
+
+        <Grid
+            container
+            sx={{
+                marginTop: "1rem",
+            }}
+        >
             <Grid size={6} flexDirection="column" alignContent="start" flexWrap="wrap" display="flex">
                 <Typography variant="caption" component="label" gutterBottom fontWeight="bold">
                     {t("email")}

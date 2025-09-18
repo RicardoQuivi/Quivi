@@ -9,7 +9,7 @@ namespace Quivi.Application.Pos.SyncStrategies
 {
     public class QuiviFacturaLusaSyncStrategy : AQuiviSyncStrategy<QuiviFacturalusaSyncSettings>
     {
-        private readonly IIdConverter _idConverter;
+        private readonly IIdConverter idConverter;
 
         public QuiviFacturaLusaSyncStrategy(
             ICommandProcessor commandProcessor,
@@ -18,7 +18,7 @@ namespace Quivi.Application.Pos.SyncStrategies
             IIdConverter idConverter)
             : base(commandProcessor, invoiceGatewayFactory, queryProcessor)
         {
-            _idConverter = idConverter;
+            this.idConverter = idConverter;
         }
 
         public override IntegrationType IntegrationType => IntegrationType.QuiviViaFacturalusa;
@@ -42,7 +42,7 @@ namespace Quivi.Application.Pos.SyncStrategies
             var invoiceGateway = InvoiceGatewayFactory.GetInvoiceGateway(settings);
             await invoiceGateway.UpsertInvoiceItems(menuItemsQuery.Select(m => new ProductItem(InvoiceItemType.ProcessedProducts)
             {
-                CorrelationId = _idConverter.ToPublicId(m.Id),
+                CorrelationId = idConverter.ToPublicId(m.Id),
                 Name = m.Name,
                 Description = m.Description,
                 Price = m.Price,

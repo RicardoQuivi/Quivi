@@ -15,6 +15,6 @@
 
     public class TransactionItem : BaseTransactionItem
     {
-        public IEnumerable<BaseTransactionItem> Modifiers { get; set; }
+        public required IEnumerable<BaseTransactionItem> Modifiers { get; set; }
     }
 }

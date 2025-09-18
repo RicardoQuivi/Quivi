@@ -1,4 +1,5 @@
 ﻿using Quivi.Application.Commands.Sessions;
+using Quivi.Application.Extensions;
 using Quivi.Application.Extensions.Pos;
 using Quivi.Application.Queries.PosIntegrations;
 using Quivi.Domain.Entities.Charges;
@@ -136,8 +137,8 @@ namespace Quivi.Application.Commands.PosCharges
 
         private static bool ValidateSessionItems(CreatePosChargeAsyncCommand command, Session session)
         {
-            var sessionItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).AsSessionItems();
-            var paidItems = session.Orders!.SelectMany(o => o.OrderMenuItems!).SelectMany(o => o.PosChargeInvoiceItems!).AsSessionItems();
+            var sessionItems = session.GetValidOrderMenuItems().AsSessionItems();
+            var paidItems = session.GetValidOrderMenuItems().SelectMany(o => o.PosChargeInvoiceItems!).AsSessionItems();
 
             if (command.Items != null)
             {

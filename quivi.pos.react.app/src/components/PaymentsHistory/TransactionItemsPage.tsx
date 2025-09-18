@@ -5,7 +5,7 @@ import { PaginationFooter } from "../Pagination/PaginationFooter";
 import CurrencySpan from "../Currency/CurrencySpan";
 import { ResponsiveTable } from "../Tables/ResponsiveTable";
 import DecimalSpan from "../Currency/DecimalSpan";
-import { BaseTransactionItem, TransactionItem } from "../../hooks/api/Dtos/transactionItems/TransactionItem";
+import { BaseTransactionItem } from "../../hooks/api/Dtos/transactionItems/TransactionItem";
 import { useTransactionItemsQuery } from "../../hooks/queries/implementations/useTransactionItemsQuery";
 
 interface Props {
@@ -26,7 +26,7 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
         pageSize: 10,
     });
 
-    const getModifiersTotal = (itemQty: number, modifiers: BaseTransactionItem[] | undefined) => modifiers?.reduce((r, m) => r + itemQty * m.quantity * m.price, 0) ?? 0;
+    const getModifiersTotal = (itemQty: number, modifiers: BaseTransactionItem[]) => modifiers.reduce((r, m) => r + itemQty * m.quantity * m.price, 0) ?? 0;
 
     const formatQuantity = (value: number) => value.toFixed(2).replace('.00', '');
 
@@ -39,8 +39,6 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
         return [...expandedList, id];
     });
 
-    const isExpandable = (item: TransactionItem) => !!item.modifiers?.length;
-
     useEffect(() => setLoadItems(p => p || props.canLoadItems), [props.canLoadItems])
     
     return <>
@@ -48,7 +46,7 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
             isLoading={itemsQuery.isFirstLoading}
             data={itemsQuery.data.map(item => ({
                 item: item,
-                isExpandable: isExpandable(item),
+                isExpandable: item.modifiers.length > 0,
                 isExpanded: isExpanded(item.id),
                 isChildren: false,
             }))}

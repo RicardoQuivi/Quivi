@@ -30,6 +30,7 @@ import { CurrencyField } from "../../components/inputs/CurrencyField";
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { useDateHelper } from "../../utilities/dateHelper";
 import { useNow } from "../../hooks/useNow";
+import React from "react";
 
 enum Tabs {
     Details = "Details",
@@ -171,6 +172,10 @@ const Details = ({
         for(const item of transaction?.items ?? []) {
             totalFinal += item.finalPrice * item.quantity;
             totalOriginal += item.originalPrice * item.quantity;
+            for(const extra of item.modifiers) {
+                totalFinal += extra.finalPrice * extra.quantity;
+                totalOriginal += extra.originalPrice * extra.quantity;
+            }
         }
         return {
             total: totalFinal,
@@ -459,31 +464,62 @@ const Details = ({
                         ))
                         :
                         transaction.items.map((item) => (
-                            <div key={item.id} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
-                                <div className="col-span-7">
-                                    <p className="font-medium dark:text-white">
-                                        {item.name}
-                                    </p>
-                                </div>
+                            <React.Fragment key={item.id}>
+                                <div className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
+                                    <div className="col-span-7">
+                                        <p className="font-medium dark:text-white">
+                                            {item.name}
+                                        </p>
+                                    </div>
 
-                                <div className="col-span-2">
-                                    <p className="font-medium dark:text-white">
-                                        {item.quantity}
-                                    </p>
-                                </div>
+                                    <div className="col-span-2">
+                                        <p className="font-medium dark:text-white">
+                                            {item.quantity}
+                                        </p>
+                                    </div>
 
-                                <div className="col-span-2">
-                                    <p className="font-medium dark:text-white">
-                                        <CurrencySpan value={item.finalPrice} />
-                                    </p>
-                                </div>
+                                    <div className="col-span-2">
+                                        <p className="font-medium dark:text-white">
+                                            <CurrencySpan value={item.finalPrice} />
+                                        </p>
+                                    </div>
 
-                                <div className="col-span-1">
-                                    <p className="text-right font-medium dark:text-white">
-                                        <CurrencySpan value={item.finalPrice * item.quantity} />
-                                    </p>
+                                    <div className="col-span-1">
+                                        <p className="text-right font-medium dark:text-white">
+                                            <CurrencySpan value={item.finalPrice * item.quantity} />
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                                {
+                                    item.modifiers.map(extra => 
+                                        <div key={extra.id} className="grid grid-cols-12 border-b border-stroke py-3.5 pl-5 pr-6 dark:border-strokedark">
+                                            <div className="col-span-7">
+                                                <p className="font-medium dark:text-white pl-6">
+                                                    {extra.name}
+                                                </p>
+                                            </div>
+
+                                            <div className="col-span-2">
+                                                <p className="font-medium dark:text-white">
+                                                    {extra.quantity}
+                                                </p>
+                                            </div>
+
+                                            <div className="col-span-2">
+                                                <p className="font-medium dark:text-white">
+                                                    <CurrencySpan value={extra.finalPrice} />
+                                                </p>
+                                            </div>
+
+                                            <div className="col-span-1">
+                                                <p className="text-right font-medium dark:text-white">
+                                                    <CurrencySpan value={extra.finalPrice * extra.quantity} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            </React.Fragment>
                         ))
                     }
                 </div>

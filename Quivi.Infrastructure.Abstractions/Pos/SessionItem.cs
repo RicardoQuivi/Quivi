@@ -17,9 +17,4 @@
         public decimal Discount { get; init; }
         public required IEnumerable<SessionExtraItem> Extras { get; init; }
     }
-
-    public record PaidSessionItem : SessionItem
-    {
-        public decimal PaidQuantity { get; init; }
-    }
 }

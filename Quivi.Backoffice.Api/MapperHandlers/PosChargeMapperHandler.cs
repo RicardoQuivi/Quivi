@@ -1,5 +1,4 @@
-﻿using Quivi.Backoffice.Api.Dtos;
-using Quivi.Domain.Entities.Charges;
+﻿using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Mapping;
@@ -17,12 +16,12 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             this.mapper = mapper;
         }
 
-        public Transaction Map(PosCharge model)
+        public Dtos.Transaction Map(PosCharge model)
         {
             if (model.Charge == null)
                 throw new Exception($"{nameof(Charge)} was not included in {nameof(PosCharge)}");
 
-            return new Transaction
+            return new Dtos.Transaction
             {
                 Id = idConverter.ToPublicId(model.ChargeId),
                 MerchantId = idConverter.ToPublicId(model.MerchantId),
@@ -65,18 +64,18 @@ namespace Quivi.Backoffice.Api.MapperHandlers
             return result;
         }
 
-        private SynchronizationState GetSyncingState(PosCharge model)
+        private Dtos.SynchronizationState GetSyncingState(PosCharge model)
         {
             if (model.PosChargeSyncAttempts?.Any() != true)
-                return IsFreePayment(model) ? SynchronizationState.Succeeded : SynchronizationState.Syncing;
+                return IsFreePayment(model) ? Dtos.SynchronizationState.Succeeded : Dtos.SynchronizationState.Syncing;
 
             if (model.PosChargeSyncAttempts.Any(c => c.State == SyncAttemptState.Synced))
-                return SynchronizationState.Succeeded;
+                return Dtos.SynchronizationState.Succeeded;
 
             if (model.PosChargeSyncAttempts.Any(c => c.State == SyncAttemptState.Failed))
-                return SynchronizationState.Failed;
+                return Dtos.SynchronizationState.Failed;
 
-            return SynchronizationState.Syncing;
+            return Dtos.SynchronizationState.Syncing;
         }
 
         private static bool IsFreePayment(PosCharge model) => model.SessionId.HasValue == false && model.PosChargeInvoiceItems?.Any() == false;
