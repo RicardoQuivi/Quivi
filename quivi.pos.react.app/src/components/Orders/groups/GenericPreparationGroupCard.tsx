@@ -357,11 +357,24 @@ export const GenericPreparationGroupCard = (props: GenericPreparationGroupCardPr
                     action={props.headerAction}
                 />
             </CardActionArea>
-            <Divider style={{flex: "0 0 auto"}}/>
-            <CardContent sx={{ paddingTop: "0.5rem", paddingBottom: "0 !important"}} style={{flex: "1 1 auto"}}>
+            <Divider sx={{flex: "0 0 auto"}} />
+            <CardContent
+                sx={{
+                    paddingTop: "0.5rem",
+                    paddingBottom: "0 !important",
+                    flex: "1 1 auto",
+                }}
+            >
                 {getItems()}
             </CardContent>
-            <CardContent sx={{ marginTop: "0.5rem", paddingTop: "0", paddingBottom: "0.5rem !important"}} style={{flex: "0 0 auto"}}>
+            <CardContent
+                sx={{
+                    marginTop: "0.5rem",
+                    paddingTop: "0",
+                    paddingBottom: "0.5rem !important",
+                    flex: "0 0 auto",
+                }}
+            >
                 <TimeBadge 
                     date={props.group?.createdDate}
                     onDelayedChange={setIsDelayed}
@@ -436,7 +449,10 @@ const TimeBadge = (props: TimeBadgeProps) => {
     }
 
     return (
-        <StyledAlert variant="outlined" severity={isDelayed ? "warning": "info"}>
+        <StyledAlert
+            variant="outlined"
+            severity={isDelayed ? "warning": "info"}
+        >
         {
             isDelayed
             ?

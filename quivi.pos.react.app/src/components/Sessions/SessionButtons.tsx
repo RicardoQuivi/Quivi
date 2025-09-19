@@ -263,6 +263,8 @@ export const SessionButtons = ({
             >
                 <Badge
                     sx={{
+                        width: "100%",
+                        height: "3rem",
                         "& .MuiBadge-badge": {
                             backgroundColor: t => t.palette.primary.main,
                             color: t => t.palette.primary.light,
@@ -272,7 +274,6 @@ export const SessionButtons = ({
                     }}
                     invisible={preparationGroupQuery.isFirstLoading || !kitchenOrdersEnabled}
                     badgeContent={totalPendingItems}
-                    style={{ width: "100%", height: "3rem" }}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'left',

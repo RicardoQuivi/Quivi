@@ -72,7 +72,6 @@ const ConfirmButton: React.FC<Props> = ({
             ref={ref}
             isLoading={isLoading}
             primaryButton={primaryButton}
-            overrideClassName={false}
         >
             {clicked ? confirmText : children}
         </LoadingButton>

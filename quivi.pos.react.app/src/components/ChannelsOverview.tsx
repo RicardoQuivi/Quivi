@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Box, Button, ButtonGroup, Card, CardActionArea, CardActions, CardHeader, Chip, Divider, Grid, IconButton, Skeleton, SxProps, Theme, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, ButtonGroup, Card, CardActionArea, CardActions, CardHeader, Divider, Grid, IconButton, Skeleton, SxProps, Theme, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { Channel } from "../hooks/api/Dtos/channels/Channel";
 import { useStoredState } from "../hooks/useStoredState";
@@ -50,6 +50,8 @@ export const ChannelsOverview: React.FC<Props> = ({
     const [channelProfileId, setChannelProfileId] = useStoredState<string | undefined>("channelProfileId", () => browserStorage.getItem("channelProfileId"), searchParamsStorage);
     const [channelsViewType, setQrCodesViewType] = useStoredState<QrCodesViewType | undefined>("channelView", () => !xs ? (browserStorage.getItem("channelView") ?? QrCodesViewType.Grid) : QrCodesViewType.Grid, searchParamsStorage);
     const [currentPage, setCurrentPage] = useState(0);
+    const [sessionToClose, setSessionToClose] = useState<{ channel: Channel, profile: ChannelProfile }>();
+
     const channelProfilesQuery = useChannelProfilesQuery({
         allowsSessionsOnly: true,
         page: 0,
@@ -70,8 +72,6 @@ export const ChannelsOverview: React.FC<Props> = ({
     const integrationsQuery = usePosIntegrationsQuery(channelsQuery.isFirstLoading ? undefined : {
         page: 0,
     });
-
-    const [sessionToClose, setSessionToClose] = useState<{ channel: Channel, profile: ChannelProfile }>();
 
     const profilesMap = useMemo(() => channelProfilesQuery.data.reduce((r, s) => {
         r.set(s.id, s);
@@ -166,13 +166,12 @@ export const ChannelsOverview: React.FC<Props> = ({
                     channelsViewType == QrCodesViewType.Grid &&
                     channelProfilesQuery.data.map(profile =>
                         <Grid size="grow" key={profile.id}>
-                            <Chip
+                            <Button
                                 sx={{
                                     width: "100%",
                                 }}
-                                label={profile.name}
-                                color="primary"
-                                variant={channelProfileId == profile.id ? "filled" : "outlined"}
+                                children={profile.name}
+                                variant={channelProfileId == profile.id ? "contained" : "outlined"}
                                 onClick={() => setChannelProfileId(profile.id)}
                             />
                         </Grid>

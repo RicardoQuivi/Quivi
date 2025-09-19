@@ -3,7 +3,6 @@ import { ReactComponent as SwapIcon } from "./swap.svg?react";
 import { ReactComponent as QrCodeIcon } from "./qrcode.svg?react";
 import { ReactComponent as MenuIcon } from "./menu.svg?react";
 import { ReactComponent as SearchIcon } from "./search.svg?react";
-import { ReactComponent as BellIcon } from "./bell.svg?react";
 import { ReactComponent as CloseIcon } from "./close.svg?react";
 import { ReactComponent as ListIcon } from "./list.svg?react";
 import { ReactComponent as OrdersIcon } from "./orders.svg?react";
@@ -41,6 +40,12 @@ import { ReactComponent as PercentIcon } from "./percent.svg?react";
 import { ReactComponent as MoneyBillIcon } from "./money-bill.svg?react";
 import { ReactComponent as PosPlaceholderIcon } from "./pos-placeholder.svg?react";
 import { ReactComponent as HomeIcon } from "./home.svg?react";
+import { ReactComponent as Kiwi1 } from "./Kiwi-1.svg?react";
+import { ReactComponent as Kiwi2 } from "./Kiwi-2.svg?react";
+import { ReactComponent as Kiwi3 } from "./Kiwi-3.svg?react";
+import { ReactComponent as Kiwi4 } from "./Kiwi-4.svg?react";
+import { ReactComponent as Kiwi5 } from "./Kiwi-5.svg?react";
+import { ReactComponent as Kiwi6 } from "./Kiwi-6.svg?react";
 
 export {
     ExitIcon,
@@ -48,7 +53,6 @@ export {
     QrCodeIcon,
     MenuIcon,
     SearchIcon,
-    BellIcon,
     CloseIcon,
     ListIcon,
     OrdersIcon,
@@ -86,4 +90,10 @@ export {
     MoneyBillIcon,
     PosPlaceholderIcon,
     HomeIcon,
+    Kiwi1,
+    Kiwi2,
+    Kiwi3,
+    Kiwi4,
+    Kiwi5,
+    Kiwi6
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Avatar, Box, Chip, Grid, } from "@mui/material";
+import { Badge, Box, Button, Grid, Stack, styled, Typography, } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
@@ -11,6 +11,19 @@ import { CommitedPreparationGroupsQueueCards } from "./groups/CommitedPreparatio
 import { OrdersQueueCards } from "./OrdersQueueCards";
 import { OrdersHistory } from "./OrdersHistory";
 import { OrderDetailModal } from "./OrderDetailModal";
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+    borderRadius: "50%",
+    aspectRatio: 1,
+    width: "24.5px",
+    maxHeight: "24.5px",
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.dark,
+    display: 'flex', // Ensures content is centered
+    alignItems: 'center', // Centers content vertically
+    justifyContent: 'center', // Centers content horizontally
+    boxSizing: 'border-box', // Ensures padding/borders don’t affect size
+}))
 
 const newTabStates = [OrderState.PendingApproval, OrderState.ScheduledRequested];
 const processingStates = [OrderState.Accepted, OrderState.Processing];
@@ -131,17 +144,21 @@ export const OrdersOverview = (props: Props) => {
                         md: "grow",
                     }}
                 >
-                    <Chip 
+                    <Button 
                         sx={{
                             width: "100%",
                             whiteSpace: "normal",
                         }}
-                        label={t("ordersTab.new")} 
-                        color="primary"
-                        variant={filters.states == newTabStates ? "filled" : "outlined"} 
+                        variant={filters.states == newTabStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: newTabStates}))} 
-                        avatar={requestedCountQuery.isFirstLoading ? undefined : <Avatar>{requestedCountQuery.totalItems}</Avatar>}
-                    />
+                    >
+                        <Stack direction="row" gap={1} justifyContent="center">
+                            { requestedCountQuery.isFirstLoading == false && <StyledBadge>{requestedCountQuery.totalItems}</StyledBadge>}
+                            <Typography variant="button">
+                                {t("ordersTab.new")} 
+                            </Typography>
+                        </Stack>
+                    </Button>
                 </Grid>
                 <Grid
                     size={{
@@ -149,17 +166,21 @@ export const OrdersOverview = (props: Props) => {
                         md: "grow",
                     }}
                 >
-                    <Chip 
+                    <Button 
                         sx={{
                             width: "100%",
                             whiteSpace: "normal",
                         }}
-                        label={t("ordersTab.inProgress")} 
-                        color="primary"
-                        variant={filters.states == processingStates ? "filled" : "outlined"} 
+                        variant={filters.states == processingStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: processingStates}))} 
-                        avatar={processingCountQuery.isFirstLoading ? undefined : <Avatar>{processingCountQuery.totalItems}</Avatar>}
-                    />
+                    >
+                        <Stack direction="row" gap={1} justifyContent="center">
+                            { processingCountQuery.isFirstLoading == false && <StyledBadge>{processingCountQuery.totalItems}</StyledBadge>}
+                            <Typography variant="button">
+                                {t("ordersTab.inProgress")} 
+                            </Typography>
+                        </Stack>
+                    </Button>
                 </Grid>
                 <Grid
                     size={{
@@ -167,17 +188,21 @@ export const OrdersOverview = (props: Props) => {
                         md: "grow",
                     }}
                 >
-                    <Chip 
+                    <Button 
                         sx={{
                             width: "100%",
                             whiteSpace: "normal",
                         }}
-                        label={t("ordersTab.preparing")} 
-                        color="primary"
-                        variant={filters.states == preparingStates ? "filled" : "outlined"} 
+                        variant={filters.states == preparingStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: preparingStates}))} 
-                        avatar={preparingCountQuery.isFirstLoading ? undefined : <Avatar>{preparingCountQuery.totalItems}</Avatar>}
-                    />
+                    >
+                        <Stack direction="row" gap={1} justifyContent="center">
+                            { preparingCountQuery.isFirstLoading == false && <StyledBadge>{preparingCountQuery.totalItems}</StyledBadge>}
+                            <Typography variant="button">
+                                {t("ordersTab.preparing")} 
+                            </Typography>
+                        </Stack>
+                    </Button>
                 </Grid>
                 <Grid
                     size={{
@@ -185,16 +210,18 @@ export const OrdersOverview = (props: Props) => {
                         md: "grow",
                     }}
                 >
-                    <Chip 
+                    <Button 
                         sx={{
                             width: "100%",
                             whiteSpace: "normal",
                         }}
-                        label={t("ordersTab.history")} 
-                        color="primary"
-                        variant={filters.states == historyStates ? "filled" : "outlined"} 
+                        variant={filters.states == historyStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: historyStates}))} 
-                    />
+                    >
+                        <Typography variant="button">
+                            {t("ordersTab.history")} 
+                        </Typography>
+                    </Button>
                 </Grid>
                 <Grid
                     size={{
@@ -202,17 +229,21 @@ export const OrdersOverview = (props: Props) => {
                         md: "grow",
                     }}
                 >
-                    <Chip 
+                    <Button 
                         sx={{
                             width: "100%",
                             whiteSpace: "normal",
                         }}
-                        label={t("ordersTab.scheduled")} 
-                        color="primary"
-                        variant={filters.states == scheduledStates ? "filled" : "outlined"} 
+                        variant={filters.states == scheduledStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: scheduledStates}))} 
-                        avatar={scheduledCountQuery.isFirstLoading ? undefined : <Avatar>{scheduledCountQuery.totalItems}</Avatar>}
-                    />
+                    >
+                        <Stack direction="row" gap={1} justifyContent="center">
+                            { scheduledCountQuery.isFirstLoading == false && <StyledBadge>{scheduledCountQuery.totalItems}</StyledBadge>}
+                            <Typography variant="button">
+                                {t("ordersTab.scheduled")} 
+                            </Typography>
+                        </Stack>
+                    </Button>
                 </Grid>
             </Grid>
 
@@ -220,7 +251,7 @@ export const OrdersOverview = (props: Props) => {
                 sx={{
                     flex: 1,
                     pt: "1rem",
-                    overflow: "hidden"
+                    overflow: "hidden",
                 }}
             >
                 {getCardsSection()}
