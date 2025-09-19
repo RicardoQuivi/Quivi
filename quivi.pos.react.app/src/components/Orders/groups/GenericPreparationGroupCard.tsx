@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Alert, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Chip, Divider, Grid, keyframes, Paper, Skeleton, styled, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardActionArea, CardActions, CardContent, CardHeader, Checkbox, Divider, Grid, keyframes, Paper, Skeleton, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { BasePreparationGroupItem, PreparationGroup, PreparationGroupItem } from "../../../hooks/api/Dtos/preparationgroups/PreparationGroup";
 import { Order } from "../../../hooks/api/Dtos/orders/Order";
@@ -473,9 +473,8 @@ interface OrderSectionProps {
     readonly onOrderClicked?: (order: Order) => any;
 }
 const OrderBadge = (props: OrderSectionProps) => {
-    return <Chip
-        color="primary"
-        variant="filled"
+    return <Button
+        variant="contained"
         onClick={(evt) => {
             if(props.order == undefined) {
                 return;
@@ -484,6 +483,13 @@ const OrderBadge = (props: OrderSectionProps) => {
             evt.stopPropagation(); 
             props.onOrderClicked?.(props.order); 
         }}
-        label={props.order == undefined ? <Skeleton animation="wave" width={50}/> : props.order.sequenceNumber}
-    />
+        sx={{
+            paddingY: "3px",
+            paddingX: "8px",
+            minWidth: "unset",
+            height: "unset",
+        }}
+    >
+        {props.order == undefined ? <Skeleton animation="wave" width={50}/> : props.order.sequenceNumber}
+    </Button>
 }

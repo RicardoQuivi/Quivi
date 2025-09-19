@@ -10,7 +10,7 @@ import { PosIntegration } from "../hooks/api/Dtos/posintegrations/PosIntegration
 import { useChannelProfilesQuery } from "../hooks/queries/implementations/useChannelProfilesQuery";
 import { ChannelProfile } from "../hooks/api/Dtos/channelProfiles/ChannelProfile";
 import CurrencySpan from "./Currency/CurrencySpan";
-import { CloseIcon, GridIcon, LayersIcon, QrCodeIcon, SwitchIcon } from "../icons";
+import { CrossIcon, GridIcon, LayersIcon, QrCodeIcon, SwapIcon } from "../icons";
 import { PaginationFooter } from "./Pagination/PaginationFooter";
 import { useEmployeesQuery } from "../hooks/queries/implementations/useEmployeesQuery";
 import { useAllowedActions } from "../hooks/pos/useAllowedActions";
@@ -394,13 +394,13 @@ const ChannelCard = (props: {
                                         size="medium"
                                         onClick={props.onCloseSessionClicked}
                                     >
-                                        <CloseIcon style={{height: "16", aspectRatio: 1}} />
+                                        <CrossIcon style={{height: "16", aspectRatio: 1}} />
                                     </IconButton>
                                 </Tooltip>
                             }
                             <Tooltip title={t("transferSession")}>
                                 <IconButton size="medium" disabled={!!props.disableTransfer} onClick={props.onTransferQrCodeSessionClicked}>
-                                    <SwitchIcon style={{height: "16", aspectRatio: 1}}/>
+                                    <SwapIcon style={{height: "16", aspectRatio: 1}}/>
                                 </IconButton>
                             </Tooltip>
                         </>

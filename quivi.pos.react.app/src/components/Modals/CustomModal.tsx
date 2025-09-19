@@ -1,6 +1,6 @@
 import { Box, Breakpoint, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import React, { ReactNode, useEffect } from "react";
-import { CloseIcon } from "../../icons";
+import { CrossIcon } from "../../icons";
 
 export enum ModalSize {
     Default="md",
@@ -102,10 +102,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
                         position: 'absolute',
                         right: 8,
                         top: 8,
-                        color: (theme) => theme.palette.grey[500],
+                        stroke: (theme) => theme.palette.grey[500],
                     }}
                 >
-                    <CloseIcon />
+                    <CrossIcon />
                 </IconButton>
             }
             <DialogContent dividers>

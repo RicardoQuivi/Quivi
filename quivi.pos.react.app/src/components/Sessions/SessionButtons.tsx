@@ -12,7 +12,7 @@ import { usePrintersQuery } from "../../hooks/queries/implementations/usePrinter
 import { usePreparationGroupsQuery } from "../../hooks/queries/implementations/usePreparationGroupsQuery";
 import { PreparationGroup } from "../../hooks/api/Dtos/preparationgroups/PreparationGroup";
 import SplitButton from "../Buttons/SplitButton";
-import { CashDrawerIcon, MoneyBillIcon, OvenIcon, PercentIcon, ReceiptIcon } from "../../icons";
+import { CashDrawerIcon, EuroBadgeIcon, MicrowaveIcon, PercentIcon, ReceiptIcon } from "../../icons";
 import { DiscountedItem, DiscountsModal } from "../Modals/DiscountsModal";
 import { SessionItem } from "../../hooks/api/Dtos/sessions/SessionItem";
 import { PaymentData, PaymentsModal } from "../Payments/PaymentsModal";
@@ -426,7 +426,7 @@ export const SessionButtons = ({
                     direction="up"
                 >
                     <SpeedDialAction
-                        icon={<OvenIcon />}
+                        icon={<MicrowaveIcon />}
                         slotProps={{
                             tooltip: {
                                 title: t("sendToPreparation"),
@@ -463,7 +463,7 @@ export const SessionButtons = ({
                     }
 
                     <SpeedDialAction
-                        icon={<MoneyBillIcon />}
+                        icon={<EuroBadgeIcon />}
                         slotProps={{
                             tooltip: {
                                 title: t("payment"),

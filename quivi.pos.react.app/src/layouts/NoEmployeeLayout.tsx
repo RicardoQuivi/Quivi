@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Box, Grid, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Grid, Stack, Toolbar, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { QuiviFullIcon, QuiviIcon } from "../icons";
 import { FloatingLanguageButton } from "../components/Buttons/FloatingLanguageButton";
@@ -123,7 +123,6 @@ export const NoEmployeeLayout = (props: Props) => {
 
 const RightSidePanel = () => {
     const { t } = useTranslation();
-
     return (
         <Box
             sx={{
@@ -133,80 +132,63 @@ const RightSidePanel = () => {
                 position: 'relative',
                 zIndex: 1,
                 width: "100%",
+                height: "100%",
+                bgcolor: t => t.palette.primary.main,
             }}
         >
-            {/* Background grid image - top right */}
-            <Box
+            <Stack
+                direction="column"
                 sx={{
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    zIndex: -1,
-                    width: '50%',
-                    transform: "translate(0, -50%)",
-                }}
-            >
-                <img
-                    alt="grid"
-                    src="/images/shape/grid-01.svg"
-                    style={{ width: '100%' }}
-                />
-            </Box>
-
-            {/* Background grid image - bottom left, rotated */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    zIndex: -1,
-                    width: '50%',
-                    transform: 'rotate(180deg) translate(0, -50%)',
-                }}
-            >
-                <img 
-                    alt="grid"
-                    src="/images/shape/grid-01.svg"
-                    style={{
-                        width: '100%',
-                    }}
-                />
-            </Box>
-
-            {/* Content */}
-            <Box 
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
+                    color: "#272727",
+
+                    "& svg": {
+                        fill: "#272727"
+                    }
                 }}
+                gap={8}
             >
-                <Box 
+                <QuiviFullIcon
+                    height="auto"
+                    width={231}
+                />
+
+                <Typography
+                    variant="h5"
                     sx={{
-                        mb: 2,
-                        "& svg": {
-                            fill: t => t.palette.primary.light,
-                        }
+                        textAlign: 'center',
+                        fontFamily: "Atelia",
+                        fontWeight: 400,
+                        fontStyle: "Regular",
+                        leadingTrim: "NONE",
+                        lineHeight: "83%",
+                        letterSpacing: "0%",
+                        textTransform: "uppercase",
                     }}
                 >
-                    <QuiviFullIcon
-                        height="auto"
-                        width={231}
-                    />
-                </Box>
+                        {t("quivi.product.description")}
+                </Typography>
+                
+                <img
+                    src="/public/images/quivi/kiwi-3.svg"
+                    width="456"
+                    height="auto"
+                />
 
                 <Typography
                     variant="body1"
                     sx={{
                         textAlign: 'center',
-                        color: 'grey.400',
+                        fontWeight: 400,
+                        fontStyle: "Regular",
+                        leadingTrim: "NONE",
+                        lineHeight: "83%",
+                        letterSpacing: "0%",
                     }}
                 >
-                        {t("quivi.product.description")}
+                    {t("quivi.product.description")}
                 </Typography>
-            </Box>
+            </Stack>
         </Box>
     );
 }

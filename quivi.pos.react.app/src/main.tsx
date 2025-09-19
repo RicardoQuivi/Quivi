@@ -31,7 +31,7 @@ const colors = {
             backgroundColor: baseColors.accent.brightGreen,
             borderColor: baseColors.accent.brightGreen,
             color: baseColors.neutrals.black,
-            //stroke: baseColors.neutrals.black,
+            stroke: baseColors.neutrals.black,
 
             "&:hover": {
                 backgroundColor: darken(baseColors.accent.brightGreen, 0.3),
@@ -42,27 +42,27 @@ const colors = {
                 backgroundColor: "#B1EBB5",
                 borderColor: "#B1EBB5",
                 color: "#474747",
-                //stroke: "#474747",
+                stroke: "#474747",
             }
         },
         secondary: {
             backgroundColor: baseColors.neutrals.beige,
             borderColor: baseColors.neutrals.black,
             color: baseColors.neutrals.black,
-            //stroke: baseColors.neutrals.black,
+            stroke: baseColors.neutrals.black,
 
             "&:hover": {
                 backgroundColor: baseColors.neutrals.black,
                 borderColor: baseColors.neutrals.black,
                 color: baseColors.neutrals.beige,
-                //stroke: baseColors.neutrals.beige,
+                stroke: baseColors.neutrals.beige,
             },
 
             "&.Mui-disabled": {
                 backgroundColor: baseColors.neutrals.beige,
                 borderColor: "#989898",
                 color: "#989898",
-                //stroke: "#989898",
+                stroke: "#989898",
             }
         },
     },
@@ -177,7 +177,7 @@ const theme = createTheme({
             fontFamily: "Atelia",
         },
         h4: {
-            fontFamily: "Atelia",
+            fontFamily: "BDOGrotesk",
         },
         h5: {
             fontFamily: "BDOGrotesk",

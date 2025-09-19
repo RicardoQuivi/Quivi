@@ -58,6 +58,7 @@ namespace Quivi.Pos.Api.Controllers
                 States = request.States,
                 IncludeOrderMenuItems = true,
                 IncludeOrderMenuItemsPosChargeInvoiceItems = true,
+                IncludeOrderAdditionalFields = true,
                 IncludeOrderSequence = true,
                 PageIndex = request.Page,
                 PageSize = request.PageSize,

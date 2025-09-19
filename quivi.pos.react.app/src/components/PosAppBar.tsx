@@ -88,9 +88,9 @@ export const PosAppBar = (props: Props) => {
             {
                 locationsQuery.isFirstLoading == false &&
                 locationsQuery.data.length > 0 &&
-                <Tooltip title={t("changeLocal")} style={{backgroundColor: "transparent" }}>
-                    <Chip avatar={<SwapIcon style={{marginLeft: 5, cursor: "pointer", height: "100%", fill: "white"}}/>} 
-                            label={ local?.name ?? t("allLocals")}
+                <Tooltip title={t("changeLocal")} sx={{backgroundColor: "transparent" }}>
+                    <Chip avatar={<SwapIcon style={{marginLeft: 5, cursor: "pointer", height: "100%", stroke: "white"}}/>} 
+                            label={local?.name ?? t("allLocals")}
                             variant="filled"
                             color="default"
                             sx={{
@@ -136,8 +136,15 @@ export const PosAppBar = (props: Props) => {
                     locationsQuery.isFirstLoading == false &&
                     locationsQuery.data.length > 0 &&
                     <MenuItem onClick={() => setState(s => ({...s, localModalOpen: true, menuAnchor: undefined}))}>
-                        <ListItemIcon>
-                            <SwapIcon style={{marginLeft: 5, cursor: "pointer", height: "100%"}}/>
+                        <ListItemIcon
+                            sx={{
+                                "& svg": {
+                                    cursor: "pointer",
+                                    height: "100%",
+                                }
+                            }}
+                        >
+                            <SwapIcon />
                         </ListItemIcon>
                         <ListItemText sx={{marginLeft: "0.25rem"}}>
                             {local?.name ?? t("allLocals")}

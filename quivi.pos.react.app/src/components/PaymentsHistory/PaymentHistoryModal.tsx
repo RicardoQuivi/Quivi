@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModal, { ModalSize } from '../Modals/CustomModal';
@@ -27,9 +27,16 @@ export const PaymentHistoryModal: React.FC<Props> = ({
         if(state.transactionId == undefined) {
             return t("paymentHistory.title");
         }
-        return <Box style={{display: "flex", flexDirection: "row"}}>
-            <LeftArrowIcon style={{height: "35px", width: "35px", cursor: "pointer"}} onClick={() => setTransactionId(undefined)}/>
-            <Typography variant='h4' style={{flex: "1 1 auto", textAlign: "center"}}>
+        return <Box
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+            }}
+        >
+            <IconButton onClick={() => setTransactionId(undefined)}>
+                <LeftArrowIcon height="35px" width="35px" />
+            </IconButton>
+            <Typography variant='h4' sx={{flex: "1 1 auto", textAlign: "center"}}>
                 {t("paymentHistory.transaction")} {state.transactionId}
             </Typography>
         </Box>

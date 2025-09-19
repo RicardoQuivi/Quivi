@@ -5,7 +5,7 @@ import { BasePreparationGroupItem, PreparationGroup, PreparationGroupItem } from
 import { Local } from "../../../hooks/api/Dtos/locals/Local";
 import { useChannelsQuery } from "../../../hooks/queries/implementations/useChannelsQuery";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
-import { CloseIcon } from "../../../icons";
+import { CrossIcon } from "../../../icons";
 import CustomModal, { ModalSize } from "../../Modals/CustomModal";
 import { MenuItem } from "../../../hooks/api/Dtos/menuitems/MenuItem";
 import { useNow } from "../../../hooks/useNow";
@@ -135,7 +135,7 @@ export const PreparationGroupDetailModal = (props: GroupDetailModalProps) => {
                 }}
             >
                 <IconButton onClick={props.onClose}>
-                    <CloseIcon />
+                    <CrossIcon />
                 </IconButton>
             </Box>
         </Box>

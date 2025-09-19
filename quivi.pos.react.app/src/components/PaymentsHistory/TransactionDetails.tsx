@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
-import { DownloadIcon, ExpandIcon } from "../../icons";
+import { ChevronDownIcon, DownloadIcon } from "../../icons";
 import { SummaryBox } from "../common/SummaryBox";
 import CurrencySpan from "../Currency/CurrencySpan";
 import HighlightMessage, { MessageType } from "../Messages/HighlightMessage";
@@ -71,7 +71,7 @@ export const TransactionDetails = ({
     return <Stack direction="column" spacing={2}>
         <Tooltip title={t("paymentHistory.clickToSeeItems")} style={{width: "100%"}}>
             <Accordion square sx={{backgroundColor: "#F7F7F8", width: "100%"}} expanded={isExpanded} onChange={() => setIsExpanded(p => !p)}>
-                <AccordionSummary expandIcon={<ExpandIcon />}>
+                <AccordionSummary expandIcon={<ChevronDownIcon height="1.5rem" width="auto" />}>
                     <SummaryBox style={{padding: 0, margin: 0}} items={[
                         {
                             label: t("total"),

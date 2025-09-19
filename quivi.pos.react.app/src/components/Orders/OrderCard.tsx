@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from "react"
-import { Alert, AlertTitle, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, Divider, keyframes, Paper, Skeleton, styled, Tooltip, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, Divider, keyframes, Paper, Skeleton, Stack, styled, Tooltip, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Order } from "../../hooks/api/Dtos/orders/Order";
 import { useDateHelper } from "../../helpers/dateHelper";
@@ -11,7 +11,7 @@ import { useConfigurableFieldsQuery } from "../../hooks/queries/implementations/
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { CardItemDetails } from "./CardItemDetails";
 import ConfirmButton from "../Buttons/ConfirmButton";
-import { CashCoinIcon, NotificationIcon, TakeAwayIcon } from "../../icons";
+import { NotebookIcon, TakeAwayIcon } from "../../icons";
 import { useMenuItemsQuery } from "../../hooks/queries/implementations/useMenuItemsQuery";
 import { MenuItem } from "../../hooks/api/Dtos/menuitems/MenuItem";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
@@ -130,17 +130,12 @@ export const OrderCard = (props: OrderCardProps) => {
         const additionalInfo: ReactNode[] = [];
         if(props.order.fields.length > 0) {
             additionalInfo.push(<Tooltip title={t("ordersTab.additionalNotes")} key="notification">
-                <NotificationIcon />
+                <NotebookIcon />
             </Tooltip>)
         }
         if(props.order.isTakeAway) {
             additionalInfo.push(<Tooltip title={t("ordersTab.takeaway")} key="takeaway">
                 <TakeAwayIcon />
-            </Tooltip>)
-        }
-        if(props.order.items.every(i => i.isPaid)) {
-            additionalInfo.push(<Tooltip title={t("prepaid")} key="prepaid">
-                <CashCoinIcon />
             </Tooltip>)
         }
 
@@ -160,16 +155,20 @@ export const OrderCard = (props: OrderCardProps) => {
             >
                 {props.order.sequenceNumber}
             </Typography>
-            <Box
+            <Stack
+                direction="row"
                 sx={{
+                    justifyContent: "end",
                     flex: 1,
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: "0.5rem",
+
+                    "& svg": {
+                        height: "1.25rem",
+                        width: "auto",
+                    }
                 }}
             >
                 {additionalInfo}
-            </Box>
+            </Stack>
         </Box>;
     }
 

@@ -7,7 +7,7 @@ import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQue
 import { SortDirection } from "../../hooks/api/Dtos/SortableRequest";
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import LoadingButton from "../Buttons/LoadingButton";
-import { CloseIcon } from "../../icons";
+import { CrossIcon } from "../../icons";
 import { Order } from "../../hooks/api/Dtos/orders/Order";
 import CustomModal, { ModalSize } from "../Modals/CustomModal";
 import { useToast } from "../../context/ToastProvider";
@@ -192,7 +192,7 @@ export const OrderDetailModal = (props: OrderDetailModalProps) => {
                         cursor: "pointer",
                     }}
                 >
-                    <CloseIcon />
+                    <CrossIcon />
                 </IconButton>
             </Box>
         </Box>

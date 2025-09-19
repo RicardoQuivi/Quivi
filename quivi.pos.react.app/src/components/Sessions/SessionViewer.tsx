@@ -8,7 +8,7 @@ import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { SortDirection } from "../../hooks/api/Dtos/SortableRequest";
 import CurrencySpan from "../Currency/CurrencySpan";
 import { Channel } from "../../hooks/api/Dtos/channels/Channel";
-import { CheckIcon, CollapseIcon, ExclamationIcon, ExpandIcon, InfoIcon, MinusIcon, PencilIcon, PlusIcon, PlusMinusIcon, SwitchIcon, UncheckIcon } from "../../icons";
+import { ChevronDownIcon, CheckIcon, InfoIcon, MinusIcon, PencilIcon, PlusIcon, PlusMinusIcon, CrossIcon, SwapIcon } from "../../icons";
 import { Order } from "../../hooks/api/Dtos/orders/Order";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
 import { useNow } from "../../hooks/useNow";
@@ -254,7 +254,7 @@ export const SessionViewer: React.FC<Props> = ({
                         canAddItems && canRemoveItems &&
                         <Tooltip title={t("transferSession")}>
                             <IconButton size="large" disabled={!!pos.cartSession.isSyncing} onClick={() => onTransferSessionClicked(channelsQuery.data[0])}>
-                                <SwitchIcon height={18} width={18} />
+                                <SwapIcon height={18} width={18} />
                             </IconButton>
                         </Tooltip>
                     }
@@ -643,7 +643,7 @@ const OrderItemComponent = (props : {
         }
     }
 
-        const primaryActions = (): React.ReactNode => {
+    const primaryActions = (): React.ReactNode => {
         const buttons: React.ReactNode[] = [];
 
         if(isLoading == false) {
@@ -655,8 +655,10 @@ const OrderItemComponent = (props : {
                     }}
                     aria-label="reduce"
                     onClick={acceptOrder}
+                    color="success"
+                    variant="contained"
                 >
-                    <CheckIcon height={16} width={16} aria-hidden="true" fill="green" />
+                    <CheckIcon height={16} width={16} />
                 </Button>
             ));
 
@@ -668,8 +670,10 @@ const OrderItemComponent = (props : {
                     }}
                     aria-label="reduce"
                     onClick={declineOrder}
+                    color="error"
+                    variant="outlined"
                 >
-                    <UncheckIcon height={16} width={16} aria-hidden="true" fill="red" />
+                    <CrossIcon height={16} width={16} />
                 </Button>
             ));
         } else {
@@ -698,7 +702,13 @@ const OrderItemComponent = (props : {
             cursor: "pointer",
             transition: "background-color 0.5s ease",
             border: "unset",
-            boxShadow: "unset"
+            boxShadow: "unset",
+
+            "& .MuiCardHeader-action": {
+                margin: 0,
+                padding: 0,
+                height: "100%",
+            }
         }}
     >
         <CardHeader
@@ -707,29 +717,34 @@ const OrderItemComponent = (props : {
                 direction="row"
                 gap={2}
             >
-                <Tooltip title={t("pendingApproval")}>
+                <Tooltip
+                    title={t("pendingApproval")}
+                    sx={{
+                        display: {
+                            xs: "none",
+                            sm: "none",
+                            md: "flex",
+                        }
+                    }}
+                >
                     <Chip
                         size="medium"
-                        variant="outlined"
+                        variant="filled"
                         color="info"
-                        label={<>
-                            <ExclamationIcon height={16} width={16} aria-hidden="true" fill="#0288d1" />
+                        label={<Stack direction="row" gap={1} alignItems="center">
+                            <InfoIcon height={16} width={16} />
                             {dateHelper.getTimeAgo(now, props.order.lastModified)}
-                        </>}
+                        </Stack>}
                     />
                 </Tooltip>
                 <IconButton
                     sx={{
                         height: "32px",
+                        transform: isOpen ? "rotate(180deg)" : undefined,
+                        transition: "transform 0.3s ease",
                     }}
                 >
-                    {
-                        isOpen
-                        ?
-                        <ExpandIcon height={16} width={16} fill="black"/>
-                        :
-                        <CollapseIcon height={16} width={16} fill="black"/>
-                    }
+                    <ChevronDownIcon height={"100%"} width={"auto"} />
                 </IconButton>
             </Stack>}
             onClick={() => setIsOpen(s => !s)}

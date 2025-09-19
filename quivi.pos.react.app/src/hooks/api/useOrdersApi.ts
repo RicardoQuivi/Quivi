@@ -19,6 +19,7 @@ export const useOrdersApi = () => {
         }
 
         queryParams.set("page", request.page.toString());
+        queryParams.set("sortDirection", request.sortDirection.toString())
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         request.channelIds?.forEach((id, i) => queryParams.set(`channelIds[${i}]`, id));
         request.states?.forEach((s, i) => queryParams.set(`states[${i}]`, s.toString()));

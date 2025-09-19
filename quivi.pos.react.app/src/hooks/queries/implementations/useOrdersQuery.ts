@@ -16,7 +16,7 @@ export const useOrdersQuery = (request: GetOrdersRequest | undefined) : PagedQue
             ...request,
         },
         getId: (e: Order) => e.id,
-        query: r => api.get(r),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

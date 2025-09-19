@@ -89,46 +89,49 @@ export const ItemsSelector: React.FC<Props> = ({
                     paddingY: "1.5rem",
                 }}
             >
-                <Link underline="none" color="inherit" onClick={() => onCategoryChanged(undefined)} sx={{ cursor: "pointer"}}>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 1,
-                            fontWeight: selectedCategoryId === undefined ? "bold" : undefined,
-                        }}
-                    >
-                            <HomeIcon />
-                            {t("itemsTab.categories")}
-                    </Typography>
-                    
-                </Link>
+                <ButtonBase>
+                    <Link underline="none" color="inherit" onClick={() => onCategoryChanged(undefined)} sx={{ cursor: "pointer"}}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 1,
+                                fontWeight: selectedCategoryId === undefined ? "bold" : undefined,
+                            }}
+                        >
+                                <HomeIcon />
+                                {t("itemsTab.categories")}
+                        </Typography>
+                    </Link>
+                </ButtonBase>
                 {
                     selectedCategoryId !== undefined &&
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 1,
-                            fontWeight: "bold",
-                        }}
-                    >
-                    {
-                        selectedCategoryId === null
-                        ?
-                        t("itemsTab.allCategories")
-                        :
-                        (
-                            selectedCategory == undefined
+                    <ButtonBase>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 1,
+                                fontWeight: "bold",
+                            }}
+                        >
+                        {
+                            selectedCategoryId === null
                             ?
-                            <Skeleton animation="wave" width="100" />
+                            t("itemsTab.allCategories")
                             :
-                            selectedCategory.name
-                        )
-                    }
-                    </Typography>
+                            (
+                                selectedCategory == undefined
+                                ?
+                                <Skeleton animation="wave" width="100" />
+                                :
+                                selectedCategory.name
+                            )
+                        }
+                        </Typography>
+                    </ButtonBase>
                 }
             </Breadcrumbs>
             {

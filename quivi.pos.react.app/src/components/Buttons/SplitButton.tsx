@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from "@mui/material";
-import { ArrowDropDownIcon } from "../../icons";
+import { ChevronDownIcon } from "../../icons";
 
 export interface ISplitButtonOption {
     readonly onClick: () => void;
@@ -59,7 +59,7 @@ const SplitButton: React.FC<SplitButtonProps> = (props) => {
                 {props.children}
             </Button>
             <Button variant={props.variant} size="small" loading={props.isLoading} disabled={props.isDisabled} onClick={handleToggle}>
-                <ArrowDropDownIcon height={25} width={25} />
+                <ChevronDownIcon height={25} width={25} />
             </Button>
         </ButtonGroup>
         <Popper
