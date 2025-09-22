@@ -64,7 +64,16 @@ export const PosAppBar = (props: Props) => {
     const renderOptionsDesktop = () => {
         return <>
             <Tooltip title={posContext.employee.name}>
-                <IconButton size="large" edge="start" onClick={posContext.signOut} sx={{ margin: "0 0.25rem", marginLeft: 0, paddingLeft: 0, }}>
+                <IconButton
+                    size="large"
+                    edge="start"
+                    onClick={posContext.signOut}
+                    sx={{
+                        margin: "0 0.25rem",
+                        marginLeft: 0,
+                        paddingLeft: 0,
+                    }}
+                >
                     <EmployeeAvatar employee={posContext.employee} />
                 </IconButton>
             </Tooltip>
@@ -83,7 +92,7 @@ export const PosAppBar = (props: Props) => {
                         variant="filled"
                         color="default"
                         sx={{
-                            color: t => t.typography.button,
+                            color: t => t.palette.text.primary,
                             height: 40,
                             cursor: "pointer",
                             margin: "0 0.25rem",
@@ -92,7 +101,7 @@ export const PosAppBar = (props: Props) => {
                                 marginLeft: 5,
                                 cursor: "pointer",
                                 height: "100%",
-                                color: t => t.typography.button,
+                                color: t => t.palette.text.primary,
                             }
                         }}
                         onClick={() => setState(s => ({...s, localModalOpen: true, }))}
@@ -104,8 +113,22 @@ export const PosAppBar = (props: Props) => {
 
     const renderOptionsMobile = () => {
         return <>
-            <IconButton size="large" color="inherit" sx={{paddingLeft: 0}} onClick={(e) => setState(s => ({...s, menuAnchor: e.currentTarget}))}>
-                <MenuIcon style={{paddingRight: "0.25rem", height: 24, width: "auto", color: "white"}}/>
+            <IconButton
+                size="large"
+                color="inherit"
+                sx={{
+                    paddingLeft: 0,
+
+                    "& svg": {
+                        paddingRight: "0.25rem",
+                        height: 24,
+                        width: "auto",
+                        color: t => t.palette.text.primary,
+                    }
+                }}
+                onClick={(e) => setState(s => ({...s, menuAnchor: e.currentTarget}))}
+            >
+                <MenuIcon />
             </IconButton>
             <Menu
                 anchorEl={state.menuAnchor}
@@ -131,7 +154,9 @@ export const PosAppBar = (props: Props) => {
                 {
                     locationsQuery.isFirstLoading == false &&
                     locationsQuery.data.length > 0 &&
-                    <MenuItem onClick={() => setState(s => ({...s, localModalOpen: true, menuAnchor: undefined}))}>
+                    <MenuItem
+                        onClick={() => setState(s => ({...s, localModalOpen: true, menuAnchor: undefined}))}
+                    >
                         <ListItemIcon
                             sx={{
                                 "& svg": {
@@ -142,7 +167,11 @@ export const PosAppBar = (props: Props) => {
                         >
                             <SwapIcon />
                         </ListItemIcon>
-                        <ListItemText sx={{marginLeft: "0.25rem"}}>
+                        <ListItemText
+                            sx={{
+                                marginLeft: "0.25rem",
+                            }}
+                        >
                             {local?.name ?? t("allLocals")}
                         </ListItemText>
                     </MenuItem>

@@ -159,7 +159,7 @@ export const PosTabs = (props: Props) => {
                 padding: "0.75rem 0",
 
                 "& .MuiButtonBase-root": {
-                    color: "rgba(255, 255, 255, 0.7)",
+                    color: t => t.palette.text.secondary,
                     padding: 0,
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
 
@@ -168,18 +168,23 @@ export const PosTabs = (props: Props) => {
                         aspectRatio: 1,
                         height: "auto",
                         pb: "0.25rem",
+                        stroke: t => t.palette.text.secondary,
                     },
+
+                    "&.Mui-selected": {
+                        transform: "translateY(-2px) scale(1.15)",
+                        fontWeight: 900,
+                        color: t => t.palette.text.primary,
+                        
+                        "& .MuiBottomNavigationAction-label": {
+                            fontSize: "0.75rem"
+                        },
+
+                        "& svg": {
+                            stroke: t => t.palette.text.primary,
+                        }
+                    }
                 },
-
-                "& .MuiButtonBase-root.Mui-selected": {
-                    transform: "translateY(-2px) scale(1.02)",
-                    color: "rgba(255, 255, 255, 1)",
-                    fontWeight: 800,
-
-                    "& .MuiBottomNavigationAction-label": {
-                        fontSize: "0.75rem"
-                    },
-                }
             }}
             showLabels
             value={props.tab}
@@ -204,37 +209,26 @@ export const PosTabs = (props: Props) => {
                 icon={(
                     <Badge
                         badgeContent={totalPendingOrders} 
-                        color="primary"
+                        color="warning"
                         variant="standard"
                         overlap="rectangular"
-                        sx={{
-                            "& .MuiBadge-badge": {
-                                backgroundColor: '#6c757d',
-                                color: '#fff',
-                            }
-                        }}
                     >
-                            <OrdersIcon />
-                        </Badge>
-                )} 
+                        <OrdersIcon />
+                    </Badge>
+                )}
             />
             {
-                channel != undefined && profile != undefined &&
+                channel != undefined &&
+                profile != undefined &&
                 <BottomNavigationAction
                     label={`${profile.name} ${channel.name}`} 
                     value={ActiveTab.SessionOverview}
                     icon={(
                         <Badge 
                             badgeContent={pos.cartSession.items.reduce((r, c) => r + c.quantity, 0)}
-                            color="primary"
+                            color="warning"
                             variant="standard"
                             overlap="rectangular"
-                            sx={{
-                                "& .MuiBadge-badge": {
-                                    backgroundColor: '#6c757d',
-                                    color: '#fff',
-                                }
-                            }}
                         >
                             <CartIcon />
                         </Badge>

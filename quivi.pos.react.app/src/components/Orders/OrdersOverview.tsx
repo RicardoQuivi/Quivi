@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Badge, Box, Button, Grid, Stack, styled, Typography, } from "@mui/material";
+import { Badge, Box, Button, Grid, Stack, styled, Typography, useMediaQuery, useTheme, } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
 import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
@@ -42,7 +42,9 @@ interface Props {
 }
 export const OrdersOverview = (props: Props) => {
     const { t } = useTranslation();
-    
+    const theme = useTheme();
+    const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
     const [filters, setFilters] = useState({
         states: newTabStates,
         selectedLocation: undefined as Local | undefined,
@@ -130,25 +132,33 @@ export const OrdersOverview = (props: Props) => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                overflow: "hidden"
+                overflow: "hidden",
             }}
         >
             <Grid
                 container
                 spacing={1}
                 width="100%"
+                sx={{
+                    "& .MuiButton-root": {
+                        width: "100%",
+                        whiteSpace: "normal",
+
+                        height: {
+                            xs: "100%",
+                            sm: undefined,
+                        }
+                    }
+                }}
             >
                 <Grid
                     size={{
-                        xs: "auto",
+                        xs: 6,
                         md: "grow",
                     }}
                 >
-                    <Button 
-                        sx={{
-                            width: "100%",
-                            whiteSpace: "normal",
-                        }}
+                    <Button
+                        size={xs ? "small" : "medium"}
                         variant={filters.states == newTabStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: newTabStates}))} 
                     >
@@ -162,15 +172,12 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: "auto",
+                        xs: 6,
                         md: "grow",
                     }}
                 >
-                    <Button 
-                        sx={{
-                            width: "100%",
-                            whiteSpace: "normal",
-                        }}
+                    <Button
+                        size={xs ? "small" : "medium"}
                         variant={filters.states == processingStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: processingStates}))} 
                     >
@@ -184,15 +191,12 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: "auto",
+                        xs: 6,
                         md: "grow",
                     }}
                 >
-                    <Button 
-                        sx={{
-                            width: "100%",
-                            whiteSpace: "normal",
-                        }}
+                    <Button
+                        size={xs ? "small" : "medium"}
                         variant={filters.states == preparingStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: preparingStates}))} 
                     >
@@ -206,15 +210,12 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: "auto",
+                        xs: 6,
                         md: "grow",
                     }}
                 >
-                    <Button 
-                        sx={{
-                            width: "100%",
-                            whiteSpace: "normal",
-                        }}
+                    <Button
+                        size={xs ? "small" : "medium"}
                         variant={filters.states == historyStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: historyStates}))} 
                     >
@@ -225,15 +226,12 @@ export const OrdersOverview = (props: Props) => {
                 </Grid>
                 <Grid
                     size={{
-                        xs: "auto",
+                        xs: 6,
                         md: "grow",
                     }}
                 >
-                    <Button 
-                        sx={{
-                            width: "100%",
-                            whiteSpace: "normal",
-                        }}
+                    <Button
+                        size={xs ? "small" : "medium"}
                         variant={filters.states == scheduledStates ? "contained" : "outlined"} 
                         onClick={() => setFilters(f => ({...f, states: scheduledStates}))} 
                     >

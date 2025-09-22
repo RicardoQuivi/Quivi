@@ -8,7 +8,6 @@ import { ReactComponent as CartIcon } from "./cart.svg?react";
 import { ReactComponent as GridIcon } from "./grid.svg?react";
 import { ReactComponent as LayersIcon } from "./layers.svg?react";
 import { ReactComponent as InfoIcon } from "./info.svg?react";
-import { ReactComponent as CollapseIcon } from "./collapse.svg?react";
 import { ReactComponent as CheckIcon } from "./check.svg?react";
 import { ReactComponent as CrossIcon } from "./cross.svg?react";
 import { ReactComponent as PencilIcon } from "./pencil.svg?react";
@@ -47,7 +46,6 @@ export {
     GridIcon,
     LayersIcon,
     InfoIcon,
-    CollapseIcon,
     CheckIcon,
     CrossIcon,
     PencilIcon,
