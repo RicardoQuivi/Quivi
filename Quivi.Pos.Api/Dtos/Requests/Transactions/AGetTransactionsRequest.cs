@@ -4,5 +4,6 @@
     {
         public IEnumerable<string>? Ids { get; init; }
         public IEnumerable<string>? OrderIds { get; init; }
+        public IEnumerable<string>? SessionIds { get; init; }
     }
 }

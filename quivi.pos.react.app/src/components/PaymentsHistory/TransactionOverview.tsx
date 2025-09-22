@@ -6,13 +6,17 @@ import { useEmployeesQuery } from "../../hooks/queries/implementations/useEmploy
 import { useChannelsQuery } from "../../hooks/queries/implementations/useChannelsQuery";
 import { useChannelProfilesQuery } from "../../hooks/queries/implementations/useChannelProfilesQuery";
 import { TransactionDetails } from "./TransactionDetails";
+import { SessionOverview } from "./Sessions/SessionOverview";
+import { useLoggedEmployee } from "../../context/pos/LoggedEmployeeContextProvider";
+import { EmployeeRestriction } from "../../hooks/api/Dtos/employees/Employee";
+import { TransactionActions } from "./TransactionActions";
 
 interface Props {
     readonly transactionId: string;
 }
 export const TransactionOverview = (props: Props) => {
     const { t } = useTranslation();
-    //const loggedEmployeeContext = useLoggedEmployee();
+    const loggedEmployeeContext = useLoggedEmployee();
 
     const transactionQuery = useTransactionsQuery({
         ids: [props.transactionId],
@@ -121,7 +125,7 @@ export const TransactionOverview = (props: Props) => {
                 }
                 value={0}
             />
-            {/* {
+            {
                 (transaction == undefined || transaction.sessionId != undefined) &&
                 <Tab
                     label={
@@ -144,13 +148,12 @@ export const TransactionOverview = (props: Props) => {
                     }
                     value={2}
                 />
-            } */}
+            }
         </Tabs>
         {
             tab == 0 &&
             <TransactionDetails transaction={transaction} />
         }
-        {/* 
         {
             tab == 1 &&
             transaction?.sessionId != undefined &&
@@ -164,6 +167,6 @@ export const TransactionOverview = (props: Props) => {
                 transaction={transaction}
                 onRefundSuccess={() => setTab(0)}
             />
-        } */}
+        }
     </Stack>
 }

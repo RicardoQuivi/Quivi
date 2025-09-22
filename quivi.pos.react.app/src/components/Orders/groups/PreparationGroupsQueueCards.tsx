@@ -49,7 +49,11 @@ export const PreparationGroupsQueueCards = (props: Props) => {
                 overflow: "auto",
             }}
         >
-            <Grid container spacing={1} justifyContent={xs ? "center" : undefined}>
+            <Grid
+                container
+                gap={2}
+                justifyContent={xs ? "center" : undefined}
+            >
             {
                 groupsQuery.isFirstLoading == false
                 ?
@@ -86,6 +90,7 @@ export const PreparationGroupsQueueCards = (props: Props) => {
             }
             </Grid>
         </Box>
+        
         {
             groupsQuery.totalPages > 1 &&
             <Box

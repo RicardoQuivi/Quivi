@@ -23,6 +23,7 @@ export const useOrdersApi = () => {
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         request.channelIds?.forEach((id, i) => queryParams.set(`channelIds[${i}]`, id));
         request.states?.forEach((s, i) => queryParams.set(`states[${i}]`, s.toString()));
+        request.sessionIds?.forEach((s, i) => queryParams.set(`sessionIds[${i}]`, s.toString()));
 
         const url = new URL(`api/orders?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.get<GetOrdersResponse>(url, {});

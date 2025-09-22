@@ -481,6 +481,7 @@ const getClosedSession = (channelId: string | undefined, closeDate: string): Ses
     id: "",
     items: [],
     isOpen: false,
+    startDate: closeDate,
     closedDate: closeDate,
     channelId: channelId ?? "",
     isDeleted: false,

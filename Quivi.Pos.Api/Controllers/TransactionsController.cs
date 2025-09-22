@@ -56,6 +56,7 @@ namespace Quivi.Pos.Api.Controllers
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 OrderIds = request.OrderIds?.Select(idConverter.FromPublicId),
+                SessionIds = request.SessionIds?.Select(idConverter.FromPublicId),
                 IncludePosChargeInvoiceItems = true,
                 IncludeMerchantCustomCharge = true,
                 IsCaptured = true,
@@ -81,6 +82,8 @@ namespace Quivi.Pos.Api.Controllers
             {
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
+                OrderIds = request.OrderIds?.Select(idConverter.FromPublicId),
+                SessionIds = request.SessionIds?.Select(idConverter.FromPublicId),
                 IsCaptured = true,
             });
 

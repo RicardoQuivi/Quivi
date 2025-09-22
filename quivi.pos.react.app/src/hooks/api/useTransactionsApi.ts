@@ -21,6 +21,7 @@ export const useTransactionsApi = () => {
 
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         request.orderIds?.forEach((id, i) => queryParams.set(`orderIds[${i}]`, id));
+        request.sessionIds?.forEach((id, i) => queryParams.set(`sessionIds[${i}]`, id));
 
         const url = new URL(`api/transactions?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.get<GetTransactionsResponse>(url, {});
@@ -31,6 +32,7 @@ export const useTransactionsApi = () => {
 
         request.ids?.forEach((id, i) => queryParams.set(`ids[${i}]`, id));
         request.orderIds?.forEach((id, i) => queryParams.set(`orderIds[${i}]`, id));
+        request.sessionIds?.forEach((id, i) => queryParams.set(`sessionIds[${i}]`, id));
 
         const url = new URL(`api/transactions/resume?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.get<GetTransactionsResumeResponse>(url, {});

@@ -19,6 +19,7 @@
     "channels": "Channels",
     "channel": "Channel",
     "orders": "Orders",
+    "payments": "Payments",
     "date": "Date",
     "employeeAccessDenied": "You don't have permissions to transfer items between sessions",
     "employee": "Employee",
@@ -33,7 +34,10 @@
         "current": "Session",
         "empty": "This session is empty",
         "nothingToPrepare": "There are no pending items to prepare in this session",
-        "paymentNotAllowed": "Payment is not available at the moment. Your PoS is either offline or does not allow this action."
+        "paymentNotAllowed": "Payment is not available at the moment. Your PoS is either offline or does not allow this action.",
+        "sessionStart": "Session start",
+        "sessionEnd": "Session end",
+        "sessionIsOpen": "Session is still open"
     },
     "unpaid": "Unpaid",
     "paid": "Paid",
@@ -46,6 +50,7 @@
     "openCashDrawer": "Open drawer",
     "printEndOfDayTotals": "Print end of day totals",
     "pickItemQuantity": "Change quantity - {{name}}",
+    "quantity": "Quantity",
     "discounts": "Discounts",
     "discount": "Discount",
     "itemsWithNoDiscount": "Items without discount",
@@ -195,7 +200,8 @@
         "item": "Item",
         "unitPrice": "Unit price",
         "byEmployee": "By employee {{name}}",
-        "refunded": "Refunded"
+        "refunded": "Refunded",
+        "refund": "Refund"
     },
     "details": "Details",
     "sessionDetails": "Session details",

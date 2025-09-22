@@ -31,6 +31,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 AllowsOpeningSessions = settings.AllowsOpeningSessions,
                 AllowsAddingItemsToSession = settings.AllowsAddingItemsToSession,
                 AllowsRemovingItemsFromSession = settings.AllowsRemovingItemsFromSession,
+                AllowsRefunds = true,
             };
         }
     }

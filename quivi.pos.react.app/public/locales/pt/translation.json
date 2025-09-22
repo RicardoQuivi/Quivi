@@ -19,6 +19,7 @@
     "channels": "Canais",
     "channel": "Canal",
     "orders": "Pedidos",
+    "payments": "Pagamentos",
     "date": "Data",
     "employeeAccessDenied": "Não tem permissões para transferir itens entre sessões",
     "employee": "Funcionário",
@@ -33,7 +34,10 @@
         "current": "Sessão",
         "empty": "Esta sessão está vazia",
         "nothingToPrepare": "Não existem items por preparar nesta sessão",
-        "paymentNotAllowed": "O pagamento não está disponível neste momento. O PoS encontra-se offline ou não suporta esta ação."
+        "paymentNotAllowed": "O pagamento não está disponível neste momento. O PoS encontra-se offline ou não suporta esta ação.",
+        "sessionStart": "Início da sessão",
+        "sessionEnd": "Término da sessão",
+        "sessionIsOpen": "A sessão encontra-se aberta"
     },
     "unpaid": "Por pagar",
     "paid": "Pago",
@@ -46,6 +50,7 @@
     "openCashDrawer": "Abrir gaveta",
     "printEndOfDayTotals": "Imprimir totais de fecho de dia",
     "pickItemQuantity": "Alterar quantidade - {{name}}",
+    "quantity": "Quantidade",
     "discounts": "Descontos",
     "discount": "Desconto",
     "itemsWithNoDiscount": "Itens sem desconto",
@@ -195,7 +200,8 @@
         "item": "Item",
         "unitPrice": "Preço unitário",
         "byEmployee": "Pelo funcionário {{name}}",
-        "refunded": "Reembolsada"
+        "refunded": "Reembolsada",
+        "refund": "Reembolso"
     },
     "details": "Detalhes",
     "sessionDetails": "Detalhes da sessão",

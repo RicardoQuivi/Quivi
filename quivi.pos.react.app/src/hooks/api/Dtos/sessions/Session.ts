@@ -7,6 +7,7 @@ export interface Session {
     readonly employeeId?: string;
     readonly items: SessionItem[];
     readonly orderIds: string[];
+    readonly startDate: string;
     readonly closedDate?: string;
     readonly isDeleted: boolean;
 }

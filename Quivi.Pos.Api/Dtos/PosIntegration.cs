@@ -9,5 +9,6 @@
         public bool AllowsEscPosInvoices { get; init; }
         public bool AllowsAddingItemsToSession { get; init; }
         public bool AllowsRemovingItemsFromSession { get; init; }
+        public bool AllowsRefunds { get; init; }
     }
 }

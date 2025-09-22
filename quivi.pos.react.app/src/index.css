@@ -1,15 +1,50 @@
 @font-face {
     font-family: 'Atelia';
-    src: url('./assets/fonts/Atelia.ttf') format('truetype');
+    src: url('./assets/fonts/Atelia.otf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'BDOGrotesk';
-    src: url('./assets/fonts/BDOGrotesk.otf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BDOGrotesk';
+  src: url('./assets/fonts/BDOGrotesk-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
 }
 
 :root {

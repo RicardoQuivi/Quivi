@@ -18,18 +18,6 @@ import { AGetTransactionsRequest } from "../../hooks/api/Dtos/transactions/AGetT
 import { useTransactionsResumeQuery } from "../../hooks/queries/implementations/useTransactionsResumeQuery";
 import { SummaryBox } from "../common/SummaryBox";
 
-const dateToString = (d: Date) => {
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    const hour = d.getHours();
-    const minute = d.getMinutes();
-    const format = (n: number) => n.toLocaleString(undefined, {minimumIntegerDigits: 2});
-    
-    const result = `${year}-${format(month)}-${format(day)} ${format(hour)}:${format(minute)}`;
-    return result;
-}
-
 interface Props extends AGetTransactionsRequest {
     readonly onTransactionDetailsClicked?: (transactionId: string) => any;
     readonly hideChannel?: boolean;
@@ -92,7 +80,14 @@ export const TransactionsTable = ({
 
     return (
         <>
-            <Accordion square sx={{backgroundColor: "#F7F7F8", width: "100%"}} expanded>
+            <Accordion
+                square
+                sx={{
+                    backgroundColor: t => t.palette.background.paper,
+                    width: "100%",
+                }}
+                expanded
+            >
                 <AccordionSummary>
                     <SummaryBox 
                         isLoading={transactionsResumeQuery.isFirstLoading}
@@ -250,7 +245,7 @@ const TransactionRow = (props: RowProps) => {
             ?
                 <Skeleton animation="wave" />
             :
-                dateToString(dateHelpers.toDate(row.capturedDate))
+                dateHelpers.toLocalString(row.capturedDate, "YYYY-MM-DD HH:mm")
         }
         </TableCell>
         {

@@ -12,7 +12,6 @@ import { TransactionItemsPage } from "./TransactionItemsPage";
 import { useTransactionDocumentsQuery } from "../../hooks/queries/implementations/useTransactionDocumentsQuery";
 import { useAuth } from "../../context/AuthContextProvider";
 import { TransactionInvoiceType } from "../../hooks/api/Dtos/transactionDocuments/TransactionInvoiceType";
-import React from "react";
 
 interface Props {
     readonly transaction?: Transaction;
@@ -68,11 +67,34 @@ export const TransactionDetails = ({
     //     }
     // }
 
-    return <Stack direction="column" spacing={2}>
-        <Tooltip title={t("paymentHistory.clickToSeeItems")} style={{width: "100%"}}>
-            <Accordion square sx={{backgroundColor: "#F7F7F8", width: "100%"}} expanded={isExpanded} onChange={() => setIsExpanded(p => !p)}>
-                <AccordionSummary expandIcon={<ChevronDownIcon height="1.5rem" width="auto" />}>
-                    <SummaryBox style={{padding: 0, margin: 0}} items={[
+    return <Stack
+        direction="column"
+        gap={2}
+    >
+        <Tooltip
+            title={t("paymentHistory.clickToSeeItems")}
+            sx={{
+                width: "100%",
+            }}
+        >
+            <Accordion
+                square
+                sx={{
+                    backgroundColor: t => t.palette.background.paper,
+                    width: "100%",
+                }}
+                expanded={isExpanded}
+                onChange={() => setIsExpanded(p => !p)}
+            >
+                <AccordionSummary
+                    expandIcon={<ChevronDownIcon height="1.5rem" width="auto" />}
+                >
+                    <SummaryBox
+                        style={{
+                            padding: 0,
+                            margin: 0,
+                        }}
+                        items={[
                         {
                             label: t("total"),
                             content: transaction == undefined 
@@ -97,7 +119,8 @@ export const TransactionDetails = ({
                                         :
                                         <CurrencySpan value={transaction.tip} />
                         },
-                    ]} />
+                    ]}
+                />
                 </AccordionSummary>
                 {
                     transaction != undefined &&
@@ -179,21 +202,32 @@ export const TransactionDetails = ({
                         ?
                         t("notAvailable")
                         :
-                        documentsQuery.data.filter(p => auth.principal?.isAdmin == true || p.type != TransactionInvoiceType.Surcharge).map(s =>
-                            <React.Fragment key={s.id}>
-                                {s.name}
-                                &nbsp;
-                                <a href={s.url} target="_blank" rel="noopener noreferrer">
-                                    <DownloadIcon
-                                        fontSize="inherit"
-                                        style={{
-                                            verticalAlign: "middle",
-                                        }}
-                                    />
-                                </a>
-                                <br/>
-                            </React.Fragment>
-                        )
+                        <Stack
+                            direction="column"
+                            gap={2}
+                        >
+                        {
+                            documentsQuery.data.filter(p => auth.principal?.isAdmin == true || p.type != TransactionInvoiceType.Surcharge).map(s =>
+                                <Stack
+                                    key={s.id}
+                                    direction="row"
+                                    gap={2}
+                                >
+                                    <Typography variant="body1">
+                                        {s.name}
+                                    </Typography>
+                                    <a href={s.url} target="_blank" rel="noopener noreferrer">
+                                        <DownloadIcon
+                                            fontSize="inherit"
+                                            style={{
+                                                verticalAlign: "middle",
+                                            }}
+                                        />
+                                    </a>
+                                </Stack>
+                            )
+                        }
+                        </Stack>
                     )
                 }
                 </Typography>
@@ -225,14 +259,16 @@ const RefundDescription = (props: RefundDescriptionProps) => {
         return string[0].toLowerCase() + string.slice(1);
     }
 
-    return (
-        <span>
+    return <>
+        <Typography variant="body1">
             {dateHelper.toLocalString(props.transaction.lastModified, `D MMM YYYY`)}
-            <span style={{textTransform: "lowercase"}}>&nbsp;{t("dateHelper.at")}&nbsp;</span>
+        </Typography>
+        <Typography variant="body1" sx={{textTransform: "lowercase"}}>&nbsp;{t("dateHelper.at")}&nbsp;</Typography>
+        <Typography variant="body1">
             {dateHelper.toLocalString(props.transaction.lastModified, `HH:mm`)}
             {
                 props.transaction.refundEmployeeId != undefined &&
-                <span style={{textTransform: "-moz-initial"}}>
+                <>
                     &nbsp;
                     {
                         refundEmployee == undefined
@@ -241,8 +277,8 @@ const RefundDescription = (props: RefundDescriptionProps) => {
                         :
                         getEmployeeDescription(refundEmployee.name)
                     }
-                </span>
+                </>
             }
-        </span>
-    )
+        </Typography>
+    </>
 }

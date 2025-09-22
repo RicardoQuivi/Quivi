@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { Transaction } from "../../hooks/api/Dtos/transactions/Transaction";
 import { PaginationFooter } from "../Pagination/PaginationFooter";
@@ -7,6 +7,7 @@ import { ResponsiveTable } from "../Tables/ResponsiveTable";
 import DecimalSpan from "../Currency/DecimalSpan";
 import { BaseTransactionItem } from "../../hooks/api/Dtos/transactionItems/TransactionItem";
 import { useTransactionItemsQuery } from "../../hooks/queries/implementations/useTransactionItemsQuery";
+import { Button, Stack } from "@mui/material";
 
 interface Props {
     readonly transaction: Transaction;
@@ -18,7 +19,7 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
 
     const [loadItems, setLoadItems] = useState(props.canLoadItems);
     const [page, setPage] = useState(0);
-    const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    const [expandedItems, setExpandedItems] = useState<Set<string>>(() => new Set<string>());
 
     const itemsQuery = useTransactionItemsQuery(loadItems == false ? undefined : {
         transactionId: props.transaction.id,
@@ -26,77 +27,88 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
         pageSize: 10,
     });
 
-    const getModifiersTotal = (itemQty: number, modifiers: BaseTransactionItem[]) => modifiers.reduce((r, m) => r + itemQty * m.quantity * m.price, 0) ?? 0;
-
-    const formatQuantity = (value: number) => value.toFixed(2).replace('.00', '');
-
-    const isExpanded = (id: string) => expandedItems.some(x => x == id);
-
     const toggleExpandedItem = (id: string) => setExpandedItems(expandedList => {
-        if (expandedList.some(x => x == id)) {
-            return expandedList.filter(x => x != id);
+        const result = new Set<string>(expandedList);
+        if (result.has(id)) {
+            result.delete(id);
+            return result;
         }
-        return [...expandedList, id];
+        result.add(id);
+        return result;
     });
 
     useEffect(() => setLoadItems(p => p || props.canLoadItems), [props.canLoadItems])
     
+    const mappedItems = useMemo(() => itemsQuery.data.map(item => ({
+        item: item,
+        isExpandable: item.modifiers.length > 0,
+        isChildren: false,
+    })), [itemsQuery.data])
+
     return <>
         <ResponsiveTable
             isLoading={itemsQuery.isFirstLoading}
-            data={itemsQuery.data.map(item => ({
-                item: item,
-                isExpandable: item.modifiers.length > 0,
-                isExpanded: isExpanded(item.id),
-                isChildren: false,
-            }))}
+            data={mappedItems}
             columns={[
                 {
                     key: "name",
                     label: t("name"),
-                    render: d => <>
+                    render: d => <Stack
+                        direction="row"
+                        gap={2}
+                        alignItems="center"
+                    >
                         {
-                            (d.isChildren == false || d.item.quantity > 1) &&
-                            <>
-                                <span className="badge badge-secondary">
-                                    {formatQuantity(d.item.quantity)} x
-                                </span>
-                                &nbsp;
-                            </>
+                            (d.isChildren == false || d.item.quantity != 1) &&
+                            <span className="badge badge-secondary">
+                                {formatQuantity(d.item.quantity)} x
+                            </span>
                         }
-                        {d.item.name} {d.isExpandable && <strong>{d.isExpanded ? " ( - )" : " ( + )"}</strong>}
-                    </>
+                        <span>
+                            {d.item.name} {d.isExpandable && <strong>{expandedItems.has(d.item.id) ? " ( - )" : " ( + )"}</strong>}
+                        </span>
+                    </Stack>
                 },
                 {
                     key: "unit-price",
                     label: t("paymentHistory.unitPrice"),
-                    render: d => <CurrencySpan value={d.item.originalPrice + (!d.isExpanded ? getModifiersTotal(1, d.item.modifiers) : 0)} />
+                    render: d => <CurrencySpan value={d.item.originalPrice + (!expandedItems.has(d.item.id) ? getModifiersTotal(1, d.item.modifiers) : 0)} />
                 },
                 {
                     key: "discount",
                     label: t("discount"),
-                    render: d => <>
+                    render: d => <Stack
+                        direction="row"
+                        gap={2}
+                        alignItems="center"
+                    >
+                        <CurrencySpan value={d.item.originalPrice - d.item.price} />
                         {
                             d.item.appliedDiscountPercentage > 0 &&
-                            <>
-                                <span className="badge badge-pill badge-success">
-                                    <DecimalSpan value={d.item.appliedDiscountPercentage} /> %
-                                </span>
-                                &nbsp;
-                            </>
+                            <Button
+                                variant="contained"
+                                color="info"
+                                sx={{
+                                    paddingY: "3px",
+                                    paddingX: "8px",
+                                    minWidth: "unset",
+                                    height: "unset",
+                                }}
+                            >
+                                <DecimalSpan value={d.item.appliedDiscountPercentage} /> %
+                            </Button>
                         }
-                        <CurrencySpan value={d.item.originalPrice - d.item.price} />
-                    </>
+                    </Stack>
                 },
                 {
                     key: "total",
                     label: t("total"),
-                    render: d => <CurrencySpan value={d.item.quantity * d.item.price + (!d.isExpanded ? getModifiersTotal(d.item.quantity, d.item.modifiers) : 0)} />
+                    render: d => <CurrencySpan value={d.item.quantity * d.item.price + (!expandedItems.has(d.item.id) ? getModifiersTotal(d.item.quantity, d.item.modifiers) : 0)} />
                 }
             ]}
             getKey={d => d.item.id}
             onRowClick={d => d.isExpandable && toggleExpandedItem(d.item.id)}
-            getChildren={d => (d.item.modifiers ?? []).map(m => ({
+            getChildren={d => d.item.modifiers.map(m => ({
                 item: {
                     ...m,
                     modifiers: [],
@@ -109,3 +121,6 @@ export const TransactionItemsPage: React.FC<Props> = (props) => {
         <PaginationFooter currentPage={itemsQuery.page} numberOfPages={itemsQuery.totalPages} onPageChanged={setPage} />
     </>
 }
+
+const getModifiersTotal = (itemQty: number, modifiers: BaseTransactionItem[]) => modifiers.reduce((r, m) => r + itemQty * m.quantity * m.price, 0) ?? 0;
+const formatQuantity = (value: number) => value.toFixed(2).replace('.00', '');

@@ -195,7 +195,7 @@ export const Pos = () => {
                                 sm: 0,
                             },
                             padding: {
-                                xs: "0.5rem",
+                                xs: "0.5rem 0.5rem 0rem 0.5rem",
                                 sm: 0,
                             },
                             overflowY: "hidden",

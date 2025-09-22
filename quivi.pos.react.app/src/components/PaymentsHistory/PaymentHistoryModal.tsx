@@ -25,8 +25,11 @@ export const PaymentHistoryModal: React.FC<Props> = ({
 
     const getTitle = () => {
         if(state.transactionId == undefined) {
-            return t("paymentHistory.title");
+            return <Typography variant='h4' sx={{flex: "1 1 auto", textAlign: "center"}}>
+                {t("paymentHistory.title")}
+            </Typography>
         }
+
         return <Box
             sx={{
                 display: "flex",
@@ -34,7 +37,7 @@ export const PaymentHistoryModal: React.FC<Props> = ({
             }}
         >
             <IconButton onClick={() => setTransactionId(undefined)}>
-                <LeftArrowIcon height="35px" width="35px" />
+                <LeftArrowIcon height="30px" width="30px" />
             </IconButton>
             <Typography variant='h4' sx={{flex: "1 1 auto", textAlign: "center"}}>
                 {t("paymentHistory.transaction")} {state.transactionId}

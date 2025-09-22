@@ -6,4 +6,5 @@ export interface PosIntegration {
     readonly allowsEscPosInvoices: boolean;
     readonly allowsAddingItemsToSession: boolean;
     readonly allowsRemovingItemsFromSession: boolean;
+    readonly allowsRefunds: boolean;
 }

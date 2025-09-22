@@ -20,7 +20,6 @@ export const usePosIntegrationsQuery = (request: GetPosIntegrationsRequest | und
         refreshOnAnyUpdate: true,
     })
 
-
     const queryResult = useQueryable({
         queryName: "usePosIntegrationsQuery",
         entityType: `${getEntityType(Entity.PosIntegrations)}-processed`,
