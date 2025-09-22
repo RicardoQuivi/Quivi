@@ -296,13 +296,25 @@ export const SessionViewer: React.FC<Props> = ({
                         >
                             {
                                 itemStatusFilter == false &&
-                                pendingOrdersQuery.data.map(item =>
-                                    <OrderItemComponent 
-                                        key={item.id}
-                                        order={item}
-                                        itemsMap={itemsMap}
-                                    />
-                                )
+                                pendingOrdersQuery.data.length > 0 &&
+                                <>
+                                    {
+                                        pendingOrdersQuery.data.map(item =>
+                                            <OrderItemComponent 
+                                                key={item.id}
+                                                order={item}
+                                                itemsMap={itemsMap}
+                                            />
+                                        )
+                                    }
+                                    <Divider
+                                        sx={{
+                                            marginX: "1rem",
+                                        }}
+                                    >
+                                        {t("session.current")}
+                                    </Divider>
+                                </>
                             }
                             {
                                  pos.cartSession.items.filter(item => itemStatusFilter == undefined || item.isPaid == itemStatusFilter).map((item, index) => (
@@ -643,7 +655,7 @@ const OrderItemComponent = (props : {
         }
     }
 
-    const primaryActions = (): React.ReactNode => {
+    const primaryActions = useMemo(() => {
         const buttons: React.ReactNode[] = [];
 
         if(isLoading == false) {
@@ -693,7 +705,7 @@ const OrderItemComponent = (props : {
         return <ButtonGroup variant="outlined">
             { buttons }
         </ButtonGroup>
-    }
+    }, [isLoading])
 
     return (
     <Card
@@ -703,6 +715,9 @@ const OrderItemComponent = (props : {
             transition: "background-color 0.5s ease",
             border: "unset",
             boxShadow: "unset",
+            "& .MuiCardHeader-root": {
+                padding: 0,
+            },
 
             "& .MuiCardHeader-action": {
                 margin: 0,
@@ -712,7 +727,7 @@ const OrderItemComponent = (props : {
         }}
     >
         <CardHeader
-            avatar={primaryActions()}
+            avatar={primaryActions}
             action={<Stack
                 direction="row"
                 gap={2}

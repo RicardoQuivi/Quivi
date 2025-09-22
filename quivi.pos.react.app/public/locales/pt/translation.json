@@ -30,6 +30,7 @@
     "closeSessionQuestion": "Tem a certeza que deseja fechar a sessão de <bold>{{name}}</bold>?",
     "sessionInformation": "Informação da sessão",
     "session": {
+        "current": "Sessão",
         "empty": "Esta sessão está vazia",
         "nothingToPrepare": "Não existem items por preparar nesta sessão",
         "paymentNotAllowed": "O pagamento não está disponível neste momento. O PoS encontra-se offline ou não suporta esta ação."

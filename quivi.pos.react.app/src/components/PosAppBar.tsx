@@ -33,23 +33,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
 }));
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    width: "100%",
-    
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
-        },
-    },
-}));
 
 interface Props {
     readonly search: string;
@@ -174,11 +157,36 @@ export const PosAppBar = (props: Props) => {
         <AppBar position="relative">
             <Toolbar variant="regular">
                 { renderOptions() }
-                <Search style={{flex: "1 1 auto"}}>
+                <Search
+                    sx={{
+                        flex: 1,
+                    }}
+                >
                     <SearchIconWrapper>
                         <SearchIcon />
                     </SearchIconWrapper>
-                    <StyledInputBase placeholder={t("search")!} value={searchTxt} onChange={(v) => setSearchTxt(v.target.value)} />
+                    <InputBase
+                        placeholder={t("search")!}
+                        value={searchTxt}
+                        onChange={(v) => setSearchTxt(v.target.value)}
+                        sx={{
+                            color: 'inherit',
+                            width: "100%",
+                            
+                            '& .MuiInputBase-input': {
+                                padding: theme.spacing(1, 1, 1, 0),
+
+                                // vertical padding + font size from searchIcon
+                                paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+                                transition: theme.transitions.create('width'),
+                                width: '100%',
+
+                                [theme.breakpoints.up('md')]: {
+                                    width: '20ch',
+                                },
+                            },
+                        }}
+                    />
                 </Search>
             </Toolbar>
         </AppBar>
