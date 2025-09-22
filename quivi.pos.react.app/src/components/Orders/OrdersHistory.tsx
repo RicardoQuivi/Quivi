@@ -35,7 +35,7 @@ export const OrdersHistory = (props: Props) => {
             pageSize={19}
             states={props.states}
             onOrderSelected={props.onOrderSelected}
-            sortDirection={SortDirection.Asc}
+            sortDirection={SortDirection.Desc}
             onPageChanged={setPage}
         />
     </Paper>

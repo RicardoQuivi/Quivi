@@ -1,4 +1,4 @@
-import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Grid, useMediaQuery } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useToast } from "./context/ToastProvider";
 import useNoSleepMonitor from "./hooks/useNoSleepMonitor";
@@ -13,7 +13,6 @@ import { Channel } from "./hooks/api/Dtos/channels/Channel";
 import { ItemsSelector } from "./components/Items/ItemsSelector";
 import { MenuItem } from "./hooks/api/Dtos/menuitems/MenuItem";
 import { usePosSession } from "./context/pos/PosSessionContextProvider";
-import { NewOrderAudioPlayer } from "./components/Orders/NewOrderAudioPlayer";
 import { SessionViewer } from "./components/Sessions/SessionViewer";
 import { useConfigurableFieldsQuery } from "./hooks/queries/implementations/useConfigurableFieldsQuery";
 import { EditItemPriceModel } from "./components/Sessions/EditSessionItemModal";
@@ -22,20 +21,20 @@ import { OrdersOverview } from "./components/Orders/OrdersOverview";
 import { SessionAdditionalFieldsModal } from "./components/SessionAdditionalFieldsModal";
 import { useSessionAdditionalInformationsQuery } from "./hooks/queries/implementations/useSessionAdditionalInformationsQuery";
 import { MenuItemWithExtras } from "./hooks/pos/session/ICartSession";
+import { useNewOrderAudio } from "./hooks/useNewOrderAudio";
 
 export const Pos = () => {
-    const theme = useTheme();
+    useNewOrderAudio();
+    useNoSleepMonitor(true);
+
+    const xs = useMediaQuery(t => t.breakpoints.only('xs'));
     const pos = usePosSession();
 
-    const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
-    
     const { t } = useTranslation();
     const toast = useToast();
 
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined | null>(undefined);
     const [transferChannel, setTransferChannel] = useState<Channel>();
-
-    const { } = useNoSleepMonitor(true);
 
     const [searchTxt, setSearchTxt] = useState("");
     const [readQrCodeOpen, setReadQrCodeOpen] = useState(false);
@@ -75,7 +74,7 @@ export const Pos = () => {
         }
     }
 
-    const onItemAdded = async (item: MenuItem | MenuItemWithExtras) => {
+    const onItemAdded = (item: MenuItem | MenuItemWithExtras) => {
         setSearchTxt("");
         pos.cartSession.addItem(item, 1);
     }
@@ -135,13 +134,16 @@ export const Pos = () => {
                 sx={{
                     overflow: "hidden",
                     flex: 1,
-                    padding: isMobile ? 0 : "1rem",
+                    padding: {
+                        xs: 0,
+                        sm: "1rem",
+                    }
                 }}
                 spacing={2}
             >
                 {
                     hasChannelsWithSessions &&
-                    isMobile == false &&
+                    xs == false &&
                     <Grid
                         size={{
                             xs: 12,
@@ -173,7 +175,6 @@ export const Pos = () => {
                 >
                     <PosTabs
                         hasChannelsWithSessions={hasChannelsWithSessions}
-                        isMobile={isMobile}
                         onTabIndexChanged={setActiveTab}
                         tab={activeTab}
                         localId={localId}
@@ -185,9 +186,18 @@ export const Pos = () => {
                     <Box
                         sx={{
                             flex: 1,
-                            marginTop: isMobile ? 0 : "1rem",
-                            order: isMobile ? -1 : 0,
-                            padding: isMobile ? "0.5rem" : 0,
+                            marginTop: {
+                                xs: 0,
+                                sm: "1rem",
+                            },
+                            order: {
+                                xs: -1,
+                                sm: 0,
+                            },
+                            padding: {
+                                xs: "0.5rem",
+                                sm: 0,
+                            },
                             overflowY: "hidden",
                         }}
                     >
@@ -232,11 +242,14 @@ export const Pos = () => {
                         
                         {
                             hasChannelsWithSessions &&
-                            isMobile &&
                             activeTab == ActiveTab.SessionOverview &&
                             <Box
                                 sx={{
                                     height: "100%",
+                                    display: {
+                                        xs: "block",
+                                        sm: "hidden"
+                                    }
                                 }}
                             >
                                 <SessionViewer
@@ -261,7 +274,6 @@ export const Pos = () => {
                 isOpen={additionalInfoModalOpen}
                 onClose={() => setAdditionalInfoModalOpen(false)}
             />
-            <NewOrderAudioPlayer />
             {/* <PrinterFailureManager /> */}
         </Box>
     )

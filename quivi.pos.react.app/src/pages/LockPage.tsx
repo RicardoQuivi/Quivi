@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useToast } from "../context/ToastProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Employee } from "../hooks/api/Dtos/employees/Employee";
 import { EmployeeSelectPage } from "./employees/EmployeeSelectPage";
 import { EmployeePinCodeLock } from "./employees/EmployeePinCodeLock";
@@ -17,7 +17,6 @@ export const LockPage = () => {
     const toast = useToast();
 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const [currentPage, setCurrentPage] = useState<Page>();
 
     const onComplete = (hasError: boolean) => {
         if(hasError == false) {
@@ -28,13 +27,13 @@ export const LockPage = () => {
 
     useEffect(() => setSelectedEmployee(undefined), [])
 
-    useEffect(() => {
+    const currentPage = useMemo(() => {
         if(selectedEmployee == undefined) {
-            setCurrentPage(undefined);
+            return undefined;
         } else if(selectedEmployee.hasPinCode == true) {
-            setCurrentPage(Page.PinCode);
+            return Page.PinCode;
         } else {
-            setCurrentPage(Page.DefinePinCode);
+            return Page.DefinePinCode;
         }
     }, [selectedEmployee])
 
@@ -93,7 +92,7 @@ export const LockPage = () => {
                                 alignItems: "center",
                             }}
                         >
-                                <LeftArrowIcon style={{ fontSize: 20, marginRight: 0.5 }} />
+                            <LeftArrowIcon style={{ fontSize: 20, marginRight: 0.5 }} />
                             {t("pages.employeeLockPage.backToEmployee")}
                         </Stack>
                     </Link>

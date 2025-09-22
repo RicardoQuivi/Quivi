@@ -131,8 +131,8 @@ const RightSidePanel = () => {
                 justifyContent: 'center',
                 position: 'relative',
                 zIndex: 1,
-                width: "100%",
-                height: "100%",
+                width: "100dvw",
+                height: "100dvh",
                 bgcolor: t => t.palette.primary.main,
             }}
         >
@@ -140,10 +140,10 @@ const RightSidePanel = () => {
                 direction="column"
                 sx={{
                     alignItems: 'center',
-                    color: "#272727",
+                    color: t => t.palette.text.primary,
 
                     "& svg": {
-                        fill: "#272727"
+                        fill: t => t.palette.text.primary,
                     }
                 }}
                 gap={8}
@@ -156,13 +156,7 @@ const RightSidePanel = () => {
                 <Typography
                     variant="h5"
                     sx={{
-                        textAlign: 'center',
                         fontFamily: "Atelia",
-                        fontWeight: 400,
-                        fontStyle: "Regular",
-                        leadingTrim: "NONE",
-                        lineHeight: "83%",
-                        letterSpacing: "0%",
                         textTransform: "uppercase",
                     }}
                 >
@@ -177,14 +171,6 @@ const RightSidePanel = () => {
 
                 <Typography
                     variant="body1"
-                    sx={{
-                        textAlign: 'center',
-                        fontWeight: 400,
-                        fontStyle: "Regular",
-                        leadingTrim: "NONE",
-                        lineHeight: "83%",
-                        letterSpacing: "0%",
-                    }}
                 >
                     {t("quivi.product.description")}
                 </Typography>

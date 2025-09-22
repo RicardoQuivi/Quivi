@@ -236,11 +236,7 @@ export const SessionButtons = ({
         return <></>
     }
     
-    return <Box
-        sx={{
-            position: "relative"
-        }}
-    >
+    return <>
         <Grid
             container
             spacing={2}
@@ -516,5 +512,5 @@ export const SessionButtons = ({
             isOpen={paymentHistoryModalOpen}
             onClose={() => setPaymentHistoryModalOpen(false)}
         />
-    </Box>
+    </>
 }

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
-import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
-import { OrderState } from "../../hooks/api/Dtos/orders/OrderState";
-import { SortDirection } from "../../hooks/api/Dtos/SortableRequest";
-import { useDateHelper } from "../../helpers/dateHelper";
+import { useDateHelper } from "../helpers/dateHelper";
+import { useOrdersQuery } from "./queries/implementations/useOrdersQuery";
+import { SortDirection } from "./api/Dtos/SortableRequest";
+import { OrderState } from "./api/Dtos/orders/OrderState";
 
 const newOrderAudio = new Audio("/sounds/New.wav");
+newOrderAudio.muted = false;
 
-export const NewOrderAudioPlayer = () => {  
+export const useNewOrderAudio = () => {  
     const dateHelper = useDateHelper();
     const requestedOrdersQuery = useOrdersQuery({
         page: 0,
@@ -33,12 +34,8 @@ export const NewOrderAudioPlayer = () => {
         }
 
         if(lastRequestedOrderDate === null || newDate > lastRequestedOrderDate) {
-            newOrderAudio.muted = false;
             newOrderAudio.play();
             setLastRequestedOrderDate(newDate)
         }
     }, [dateHelper, lastRequestedOrderDate, requestedOrdersQuery.data, requestedOrdersQuery.isFirstLoading])
-    
-    return <>
-    </>
 }

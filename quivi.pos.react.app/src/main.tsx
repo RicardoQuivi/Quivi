@@ -113,8 +113,8 @@ const theme = createTheme({
             light: colors.neutrals.beige,
         },
         secondary: {
-            main: "#FF0000",
-            contrastText: "#ff0000"
+            main: "#FF0000", //TODO: Never used
+            contrastText: "#ff0000", //TODO: Never used
         },
         text: {
             primary: colors.neutrals.black,
@@ -127,19 +127,19 @@ const theme = createTheme({
         success: {
             main: baseColors.accent.brightGreen,
             dark: baseColors.accent.brightGreen,
-            light:baseColors.accent.brightGreen,
+            light: baseColors.accent.brightGreen,
             contrastText: baseColors.neutrals.black,
         },
         info: {
             main: colors.accent.skyBlue,
-            dark:  colors.accent.skyBlue,
-            light:  colors.accent.skyBlue,
+            dark: colors.accent.skyBlue,
+            light: colors.accent.skyBlue,
             contrastText: baseColors.neutrals.black,
         },
         warning: {
             main: colors.accent.lime,
-            dark:  baseColors.accent.lime,
-            light:  baseColors.accent.lime,
+            dark: baseColors.accent.lime,
+            light: baseColors.accent.lime,
             contrastText: baseColors.neutrals.black,
         },
         error: {

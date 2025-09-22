@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from 'vite-plugin-pwa'
-import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({

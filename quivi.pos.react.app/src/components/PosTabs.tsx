@@ -22,7 +22,6 @@ export enum ActiveTab {
 }
 
 interface Props {
-    readonly isMobile: boolean;
     readonly tab: ActiveTab;
     readonly onTabIndexChanged: (tab: ActiveTab) => any;
     readonly hasChannelsWithSessions: boolean;
@@ -65,11 +64,18 @@ export const PosTabs = (props: Props) => {
         return <></>
     }
     
-    if(props.isMobile == false) {
-        return (
+    return <>
+        {/* Desktop view */}
         <Paper 
             elevation={16}
-            sx={props.sx}
+            sx={{
+                ...(props.sx ?? {}),
+
+                display: {
+                    xs: "none",
+                    sm: "block",
+                }
+            }}
         >
             <Tabs
                 value={
@@ -146,13 +152,15 @@ export const PosTabs = (props: Props) => {
             </Tabs>
             <TabValidator channelId={pos.cartSession.channelId} tab={props.tab} onTabCanProceed={props.onTabIndexChanged} />
         </Paper>
-        )
-    }
 
-    return (
+        {/* Mobile View */}
         <BottomNavigation 
             sx={{
                 ...(props.sx ?? {}),
+                display: {
+                    xs: "flex",
+                    sm: "none",
+                },
                 width: "100%", 
                 bgcolor: p => p.palette.primary.main,
                 height: "auto",
@@ -237,7 +245,7 @@ export const PosTabs = (props: Props) => {
             }
             <TabValidator channelId={pos.cartSession.channelId} tab={props.tab} onTabCanProceed={props.onTabIndexChanged} />
         </BottomNavigation>
-    )
+    </>
 }
 
 interface TabValidatorProps {
