@@ -170,7 +170,7 @@ const RightSidePanel = () => {
                 </Typography>
                 
                 <img
-                    src="/public/images/quivi/kiwi-3.svg"
+                    src="/images/quivi/Kiwi-3.svg"
                     width="456"
                     height="auto"
                 />

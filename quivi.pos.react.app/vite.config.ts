@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from 'vite-plugin-pwa'
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -59,5 +60,12 @@ export default defineConfig({
     ],
     server: {
         port: 3011,
+    },
+    resolve: {
+        alias: {
+            "@mui/material/Button": path.resolve(__dirname, "src/overrides/Button"),
+            "@mui/material/IconButton": path.resolve(__dirname, "src/overrides/IconButton"),
+            "@mui/material/ButtonBase": path.resolve(__dirname, "src/overrides/ButtonBase"),
+        }
     }
 })

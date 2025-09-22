@@ -71,18 +71,31 @@ export const PosAppBar = (props: Props) => {
             {
                 locationsQuery.isFirstLoading == false &&
                 locationsQuery.data.length > 0 &&
-                <Tooltip title={t("changeLocal")} sx={{backgroundColor: "transparent" }}>
-                    <Chip avatar={<SwapIcon style={{marginLeft: 5, cursor: "pointer", height: "100%", stroke: "white"}}/>} 
-                            label={local?.name ?? t("allLocals")}
-                            variant="filled"
-                            color="default"
-                            sx={{
-                                color: "white",
-                                height: 40,
+                <Tooltip
+                    title={t("changeLocal")}
+                    sx={{
+                        backgroundColor: "transparent",
+                    }}
+                >
+                    <Chip
+                        avatar={(<SwapIcon />)} 
+                        label={local?.name ?? t("allLocals")}
+                        variant="filled"
+                        color="default"
+                        sx={{
+                            color: t => t.typography.button,
+                            height: 40,
+                            cursor: "pointer",
+                            margin: "0 0.25rem",
+
+                            "& svg": {
+                                marginLeft: 5,
                                 cursor: "pointer",
-                                margin: "0 0.25rem",
-                            }}
-                            onClick={() => setState(s => ({...s, localModalOpen: true, }))}
+                                height: "100%",
+                                color: t => t.typography.button,
+                            }
+                        }}
+                        onClick={() => setState(s => ({...s, localModalOpen: true, }))}
                     />
                 </Tooltip>
             }

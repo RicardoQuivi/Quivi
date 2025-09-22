@@ -715,6 +715,7 @@ const OrderItemComponent = (props : {
             transition: "background-color 0.5s ease",
             border: "unset",
             boxShadow: "unset",
+
             "& .MuiCardHeader-root": {
                 padding: 0,
             },
