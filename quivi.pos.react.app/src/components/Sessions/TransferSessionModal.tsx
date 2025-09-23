@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Autocomplete, ButtonBase, CircularProgress, FormControl, Grid, Skeleton, TextField } from '@mui/material';
+import { Autocomplete, ButtonBase, CircularProgress, FormControl, Grid, List, ListSubheader, Skeleton, TextField } from '@mui/material';
 import { Channel } from '../../hooks/api/Dtos/channels/Channel';
 import { QuantifiedItem, QuantifiedItemPicker, SelectableItem } from '../Pickers/QuantifiedItemPicker';
 import { useSessionsQuery } from '../../hooks/queries/implementations/useSessionsQuery';
@@ -18,6 +18,7 @@ import { useCartSession } from '../../hooks/pos/session/useCartSession';
 import { useMenuItemsQuery } from '../../hooks/queries/implementations/useMenuItemsQuery';
 import { MenuItem } from '../../hooks/api/Dtos/menuitems/MenuItem';
 import { ICartSession } from '../../hooks/pos/session/ICartSession';
+import React from 'react';
 
 const getItemIds = (...sessions: ICartSession[]) => {
     const ids = new Set<string>();
@@ -606,11 +607,22 @@ const Dropdown = (props: {
                         {getChannelName(option)}
                     </li>
                 )}
+                renderGroup={(params) => (
+                    <React.Fragment key={params.key}>
+                        <ListSubheader sx={{ fontWeight: "bold" }}>
+                            {props.channelProfilesMap.get(params.group)?.name ?? <Skeleton  animation="wave" />}
+                        </ListSubheader>
+                        <List disablePadding>
+                            {params.children}
+                        </List>
+                    </React.Fragment>
+                )}
                 renderInput={(params) => <TextField {...params} label={props.label} />}
                 value={props.selectedItem}
                 disabled={props.items.length == 1}
                 noOptionsText={t("notFound")}
                 onChange={(_, v) => v != undefined && props.onSelectionChanged(v)}
+                getOptionLabel={o => o.name}
             />
         }
         </FormControl>
