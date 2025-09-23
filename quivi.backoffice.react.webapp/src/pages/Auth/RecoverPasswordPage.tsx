@@ -108,7 +108,12 @@ const RecoverForm = (props: RecoverFormProps) => {
             </h1>
         </div>
         <div>
-            <form>
+            <form
+                onSubmit={async e => {
+                    e.preventDefault();
+                    await submit();
+                }}
+            >
                 <div className="space-y-5">
                     <PasswordField
                         value={state.password}
@@ -127,7 +132,7 @@ const RecoverForm = (props: RecoverFormProps) => {
                     <Button 
                         size="md"
                         variant="primary"
-                        onClick={submit}
+                        type="submit"
                         disabled={form.isSubmitting || !form.isValid || state.password != state.confirmPassword}
                         className="w-full"
                     >

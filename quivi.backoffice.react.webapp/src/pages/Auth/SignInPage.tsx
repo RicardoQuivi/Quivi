@@ -25,14 +25,14 @@ export const SignInPage = () => {
     const [credentialsError, setCredentialsError] = useState(false);
 
     useEffect(() => setCredentialsError(false), [state]);
-    
+
     const login = async () => {
         try {
             setIsSubmitting(true);
             await auth.signIn(state.email, state.password);
             navigate("/");
         } catch (e) {
-            if(e instanceof AuthenticationError) {
+            if (e instanceof AuthenticationError) {
                 setCredentialsError(true);
             }
         } finally {
@@ -86,7 +86,12 @@ export const SignInPage = () => {
                                     </span>
                                 </div>
                             </div>
-                            <form>
+                            <form
+                                onSubmit={async e => {
+                                    e.preventDefault();
+                                    await login();
+                                }}
+                            >
                                 <div className="space-y-6">
                                     <TextField
                                         value={state.email}
@@ -94,7 +99,7 @@ export const SignInPage = () => {
                                         name="email"
                                         label={t("common.email")}
                                         placeholder={t("common.emailPlaceholder")}
-                                        onChange={v => setState(s => ({...s, email: v }))}
+                                        onChange={v => setState(s => ({ ...s, email: v }))}
                                         autoComplete="username"
                                     />
                                     <PasswordField
@@ -102,7 +107,7 @@ export const SignInPage = () => {
                                         name="password"
                                         label={t("common.password")}
                                         placeholder={t("common.passwordPlaceholder")}
-                                        onChange={v => setState(s => ({...s, password: v }))}
+                                        onChange={v => setState(s => ({ ...s, password: v }))}
                                         errorMessage={credentialsError ? t("common.apiErrors.InvalidCredentials") : undefined}
                                         autoComplete="current-password"
                                     />
@@ -115,20 +120,14 @@ export const SignInPage = () => {
                                             {t("pages.signIn.forgotPassword")}
                                         </Link>
                                     </div>
-                                    <Button 
-                                        size="md" 
+                                    <Button
+                                        size="md"
                                         variant="primary"
-                                        onClick={login}
+                                        type="submit"
                                         disabled={isSubmitting || !state.email || !state.password}
                                         className="w-full"
                                     >
-                                        {
-                                            isSubmitting
-                                            ?
-                                            <Spinner />
-                                            :
-                                            t("pages.signIn.signIn")
-                                        }
+                                        {isSubmitting ? <Spinner /> : t("pages.signIn.signIn")}
                                     </Button>
                                 </div>
                             </form>

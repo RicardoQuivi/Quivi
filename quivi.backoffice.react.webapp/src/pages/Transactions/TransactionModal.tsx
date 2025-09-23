@@ -677,7 +677,6 @@ const Refund = ({
 
     
     const getRefundButton = (isCancelation: boolean) => {
-
         const isRefundAvailable = posIntegration?.features.allowsRefunds != false;
         const baseButton = (
             <Button

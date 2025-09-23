@@ -95,7 +95,12 @@ const RecoverForm = (props: RecoverFormProps) => {
             </p>
         </div>
         <>
-            <form>
+            <form
+                onSubmit={async e => {
+                    e.preventDefault();
+                    await recover();
+                }}
+            >
                 <div className="space-y-6">
                     <TextField
                         label={t("common.email")}
@@ -109,7 +114,7 @@ const RecoverForm = (props: RecoverFormProps) => {
                     <Button 
                         size="md" 
                         variant="primary"
-                        onClick={recover}
+                        type="submit"
                         disabled={form.isSubmitting}
                         className="w-full"
                     >
