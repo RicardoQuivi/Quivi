@@ -19,7 +19,7 @@ export const useConfigurableFieldsQuery = (request: GetConfigurableFieldRequest 
         },
         getIdsFilter: r => r.ids,
         getId: (e: ConfigurableField) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

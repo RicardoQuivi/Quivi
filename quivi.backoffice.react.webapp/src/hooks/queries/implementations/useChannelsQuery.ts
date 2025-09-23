@@ -19,7 +19,7 @@ export const useChannelsQuery = (request: GetChannelsRequest | undefined) => {
         },
         getIdsFilter: r => r.ids,
         getId: (e: Channel) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

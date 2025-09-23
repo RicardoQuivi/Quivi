@@ -20,7 +20,7 @@ export const useTransactionsQuery = (request: GetTransactionsRequest | undefined
         },
         getIdsFilter: r => r.ids,
         getId: (e: Transaction) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
         canUseOptimizedResponse: r => r.ids != undefined,

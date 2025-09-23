@@ -18,7 +18,7 @@ export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undef
         },
         getIdsFilter: r => r.ids,
         getId: (e: MenuCategory) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

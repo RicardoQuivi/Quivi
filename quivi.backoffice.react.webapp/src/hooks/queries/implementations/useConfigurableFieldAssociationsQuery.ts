@@ -18,7 +18,7 @@ export const useConfigurableFieldAssociationsQuery = (request: GetConfigurableFi
             subMerchantId: user.subMerchantId,
         },
         getId: (e: ConfigurableFieldAssociation) => `${e.channelProfileId}-${e.configurableFieldId}`,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
     })

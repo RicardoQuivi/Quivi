@@ -25,6 +25,7 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                 Id = idConverter.ToPublicId(model.Id),
                 Name = model.DocumentId ?? "",
                 DownloadUrl = model.Path,
+                CreatedDate = new DateTimeOffset(model.CreatedDate, TimeSpan.Zero),
             };
         }
     }

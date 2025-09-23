@@ -1,34 +1,26 @@
 import { Entity, getEntityType } from "../../EntitiesName";
 import { useQueryable } from "../useQueryable";
 import { useAuthenticatedUser } from "../../../context/AuthContext";
-import { GetEmployeesRequest } from "../../api/Dtos/employees/GetEmployeesRequest";
-import { useEmployeesApi } from "../../api/useEmployeesApi";
-import { Employee } from "../../api/Dtos/employees/Employee";
 import { useMemo } from "react";
+import { GetSettlementsRequest } from "../../api/Dtos/settlements/GetSettlementsRequest";
+import { useSettlementsApi } from "../../api/useSettlementsApi";
+import { Settlement } from "../../api/Dtos/settlements/Settlement";
 
-export const useEmployeesQuery = (request: GetEmployeesRequest | undefined) => {
+export const useSettlementsQuery = (request: GetSettlementsRequest | undefined) => {
     const user = useAuthenticatedUser();
-    const api = useEmployeesApi();
+    const api = useSettlementsApi();
 
     const queryResult = useQueryable({
-        queryName: "useEmployeesQuery",
-        entityType: getEntityType(Entity.Employees),
+        queryName: "useSettlementsQuery",
+        entityType: getEntityType(Entity.Settlements),
         request: user.subMerchantId == undefined || request == undefined ? undefined : {
             ...request,
             subMerchantId: user.subMerchantId,
         },
-        getIdsFilter: r => r.ids,
-        getId: (e: Employee) => e.id,
+        getId: (e: Settlement) => e.id,
         query: api.get,
 
-        refreshOnAnyUpdate: true,
-        canUseOptimizedResponse: r => r.ids != undefined,
-        getResponseFromEntities: (e) => ({
-            data: e,
-            page: 0,
-            totalPages: 1,
-            totalItems: 1,
-        }),       
+        refreshOnAnyUpdate: true,     
     })
 
     const result = useMemo(() => ({

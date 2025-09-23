@@ -80,6 +80,7 @@
         "yes": "Yes",
         "no": "No",
         "options": "Options",
+        "services": "Services",
         "all": "All",
         "settings": "Settings",
         "refunded": "Refunded",
@@ -702,6 +703,12 @@
                 "ForOrdering": "Is this field will pop up when guests are submitting an order"
             },
             "linkToChannelProfiles": "Link Channel profiles to {{name}}"
+        },
+        "payouts": {
+            "title": "Payouts"
+        },
+        "invoicing": {
+            "title": "Invoicing"
         }
     }
 }

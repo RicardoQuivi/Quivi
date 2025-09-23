@@ -19,7 +19,7 @@ export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsReque
         },
         getIdsFilter: r => r.ids,
         getId: (e: CustomChargeMethod) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
         canUseOptimizedResponse: r => r.ids != undefined,

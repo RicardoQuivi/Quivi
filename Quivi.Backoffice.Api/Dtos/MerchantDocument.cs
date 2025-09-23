@@ -5,5 +5,6 @@
         public required string Id { get; init; }
         public required string Name { get; init; }
         public required string DownloadUrl { get; init; }
+        public required DateTimeOffset CreatedDate { get; init; }
     }
 }

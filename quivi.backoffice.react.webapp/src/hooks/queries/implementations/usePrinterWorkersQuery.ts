@@ -18,7 +18,7 @@ export const usePrinterWorkersQuery = (request: GetPrinterWorkersRequest | undef
         },
         getIdsFilter: r => r.ids,
         getId: (e: PrinterWorker) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

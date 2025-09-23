@@ -20,7 +20,7 @@ export const useReviewsQuery = (request: GetReviewsRequest | undefined) => {
         },
         getIdsFilter: r => r.ids,
         getId: (e: Review) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
         canUseOptimizedResponse: r => r.ids != undefined,

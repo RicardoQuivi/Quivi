@@ -25,22 +25,21 @@ export const ItemsSelector: React.FC<Props> = ({
 }) => {
     const { t } = useTranslation();
 
-    const categoryQuery = useMenuCategoriesQuery(selectedCategoryId == undefined ? undefined : {
+    const selectedCategoryQuery = useMenuCategoriesQuery(selectedCategoryId == undefined ? undefined : {
         ids: [selectedCategoryId],
         hasItems: true,
         page: 0,
     });
-
-    const [currentPage, setCurrentPage] = useState<number>(0);
-    const [selectedItemWithModifier, setSelectedItemWithModifier] = useState<MenuItem>();
-
     const selectedCategory = useMemo(() => {
         if(selectedCategoryId == undefined) {
             return undefined;
         }
 
-        return categoryQuery.data.length == 0 ? undefined : categoryQuery.data[0];
-    }, [selectedCategoryId, categoryQuery.isFirstLoading]);
+        return selectedCategoryQuery.data.length == 0 ? undefined : selectedCategoryQuery.data[0];
+    }, [selectedCategoryId, selectedCategoryQuery.isFirstLoading]);
+
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [selectedItemWithModifier, setSelectedItemWithModifier] = useState<MenuItem>();
 
     useEffect(() => setCurrentPage(0), [selectedCategoryId])
     useEffect(() => {
@@ -48,6 +47,10 @@ export const ItemsSelector: React.FC<Props> = ({
             return;
         }
         
+        if(selectedCategoryId === undefined) {
+            return;
+        }
+
         // Select category "All" each time user search anything
         onCategoryChanged(undefined);
     }, [search]);

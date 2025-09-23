@@ -19,7 +19,7 @@ export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) => {
         },
         getIdsFilter: r => r.ids,
         getId: (e: MenuItem) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

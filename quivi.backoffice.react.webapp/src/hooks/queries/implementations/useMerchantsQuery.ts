@@ -19,7 +19,7 @@ export const useMerchantsQuery = (request: GetMerchantsRequest | undefined) => {
             authSubMerchantId: user.subMerchantId,
         },
         getId: (e: Merchant) => e.id,
-        query: request => api.get(request),
+        query: api.get,
         refreshOnAnyUpdate: true,
     })
 

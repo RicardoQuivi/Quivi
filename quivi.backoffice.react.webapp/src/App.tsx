@@ -37,6 +37,8 @@ import { PosIntegrationsPage } from "./pages/Admin/PosIntegrations/PosIntegratio
 import { PosIntegrationFormPage } from "./pages/Admin/PosIntegrations/PosIntegrationFormPage";
 import { ConfigurableFieldsPage } from "./pages/BusinessProfile/ConfigurableFields/ConfigurableFieldsPage";
 import { ConfigurableFieldFormPage } from "./pages/BusinessProfile/ConfigurableFields/ConfigurableFieldFormPage";
+import { PayoutsPage } from "./pages/Payouts/PayoutsPage";
+import { InvoicingPage } from "./pages/Invoicing/InvoicingPage";
 
 export const App = () => {
     return <>
@@ -102,6 +104,13 @@ export const App = () => {
                     {/* Transactions */}
                     <Route path="/transactions" element={<TransactionsPage />} />
                     <Route path="/transactions/:id" element={<TransactionsPage />} />
+
+
+                    {/* Payouts */}
+                    <Route path="/payouts" element={<PayoutsPage />} />
+
+                    {/* Invoicing */}
+                    <Route path="/invoicing" element={<InvoicingPage />} />
 
 
                     {/* Locals */}

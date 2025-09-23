@@ -79,6 +79,7 @@
         "yes": "Sim",
         "no": "Não",
         "options": "Opções",
+        "services": "Serviços",
         "all": "Todos",
         "settings": "Definições",
         "refunded": "Reembolso",
@@ -701,6 +702,12 @@
                 "ForOrdering": "Se o campo aparecerá para preenchimento em pedidos mobile"
             },
             "linkToChannelProfiles": "Associar Perfis de canal a {{name}}"
+        },
+        "payouts": {
+            "title": "Liquidações"
+        },
+        "invoicing": {
+            "title": "Faturação"
         }
     }
 }

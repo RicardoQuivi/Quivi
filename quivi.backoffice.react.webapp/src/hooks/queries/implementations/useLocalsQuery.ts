@@ -19,7 +19,7 @@ export const useLocalsQuery = (request: GetLocalsRequest | undefined) => {
         },
         getIdsFilter: r => r.ids,
         getId: (e: Local) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
         canUseOptimizedResponse: r => r.ids != undefined,

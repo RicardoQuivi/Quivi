@@ -19,7 +19,7 @@ export const useAcquirerConfigurationsQuery = (request: GetAcquirerConfiguration
         },
         getIdsFilter: r => r.ids,
         getId: (e: AcquirerConfiguration) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
         canUseOptimizedResponse: r => r.ids != undefined,

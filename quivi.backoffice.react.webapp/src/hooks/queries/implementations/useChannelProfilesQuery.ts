@@ -18,7 +18,7 @@ export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | und
         },
         getIdsFilter: r => r.ids,
         getId: (e: ChannelProfile) => e.id,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: request?.ids == undefined,
         canUseOptimizedResponse: r => r.ids != undefined,

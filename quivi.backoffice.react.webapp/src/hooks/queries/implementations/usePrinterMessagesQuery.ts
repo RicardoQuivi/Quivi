@@ -18,7 +18,7 @@ export const usePrinterMessagesQuery = (request: GetPrinterMessagesRequest | und
             subMerchantId: user.subMerchantId,
         },
         getId: (e: PrinterMessage) => `${e.printerId}-${e.messageId}`,
-        query: request => api.get(request),
+        query: api.get,
 
         refreshOnAnyUpdate: true,
     })
