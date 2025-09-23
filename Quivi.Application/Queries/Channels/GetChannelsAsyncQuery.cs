@@ -8,6 +8,7 @@ namespace Quivi.Application.Queries.Channels
 {
     public class GetChannelsAsyncQuery : APagedAsyncQuery<Channel>
     {
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<int>? SessionIds { get; init; }
@@ -33,6 +34,7 @@ namespace Quivi.Application.Queries.Channels
         {
             return repository.GetAsync(new GetChannelsCriteria
             {
+                ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,
                 Ids = query.Ids,
                 SessionIds = query.SessionIds,

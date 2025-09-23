@@ -5,6 +5,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
     public class GetChannelsCriteria : IPagedCriteria
     {
         public IEnumerable<int>? Ids { get; init; }
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? ChannelProfileIds { get; init; }
         public IEnumerable<string>? Identifiers { get; init; }

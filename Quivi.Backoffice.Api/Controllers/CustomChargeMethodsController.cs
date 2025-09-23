@@ -15,7 +15,7 @@ using Quivi.Infrastructure.Validations;
 namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
-    [RequireSubMerchant]
+    [RequireMerchant]
     [Authorize]
     [ApiController]
     public class CustomChargeMethodsController : ControllerBase
@@ -40,9 +40,12 @@ namespace Quivi.Backoffice.Api.Controllers
         public async Task<GetCustomChargeMethodsResponse> Get([FromQuery] GetCustomChargeMethodsRequest request)
         {
             request ??= new();
+
+            var subMerchantId = User.SubMerchantId(idConverter);
             var query = await queryProcessor.Execute(new GetCustomChargeMethodsAsyncQuery
             {
-                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                ParentMerchantIds = [User.MerchantId(idConverter)!.Value],
+                MerchantIds = subMerchantId.HasValue ? [subMerchantId.Value] : null,
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
@@ -58,6 +61,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPost]
+        [RequireSubMerchant]
         public async Task<CreateCustomChargeMethodResponse> Create([FromBody] CreateCustomChargeMethodRequest request)
         {
             using var validator = new ModelStateValidator<CreateCustomChargeMethodRequest, ValidationError>(request);
@@ -79,6 +83,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [RequireSubMerchant]
         public async Task<PatchCustomChargeMethodResponse> Patch(string id, [FromBody] PatchCustomChargeMethodRequest request)
         {
             using var validator = new ModelStateValidator<PatchCustomChargeMethodRequest, ValidationError>(request);
@@ -94,7 +99,7 @@ namespace Quivi.Backoffice.Api.Controllers
                     if (string.IsNullOrWhiteSpace(request.Name) == false)
                         local.Name = request.Name;
 
-                    if(request.LogoUrl.IsSet)
+                    if (request.LogoUrl.IsSet)
                         local.LogoUrl = request.LogoUrl;
 
                     return Task.CompletedTask;
@@ -110,6 +115,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RequireSubMerchant]
         public async Task<DeleteCustomChargeMethodResponse> Delete(string id)
         {
             await commandProcessor.Execute(new DeleteCustomChargeMethodsAsyncCommand

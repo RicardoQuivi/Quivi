@@ -13,8 +13,9 @@ export const useCustomChargeMethodsQuery = (request: GetCustomChargeMethodsReque
     const queryResult = useQueryable({
         queryName: "useCustomChargeMethodsQuery",
         entityType: getEntityType(Entity.CustomChargeMethods),
-        request: user.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.merchantId == undefined || request == undefined ? undefined : {
             ...request,
+            merchantId: user.merchantId,
             subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,

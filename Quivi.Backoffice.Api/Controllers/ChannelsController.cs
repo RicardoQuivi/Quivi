@@ -14,7 +14,7 @@ using Quivi.Infrastructure.Extensions;
 namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
-    [RequireSubMerchant]
+    [RequireMerchant]
     [ApiController]
     [Authorize]
     public class ChannelsController : ControllerBase
@@ -47,12 +47,17 @@ namespace Quivi.Backoffice.Api.Controllers
                 features |= ChannelFeature.AllowsSessions;
             }
 
+            var merchantId = User.MerchantId(idConverter);
+            if (User.IsAdmin() == false && merchantId == null)
+                throw new UnauthorizedAccessException();
+
             var subMerchantId = User.SubMerchantId(idConverter);
-            if (User.IsAdmin() == false && subMerchantId == null)
+            if (User.IsAdmin() == false && merchantId.HasValue == false && subMerchantId == null)
                 throw new UnauthorizedAccessException();
 
             var result = await queryProcessor.Execute(new GetChannelsAsyncQuery
             {
+                ParentMerchantIds = [merchantId!.Value],
                 MerchantIds = subMerchantId == null ? null : [subMerchantId.Value],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 Flags = features,
@@ -71,6 +76,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPost]
+        [RequireSubMerchant]
         public async Task<CreateChannelsResponse> Create([FromBody] CreateChannelsRequest request)
         {
             if (string.IsNullOrWhiteSpace(User.SubMerchantId()))
@@ -93,6 +99,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPatch]
+        [RequireSubMerchant]
         public async Task<PatchChannelsResponse> Patch([FromBody] PatchChannelsRequest request)
         {
             if (string.IsNullOrWhiteSpace(User.SubMerchantId()))
@@ -128,6 +135,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpDelete]
+        [RequireSubMerchant]
         public async Task<DeleteChannelsResponse> Delete([FromBody] DeleteChannelsRequest request)
         {
             if (string.IsNullOrWhiteSpace(User.SubMerchantId()))
@@ -152,6 +160,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPost("qrcodes")]
+        [RequireSubMerchant]
         public async Task<GenerateChannelQrCodesResponse> GenerateQrCode([FromBody] GenerateChannelQrCodesRequest request)
         {
             var pdf = await commandProcessor.Execute(new GenerateChannelsQrCodesAsyncCommand

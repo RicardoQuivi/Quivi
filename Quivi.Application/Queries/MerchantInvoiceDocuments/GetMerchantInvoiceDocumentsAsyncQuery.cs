@@ -10,6 +10,7 @@ namespace Quivi.Application.Queries.MerchantInvoiceDocuments
     public class GetMerchantInvoiceDocumentsAsyncQuery : APagedAsyncQuery<MerchantInvoiceDocument>
     {
         public IEnumerable<int>? Ids { get; init; }
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? PosChargeIds { get; init; }
         public IEnumerable<InvoiceDocumentType>? Types { get; init; }
@@ -36,6 +37,7 @@ namespace Quivi.Application.Queries.MerchantInvoiceDocuments
             return repository.GetAsync(new GetMerchantInvoiceDocumentsCriteria
             {
                 Ids = query.Ids,
+                ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,
                 PosChargeIds = query.PosChargeIds,
                 Types = query.Types,

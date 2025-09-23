@@ -15,6 +15,9 @@ namespace Quivi.Infrastructure.Repositories
         {
             IQueryable<CustomChargeMethod> query = Set;
 
+            if (criteria.ParentMerchantIds != null)
+                query = query.Where(e => e.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds.Contains(e.Merchant.ParentMerchantId.Value));
+
             if (criteria.MerchantIds != null)
                 query = query.Where(e => criteria.MerchantIds.Contains(e.MerchantId));
 

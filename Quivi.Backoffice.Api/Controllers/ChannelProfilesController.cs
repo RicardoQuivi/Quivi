@@ -17,7 +17,7 @@ namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [RequireSubMerchant]
+    [RequireMerchant]
     [Authorize]
     public class ChannelProfilesController : ControllerBase
     {
@@ -42,14 +42,18 @@ namespace Quivi.Backoffice.Api.Controllers
         {
             request ??= new GetChannelProfilesRequest();
 
+            var merchantId = User.MerchantId(idConverter);
+            var subMerchantId = User.SubMerchantId(idConverter);
+
             var result = await queryProcessor.Execute(new GetChannelProfilesAsyncQuery
             {
-                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                ParentMerchantIds = [merchantId!.Value],
+                MerchantIds = subMerchantId == null ? null : [subMerchantId.Value],
                 ChannelIds = request.ChannelIds?.Select(idConverter.FromPublicId),
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
-                IsDeleted = false, 
+                IsDeleted = false,
             });
 
             return new GetChannelProfilesResponse
@@ -62,6 +66,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPost]
+        [RequireSubMerchant]
         public async Task<CreateChannelProfileResponse> Create([FromBody] CreateChannelProfileRequest request)
         {
             var result = await commandProcessor.Execute(new AddChannelProfileAsyncCommand
@@ -81,6 +86,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [RequireSubMerchant]
         public async Task<PatchChannelProfileResponse> Patch(string id, [FromBody] PatchChannelProfileRequest request)
         {
             var result = await commandProcessor.Execute(new UpdateChannelProfileAsyncCommand
@@ -121,6 +127,7 @@ namespace Quivi.Backoffice.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RequireSubMerchant]
         public async Task<DeleteChannelProfileResponse> Delete(string id)
         {
             using var validator = new ModelStateValidator<string, ValidationError>(id);

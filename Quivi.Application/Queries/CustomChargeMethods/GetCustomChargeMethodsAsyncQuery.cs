@@ -8,6 +8,7 @@ namespace Quivi.Application.Queries.CustomChargeMethods
 {
     public class GetCustomChargeMethodsAsyncQuery : APagedAsyncQuery<CustomChargeMethod>
     {
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Names { get; init; }
@@ -27,6 +28,7 @@ namespace Quivi.Application.Queries.CustomChargeMethods
             return repository.GetAsync(new GetCustomChargeMethodsCriteria
             {
                 Ids = query.Ids,
+                ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,
                 Names = query.Names,
 

@@ -13,7 +13,7 @@ using Quivi.Infrastructure.Extensions;
 namespace Quivi.Backoffice.Api.Controllers
 {
     [Route("api/[controller]")]
-    [RequireSubMerchant]
+    [RequireMerchant]
     [ApiController]
     [Authorize]
     public class MerchantDocumentsController : ControllerBase
@@ -35,9 +35,12 @@ namespace Quivi.Backoffice.Api.Controllers
         public async Task<GetMerchantDocumentsResponse> Get([FromQuery] GetMerchantDocumentsRequest request)
         {
             request ??= new();
+
+            var subMerchantId = User.SubMerchantId(idConverter);
             var query = await queryProcessor.Execute(new GetMerchantInvoiceDocumentsAsyncQuery
             {
-                MerchantIds = [User.SubMerchantId(idConverter)!.Value],
+                ParentMerchantIds = [User.MerchantId(idConverter)!.Value],
+                MerchantIds = subMerchantId.HasValue ? [subMerchantId.Value] : null,
                 PosChargeIds = request.TransactionIds?.Select(idConverter.FromPublicId),
                 Types = request.MonthlyInvoiceOnly ? [InvoiceDocumentType.MerchantMonthlyInvoice] : null,
                 Formats = [DocumentFormat.Pdf],

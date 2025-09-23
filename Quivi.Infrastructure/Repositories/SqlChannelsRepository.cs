@@ -16,8 +16,11 @@ namespace Quivi.Infrastructure.Repositories
         {
             IQueryable<Channel> query = Set;
 
-            if(criteria.IncludeChannelProfile)
+            if (criteria.IncludeChannelProfile)
                 query = query.Include(q => q.ChannelProfile);
+
+            if (criteria.ParentMerchantIds != null)
+                query = query.Where(q => q.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds.Contains(q.Merchant.ParentMerchantId.Value));
 
             if (criteria.MerchantIds != null)
                 query = query.Where(q => criteria.MerchantIds.Contains(q.MerchantId));

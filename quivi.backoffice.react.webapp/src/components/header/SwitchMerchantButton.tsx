@@ -10,6 +10,7 @@ import { useToast } from "../../layout/ToastProvider";
 import { Merchant } from "../../hooks/api/Dtos/merchants/Merchant";
 import Button from "../ui/button/Button";
 import { useNavigate, useParams } from "react-router";
+import { Spinner } from "../spinners/Spinner";
 
 interface Props {
     readonly collapsed?: boolean;
@@ -135,47 +136,76 @@ const SwitchMerchantModal = (props: SwitchMerchantModalProps) => {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-6">
             {
-                merchantsQuery.data.map(m => 
-                    <div 
-                        key={m.id}
-                        className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] cursor-pointer"
-                        onClick={async () => {
-                            if(m.parentId == undefined) {
-                                setState(s => ({ ...s, parentMerchant: m, page: 0, }));
-                                return;
-                            }
-                            await switchToMerchant(m);
-                        }}
-                    >
-                        <div className="mb-5 overflow-hidden rounded-lg">
-                            <img src={m.logoUrl} alt={m.name} className="overflow-hidden rounded-lg" />
-                        </div>
-
-                        <div>
-                            <h4 className="mb-1 text-theme-xl font-medium text-gray-800 dark:text-white/90">
-                                {m.name}
-                            </h4>
-
-                            <Button
-                                className="mt-4 w-full"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    switchToMerchant(m);
-                                }}
-                            >
-                            {
-                                m.parentId == undefined
-                                ?
-                                t("sidebar.switchMerchant.selectGroup")
-                                :
-                                t("sidebar.switchMerchant.selectSubMerchant")
-                            }
-                            </Button>
-                        </div>
-                    </div>
-                )
+                merchantsQuery.data.map(m => <MerchantCard
+                    key={m.id}
+                    merchant={m}
+                    onCardClick={async () => {
+                        if(m.parentId == undefined) {
+                            setState(s => ({ ...s, parentMerchant: m, page: 0, }));
+                            return;
+                        }
+                        await switchToMerchant(m);
+                    }}
+                    onMerchantSelect={() => switchToMerchant(m)}
+                />)
             }
         </div>
         <QueryPagination query={merchantsQuery} pageSize={state.pageSize} onPageIndexChange={p => setState(s => ({...s, page: p}))} />
     </Modal>
+}
+
+interface MerchantCardProps {
+    readonly merchant: Merchant;
+    readonly onCardClick: () => Promise<any>;
+    readonly onMerchantSelect: () => Promise<any>;
+}
+const MerchantCard = (props: MerchantCardProps) => {
+    const  { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState(false);
+
+    return <div 
+        className={`rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] ${isLoading ? "" : "cursor-pointer"}`}
+        onClick={async () => {
+            setIsLoading(true);
+            await props.onCardClick();
+            setIsLoading(false);
+        }}
+    >
+        <div className="mb-5 overflow-hidden rounded-lg">
+            <img src={props.merchant.logoUrl} alt={props.merchant.name} className="overflow-hidden rounded-lg" />
+        </div>
+
+        <div>
+            <h4 className="mb-1 text-theme-xl font-medium text-gray-800 dark:text-white/90">
+                {props.merchant.name}
+            </h4>
+
+            {
+                props.merchant.parentId != undefined &&
+                <Button
+                    className="mt-4 w-full"
+                    onClick={async () => {
+                        setIsLoading(true);
+                        await props.onMerchantSelect();
+                        setIsLoading(false);
+                    }}
+                    disabled={isLoading}
+                >
+                {
+                    isLoading
+                    ?
+                        <Spinner />
+                    :
+                    (
+                        props.merchant.parentId == undefined
+                        ?
+                        t("sidebar.switchMerchant.selectGroup")
+                        :
+                        t("sidebar.switchMerchant.selectSubMerchant")
+                    )
+                }
+                </Button>
+            }
+        </div>
+    </div>
 }

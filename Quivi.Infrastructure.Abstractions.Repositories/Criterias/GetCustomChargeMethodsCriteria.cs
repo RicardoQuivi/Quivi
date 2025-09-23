@@ -2,6 +2,7 @@
 {
     public record GetCustomChargeMethodsCriteria : IPagedCriteria
     {
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Names { get; init; }

@@ -12,8 +12,9 @@ export const useChannelProfilesQuery = (request: GetChannelProfilesRequest | und
     const queryResult = useQueryable({
         queryName: "useChannelProfilesQuery",
         entityType: getEntityType(Entity.ChannelProfiles),
-        request: user.subMerchantId == undefined || request == undefined ? undefined : {
+        request: user.merchantId == undefined || request == undefined ? undefined : {
             ...request,
+            merchantId: user.merchantId,
             subMerchantId: user.subMerchantId,
         },
         getIdsFilter: r => r.ids,

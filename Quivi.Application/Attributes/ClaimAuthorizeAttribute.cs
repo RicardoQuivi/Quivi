@@ -14,7 +14,7 @@ namespace Quivi.Application.Attributes
 
         public Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            if(context.HttpContext.User.HasClaim(c => c.Type == claimName) == false)
+            if (context.HttpContext.User.HasClaim(c => c.Type == claimName) == false)
                 context.Result = new ForbidResult();
             return Task.CompletedTask;
         }
