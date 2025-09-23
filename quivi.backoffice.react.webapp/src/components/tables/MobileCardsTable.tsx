@@ -47,7 +47,6 @@ interface MobileCardProps<T> {
     readonly rowClasses?: (item: T) => string | undefined;
 }
 const MobileCard = <T,>(props: MobileCardProps<T>) => {
-
     const {
         onRowClick,
         rowClasses,
@@ -100,15 +99,15 @@ const MobileCard = <T,>(props: MobileCardProps<T>) => {
                             >
                                 {c.label}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
                             {
                                 props.item == undefined
                                 ?
                                 <Skeleton />
                                 :
-                                c.render(props.item)
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    {c.render(props.item)}
+                                </div>
                             }
-                            </p>
                         </div>
                     ))
                 }

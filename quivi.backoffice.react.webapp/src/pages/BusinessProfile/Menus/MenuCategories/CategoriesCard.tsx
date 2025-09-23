@@ -59,7 +59,7 @@ export const CategoriesCard = (props: CategoriesCardProps) => {
         className="size-full"
     >
         <div className="overflow-x-auto pb-2 width-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-100 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-1.5">
-            <nav className="flex flex-row w-full sm:flex-col sm:space-y-2">
+            <nav className="flex flex-col w-full sm:flex-col sm:space-y-2">
                 <button
                     className={`inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ease-in-out sm:p-3 ${
                         props.categoryId === undefined

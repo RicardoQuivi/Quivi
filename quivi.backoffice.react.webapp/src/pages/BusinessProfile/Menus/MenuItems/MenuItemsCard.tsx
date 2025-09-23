@@ -124,8 +124,7 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                     {
                         key: "categories",
                         label: t("common.entities.menuCategories"),
-                        render: item => <>
-                        {
+                        render: item => (
                             categoriesQuery.isFirstLoading
                             ?
                             <Skeleton className="w-24"/>
@@ -159,8 +158,7 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                                     </span>
                                 }
                             </div>
-                        }
-                        </>
+                        )
                     },
                     {
                         key: "price",
