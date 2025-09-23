@@ -5,20 +5,30 @@ import { useTranslation } from "react-i18next";
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
+interface ToastOptions {
+    readonly title?: string | null;
+}
+
 interface ToastService {
-    readonly success: (message: string) => any;
-    readonly error: (message: string) => any;
-    readonly info: (message: string) => any;
-    readonly warning: (message: string) => any;
+    readonly success: (message: string, options?: ToastOptions) => any;
+    readonly error: (message: string, options?: ToastOptions) => any;
+    readonly info: (message: string, options?: ToastOptions) => any;
+    readonly warning: (message: string, options?: ToastOptions) => any;
 }
 
 const ToastContext = createContext<ToastService | undefined>(undefined);
 
 const autoClose = 5000;
-const showToast = (type: ToastType, title: string, message: string) => {
+const showToast = (type: ToastType, title: string, message: string, options?: ToastOptions) => {
+    let toastTitle: string | undefined = title;
+    if(options != undefined) {
+        if(options.title === null) {
+            toastTitle = undefined;
+        }
+    }
     const id = toast(<Notification 
         variant={type}
-        title={title}
+        title={toastTitle ?? ""}
         description={message} 
         hideDuration={autoClose}
         close={() => toast.dismiss(id)}
@@ -34,10 +44,10 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const { t } = useTranslation();
     return <>
         <ToastContext.Provider value={{
-            success: m => showToast("success", t("common.toast.success"), m),
-            error: m => showToast("error", t("common.toast.error"), m),
-            info: m => showToast("info", t("common.toast.info"), m),
-            warning: m => showToast("warning", t("common.toast.warning"), m),
+            success: (m, options) => showToast("success",t("common.toast.success"), m, options),
+            error: (m, options) => showToast("error", t("common.toast.error"), m, options),
+            info: (m, options) => showToast("info", t("common.toast.info"), m, options),
+            warning: (m, options) => showToast("warning", t("common.toast.warning"), m, options),
         }}>
             {children}
         </ToastContext.Provider>

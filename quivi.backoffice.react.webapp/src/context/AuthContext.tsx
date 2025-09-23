@@ -88,7 +88,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setState(getState);
         } catch (e) {
             if(e instanceof AuthenticationError) {
-                toast.error(t("common.apiErrors.InvalidCredentials"));
+                toast.error(t("common.apiErrors.InvalidCredentials"), {
+                    title: null,
+                });
             }
             throw e;
         }
