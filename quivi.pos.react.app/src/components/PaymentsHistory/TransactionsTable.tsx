@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Accordion, AccordionSummary, Chip, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
+import { Accordion, AccordionSummary, Chip, Skeleton, Stack, Tooltip, Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 import { useChannelsQuery } from "../../hooks/queries/implementations/useChannelsQuery";
 import { useEmployeesQuery } from "../../hooks/queries/implementations/useEmployeesQuery";
@@ -17,7 +17,17 @@ import { QuiviIcon, RefundIcon } from "../../icons";
 import { AGetTransactionsRequest } from "../../hooks/api/Dtos/transactions/AGetTransactionsRequest";
 import { useTransactionsResumeQuery } from "../../hooks/queries/implementations/useTransactionsResumeQuery";
 import { SummaryBox } from "../common/SummaryBox";
+import { CollectionFunctions } from "../../helpers/collectionsHelper";
+import { ResponsiveTable } from "../Tables/ResponsiveTable";
+import { ChannelProfile } from "../../hooks/api/Dtos/channelProfiles/ChannelProfile";
 
+interface ExtendedTransaction {
+    readonly data: Transaction;
+    readonly channel?: Channel;
+    readonly profile?: ChannelProfile;
+    readonly employee?: Employee;
+    readonly chargeMethod?: CustomChargeMethod;
+}
 interface Props extends AGetTransactionsRequest {
     readonly onTransactionDetailsClicked?: (transactionId: string) => any;
     readonly hideChannel?: boolean;
@@ -28,7 +38,8 @@ export const TransactionsTable = ({
     ...baseRequest
 }: Props) => {
     const { t } = useTranslation();
-   
+    const dateHelper = useDateHelper();
+
     const [state, setState] = useState({
         currentPage: 0,
     })
@@ -46,37 +57,47 @@ export const TransactionsTable = ({
         page: 0,
         includeDeleted: true,
     });
-    const channelsMap = useMemo(() => {
-        const result = new Map<string, Channel>();
-        for(const d of channelsQuery.data) {
-            result.set(d.id, d);
+    const channelsMap = useMemo(() => CollectionFunctions.toMap(channelsQuery.data, c => c.id), [channelsQuery.data])
+    const profileIds = useMemo(() => {
+        const ids = new Set<string>();
+        for(const channel of channelsQuery.data) {
+            ids.add(channel.channelProfileId);
         }
-        return result;
+        return Array.from(ids);
     }, [channelsQuery.data])
+
+    const profilesQuery = useChannelProfilesQuery(profileIds.length == 0 ? undefined : {
+        ids: profileIds,
+        page: 0,
+    })
+    const channelProfilesMap = useMemo(() => CollectionFunctions.toMap(profilesQuery.data, c => c.id), [profilesQuery.data])
 
     const employeesQuery = useEmployeesQuery(transactionsQuery.isFirstLoading ? undefined : {
         ids: transactionsQuery.data.filter(t => t.employeeId != undefined).map(t => t.employeeId!),
         includeDeleted: true,
         page: 0,
     });
-    const employeesMap = useMemo(() => {
-        const result = new Map<string, Employee>();
-        for(const d of employeesQuery.data) {
-            result.set(d.id, d);
-        }
-        return result;
-    }, [employeesQuery.data])
+    const employeesMap = useMemo(() => CollectionFunctions.toMap(employeesQuery.data, e => e.id), [employeesQuery.data])
 
     const chargeMethodsQuery = useCustomChargeMethodsQuery({
         page: 0,
     });
-    const chargeMethodsMap = useMemo(() => {
-        const result = new Map<string, CustomChargeMethod>();
-        for(const d of chargeMethodsQuery.data) {
-            result.set(d.id, d);
+    const chargeMethodsMap = useMemo(() => CollectionFunctions.toMap(chargeMethodsQuery.data, c => c.id), [chargeMethodsQuery.data])
+
+    const transactions = useMemo(() => {
+        const result = [] as ExtendedTransaction[];
+        for(const t of transactionsQuery.data) {
+            const channel = channelsMap.get(t.channelId);
+            result.push({
+                data: t,
+                channel: channel,
+                profile: channel == undefined ? undefined : channelProfilesMap.get(channel.channelProfileId),
+                employee: t.employeeId == undefined ? undefined : employeesMap.get(t.employeeId),
+                chargeMethod: t.customChargeMethodId == undefined ? undefined : chargeMethodsMap.get(t.customChargeMethodId),
+            })
         }
         return result;
-    }, [chargeMethodsQuery.data])
+    }, [transactionsQuery.data, chargeMethodsMap, employeesMap, channelsMap, channelProfilesMap])
 
     return (
         <>
@@ -89,7 +110,7 @@ export const TransactionsTable = ({
                 expanded
             >
                 <AccordionSummary>
-                    <SummaryBox 
+                    <SummaryBox
                         isLoading={transactionsResumeQuery.isFirstLoading}
                         items={[
                             {
@@ -109,35 +130,84 @@ export const TransactionsTable = ({
                 </AccordionSummary>
             </Accordion>
 
-            <TableContainer component={"div"}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell>{t("date")}</TableCell>
+            <ResponsiveTable
+                data={transactions}
+                isLoading={transactionsQuery.isFirstLoading}
+                getKey={t => t.data.id}
+                columns={[
+                    {
+                        key: "logo",
+                        label: "",
+                        render: row => row.chargeMethod == undefined ? <QuiviIcon style={{ height: "30px", width: "auto" }} /> : <img style={{ height: "30px", width: "auto" }} src={row.chargeMethod.logoUrl} />
+                    },
+                    {
+                        key: "date",
+                        label: t("date"),
+                        render: row => dateHelper.toLocalString(row.data.capturedDate, "YYYY-MM-DD HH:mm"),
+                    },
+                    ...(
+                        hideChannel == true
+                        ?
+                        []
+                        :
+                        [
                             {
-                                hideChannel != true &&
-                                <TableCell align="right">{t("channel")}</TableCell>
+                                key: "channel",
+                                label: t("channel"),
+                                render: (row: ExtendedTransaction) => row.channel == undefined || row.profile == undefined ? <Skeleton animation="wave" /> : `${row.profile.name} ${row.channel.name}`,
+                            },
+                        ]
+                    ),
+                    {
+                        key: "total",
+                        label: t("total"),
+                        render: row => (
+                        <Stack direction="row" gap={1} justifyContent="start" alignItems="center">
+                            <CurrencySpan value={row.data.payment + row.data.tip} />
+                            {
+                                row.data.refundedAmount > 0 &&
+                                <Tooltip title={t("refunded")}>
+                                    <Chip
+                                        label={<CurrencySpan value={-1 * row.data.refundedAmount} />}
+                                        variant="outlined"
+                                        icon={<RefundIcon style={{padding: "0.5rem"}}/>} 
+                                    />
+                                </Tooltip>
                             }
-                            <TableCell align="right">{t("total")}</TableCell>
-                            <TableCell align="right">{t("amount")}</TableCell>
-                            <TableCell align="right">{t("tip")}</TableCell>
-                            <TableCell align="right">{t("employee")}</TableCell>
-                            <TableCell align="right">{t("actions")}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            transactionsQuery.isFirstLoading
+                        </Stack>
+                        )
+                    },
+                    {
+                        key: "amount",
+                        label: t("amount"),
+                        render: row => <CurrencySpan value={row.data.payment} />,
+                    },
+                    {
+                        key: "tip",
+                        label: t("tip"),
+                        render: row => <CurrencySpan value={row.data.tip} />,
+                    },
+                    {
+                        key: "employee",
+                        label: t("employee"),
+                        render: row => (
+                            row.data.employeeId != undefined
                             ?
-                            [1, 2, 3, 4, 5].map(r => <TransactionRow key={`loading-${r}`} row={undefined} channelsMap={channelsMap} chargeMethodsMap={chargeMethodsMap} employeesMap={employeesMap}/>)
+                            (
+                                row.employee == undefined
+                                ?
+                                    <Skeleton animation="wave" />
+                                :
+                                    row.employee.name
+                            )
                             :
-                            transactionsQuery.data.map(r => <TransactionRow key={r.id} row={r} channelsMap={hideChannel == true ? undefined : channelsMap} chargeMethodsMap={chargeMethodsMap} employeesMap={employeesMap} onTransactionDetailsClicked={onTransactionDetailsClicked}/>)
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-    
+                                <Typography variant="body1" fontWeight="bold">N/A</Typography>
+                        )
+                    },
+                ]}
+                onRowClick={row => onTransactionDetailsClicked?.(row.data.id)}
+            />
+
             <PaginationFooter 
                 currentPage={transactionsQuery.page}
                 numberOfPages={transactionsQuery.totalPages}
@@ -147,224 +217,5 @@ export const TransactionsTable = ({
                 }))}
             />
         </>
-    )
-}
-
-interface RowProps {
-    readonly row?: Transaction;
-    readonly channelsMap?: Map<string, Channel>;
-    readonly employeesMap: Map<string, Employee>;
-    readonly chargeMethodsMap: Map<string, CustomChargeMethod>;
-    readonly onTransactionDetailsClicked?: (transactionId: string) => any;
-}
-const TransactionRow = (props: RowProps) => {
-    const { t } = useTranslation();
-    const dateHelpers = useDateHelper();
-    //const printersApi = usePrintersApi();
-    // const printersQuery = usePrintersQuery({
-    //     page: 0,
-    // });
-
-    const currentChannelQuery = useChannelsQuery(props.row == undefined ? undefined : {
-        ids: [props.row.channelId],
-        page: 0,
-    })
-    const currentChannel = useMemo(() => currentChannelQuery.data.length == 0 ? undefined : currentChannelQuery.data[0], [currentChannelQuery]);
-
-    const channelProfileQuery = useChannelProfilesQuery(currentChannel == undefined ? undefined : {
-        ids: [currentChannel.channelProfileId],
-        page: 0,
-    })
-    const channelProfile = useMemo(() => channelProfileQuery.data.length == 0 ? undefined : channelProfileQuery.data[0], [channelProfileQuery]);
-
-    // const integrationQuery = usePosIntegrationsQuery(channelProfile == undefined ? undefined : {
-    //     ids: [channelProfile.posIntegrationId],
-    //     page: 0,
-    // })
-    // const integration = useMemo(() => integrationQuery.data.length == 0 ? undefined : integrationQuery.data[0], [integrationQuery]);
-
-    // const [state, setState] = useState({
-    //     isPrinting: false,
-    // })
-
-    // const setIsPrinting = (b: boolean) => setState(s => ({...s, isPrinting: b}));
-    // const Print = async (transaction: Transaction) => {
-    //     setIsPrinting(true);
-
-    //     try {
-    //         //await printersApi.Print(transaction.id);
-    //         toast.info(`${t('printing')}...`);
-    //     } catch {
-    //         toast.error(t('unexpectedErrorHasOccurred'));
-    //     } finally {            
-    //         setIsPrinting(false);
-    //     }
-    // }
-
-    const row = props.row;
-    const channel = row != undefined && props.channelsMap != undefined ? props.channelsMap.get(row.channelId) : undefined;
-
-    const hasEmployee = row != undefined && row.employeeId != undefined;
-    const employee = hasEmployee ? props.employeesMap.get(row.employeeId) : undefined;
-
-    const hasChargeMethod = row != undefined && row.customChargeMethodId != undefined;
-    const chargeMethod = hasChargeMethod ? props.chargeMethodsMap.get(row.customChargeMethodId) : undefined;
-
-    return (
-    <TableRow
-        onClick={() => row != undefined && props.onTransactionDetailsClicked?.(row.id)}
-        style={{
-            cursor: [row, props.onTransactionDetailsClicked].every(p => p != undefined) ? "pointer" : undefined,
-            backgroundColor: row != undefined && row.refundedAmount > 0 ? "rgba(255, 0, 0, 0.15)" : undefined,
-        }}
-    >
-        <TableCell component="th" scope="row" style={{ display: "flex", justifyContent: "center" }}>
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-            (
-                hasChargeMethod
-                ?
-                (
-                    chargeMethod == undefined
-                    ?
-                        <Skeleton animation="wave" />
-                    :
-                        <img style={{ height: "30px", width: "auto" }} src={chargeMethod.logoUrl}/>
-                )
-                :
-                    <QuiviIcon style={{ height: "30px", width: "auto" }} />
-            )
-        }
-        </TableCell>
-        <TableCell component="th" scope="row">
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-                dateHelpers.toLocalString(row.capturedDate, "YYYY-MM-DD HH:mm")
-        }
-        </TableCell>
-        {
-            props.channelsMap != undefined &&
-            <TableCell align="right">
-            {
-                row == undefined || channel == undefined || channelProfile == undefined
-                ?
-                    <Skeleton animation="wave" />
-                :
-                    `${channelProfile.name} ${channel.name}`
-            }
-            </TableCell>
-        }
-        <TableCell align="right">
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-                <Stack direction="row" gap={1} justifyContent="flex-end" alignItems="center">
-                    <CurrencySpan value={row.payment + row.tip} />
-                    {
-                        row.refundedAmount > 0 &&
-                        <Tooltip title={t("refunded")}>
-                            <Chip
-                                label={<CurrencySpan value={-1 * row.refundedAmount} />}
-                                variant="outlined"
-                                icon={<RefundIcon style={{padding: "0.5rem"}}/>} 
-                            />
-                        </Tooltip>
-                    }
-                </Stack>
-        }
-        </TableCell>
-        <TableCell align="right">
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-                <CurrencySpan value={row.payment} />
-        }
-        </TableCell>
-        <TableCell align="right">
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-                <CurrencySpan value={row.tip} />
-        }
-        </TableCell>
-        <TableCell align="right">
-        {
-            row == undefined
-            ?
-                <Skeleton animation="wave" />
-            :
-            (
-                hasEmployee
-                ?
-                (
-                    employee == undefined
-                    ?
-                        <Skeleton animation="wave" />
-                    :
-                        employee.name
-                )
-                :
-                    <b>N/A</b>
-            )
-        }
-        </TableCell>
-        <TableCell align="right">
-            <Stack
-                direction="row"
-                spacing={2}
-                sx={{flexDirection: "row-reverse"}}
-            >
-            {/* {
-                row == undefined
-                ?
-                    <Skeleton animation="wave" />
-                :
-                (
-                    row.payment + row.tip == 0 || isFreePayment
-                    ?
-                    <></>
-                    :
-                    <>
-                        {
-                            printersQuery.isFirstLoading ||
-                            state.isPrinting ||
-                            currentChannel != undefined &&
-                            channelProfile != undefined &&
-                            (channelProfile.posIntegrationId != undefined && integrationQuery.isFirstLoading)
-                            ?
-                                <div className="spinner-border" role="status" style={{height: "16px", width: "16px"}}>
-                                    <span className="sr-only">{t("loading")}...</span>
-                                </div>
-                            :
-                            (
-                                printersQuery.data.some(p => p.printConsumerInvoice) == true &&
-                                integration != undefined &&
-                                integration.isOnline &&
-                                integration.allowsEscPosInvoices &&
-                                <>
-                                    <IconButton onClick={async (e) => { e.stopPropagation(); await Print(row); }}>
-                                        <PrinterIcon style={{height: "16px", width: "16px"}} />
-                                    </IconButton>
-                                </>
-                            )
-                        }
-                    </>
-                )
-            } */}
-            </Stack>
-        </TableCell>
-    </TableRow>
     )
 }
