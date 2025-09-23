@@ -330,6 +330,10 @@ const ListItem = (props: {
                     cursor: "pointer",
                     height: "100%",
                     width: "100%",
+
+                    "& .MuiImageListItemBar-root, & img, & .MuiSkeleton-root": {
+                        borderRadius: "0.5rem",
+                    },
                 }}
             >
                 {
