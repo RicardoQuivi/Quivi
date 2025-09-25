@@ -322,7 +322,8 @@ namespace Quivi.Application.Extensions
             {
                 var principalAssemblyName = Assembly.GetEntryAssembly()!.GetName().Name;
                 var connection = s.GetService<RabbitMQConnection>()!;
-                return new RabbitMQWorker(connection, principalAssemblyName!, s, false);
+                var rabbitMqSettings = s.GetService<IRabbitMqSettings>()!;
+                return new RabbitMQWorker(connection, principalAssemblyName!, s, rabbitMqSettings.RoundRobin);
             });
             serviceCollection.AddHostedService((s) =>
             {

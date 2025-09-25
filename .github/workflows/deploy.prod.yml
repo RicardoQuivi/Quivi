@@ -214,6 +214,8 @@ jobs:
       - quivi-migrator
     runs-on: ubuntu-latest
     environment: Production
+    env:
+      RabbitMq__RoundRobin: true
     steps:
       - name: Log in to Azure
         uses: azure/login@v1

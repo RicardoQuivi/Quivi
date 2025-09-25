@@ -5,5 +5,6 @@
         IEnumerable<string> Hosts { get; }
         string Username { get; }
         string Password { get; }
+        bool RoundRobin { get; }
     }
 }

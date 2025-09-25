@@ -45,7 +45,7 @@ namespace Quivi.Infrastructure.Events.RabbitMQ
         public Task Publish(IEvent evt)
         {
             var exchangeName = evt.GetType().FullName;
-            Channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false);
+            Channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Fanout, durable: true, autoDelete: false);
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(evt, jsonSettings));
             Channel.BasicPublish(exchange: exchangeName, routingKey: "", basicProperties: null, body: body);
             return Task.CompletedTask;
