@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { SchedulerDialog, SchedulerDialogState } from "../../components/Ordering/SchedulerDialog";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,6 @@ import LoadingButton from "../../components/Buttons/LoadingButton";
 import { toast } from "react-toastify";
 import { Alert, Box, Checkbox, Chip, FormControl, Grid, Skeleton, TextField, Tooltip } from "@mui/material";
 import React from "react";
-import { makeStyles } from "@mui/styles";
 import type { ICartItem } from "../../context/cart/ICartItem";
 import { useCart } from "../../context/OrderingContextProvider";
 import { useChannelContext } from "../../context/AppContextProvider";
@@ -24,15 +23,8 @@ import * as Yup from "yup";
 import { useOrderFieldsQuery } from "../../hooks/queries/implementations/useOrderFieldsQuery";
 import { OrderFieldType } from "../../hooks/api/Dtos/orderFields/OrderFieldType";
 
-const useStyles = makeStyles(() => ({
-    observationsContainer: {
-        margin: "30px 0",
-    },
-}));
-
 export const CartPage = () => {
     const { i18n, t } = useTranslation(); 
-    const classes = useStyles();
 
     const channelContext = useChannelContext();
     const navigate = useNavigate();
@@ -87,18 +79,18 @@ export const CartPage = () => {
         initialStatus: false,
     });
 
-    useEffect(() => {
-        if(isSubmitting == false) {
-            return;
-        }
-
-        cart.submit(true).then(() => {
+    const submit = async () => {
+        try {
+            setIsSubmitting(true);
+            await cart.submit(true);
             toast.info(t("digitalMenu.receivedOrderMsg"), {
                 icon: <SuccessIcon />,
             });
             navigate(`/c/${channelContext.channelId}/session/summary`);
-        }).finally(() => setIsSubmitting(false))
-    }, [isSubmitting])
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const getDate = (scheduledDate: Date | undefined) => {
         if(scheduledDate == undefined) {
@@ -117,45 +109,45 @@ export const CartPage = () => {
         const remainingAmount = features.ordering.minimumPrePaidOrderAmount - prePaidTotal;
         const isDisabled = remainingAmount > 0;
         return <LoadingButton
-                key="prepay"
-                className="primary-button w-100"
-                isLoading={orderFieldsQuery.isFirstLoading || formik.isSubmitting}
-                onClick={async () => {
-                    formik.setStatus(true);
-                    const result = await formik.validateForm();
-                    if(Object.keys(result).length > 0) {
-                        return;
-                    }
-                    await formik.handleSubmit();
-                    navigate(`/c/${channelContext.channelId}/pay/checkout`);
-                }}
-                disabled={formik.isValid == false || isDisabled}
-            >
-                {
-                    isDisabled
-                    ?
-                    <Tooltip
-                        title={t("cart.amountNotEligible", { 
-                            amount: Formatter.price(features.ordering.minimumPrePaidOrderAmount), 
-                            remaining: Formatter.price(remainingAmount),
-                        })}
-                        placement="top" 
-                        arrow
-                        open
-                        slotProps={{
-                            popper: {
-                                className: "MuiTooltip-popper MuiTooltip-popperArrow"
-                            }
-                        }}
-                    >
-                        <span>
-                            {t("pay.payNow")}
-                        </span>
-                    </Tooltip>
-                    :
-                    t("pay.payNow")
+            key="prepay"
+            className="primary-button w-100"
+            isLoading={orderFieldsQuery.isFirstLoading || formik.isSubmitting}
+            onClick={async () => {
+                formik.setStatus(true);
+                const result = await formik.validateForm();
+                if(Object.keys(result).length > 0) {
+                    return;
                 }
-            </LoadingButton>
+                await formik.handleSubmit();
+                navigate(`/c/${channelContext.channelId}/pay/checkout`);
+            }}
+            disabled={formik.isValid == false || isDisabled}
+        >
+            {
+                isDisabled
+                ?
+                <Tooltip
+                    title={t("cart.amountNotEligible", { 
+                        amount: Formatter.price(features.ordering.minimumPrePaidOrderAmount), 
+                        remaining: Formatter.price(remainingAmount),
+                    })}
+                    placement="top" 
+                    arrow
+                    open
+                    slotProps={{
+                        popper: {
+                            className: "MuiTooltip-popper MuiTooltip-popperArrow"
+                        }
+                    }}
+                >
+                    <span>
+                        {t("pay.payNow")}
+                    </span>
+                </Tooltip>
+                :
+                t("pay.payNow")
+            }
+        </LoadingButton>
     }
 
     const getFooter = () => {
@@ -177,6 +169,7 @@ export const CartPage = () => {
                                             return;
                                         }
                                         await formik.handleSubmit();
+                                        formik.setSubmitting(false);
                                         setIsPayLaterDialogOpen(true);
                                     })}
                                     disabled={formik.isValid == false}
@@ -195,10 +188,14 @@ export const CartPage = () => {
     }
 
     if(features.ordering.isActive == false) {
-        return <Navigate to={"/"} replace />
+        return <Navigate to={`/c/${channelContext.channelId}`} replace />
     }
 
-    return <Page title={t("cart.title")} headerProps={{hideCart: true}} footer={getFooter()}>
+    return <Page
+        title={t("cart.title")}
+        headerProps={{hideCart: true}}
+        footer={getFooter()}
+    >
         { 
             cart.items.length > 0 
             ?
@@ -206,7 +203,11 @@ export const CartPage = () => {
                 <CartResume items={cart.items} onItemSelected={setSelectedItem} />
                 {
                     orderFieldsQuery.data.length > 0 &&
-                    <div className={classes.observationsContainer}>
+                    <Box
+                        sx={{
+                            margin: "30px 0",
+                        }}
+                    >
                     {
                         orderFieldsQuery.data.map(f => (
                             <FormControl 
@@ -246,7 +247,7 @@ export const CartPage = () => {
                                     {
                                         cart.isInitializing
                                         ?
-                                        <Skeleton animation="wave" width="100%" />
+                                        <Skeleton animation="wave" width="100%" /> 
                                         :
                                         (
                                             f.type == OrderFieldType.Check
@@ -293,7 +294,7 @@ export const CartPage = () => {
                             </FormControl>
                         ))
                     }
-                    </div>
+                    </Box>
                 }
                 <div className="mt-5">
                     {
@@ -309,41 +310,59 @@ export const CartPage = () => {
                     }
                 </div>
             </>
-            : // No items in cart
-            <>
-                <div className="flex flex-fd-c flex-ai-c flex-jc-c mt-10">
-                    <h2 className="mb-4">{t("cart.cartIsEmpty")}</h2>
-                    <p className="ta-c">{t("cart.cartIsEmptyDesc")}</p>
-                </div>
-            </>
+            :
+            <div className="flex flex-fd-c flex-ai-c flex-jc-c mt-10">
+                <h2 className="mb-4">{t("cart.cartIsEmpty")}</h2>
+                <p className="ta-c">{t("cart.cartIsEmptyDesc")}</p>
+            </div>
         }
-        <MenuItemDetailDialog menuItem={selectedItem ?? null} onClose={() => setSelectedItem(undefined)} />
+        <MenuItemDetailDialog
+            menuItem={selectedItem ?? null}
+            onClose={() => setSelectedItem(undefined)}
+        />
         <SchedulerDialog
             date={cart.scheduledDate}
             isOpen={schedulerOpen}
             onDialogChange={(s) => s == SchedulerDialogState.Closed && setSchedulerOpen(false)}
             onDateSelected={() => setSchedulerOpen(false)}
         />
-        <Dialog isOpen={isPayLaterDialogOpen || isSubmitting} onClose={() => setIsPayLaterDialogOpen(false)}>
-            <div className="container" style={{ paddingTop: "1.75rem", paddingBottom: "1.75rem" }}>
-                <div className="modal__header">
+        <Dialog
+            isOpen={isPayLaterDialogOpen || isSubmitting}
+            onClose={() => setIsPayLaterDialogOpen(false)}
+        >
+            <Box
+                className="container"
+                sx={{
+                    paddingTop: "1.75rem",
+                    paddingBottom: "1.75rem",
+                }}
+            >
+                <Box className="modal__header">
                     <h3>{t("cart.confirmSubmissionTitle")}</h3>
-                    <div className="close-icon" onClick={() => setIsPayLaterDialogOpen(false)}>
+                    <Box className="close-icon" onClick={() => setIsPayLaterDialogOpen(false)}>
                         <CloseIcon />
-                    </div>
-                </div>
+                    </Box>
+                </Box>
 
                 <p className="mb-5">{t("cart.confirmSubmissionDescription")}</p>
 
                 <ButtonsSection>
-                    <LoadingButton isLoading={false} className="secondary-button w-100" onClick={() => setIsPayLaterDialogOpen(false)}>
+                    <LoadingButton
+                        isLoading={false}
+                        className="secondary-button w-100"
+                        onClick={() => setIsPayLaterDialogOpen(false)}
+                    >
                         {t("cart.payLater.change")}
                     </LoadingButton>
-                    <LoadingButton isLoading={isSubmitting} className="primary-button w-100" onClick={() => setIsSubmitting(true)}>
+                    <LoadingButton
+                        isLoading={isSubmitting}
+                        className="primary-button w-100"
+                        onClick={submit}
+                    >
                         {t("cart.payLater.submit")}
                     </LoadingButton>
                 </ButtonsSection>
-            </div>
+            </Box>
         </Dialog>
     </Page>
 }

@@ -6,11 +6,10 @@ import { Formatter } from "../../helpers/formatter";
 import { useChannelContext } from "../../context/AppContextProvider";
 import { useSessionsQuery } from "../../hooks/queries/implementations/useSessionsQuery";
 import { useBrowserStorageService } from "../../hooks/useBrowserStorageService";
-import { makeStyles } from "@mui/styles";
 import { Calculations } from "../../helpers/calculations";
 import { ItemsHelper } from "../../helpers/ItemsHelper";
 import { QuantitySelector } from "../../components/Quantity/QuantitySelector";
-import { Skeleton } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { useMenuItemsQuery } from "../../hooks/queries/implementations/useMenuItemsQuery";
 import type { MenuItem } from "../../hooks/api/Dtos/menuItems/MenuItem";
 
@@ -241,14 +240,6 @@ export const ShareItems: React.FC<Props> = ({
     )
 }
 
-const useStyles = makeStyles(() => ({
-    namePriceContainer: {
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "flex-start",
-    },
-}));
-
 interface SelectableTableItemProps {
     readonly name?: string,
     readonly price: number,
@@ -259,7 +250,6 @@ interface SelectableTableItemProps {
 }
 
 const SelectableTableItem = ({ name, price, maxQuantity, quantity, isPaid, onChange }: SelectableTableItemProps) => {
-    const classes = useStyles();
     const { i18n } = useTranslation();
 
     const onIncrement = () => {
@@ -282,9 +272,22 @@ const SelectableTableItem = ({ name, price, maxQuantity, quantity, isPaid, onCha
     }
 
     return (
-        <div style={{display: "flex", gap: "10px", alignItems: "center"}} className={`checkbox-tableitem ${isPaid ? "is-paid" : ""}`}>
+        <Box
+            sx={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "center",
+            }} 
+            className={`checkbox-tableitem ${isPaid ? "is-paid" : ""}`}
+        >
             <span style={{width: "4rem"}}>({Formatter.number(Formatter.floatify(maxQuantity), i18n.language)} x)</span>
-            <div className={classes.namePriceContainer}>
+            <Box
+                sx={{
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "flex-start",
+                }}
+            >
                 {
                     name == undefined
                     ?
@@ -293,11 +296,11 @@ const SelectableTableItem = ({ name, price, maxQuantity, quantity, isPaid, onCha
                     <span>{name}</span>
                 }
                 <span style={{fontSize: "0.8rem"}}>{Formatter.price(Calculations.roundUp(price), "€")}</span>
-            </div>
-            <div style={{flex: "1 1 auto"}} ></div>
+            </Box>
+            <Box sx={{flex: "1 1 auto"}}></Box>
             {
                 !isPaid &&
-                <div>
+                <Box>
                     <QuantitySelector
                         quantity={Formatter.floatify(quantity)} 
                         onDecrement={onDecrement} 
@@ -306,8 +309,8 @@ const SelectableTableItem = ({ name, price, maxQuantity, quantity, isPaid, onCha
                         alwaysOpened={true}
                         incrementDisabled={maxQuantity == quantity}
                         decrementDisabled={quantity == 0} />
-                </div>
+                </Box>
             }
-        </div>
+        </Box>
     );
 }

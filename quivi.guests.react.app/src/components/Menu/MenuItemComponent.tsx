@@ -56,7 +56,7 @@ export const MenuItemComponent: React.FC<Props> = (props: Props) => {
             return;
         }
 
-        const qty = cart?.getQuantityInCart(props.menuItem!, props.exactItemMatch ?? false) || 0;
+        const qty = cart.getQuantityInCart(props.menuItem!, props.exactItemMatch ?? false) || 0;
         setItemQty(qty);
     }, [cart, props.menuItem]);
     //#endregion

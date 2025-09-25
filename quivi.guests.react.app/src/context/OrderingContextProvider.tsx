@@ -362,13 +362,26 @@ export const OrderingContextProvider = (props: {
     }
     //#endregion
 
-    const baseItemIds = useMemo(() => order?.items.map(i => i.id) ?? [], [order]);
-    const modifierIds = useMemo(() => order?.items.map(i => [
-                                                i.id, 
-                                                ...i.modifiers?.map(m => m.selectedOptions.map(opt => opt.id))
-                                                                .reduce((r, ids) => [...r, ...ids], []) ?? []
-                                            ])
-                                    .reduce((r, ids) => [...r, ...ids], []) ?? [], [order]);
+    const baseItemIds = useMemo(() => {
+        const set = new Set<string>();
+        for(const item of order?.items ?? []) {
+            set.add(item.id)
+        }
+        return Array.from(set);
+    }, [order]);
+
+    const modifierIds = useMemo(() => {
+        const set = new Set<string>();
+        for(const item of order?.items ?? []) {
+            set.add(item.id);
+            for(const modifier of item.modifiers ?? []) {
+                for(const opt of modifier.selectedOptions) {
+                    set.add(opt.id);
+                }
+            }
+        }
+        return Array.from(set);
+    }, [order]);
 
     const baseItemsQuery = useMenuItemsQuery(order == undefined || baseItemIds.length == 0 ? undefined : {
         channelId: order.channelId,
@@ -403,7 +416,7 @@ export const OrderingContextProvider = (props: {
             return;
         }
 
-        if(state.items.length > 0) {
+        if(state.orderId == order.id) {
             return;
         }
         
@@ -435,7 +448,7 @@ export const OrderingContextProvider = (props: {
 
             items.push(itemToAdd);
         }
-        const fields = order?.fields.reduce((r, f) => {
+        const fields = order.fields.reduce((r, f) => {
             r[f.id] = f.value;
             return r;
         }, {} as Record<string, string>)
@@ -451,7 +464,7 @@ export const OrderingContextProvider = (props: {
         merchantId, 
         channelId,
         baseItemsQuery.data, baseItemsQuery.isFirstLoading,
-        modifierItemsQuery.data, modifierItemsQuery.data
+        modifierItemsQuery.data, modifierItemsQuery.data,
     ]);
 
     useEffect(() => {
@@ -484,13 +497,14 @@ export const OrderingContextProvider = (props: {
         items: state.items,
         total: ItemsHelper.getItemsPrice(state.items),
         totalItems: state.items.reduce((r, i) => r += i.quantity, 0),
-        getQuantityInCart: (item: IBaseItem | ICartItem, exact: boolean) => getCartQuantity(item, exact, state.items),
         fields: state.fields,
+        scheduledDate: state.atDate,
+
+        getQuantityInCart: (item: IBaseItem | ICartItem, exact: boolean) => getCartQuantity(item, exact, state.items),
         addItem: addItem,
         updateItem: updateItem,
         removeItem: removeItem,
         editFields: editFields,
-        scheduledDate: state.atDate,
         setScheduleDate: async () => ({
             confirm: async () => {},
             date: undefined,
