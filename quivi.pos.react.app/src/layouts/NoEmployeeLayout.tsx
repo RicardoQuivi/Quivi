@@ -158,6 +158,7 @@ const RightSidePanel = () => {
                     sx={{
                         fontFamily: "Atelia",
                         textTransform: "uppercase",
+                        textAlign: "center",
                     }}
                 >
                         {t("quivi.product.description")}
@@ -171,6 +172,9 @@ const RightSidePanel = () => {
 
                 <Typography
                     variant="body1"
+                    sx={{
+                        textAlign: "center",
+                    }}
                 >
                     {t("quivi.product.description")}
                 </Typography>
