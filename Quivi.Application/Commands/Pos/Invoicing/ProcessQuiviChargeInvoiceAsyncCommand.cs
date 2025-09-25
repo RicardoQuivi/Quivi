@@ -1,5 +1,4 @@
 ﻿using Quivi.Application.Extensions.Pos;
-using Quivi.Application.Pos;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
@@ -8,7 +7,6 @@ using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
 using Quivi.Infrastructure.Abstractions.Services;
-using Quivi.Infrastructure.Extensions;
 using gatewayInvoiving = Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using gatewayModels = Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
 
@@ -18,8 +16,6 @@ namespace Quivi.Application.Commands.Pos.Invoicing
     {
         public required gatewayInvoiving.IInvoiceGateway InvoiceGateway { get; init; }
         public required int PosChargeId { get; init; }
-        public required decimal PaymentAmount { get; init; }
-        public required IEnumerable<AQuiviSyncStrategy.InvoiceItem> InvoiceItems { get; init; }
         public required bool IncludeTip { get; init; }
         public required string InvoicePrefix { get; init; }
     }
@@ -79,12 +75,6 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             // If invoice already exists
             if (receipt.IsValueCreated == false)
                 return;
-
-            var computedReceipt = await receipt.Value;
-            decimal receiptPaymentAmount = computedReceipt.Items.Sum(p => PriceHelper.CalculatePriceAfterDiscount(p.Price * p.Quantity, p.DiscountPercentage));
-            decimal errorMargin = 0.01M;
-            if (Math.Abs(command.PaymentAmount - receiptPaymentAmount) >= errorMargin)
-                logger.LogException(new Exception($"{GetType().Name}: This should never happen. If it does, it means the amount the receipt marks as paid ({receiptPaymentAmount}) is not the same as the total of the items ({command.PaymentAmount}). PosCharge: {command.PosChargeId}, document: {computedReceipt.DocumentId}"));
         }
 
         private async Task<PosCharge> GetPosCharge(int id)
@@ -93,6 +83,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
             {
                 Ids = [id],
                 IncludePosChargeInvoiceItems = true,
+                IncludePosChargeInvoiceItemsOrderMenuItems = true,
                 IncludeMerchantCustomCharge = true,
                 IncludeMerchantCustomChargeCustomChargeMethod = true,
                 PageSize = 1,
@@ -102,15 +93,23 @@ namespace Quivi.Application.Commands.Pos.Invoicing
 
         private Task<InvoiceReceipt> CreateInvoice(ProcessQuiviChargeInvoiceAsyncCommand command, PosCharge posCharge)
         {
-            var invoiceItems = command.InvoiceItems.Select(g => new InvoiceItem(g.Type)
+
+            var invoiceItems = posCharge.PosChargeInvoiceItems!.AsConvertedSessionItems().Select(g =>
             {
-                Reference = idConverter.ToPublicId(g.MenuItemId),
-                CorrelationId = idConverter.ToPublicId(g.MenuItemId),
-                Name = g.Name,
-                Price = g.UnitPrice,
-                TaxPercentage = g.VatRate,
-                Quantity = g.Quantity,
-                DiscountPercentage = g.DiscountPercentage,
+                var first = g.Source.First();
+                var orderMenuItem = first.OrderMenuItem!;
+                var menuItemId = first.OrderMenuItem!.MenuItemId;
+
+                return new InvoiceItem(InvoiceItemType.ProcessedProducts)
+                {
+                    Reference = idConverter.ToPublicId(orderMenuItem.MenuItemId),
+                    CorrelationId = idConverter.ToPublicId(orderMenuItem.MenuItemId),
+                    Name = orderMenuItem.Name,
+                    TaxPercentage = orderMenuItem.VatRate,
+                    Price = g.Price,
+                    Quantity = g.Quantity,
+                    DiscountPercentage = g.Discount,
+                };
             }).ToList();
 
             if (command.IncludeTip && posCharge.Tip > 0.0M)

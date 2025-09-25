@@ -176,7 +176,7 @@ const RightSidePanel = () => {
                         textAlign: "center",
                     }}
                 >
-                    {t("quivi.product.description")}
+                    www.quivi.com
                 </Typography>
             </Stack>
         </Box>

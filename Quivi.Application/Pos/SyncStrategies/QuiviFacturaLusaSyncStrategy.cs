@@ -11,12 +11,10 @@ namespace Quivi.Application.Pos.SyncStrategies
     {
         private readonly IIdConverter idConverter;
 
-        public QuiviFacturaLusaSyncStrategy(
-            ICommandProcessor commandProcessor,
-            IInvoiceGatewayFactory invoiceGatewayFactory,
-            IQueryProcessor queryProcessor,
-            IIdConverter idConverter)
-            : base(commandProcessor, invoiceGatewayFactory, queryProcessor)
+        public QuiviFacturaLusaSyncStrategy(ICommandProcessor commandProcessor,
+                                            IInvoiceGatewayFactory invoiceGatewayFactory,
+                                            IQueryProcessor queryProcessor,
+                                            IIdConverter idConverter) : base(commandProcessor, invoiceGatewayFactory, queryProcessor)
         {
             this.idConverter = idConverter;
         }
@@ -27,7 +25,7 @@ namespace Quivi.Application.Pos.SyncStrategies
 
         public override QuiviFacturalusaSyncSettings ParseSyncSettings(PosIntegration configuration) => new QuiviFacturalusaSyncSettings(configuration);
 
-        public override async Task SyncMenu(PosIntegration configuration, IEnumerable<int>? digitalMenuItemIds = null)
+        public override async Task SyncMenu(PosIntegration configuration, IEnumerable<int>? menuItemIds = null)
         {
             var settings = ParseSyncSettings(configuration);
             if (settings.SkipInvoice)
@@ -35,7 +33,7 @@ namespace Quivi.Application.Pos.SyncStrategies
 
             var menuItemsQuery = await QueryProcessor.Execute(new GetMenuItemsAsyncQuery
             {
-                Ids = digitalMenuItemIds,
+                Ids = menuItemIds,
                 MerchantIds = [configuration.MerchantId],
             });
 

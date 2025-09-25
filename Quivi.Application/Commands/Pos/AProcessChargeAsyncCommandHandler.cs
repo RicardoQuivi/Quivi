@@ -10,7 +10,6 @@ using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Abstractions.Pos;
 using Quivi.Infrastructure.Abstractions.Pos.Commands;
 using Quivi.Infrastructure.Abstractions.Pos.Exceptions;
-using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.Pos
 {
@@ -49,7 +48,7 @@ namespace Quivi.Application.Commands.Pos
         protected async Task<decimal> ProcessPayment(AQuiviSyncStrategy syncStrategy, Session session, PosCharge posCharge, Func<Task> onComplete)
         {
             var itemsToBePaid = GetAndProcessPayingItems(posCharge, session);
-            decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.Item.FinalPrice * p.Quantity), maxDecimalPlaces);
+            decimal paymentAmount = Math.Round(itemsToBePaid.Sum(p => p.OrderMenuItem!.FinalPrice * p.Quantity), maxDecimalPlaces);
 
             if (HasPendingItems(session) == false)
             {
@@ -58,11 +57,16 @@ namespace Quivi.Application.Commands.Pos
             }
 
             await onComplete();
-            ProcessInvoice(syncStrategy, posCharge, paymentAmount, itemsToBePaid);
+            if (paymentAmount > 0)
+            {
+                var posChargeId = posCharge.Id;
+                backgroundJobHandler.Enqueue(() => syncStrategy.ProcessInvoiceJob(posChargeId));
+            }
+
             return paymentAmount;
         }
 
-        private IEnumerable<(OrderMenuItem Item, decimal Quantity)> GetAndProcessPayingItems(PosCharge posCharge, Session session)
+        private IEnumerable<PosChargeInvoiceItem> GetAndProcessPayingItems(PosCharge posCharge, Session session)
         {
             if (session.Status == SessionStatus.Unknown)
                 throw new PosPaymentSyncingException(SyncingState.SessionDoesNotExist, $"Charge {posCharge.ChargeId} cannot be sent to PoS since the session {session.Id} is deleted.");
@@ -74,14 +78,19 @@ namespace Quivi.Application.Commands.Pos
             var now = dateTimeProvider.GetUtcNow();
 
             var orderMenuItems = session.GetValidOrderMenuItems().SelectMany(o => (o.Modifiers ?? []).Prepend(o)).ToDictionary(e => e.Id, e => e);
-            posCharge.PosChargeInvoiceItems = new List<PosChargeInvoiceItem>();
+            var invoiceItems = new List<PosChargeInvoiceItem>();
+            posCharge.PosChargeInvoiceItems = invoiceItems;
             foreach (var payingItem in payingItems)
             {
+                if (payingItem.Quantity == 0)
+                    continue;
+
                 var item = new PosChargeInvoiceItem
                 {
                     PosCharge = posCharge,
                     Quantity = payingItem.Quantity,
                     OrderMenuItemId = payingItem.PayingItem.Id,
+                    OrderMenuItem = payingItem.PayingItem,
                     CreatedDate = now,
                     ModifiedDate = now,
                     ChildrenPosChargeInvoiceItems = new List<PosChargeInvoiceItem>(),
@@ -94,6 +103,7 @@ namespace Quivi.Application.Commands.Pos
                         PosCharge = posCharge,
                         Quantity = payingItem.Quantity * extraQuantityPerParent,
                         OrderMenuItemId = payingExtra.Id,
+                        OrderMenuItem = payingExtra,
                         CreatedDate = now,
                         ModifiedDate = now,
                         ParentPosChargeInvoiceItem = item,
@@ -107,6 +117,7 @@ namespace Quivi.Application.Commands.Pos
                 orderMenuItems[item.OrderMenuItemId].PosChargeInvoiceItems!.Add(item);
             }
 
+            posCharge.PosChargeInvoiceItems = invoiceItems;
             this.AddSessionEvent(session, s => new OnPosChargeSyncedEvent
             {
                 ChannelId = session.ChannelId,
@@ -114,7 +125,7 @@ namespace Quivi.Application.Commands.Pos
                 MerchantId = posCharge.MerchantId,
                 SessionId = session.Id,
             });
-            return payingItems;
+            return invoiceItems;
         }
 
         private IEnumerable<(OrderMenuItem ItemPaid, decimal Quantity)> GetPayingItems(PosCharge charge, Session session)
@@ -234,33 +245,6 @@ namespace Quivi.Application.Commands.Pos
                     return true;
             }
             return false;
-        }
-
-        private void ProcessInvoice(AQuiviSyncStrategy syncStrategy, PosCharge posCharge, decimal paymentAmount, IEnumerable<(OrderMenuItem, decimal)> itemsToBePaid)
-        {
-            var itemsToBePaidData = itemsToBePaid.SelectMany(e => (e.Item1.Modifiers ?? []).Select(m =>
-                                                                                            {
-                                                                                                var extraQuantityPerParent = e.Item1.Quantity == 0 ? 0 : m.Quantity / e.Item1.Quantity;
-                                                                                                return (m, e.Item2 * extraQuantityPerParent);
-                                                                                            }).Prepend(e)
-                                                            ).Select(i => new
-                                                            {
-                                                                OrderMenuItem = i.Item1,
-                                                                QuantityToBePaid = i.Item2,
-                                                            });
-
-            List<AQuiviSyncStrategy.InvoiceItem> items = itemsToBePaidData.Select(i => new AQuiviSyncStrategy.InvoiceItem
-            {
-                MenuItemId = i.OrderMenuItem.MenuItemId,
-                Name = i.OrderMenuItem.Name,
-                UnitPrice = i.OrderMenuItem.OriginalPrice,
-                VatRate = i.OrderMenuItem.VatRate,
-                Quantity = i.QuantityToBePaid,
-                DiscountPercentage = PriceHelper.CalculateDiscountPercentage(i.OrderMenuItem.OriginalPrice, i.OrderMenuItem.FinalPrice),
-            }).ToList();
-
-            var posChargeId = posCharge.Id;
-            backgroundJobHandler.Enqueue(() => syncStrategy.ProcessInvoiceJob(posChargeId, paymentAmount, items));
         }
     }
 }

@@ -18,18 +18,7 @@ namespace Quivi.Application.Pos
 {
     public abstract class AQuiviSyncStrategy
     {
-        public class InvoiceItem
-        {
-            public InvoiceItemType Type { get; init; }
-            public decimal VatRate { get; init; }
-            public decimal UnitPrice { get; init; }
-            public int MenuItemId { get; init; }
-            public required string Name { get; init; }
-            public decimal Quantity { get; init; }
-            public decimal DiscountPercentage { get; init; }
-        }
-
-        public abstract Task ProcessInvoiceJob(int chargeId, decimal paymentAmount, IEnumerable<InvoiceItem> itemsToBePaid);
+        public abstract Task ProcessInvoiceJob(int chargeId);
     }
 
     public abstract class AQuiviSyncStrategy<T> : AQuiviSyncStrategy, IPosSyncStrategy<T> where T : IQuiviSyncSettings
@@ -53,13 +42,10 @@ namespace Quivi.Application.Pos
         ISyncSettings IPosSyncStrategy.ParseSyncSettings(PosIntegration integration) => this.ParseSyncSettings(integration);
         public abstract T ParseSyncSettings(PosIntegration integration);
 
-        public abstract Task SyncMenu(PosIntegration integration, IEnumerable<int>? digitalMenuItemIds = null);
+        public abstract Task SyncMenu(PosIntegration integration, IEnumerable<int>? menuItemIds = null);
         #endregion
 
-        protected virtual IInvoiceGateway GetInvoiceGateway(T settings)
-        {
-            return InvoiceGatewayFactory.GetInvoiceGateway(settings);
-        }
+        protected virtual IInvoiceGateway GetInvoiceGateway(T settings) => InvoiceGatewayFactory.GetInvoiceGateway(settings);
 
         public virtual async Task<byte[]> GetInvoice(PosIntegration integration, int chargeId)
         {
@@ -187,7 +173,7 @@ namespace Quivi.Application.Pos
             });
         }
 
-        public async Task ProcessInvoiceJobContextualizer(IJobContextualizer contextualizer, int chargeId, decimal paymentAmount, IEnumerable<InvoiceItem> itemsToBePaid)
+        public async Task ProcessInvoiceJobContextualizer(IJobContextualizer contextualizer, int chargeId)
         {
             var integrationsQuery = await QueryProcessor.Execute(new GetPosIntegrationsAsyncQuery
             {
@@ -202,7 +188,7 @@ namespace Quivi.Application.Pos
 
         [ContextualizeFilter(nameof(ProcessInvoiceJobContextualizer))]
         [PerIntegrationDistributedLockFilter]
-        public override async Task ProcessInvoiceJob(int chargeId, decimal paymentAmount, IEnumerable<InvoiceItem> itemsToBePaid)
+        public override async Task ProcessInvoiceJob(int chargeId)
         {
             var integrationsQuery = await QueryProcessor.Execute(new GetPosIntegrationsAsyncQuery
             {
@@ -213,7 +199,7 @@ namespace Quivi.Application.Pos
 
             var integration = integrationsQuery.Single();
             var settings = ParseSyncSettings(integration);
-            if (settings.SkipInvoice || paymentAmount == 0)
+            if (settings.SkipInvoice)
                 return;
 
             var gateway = GetInvoiceGateway(settings);
@@ -221,8 +207,6 @@ namespace Quivi.Application.Pos
             {
                 InvoiceGateway = gateway,
                 PosChargeId = chargeId,
-                PaymentAmount = paymentAmount,
-                InvoiceItems = itemsToBePaid,
                 IncludeTip = settings.IncludeTipInInvoice,
                 InvoicePrefix = settings.InvoicePrefix,
             });
