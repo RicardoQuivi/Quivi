@@ -37,11 +37,11 @@ export const useAllowedActions = (channelId: string | undefined): QueryResult<Ch
         ids: [channelId],
         page: 0,
     })
-    const channelProfileQuery = useChannelProfilesQuery(channelsQuery.isLoading || channelsQuery.data.length == 0 ? undefined : {
+    const channelProfileQuery = useChannelProfilesQuery(channelsQuery.isFirstLoading || channelsQuery.data.length == 0 ? undefined : {
         ids: [channelsQuery.data[0].channelProfileId],
         page: 0,
     })
-    const integrationQuery = usePosIntegrationsQuery(channelProfileQuery.isLoading || channelProfileQuery.data.length == 0 ? undefined : {
+    const integrationQuery = usePosIntegrationsQuery(channelProfileQuery.isFirstLoading || channelProfileQuery.data.length == 0 ? undefined : {
         ids: [channelProfileQuery.data[0].posIntegrationId],
         page: 0,
     })
@@ -124,7 +124,6 @@ const getPermissions = (p: QueryResult<ChannelPermissions | undefined> | undefin
             integrationQuery.isLoading ||
             integration.id != channelProfileQuery.data[0].posIntegrationId ||
             sessionsQuery.isLoading) {
-
         return {
             data: getDefaultPermissions(channelId, p?.data),
             isLoading: true,

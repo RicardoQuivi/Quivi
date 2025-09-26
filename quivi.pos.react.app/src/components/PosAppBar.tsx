@@ -1,4 +1,4 @@
-import { alpha, AppBar,  Chip, IconButton, InputBase, ListItemIcon, ListItemText, Menu, MenuItem, styled, Toolbar, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { alpha, AppBar,  Chip, IconButton, InputBase, ListItemIcon, ListItemText, Menu, MenuItem, styled, SxProps, Theme, Toolbar, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalsQuery } from "../hooks/queries/implementations/useLocalsQuery";
@@ -41,6 +41,7 @@ interface Props {
     readonly localId?: string;
     readonly onNewLocalSelected: (l: string | undefined) => any;
     readonly onReadQrCodeButtonClicked: () => any;
+    readonly sx?: SxProps<Theme>;
 }
 export const PosAppBar = (props: Props) => {
     const { t } = useTranslation();
@@ -192,13 +193,14 @@ export const PosAppBar = (props: Props) => {
             </Menu>
         </>
     }
-
-    const renderOptions = () =>  xs ? renderOptionsMobile() : renderOptionsDesktop();
     
     return <>
-        <AppBar position="relative">
+        <AppBar
+            position="relative"
+            sx={props.sx}
+        >
             <Toolbar variant="regular">
-                { renderOptions() }
+                {xs ? renderOptionsMobile() : renderOptionsDesktop()}
                 <Search
                     sx={{
                         flex: 1,

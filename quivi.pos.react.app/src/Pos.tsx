@@ -20,6 +20,7 @@ import { OrdersOverview } from "./components/Orders/OrdersOverview";
 import { SessionAdditionalFieldsModal } from "./components/SessionAdditionalFieldsModal";
 import { useSessionAdditionalInformationsQuery } from "./hooks/queries/implementations/useSessionAdditionalInformationsQuery";
 import { useNewOrderAudio } from "./hooks/useNewOrderAudio";
+import { LoadingAnimation } from "./components/Loadings/LoadingAnimation";
 
 export const Pos = () => {
     useNewOrderAudio();
@@ -107,164 +108,177 @@ export const Pos = () => {
                 background: p => p.palette.primary.light,
             }}
         >
-            <Box 
+            <PosAppBar
+                search={searchTxt}
+                onSearchChanged={setSearchTxt}
+                onNotificationClicked={() => setActiveTab(ActiveTab.Notifications)}
+                localId={localId}
+                onNewLocalSelected={setLocalId}
+                onReadQrCodeButtonClicked={() => setReadQrCodeOpen(true)}
                 sx={{
                     flex: 0,
                 }}
-            >
-                <PosAppBar
-                    search={searchTxt}
-                    onSearchChanged={setSearchTxt}
-                    onNotificationClicked={() => setActiveTab(ActiveTab.Notifications)}
-                    localId={localId}
-                    onNewLocalSelected={setLocalId}
-                    onReadQrCodeButtonClicked={() => setReadQrCodeOpen(true)}
-                />
-            </Box>
+            />
 
-            <Grid 
-                container
-                sx={{
-                    overflow: "hidden",
-                    flex: 1,
-                    padding: {
-                        xs: 0,
-                        sm: "1rem",
+            {
+                pos.permissions.isFirstLoading
+                ?
+                <LoadingAnimation
+                    sx={{
+                        flex: 1,
+                        alignSelf: "center",
+                        width: {
+                            xs: "50%",
+                            sm: "25%",
+                        }
+                    }}
+                />
+                :
+                <Grid 
+                    container
+                    sx={{
+                        overflow: "hidden",
+                        flex: 1,
+                        padding: {
+                            xs: 0,
+                            sm: "1rem",
+                        }
+                    }}
+                    spacing={2}
+                >
+                    {
+                        hasChannelsWithSessions &&
+                        xs == false &&
+                        <Grid
+                            size={{
+                                xs: 12,
+                                sm: 4,
+                            }}
+                            sx={{
+                                height: "100%",
+                            }}
+                        >
+                            <SessionViewer
+                                onTransferSessionClicked={onTransferSessionClicked}
+                                onEditItem={onEditItemPrice}
+                                onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
+                                localId={localId}
+                            />
+                        </Grid>
                     }
-                }}
-                spacing={2}
-            >
-                {
-                    hasChannelsWithSessions &&
-                    xs == false &&
-                    <Grid
+
+                    <Grid 
                         size={{
-                            xs: 12,
-                            sm: 4,
+                            xs: 12, 
+                            sm: hasChannelsWithSessions ? 8 : 12
                         }}
                         sx={{
                             height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
-                        <SessionViewer
-                            onTransferSessionClicked={onTransferSessionClicked}
-                            onEditItem={onEditItemPrice}
-                            onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
+                        <PosTabs
+                            hasChannelsWithSessions={hasChannelsWithSessions}
+                            onTabIndexChanged={setActiveTab}
+                            tab={activeTab}
                             localId={localId}
+                            sx={{
+                                flex: 0,
+                            }}
                         />
-                    </Grid>
-                }
 
-                <Grid 
-                    size={{
-                        xs: 12, 
-                        sm: hasChannelsWithSessions ? 8 : 12
-                    }}
-                    sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    <PosTabs
-                        hasChannelsWithSessions={hasChannelsWithSessions}
-                        onTabIndexChanged={setActiveTab}
-                        tab={activeTab}
-                        localId={localId}
-                        sx={{
-                            flex: 0,
-                        }}
-                    />
-
-                    <Box
-                        sx={{
-                            flex: 1,
-                            marginTop: {
-                                xs: 0,
-                                sm: "1rem",
-                            },
-                            order: {
-                                xs: -1,
-                                sm: 0,
-                            },
-                            padding: {
-                                xs: "0.5rem 0.5rem 0rem 0.5rem",
-                                sm: 0,
-                            },
-                            overflowY: "hidden",
-                        }}
-                    >
-                        {
-                            hasChannelsWithSessions && activeTab == ActiveTab.ItemSelection &&
-                            <ItemsSelector
-                                search={searchTxt}
-                                onItemSelect={item => {
-                                    setSearchTxt("");
-                                    pos.cartSession.addItem(item, 1);
-                                }}
-                                selectedCategoryId={selectedCategoryId}
-                                onCategoryChanged={(category) => {
-                                    if(category !== null)  {
+                        <Box
+                            sx={{
+                                flex: 1,
+                                marginTop: {
+                                    xs: 0,
+                                    sm: "1rem",
+                                },
+                                order: {
+                                    xs: -1,
+                                    sm: 0,
+                                },
+                                padding: {
+                                    xs: "0.5rem 0.5rem 0rem 0.5rem",
+                                    sm: 0,
+                                },
+                                overflowY: "hidden",
+                            }}
+                        >
+                            {
+                                hasChannelsWithSessions &&
+                                activeTab == ActiveTab.ItemSelection &&
+                                <ItemsSelector
+                                    search={searchTxt}
+                                    onItemSelect={item => {
                                         setSearchTxt("");
-                                    }
-                                    setSelectedCategoryId(() => {
-                                        if(category === null) {
-                                            return null;
+                                        pos.cartSession.addItem(item, 1);
+                                    }}
+                                    selectedCategoryId={selectedCategoryId}
+                                    onCategoryChanged={(category) => {
+                                        if(category !== null)  {
+                                            setSearchTxt("");
                                         }
+                                        setSelectedCategoryId(() => {
+                                            if(category === null) {
+                                                return null;
+                                            }
 
-                                        if(category === undefined) {
-                                            return undefined;
-                                        }
-                                        
-                                        return category.id;
-                                    });
-                                }}
-                            />
-                        }
-                        {
-                            hasChannelsWithSessions && activeTab == ActiveTab.ChannelSelection &&
-                            <ChannelsOverview
-                                search={searchTxt}
-                                onChannelClicked={q => onChannelClicked(q.id, true)}
-                                onTransferSessionClicked={onTransferSessionClicked}
-                            />
-                        }
-                        {
-                            activeTab == ActiveTab.Ordering &&
-                            <OrdersOverview
-                                onOrderSelected={setOrderId}
-                                selectedOrderId={orderId}
-                                localId={localId}
-                                readQrCodeOpen={readQrCodeOpen}
-                                onReadQrCodeClosed={() => setReadQrCodeOpen(false)}
-                                onOrderUpdated={(id) => onChannelClicked(id, false)}
-                            />
-                        }
-                        
-                        {
-                            hasChannelsWithSessions &&
-                            activeTab == ActiveTab.SessionOverview &&
-                            <Box
-                                sx={{
-                                    height: "100%",
-                                    display: {
-                                        xs: "block",
-                                        sm: "hidden"
-                                    }
-                                }}
-                            >
-                                <SessionViewer
-                                    onTransferSessionClicked={onTransferSessionClicked}
-                                    onEditItem={onEditItemPrice}
-                                    onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
-                                    localId={localId}
+                                            if(category === undefined) {
+                                                return undefined;
+                                            }
+                                            
+                                            return category.id;
+                                        });
+                                    }}
                                 />
-                            </Box>
-                        }
-                    </Box>
+                            }
+                            {
+                                hasChannelsWithSessions &&
+                                activeTab == ActiveTab.ChannelSelection &&
+                                <ChannelsOverview
+                                    search={searchTxt}
+                                    onChannelClicked={q => onChannelClicked(q.id, true)}
+                                    onTransferSessionClicked={onTransferSessionClicked}
+                                />
+                            }
+                            {
+                                activeTab == ActiveTab.Ordering &&
+                                <OrdersOverview
+                                    onOrderSelected={setOrderId}
+                                    selectedOrderId={orderId}
+                                    localId={localId}
+                                    readQrCodeOpen={readQrCodeOpen}
+                                    onReadQrCodeClosed={() => setReadQrCodeOpen(false)}
+                                    onOrderUpdated={(id) => onChannelClicked(id, false)}
+                                />
+                            }
+                            
+                            {
+                                hasChannelsWithSessions &&
+                                activeTab == ActiveTab.SessionOverview &&
+                                <Box
+                                    sx={{
+                                        height: "100%",
+                                        display: {
+                                            xs: "block",
+                                            sm: "hidden"
+                                        }
+                                    }}
+                                >
+                                    <SessionViewer
+                                        onTransferSessionClicked={onTransferSessionClicked}
+                                        onEditItem={onEditItemPrice}
+                                        onSessionAdditionalInfoClicked={configurableFieldsQuery.data.length == 0 ? undefined : () => setAdditionalInfoModalOpen(true)}
+                                        localId={localId}
+                                    />
+                                </Box>
+                            }
+                        </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
-
+            }
             <TransferSessionModal
                 currentChannel={transferChannel}
                 onClose={() => setTransferChannel(undefined)}
