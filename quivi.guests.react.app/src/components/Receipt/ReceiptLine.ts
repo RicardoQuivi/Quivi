@@ -3,7 +3,8 @@ export interface ReceiptLine extends BaseReceiptLine {
 }
 
 export interface BaseReceiptLine {
-    readonly name: string;
+    readonly id: string;
+    readonly name?: string;
     readonly amount: number;
     readonly quantity?: number;
     readonly isStroke: boolean;

@@ -3,6 +3,7 @@ import type { ReceiptLine } from "./ReceiptLine";
 import { ItemsHelper } from "../../helpers/ItemsHelper";
 import { Formatter } from "../../helpers/formatter";
 import { Calculations } from "../../helpers/calculations";
+import { Skeleton } from "@mui/material";
 
 interface Props {
     readonly item: ReceiptLine;
@@ -19,7 +20,15 @@ const ReceiptFooter: React.FC<Props> = ({ item }) => {
     return (
         <div className={`table-item ${item.isStroke ? "is-paid" : ""}`}>
             <p className="quantity">{formattedQuantity.toString()}</p>
-            <p>{item.name}</p>
+            <p>
+            {
+                item.name == undefined
+                ?
+                <Skeleton variant="text" animation="wave" />
+                :
+                item.name
+            }
+            </p>
             {
                 item.discount || (item.quantity !== 1 && quantity > 0)
                 ?

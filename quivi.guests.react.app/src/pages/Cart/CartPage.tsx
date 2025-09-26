@@ -211,11 +211,12 @@ export const CartPage = () => {
                     {
                         orderFieldsQuery.data.map(f => (
                             <FormControl 
-                                    key={f.id} sx={{
-                                        mb: "0.5rem",
-                                        display: "flex",
-                                        flexDirection: "column"
-                                    }}
+                                key={f.id}
+                                sx={{
+                                    mb: "0.5rem",
+                                    display: "flex",
+                                    flexDirection: "column"
+                                }}
                             >
                                 <Box
                                     sx={

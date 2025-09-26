@@ -22,6 +22,7 @@ import { useTransactionInvoicesQuery } from "../../hooks/queries/implementations
 import { useReviewsQuery } from "../../hooks/queries/implementations/useReviewsQuery";
 import { usePostCheckoutMessagesQuery } from "../../hooks/queries/implementations/usePostCheckoutMessagesQuery";
 import { Review } from "./Review";
+import { OrdersHelper } from "../../helpers/ordersHelper";
 
 interface Props {
     readonly order: Order,
@@ -137,149 +138,157 @@ export const OrderAndPaySuccess: React.FC<Props> = ({
         return "";
     }
 
-    const getTotal = (): number => {
-        let total = 0;
+    const total = useMemo(() => OrdersHelper.getTotal(order), [order]);
 
-        order.items.forEach(item => {
-            const modifiersPrices = (item.modifiers ?? []).map(m => m.selectedOptions)
-                                                    .reduce((r, o) => [...r, ...o], [])
-                                                    .reduce((r, o) => r + o.amount * o.quantity, 0);
-            total += (item.amount + modifiersPrices) * item.quantity;
-        });
+    const receiptLines = useMemo(() => {
+        const lines: ReceiptLine[] = [];
 
-        order.extraCosts?.forEach(item => total += item.amount);
-        
-        return total;
-    }
+        for(const item of order.items) {
+            lines.push({
+                id: item.id,
+                discount: 0,
+                isStroke: false,
+                name: item.name,
+                amount: item.amount,
+                quantity: item.quantity,
+                subItems: item.modifiers?.map(s => s.selectedOptions).reduce((r, s) => [...r, ...s], []).map(s => ({
+                    id: s.id,
+                    discount: 0,
+                    isStroke: false,
+                    name: s.name,
+                    amount: s.amount,
+                    quantity: s.quantity,
+                }))
+            });
+        }
+        return lines
+    }, [order.items]);
 
-    const mapItems = (): ReceiptLine[] => order.items.map(item => ({
-        discount: 0,
-        isStroke: false,
-        name: item.name,
-        amount: item.amount,
-        quantity: item.quantity,
-        subItems: item.modifiers?.map(s => s.selectedOptions).reduce((r, s) => [...r, ...s], []).map(s => ({
-            discount: 0,
-            isStroke: false,
-            name: s.name,
-            amount: s.amount,
-            quantity: s.quantity,
-        }))
-    }))
+    const subTotals = useMemo(() => {
+        const subTotals: ReceiptSubTotalLine[] = [];
+        for(const item of order.extraCosts) {
+            subTotals.push({
+                amount: item.amount,
+                name: t(`extraCost.${item.type}`),
+            })
+        }
 
-    const mapSubTotals = (): ReceiptSubTotalLine[] => order.extraCosts.map(item => ({
-        amount: item.amount,
-        name: t(`extraCost.${item.type}`),
-    }))
+        return subTotals
+    }, [order.extraCosts]);
 
     const downloadInvoices = () => invoicesQuery.data.forEach(d => Files.saveFileFromURL(d.downloadUrl, d.name));
 
     return (
         <>
-            <>
-                <div style={{display: "flow-root"}}>
-                    <h2 className="mb-4" style={{float: "left"}}>{t("orderAndPayResult.yourOrder")}</h2>
-                </div>
-                <div className="mb-6">
-                    <Receipt items={mapItems()} subTotals={mapSubTotals()} total={{amount: getTotal(), name: t("cart.totalPrice")}} />
-                </div>
+            <div style={{display: "flow-root"}}>
+                <h2 className="mb-4" style={{float: "left"}}>{t("orderAndPayResult.yourOrder")}</h2>
+            </div>
+            <div className="mb-6">
+                <Receipt
+                    items={receiptLines}
+                    subTotals={subTotals}
+                    total={{
+                        amount: total,
+                        name: t("cart.totalPrice"),
+                    }}
+                />
+            </div>
+            {
+                features.physicalKiosk == false &&
+                <>
                 {
-                    features.physicalKiosk == false &&
-                    <>
-                    {
-                        features.ordering.allowsTracking &&
-                        <div className="mb-8">
-                            <Box sx={{ width: '100%' }}>
-                                <Stepper
-                                    activeStep={getActiveStep()}
-                                    alternativeLabel
-                                    sx={{
-                                        paddingTop: 0,
+                    features.ordering.allowsTracking &&
+                    <div className="mb-8">
+                        <Box sx={{ width: '100%' }}>
+                            <Stepper
+                                activeStep={getActiveStep()}
+                                alternativeLabel
+                                sx={{
+                                    paddingTop: 0,
 
-                                        "& .MuiStepIcon-root.Mui-active": { 
-                                            color: theme.primaryColor.hex,
-                                            '@keyframes blink': {
-                                                '0%, 100%': { 
-                                                    color: 'white',
-                                                },
-                                                '50%': {
-                                                    color: theme.primaryColor.hex,
-                                                },
+                                    "& .MuiStepIcon-root.Mui-active": { 
+                                        color: theme.primaryColor.hex,
+                                        '@keyframes blink': {
+                                            '0%, 100%': { 
+                                                color: 'white',
                                             },
-                                            animation: 'blink 1.5s infinite',
+                                            '50%': {
+                                                color: theme.primaryColor.hex,
+                                            },
                                         },
+                                        animation: 'blink 1.5s infinite',
+                                    },
 
-                                        "& .MuiStepIcon-root.Mui-completed": { 
-                                            color: theme.primaryColor.hex,
-                                        },
-                                    }}
-                                >
-                                    {
-                                        getSteps().map((label, index) => 
-                                            <Step key={label} completed={isStepCompleted(index)}>
-                                                <StepLabel>{label}</StepLabel>
-                                            </Step>
-                                        )
-                                    }
-                                </Stepper>
-                                <div className="flex flex-fd-c flex-ai-c mt-5">
-                                    <p className="ta-c">{getMessage()}</p>
-                                    {order.state !== OrderState.Completed && <p className="ta-c">{t("orderAndPayResult.screenWillBeKeptUpdated")}</p>}
-                                </div>
-                            </Box>
-                        </div>
-                    }
-                    {
-                        order.state == OrderState.Completed && transaction != undefined &&
-                        <div className="mb-8">
-                            {
-                                invoicesQuery.data.length > 0 && features.ordering.invoiceIsDownloadable &&
-                                <ActionButton onClick={downloadInvoices} primaryButton={false} style={{ marginTop: "20px", marginBottom: "20px" }}>
-                                    <DownloadIcon />
-                                    <span style={{marginLeft: "10px"}}>{t("paymentResult.downloadInvoice")}</span>
-                                </ActionButton>
-                            }
-                            {
-                                !reviewQuery.isFirstLoading &&
-                                (
-                                    review != undefined
-                                    ?
-                                    <Box
-                                        className="flex flex-fd-c flex-ai-c mt-6"
-                                    >
-                                        <h2 className="mb-3 mt-5 ta-c">{t("paymentResult.reviewSent")}</h2>
-                                        <p className="ta-c">{t("paymentResult.reviewThanks")}</p>
-                                        {
-                                            auth.user == undefined &&
-                                            <Link to={`/c/${order.channelId}`} className="secondary-button mt-6">{t("paymentResult.home")}</Link>
-                                        }
-                                    </Box>
-                                    :
-                                    <Review transactionId={transaction.id} />
-                                )
-                            }
-                        </div>
-                    }
-                    </>
+                                    "& .MuiStepIcon-root.Mui-completed": { 
+                                        color: theme.primaryColor.hex,
+                                    },
+                                }}
+                            >
+                                {
+                                    getSteps().map((label, index) => 
+                                        <Step key={label} completed={isStepCompleted(index)}>
+                                            <StepLabel>{label}</StepLabel>
+                                        </Step>
+                                    )
+                                }
+                            </Stepper>
+                            <div className="flex flex-fd-c flex-ai-c mt-5">
+                                <p className="ta-c">{getMessage()}</p>
+                                {order.state !== OrderState.Completed && <p className="ta-c">{t("orderAndPayResult.screenWillBeKeptUpdated")}</p>}
+                            </div>
+                        </Box>
+                    </div>
                 }
                 {
-                    checkoutMessagesQuery.data.map(d => (
-                        <Alert severity="info" title={d.title} key={`${d.title}-${d.message}`}>
-                            <p style={{ fontSize:"1.5rem" }}>{d.message}</p>
-                        </Alert>
-                    ))
+                    order.state == OrderState.Completed && transaction != undefined &&
+                    <div className="mb-8">
+                        {
+                            invoicesQuery.data.length > 0 && features.ordering.invoiceIsDownloadable &&
+                            <ActionButton onClick={downloadInvoices} primaryButton={false} style={{ marginTop: "20px", marginBottom: "20px" }}>
+                                <DownloadIcon />
+                                <span style={{marginLeft: "10px"}}>{t("paymentResult.downloadInvoice")}</span>
+                            </ActionButton>
+                        }
+                        {
+                            !reviewQuery.isFirstLoading &&
+                            (
+                                review != undefined
+                                ?
+                                <Box
+                                    className="flex flex-fd-c flex-ai-c mt-6"
+                                >
+                                    <h2 className="mb-3 mt-5 ta-c">{t("paymentResult.reviewSent")}</h2>
+                                    <p className="ta-c">{t("paymentResult.reviewThanks")}</p>
+                                    {
+                                        auth.user == undefined &&
+                                        <Link to={`/c/${order.channelId}`} className="secondary-button mt-6">{t("paymentResult.home")}</Link>
+                                    }
+                                </Box>
+                                :
+                                <Review transactionId={transaction.id} />
+                            )
+                        }
+                    </div>
                 }
-                <div className="mt-4 mb-4 pl-8" style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
-                    <h1 className="mb-2">{order.sequenceNumber}</h1>
-                    <QRCode
-                        size={256}
-                        style={{ height: "auto", maxWidth: "350px", paddingLeft: "2rem", paddingRight: "2rem" }}
-                        value={order.id}
-                        viewBox={`0 0 256 256`}
-                    />
-                    <h5 className="mt-2">{order.id}</h5>
-                </div>
-            </>
+                </>
+            }
+            {
+                checkoutMessagesQuery.data.map(d => (
+                    <Alert severity="info" title={d.title} key={`${d.title}-${d.message}`}>
+                        <p style={{ fontSize:"1.5rem" }}>{d.message}</p>
+                    </Alert>
+                ))
+            }
+            <div className="mt-4 mb-4 pl-8" style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                <h1 className="mb-2">{order.sequenceNumber}</h1>
+                <QRCode
+                    size={256}
+                    style={{ height: "auto", maxWidth: "350px", paddingLeft: "2rem", paddingRight: "2rem" }}
+                    value={order.id}
+                    viewBox={`0 0 256 256`}
+                />
+                <h5 className="mt-2">{order.id}</h5>
+            </div>
         </>
     );
 }

@@ -40,7 +40,13 @@ const ReceiptItemLine: React.FC<ReceiptItemLineProps> = ({
                         direction="row"
                         gap={2}
                     >
-                        {item.name}
+                        {
+                            item.name == undefined
+                            ?
+                            <Skeleton variant="text" animation="wave" width="80%" />
+                            :
+                            item.name
+                        }
                         {
                             item.info != undefined &&
                             <Chip label={<span>{item.info}</span>} variant="outlined" size="small" avatar={<>&nbsp;<InfoIcon color={theme.primaryColor.hex} /></>}/>

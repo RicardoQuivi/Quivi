@@ -9,7 +9,6 @@ import { useQuiviTheme } from "../../hooks/theme/useQuiviTheme";
 import { useBrowserStorageService } from "../../hooks/useBrowserStorageService";
 import { useChannelContext, useCurrentPosIntegration } from "../../context/AppContextProvider";
 import { useOrdersQuery } from "../../hooks/queries/implementations/useOrdersQuery";
-import type { Order } from "../../hooks/api/Dtos/orders/Order";
 import type { ReceiptLine } from "../../components/Receipt/ReceiptLine";
 import type { ReceiptSubTotalLine } from "../../components/Receipt/ReceiptSubTotalLine";
 import { Calculations } from "../../helpers/calculations";
@@ -25,6 +24,9 @@ import { useMenuItemsQuery } from "../../hooks/queries/implementations/useMenuIt
 import type { MenuItem } from "../../hooks/api/Dtos/menuItems/MenuItem";
 import { useTransactionsQuery } from "../../hooks/queries/implementations/useTransactionsQuery";
 import { useShareEqualSettings } from "../../hooks/useShareEqualSettings";
+import type { ReceiptTotalLine } from "../../components/Receipt/ReceiptTotalLine";
+import { OrdersHelper } from "../../helpers/ordersHelper";
+import BigNumber from "bignumber.js";
 
 export const SessionSummaryPage = () => {
     const browserStorageService = useBrowserStorageService();
@@ -36,7 +38,7 @@ export const SessionSummaryPage = () => {
     const integration = useCurrentPosIntegration();
     const {
         channelId,
-        features
+        features,
     } = channelContext;
 
     const sessionQuery = useSessionsQuery({
@@ -90,7 +92,7 @@ export const SessionSummaryPage = () => {
     const [isClearingSession, _setIsClearingSession] = useState(false);
 
     const hasPaymentDivision = features.payAtTheTable.freePayment || features.payAtTheTable.itemSelectionPayment || features.payAtTheTable.splitBillPayment;
-    const isLoading = sessionQuery.isFirstLoading || ordersQuery.isFirstLoading || (menuItemIds.length > 0 && menuItemsQuery.isFirstLoading);
+    const isLoading = sessionQuery.isFirstLoading || ordersQuery.isFirstLoading;
 
     const isEmpty = () => {
         const hasOrders = ordersQuery.isFirstLoading == false && ordersQuery.data.length > 0;
@@ -104,94 +106,90 @@ export const SessionSummaryPage = () => {
         const forceTableEmpty = !hasPaymentDivision && transactionsQuery.data.length > 0;
         return forceTableEmpty || session == undefined || session.items.length === 0;
     }
-    
-    const getOrderTotal = (order: Order): number => {
-        let total = 0;
 
-        order.items.forEach(item => {
-            const modifiersPrices = (item.modifiers ?? []).map(m => m.selectedOptions)
-                                                    .reduce((r, o) => [...r, ...o], [])
-                                                    .reduce((r, o) => r + o.amount * o.quantity, 0);
-            total += (item.amount + modifiersPrices) * item.quantity;
-        });
-        order.extraCosts?.forEach(item => total += item.amount);
-        return total;
-    }
+    const resume = useMemo(() => {
+        let lines: ReceiptLine[] | undefined = undefined;
+        let pendingOrdersTotal = BigNumber(0);
 
-    const mapItems = (): ReceiptLine[] | undefined => {
-        if(isLoading) {
-            return undefined;
+        if(isLoading == false) {
+            lines = [];
+
+            for(const i of sessionQuery.data?.items ?? []) {
+                lines.push({
+                    id: i.menuItemId,
+                    discount: i.discountPercentage,
+                    isStroke: i.isPaid,
+                    info: undefined,
+                    name: menuItemsMap.get(i.menuItemId)?.name,
+                    amount: i.price,
+                    quantity: i.quantity,
+                    subItems: i.extras.map(s => ({
+                        id: s.menuItemId,
+                        discount: i.discountPercentage,
+                        isStroke: false,
+                        name: menuItemsMap.get(s.menuItemId)?.name ?? "",
+                        amount: s.price,
+                        quantity: s.quantity,
+                    }))
+                })
+            }
+
+            if(ordersQuery.isFirstLoading == false) {
+                for(const order of ordersQuery.data) {
+                    const orderTotal = OrdersHelper.getTotal(order);
+                    pendingOrdersTotal.plus(orderTotal);
+
+                    lines.push({
+                        id: order.id,
+                        discount: 0,
+                        isStroke: false,
+                        info: t("pay.requiringApproval"),
+                        name: `${t("orders.order")} ${order.sequenceNumber}`,
+                        amount: orderTotal,
+                    })
+                }
+            }
         }
 
-        let result: ReceiptLine[] = sessionQuery.data?.items.map(i => ({
-            discount: i.discountPercentage,
-            isStroke: i.isPaid,
-            info: undefined,
-            name: menuItemsMap.get(i.menuItemId)?.name ?? "",
-            amount: i.price,
-            quantity: i.quantity,
-            subItems: i.extras.map(s => ({
-                discount: i.discountPercentage,
-                isStroke: false,
-                name: menuItemsMap.get(s.menuItemId)?.name ?? "",
-                amount: s.price,
-                quantity: s.quantity,
-            }))
-        })) ?? [];
-
-        if(ordersQuery.isFirstLoading == false) {
-            const aux: ReceiptLine[] = ordersQuery.data.map(i => ({
-                discount: 0,
-                isStroke: false,
-                info: t("pay.requiringApproval"),
-                name: `${t("orders.order")} ${i.sequenceNumber}`,
-                amount: getOrderTotal(i),
-            }));
-            result = [...aux, ...result];
-        }
-
-        return result;
-    }
-
-    const mapReceiptFooter = () => {
-        if(isLoading) {
-            return undefined;
-        }
-
-        const result: ReceiptSubTotalLine[] = [];
+        const subTotals: ReceiptSubTotalLine[] = [];
         if(session != undefined && session.discount > 0) {
-            result.push({
+            subTotals.push({
                 amount: session.discount,
                 name: t("pay.discounts"),
             });
         }
 
-        //TODO: map requiring approval
-        // if(sessionState.requiringApprovalAmount > 0) {
-        //     result.push({
-        //         amount: sessionState.requiringApprovalAmount,
-        //         name: t("pay.requiringApproval"),
-        //     });
-        // }
-
-        result.push({
+        let pendingTotal = pendingOrdersTotal.toNumber();
+        if(pendingTotal > 0) {
+            subTotals.push({
+                amount: pendingTotal,
+                name: t("pay.requiringApproval"),
+            });
+        }
+        
+        subTotals.push({
             amount: session?.total ?? 0,
             name: t("pay.sessionTotal"),
         });
 
         if(session != undefined && session.paid > 0) {
-            result.push({
+            subTotals.push({
                 amount: session.paid,
                 name: t("pay.paidFor"),
             });
         }
-        return result;
-    }
 
-    const getTotal = () => ({
-        amount: isLoading ? undefined : Calculations.roundUp(session?.unpaid ?? 0), //TODO: Add requiring approval amount + session.requiringApprovalAmount), 
-        name: t("pay.paymentPending")
-    })
+        const total: ReceiptTotalLine = {
+            amount: isLoading ? undefined : Calculations.roundUp(session?.unpaid ?? 0),
+            name: t("pay.paymentPending")
+        };
+        
+        return {
+            lines: lines,
+            subTotals: subTotals,
+            total: total,
+        };
+    }, [sessionQuery.isFirstLoading, ordersQuery.isFirstLoading, menuItemsMap, session, ordersQuery.data, t])
 
     const clearSession = async () => {
         //TODO: clear session
@@ -299,7 +297,12 @@ export const SessionSummaryPage = () => {
                     <p className="ta-c">&nbsp;</p>
                 </div>
                 :
-                <Receipt header={t("pay.yourSession")} items={mapItems()} subTotals={mapReceiptFooter()} total={getTotal()} />
+                <Receipt
+                    header={t("pay.yourSession")}
+                    items={resume.lines}
+                    subTotals={resume.subTotals}
+                    total={resume.total}
+                />
             )
         }
         <Modal

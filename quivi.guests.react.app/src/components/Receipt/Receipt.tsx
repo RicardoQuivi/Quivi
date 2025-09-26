@@ -25,11 +25,6 @@ const Receipt: React.FC<Props> = ({
     style,
     className
 }) => {
-    const getItemKey = (item: ReceiptLine) => {
-        const nameGenerator = (line: BaseReceiptLine) => `${line.name}-${line.amount}-${line.discount}-${line.isStroke}-${line.quantity}`;
-        return (item.subItems ?? []).reduce((r, l) => `${r}|${nameGenerator(l)}`, nameGenerator(item));
-    }
-
     return (
         <section className={`summary ${className || ""}`} style={style}>
             <div>
@@ -60,14 +55,28 @@ const Receipt: React.FC<Props> = ({
                                 ?
                                     Formatter.price(total.amount, "€")
                                 :
-                                <Skeleton variant="text" animation="wave" height="1.5rem" width="40px" style={{marginRight: "10px"}} />
+                                <Skeleton
+                                    variant="text"
+                                    animation="wave"
+                                    height="1.5rem"
+                                    width="40px"
+                                    sx={{
+                                        marginRight: "10px",
+                                    }}
+                                />
                             }
                         </h2>
                     </div>
                 </div>
             </div>
-            {!!children && children}
+            {children}
         </section>
     )
 }
+
+const nameGenerator = (line: BaseReceiptLine) => `${line.id}-${line.name}-${line.amount}-${line.discount}-${line.isStroke}-${line.quantity}`;
+const getItemKey = (item: ReceiptLine) => {
+    return (item.subItems ?? []).reduce((r, l) => `${r}|${nameGenerator(l)}`, nameGenerator(item));
+}
+
 export default Receipt;
