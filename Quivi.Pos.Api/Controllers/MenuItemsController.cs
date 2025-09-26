@@ -49,6 +49,8 @@ namespace Quivi.Pos.Api.Controllers
                 IsDeleted = request.IncludeDeleted ? null : false,
 
                 IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers = true,
+                IncludeMenuItemCategoryAssociations = true,
+
                 PageSize = request.PageSize,
                 PageIndex = request.Page,
             });

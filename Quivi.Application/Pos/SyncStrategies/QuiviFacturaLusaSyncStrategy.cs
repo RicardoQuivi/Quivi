@@ -35,6 +35,7 @@ namespace Quivi.Application.Pos.SyncStrategies
             {
                 Ids = menuItemIds,
                 MerchantIds = [configuration.MerchantId],
+                PageSize = null,
             });
 
             var invoiceGateway = InvoiceGatewayFactory.GetInvoiceGateway(settings);

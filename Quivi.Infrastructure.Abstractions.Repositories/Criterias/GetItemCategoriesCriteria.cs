@@ -8,6 +8,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public IEnumerable<int>? MenuItemIds { get; init; }
         public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
+        public string? Search { get; init; }
         public string? Name { get; init; }
         public bool? IsDeleted { get; init; }
         public bool? WithItems { get; init; }

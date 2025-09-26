@@ -2,6 +2,7 @@
 {
     public class GetMenuCategoriesRequest : APagedRequest
     {
+        public string? Search { get; init; }
         public IEnumerable<string>? Ids { get; init; }
         public bool? HasItems { get; init; }
     }

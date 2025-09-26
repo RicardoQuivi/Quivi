@@ -25,6 +25,7 @@ namespace Quivi.Pos.Api.MapperHandlers
                 ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Price = model.Price,
                 ModifierGroups = mapper.Map<Dtos.ModifierGroup>((model.MenuItemModifierGroups ?? []).OrderBy(o => o.SortIndex).Select(o => o.MenuItemModifierGroup!)),
+                CategoryIds = model.MenuItemCategoryAssociations?.Select(a => idConverter.ToPublicId(a.ItemCategoryId)) ?? [],
                 HasStock = model.Stock,
                 IsDeleted = model.DeletedDate.HasValue,
             };

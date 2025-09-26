@@ -40,6 +40,7 @@ namespace Quivi.Pos.Api.Controllers
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 MerchantIds = [User.SubMerchantId(idConverter)!.Value],
                 HasItems = request.HasItems,
+                Search = string.IsNullOrWhiteSpace(request.Search) ? null : request.Search,
                 IsDeleted = false,
 
                 PageSize = request.PageSize,

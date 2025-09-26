@@ -13,7 +13,6 @@ export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) : Pa
         queryName: "useInternalMenuItemsQuery",
         entityType: getEntityType(Entity.MenuItems),
         request: {
-            menuCategoryId: request?.menuCategoryId,
             includeDeleted : true,
             page: 0,
         } as GetMenuItemsRequest,
@@ -41,7 +40,14 @@ export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) : Pa
                     return false;
                 }
 
-                if(request.search != undefined && d.name.includes(request.search) == false) {
+                if(request.search != undefined) {
+                    const matches = d.name.toLowerCase().includes(request.search.toLowerCase());
+                    if(matches == false) {
+                        return false;
+                    }
+                }
+
+                if(request.menuCategoryId != undefined && d.categoryIds.includes(request.menuCategoryId) == false) {
                     return false;
                 }
 
@@ -58,7 +64,7 @@ export const useMenuItemsQuery = (request: GetMenuItemsRequest | undefined) : Pa
                 const start = r.request.page * r.request.pageSize;
                 totalPages = Math.ceil(allData.length / r.request.pageSize);
                 resultData = allData.splice(start, start + r.request.pageSize)
-            }   
+            }
             return {
                 data: resultData,
                 isFirstLoading: r.isFirstLoading,

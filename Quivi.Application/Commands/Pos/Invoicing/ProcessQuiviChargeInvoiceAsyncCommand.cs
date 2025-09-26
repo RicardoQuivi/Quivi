@@ -5,16 +5,14 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
-using Quivi.Infrastructure.Abstractions.Services;
-using gatewayInvoiving = Quivi.Infrastructure.Abstractions.Pos.Invoicing;
-using gatewayModels = Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
 
 namespace Quivi.Application.Commands.Pos.Invoicing
 {
     public class ProcessQuiviChargeInvoiceAsyncCommand : ICommand<Task>
     {
-        public required gatewayInvoiving.IInvoiceGateway InvoiceGateway { get; init; }
+        public required IInvoiceGateway InvoiceGateway { get; init; }
         public required int PosChargeId { get; init; }
         public required bool IncludeTip { get; init; }
         public required string InvoicePrefix { get; init; }
@@ -26,20 +24,17 @@ namespace Quivi.Application.Commands.Pos.Invoicing
         private readonly ICommandProcessor commandProcessor;
         private readonly IIdConverter idConverter;
         private readonly IDateTimeProvider dateTimeProvider;
-        private readonly ILogger logger;
 
         public ProcessQuiviChargeInvoiceAsyncCommandHandler(IQueryProcessor queryProcessor,
                                                             ICommandProcessor commandProcessor,
                                                             IIdConverter idConverter,
-                                                            IDateTimeProvider dateTimeProvider,
-                                                            ILogger logger)
+                                                            IDateTimeProvider dateTimeProvider)
         {
             this.queryProcessor = queryProcessor;
             this.commandProcessor = commandProcessor;
             this.idConverter = idConverter;
 
             this.dateTimeProvider = dateTimeProvider;
-            this.logger = logger;
         }
 
         public async Task Handle(ProcessQuiviChargeInvoiceAsyncCommand command)
@@ -138,7 +133,7 @@ namespace Quivi.Application.Commands.Pos.Invoicing
                     Email = posCharge.Email,
                 },
                 Notes = posCharge.Observations,
-                PricesType = gatewayModels.PriceType.IncludedTaxes,
+                PricesType = Infrastructure.Abstractions.Pos.Invoicing.Models.PriceType.IncludedTaxes,
                 Items = invoiceItems,
             });
         }

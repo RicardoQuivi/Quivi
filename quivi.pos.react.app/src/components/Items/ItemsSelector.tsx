@@ -47,12 +47,12 @@ export const ItemsSelector: React.FC<Props> = ({
             return;
         }
         
-        if(selectedCategoryId === undefined) {
+        if(selectedCategoryId === null) {
             return;
         }
 
         // Select category "All" each time user search anything
-        onCategoryChanged(undefined);
+        onCategoryChanged(null);
     }, [search]);
 
     const onItemClicked = (item: MenuItem) => {
@@ -93,7 +93,14 @@ export const ItemsSelector: React.FC<Props> = ({
                 }}
             >
                 <ButtonBase>
-                    <Link underline="none" color="inherit" onClick={() => onCategoryChanged(undefined)} sx={{ cursor: "pointer"}}>
+                    <Link
+                        underline="none"
+                        color="inherit"
+                        onClick={() => onCategoryChanged(undefined)}
+                        sx={{
+                            cursor: "pointer",
+                        }}
+                    >
                         <Typography
                             variant="h6"
                             sx={{
@@ -138,20 +145,19 @@ export const ItemsSelector: React.FC<Props> = ({
                 }
             </Breadcrumbs>
             {
-                selectedCategoryId === undefined
+                selectedCategoryId === undefined && search.length == 0
                 ?
                 <CategorySelector
-                    search={search}
                     currentPage={currentPage}
                     onPageChange={setCurrentPage}
                     onCategoryClicked={onCategoryChanged}
                 />
                 :
                 <ItemSelector
-                    menuCategoryId={selectedCategory?.id}
+                    menuCategoryId={selectedCategoryId ?? undefined}
                     search={search}
-                    onItemClicked={onItemClicked}
                     currentPage={currentPage}
+                    onItemClicked={onItemClicked}
                     onPageChange={setCurrentPage}
                 />
             }
@@ -166,7 +172,6 @@ export const ItemsSelector: React.FC<Props> = ({
 
 
 interface CategorySelectorProps {
-    readonly search: string;
     readonly currentPage: number;
     readonly onPageChange: (p: number) => any;
     readonly onCategoryClicked: (m: MenuCategory | null) => any;
@@ -179,6 +184,7 @@ const CategorySelector = (props: CategorySelectorProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
     const categoriesQuery = useMenuCategoriesQuery({
+        hasItems: true,
         page: props.currentPage,
         pageSize: 64,
     });
@@ -308,8 +314,7 @@ const ListItem = (props: {
 }) => {
     const width = 400;
     const height = 300;
-
-    const truncateName = (original: string) => original.length > 84 ? `${original.substring(0, 84)}...` : original;
+    const aspectRatio = width / height;
 
     const generatedImageUrl = useGenerateImage({
         name: props.image == undefined ?  props.name : undefined,
@@ -344,7 +349,7 @@ const ListItem = (props: {
                     ?
                     <Box
                         sx={{
-                            aspectRatio: "4/3",
+                            aspectRatio: aspectRatio,
                         }}
                     >
                         <Skeleton
@@ -360,7 +365,7 @@ const ListItem = (props: {
                         alt={props.name}
                         loading="lazy"
                         style={{ 
-                            aspectRatio: "4/3",
+                            aspectRatio: aspectRatio,
                         }}
                     />
                 }
@@ -392,3 +397,4 @@ const ListItem = (props: {
         </ButtonBase>
     )
 }
+const truncateName = (original: string) => original.length > 84 ? `${original.substring(0, 84)}...` : original;

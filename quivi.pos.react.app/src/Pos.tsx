@@ -11,7 +11,6 @@ import { ChannelsOverview } from "./components/ChannelsOverview";
 import { EmployeeRestriction } from "./hooks/api/Dtos/employees/Employee";
 import { Channel } from "./hooks/api/Dtos/channels/Channel";
 import { ItemsSelector } from "./components/Items/ItemsSelector";
-import { MenuItem } from "./hooks/api/Dtos/menuitems/MenuItem";
 import { usePosSession } from "./context/pos/PosSessionContextProvider";
 import { SessionViewer } from "./components/Sessions/SessionViewer";
 import { useConfigurableFieldsQuery } from "./hooks/queries/implementations/useConfigurableFieldsQuery";
@@ -20,7 +19,6 @@ import { TransferSessionModal } from "./components/Sessions/TransferSessionModal
 import { OrdersOverview } from "./components/Orders/OrdersOverview";
 import { SessionAdditionalFieldsModal } from "./components/SessionAdditionalFieldsModal";
 import { useSessionAdditionalInformationsQuery } from "./hooks/queries/implementations/useSessionAdditionalInformationsQuery";
-import { MenuItemWithExtras } from "./hooks/pos/session/ICartSession";
 import { useNewOrderAudio } from "./hooks/useNewOrderAudio";
 
 export const Pos = () => {
@@ -72,11 +70,6 @@ export const Pos = () => {
         if(goToTab) {
             setActiveTab(ActiveTab.ItemSelection);
         }
-    }
-
-    const onItemAdded = (item: MenuItem | MenuItemWithExtras) => {
-        setSearchTxt("");
-        pos.cartSession.addItem(item, 1);
     }
 
     useEffect(() => {
@@ -205,19 +198,27 @@ export const Pos = () => {
                             hasChannelsWithSessions && activeTab == ActiveTab.ItemSelection &&
                             <ItemsSelector
                                 search={searchTxt}
-                                onItemSelect={onItemAdded}
+                                onItemSelect={item => {
+                                    setSearchTxt("");
+                                    pos.cartSession.addItem(item, 1);
+                                }}
                                 selectedCategoryId={selectedCategoryId}
-                                onCategoryChanged={(category) => setSelectedCategoryId(() => {
-                                    if(category === null) {
-                                        return null;
+                                onCategoryChanged={(category) => {
+                                    if(category !== null)  {
+                                        setSearchTxt("");
                                     }
+                                    setSelectedCategoryId(() => {
+                                        if(category === null) {
+                                            return null;
+                                        }
 
-                                    if(category === undefined) {
-                                        return undefined;
-                                    }
-                                    
-                                    return category.id;
-                                })}
+                                        if(category === undefined) {
+                                            return undefined;
+                                        }
+                                        
+                                        return category.id;
+                                    });
+                                }}
                             />
                         }
                         {

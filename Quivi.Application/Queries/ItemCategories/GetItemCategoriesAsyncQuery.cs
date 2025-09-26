@@ -12,6 +12,7 @@ namespace Quivi.Application.Queries.ItemCategories
         public IEnumerable<int>? MenuItemIds { get; init; }
         public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
+        public string? Search { get; init; }
         public string? Name { get; init; }
         public bool? IsDeleted { get; init; }
         public bool? HasItems { get; set; }
@@ -38,6 +39,7 @@ namespace Quivi.Application.Queries.ItemCategories
                 MenuItemIds = query.MenuItemIds,
                 ChannelIds = query.ChannelIds,
                 MerchantIds = query.MerchantIds,
+                Search = query.Search,
                 Name = query.Name,
                 IsDeleted = query.IsDeleted,
                 AvailableAt = query.AvailableAt,

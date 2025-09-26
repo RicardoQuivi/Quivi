@@ -19,6 +19,10 @@ export const useMenuCategoriesApi = () => {
             queryParams.set("hasItems", request.hasItems == true ? "true" : "false");
         }
         
+        if(request.search != undefined) {
+            queryParams.set("search", request.search);
+        }
+
         const url = new URL(`api/menucategories?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.get<GetMenuCategoriesResponse>(url, {});
     }

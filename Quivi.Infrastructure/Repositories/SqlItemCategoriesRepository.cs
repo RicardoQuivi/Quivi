@@ -40,6 +40,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.MerchantIds != null)
                 query = query.Where(x => criteria.MerchantIds.Contains(x.MerchantId));
 
+            if (!string.IsNullOrWhiteSpace(criteria.Search))
+                query = query.Where(x => EF.Functions.Collate(x.Name, "Latin1_General_CI_AI").Contains(criteria.Search));
+
             if (criteria.Name != null)
                 query = query.Where(x => x.Name.ToLower() == criteria.Name.ToLower());
 

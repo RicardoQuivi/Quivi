@@ -74,6 +74,13 @@ export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undef
                     }
                 }
 
+                if(request.search != undefined) {
+                    const matches = d.name.toLowerCase().includes(request.search.toLowerCase());
+                    if(matches == false) {
+                        return false;
+                    }
+                }
+                
                 return true;
             });
 
