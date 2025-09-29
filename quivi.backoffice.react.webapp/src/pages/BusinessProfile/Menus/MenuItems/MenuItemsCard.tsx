@@ -104,11 +104,13 @@ export const MenuItemsCard = (props: ItemsCardProps) => {
                     label: t("common.name"),
                     render: item => <>
                         <div className="flex items-center gap-3">
-                            <Avatar
-                                src={item.imageUrl}
-                                alt={item.name}
-                                size="large"
-                            />
+                            <div className="aspect-square">
+                                <Avatar
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    size="large"
+                                />
+                            </div>
                             <div>
                                 <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                     {item.name}

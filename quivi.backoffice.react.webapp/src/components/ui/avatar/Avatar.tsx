@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 interface AvatarProps {
     readonly src?: string | React.ReactElement;
     readonly alt: string;
@@ -48,7 +50,7 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
     const isStringSrc = typeof src === "string";
     const showFallback = !src;
-    const backgroundColor = showFallback ? getColorFromString(alt) : undefined;
+    const backgroundColor = useMemo(() => showFallback ? getColorFromString(alt) : undefined, [alt, src]);
     const firstLetter = alt.charAt(0).toUpperCase();
 
     return (
@@ -65,7 +67,7 @@ const Avatar: React.FC<AvatarProps> = ({
                     isStringSrc 
                     ?
                     <img src={src as string} alt={alt} className="object-cover w-full h-full rounded-full" />
-                    : // ReactComponent (like an imported SVG)
+                    :
                     <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
                         {src}
                     </div>
