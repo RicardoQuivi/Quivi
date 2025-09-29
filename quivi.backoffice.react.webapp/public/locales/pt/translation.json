@@ -646,7 +646,8 @@
             "chargeMethod": "Método de pagamento",
 
             "paybyrd": {
-                "apiKey": "Chave da Api"
+                "apiKey": "Chave da Api",
+                "terminalId": "Número de série do terminal"
             }
         },
         "transactions": {

@@ -44,15 +44,9 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                     break;
                 case ChargePartner.Paybyrd:
                     {
-                        var state = new Dictionary<ChargeMethod, object>
+                        Dictionary<ChargeMethod, object> state = new Dictionary<ChargeMethod, object>
                         {
-                            {
-                                model.ChargeMethod,
-                                new
-                                {
-                                    ApiKey = model.ApiKey,
-                                }
-                            }
+                            [model.ChargeMethod] = GetPaybyrdState(model),
                         };
                         result.Add(ChargePartner.Paybyrd, state);
                         break;
@@ -61,6 +55,24 @@ namespace Quivi.Backoffice.Api.MapperHandlers
                     throw new NotImplementedException();
             }
             return result;
+        }
+
+        private static object GetPaybyrdState(MerchantAcquirerConfiguration model)
+        {
+            if (model.ChargeMethod == ChargeMethod.PaymentTerminal)
+            {
+                return new
+                {
+                    ApiKey = model.ApiKey,
+                    TerminalId = model.TerminalId,
+                };
+            }
+
+            return new
+            {
+                ApiKey = model.ApiKey,
+            };
+
         }
     }
 }

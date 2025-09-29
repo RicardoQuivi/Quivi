@@ -74,7 +74,6 @@ export const PaybyrdCreditCardPaymentPage : React.FC<Props> = ({
         setup();
     }, []);
 
-
     const submit = async () => {
         if(cc == undefined) {
             return;
@@ -88,7 +87,7 @@ export const PaybyrdCreditCardPaymentPage : React.FC<Props> = ({
             }
 
             const fullUrl = `${window.location.origin}${location.pathname}#done`;
-            const response = await transactionMutator.processPaybyrd(transaction, {
+            const response = await transactionMutator.processPaybyrdCreditCard(transaction, {
                 tokenId: submissionResult.data.tokenId,
                 redirectUrl: fullUrl,
             });

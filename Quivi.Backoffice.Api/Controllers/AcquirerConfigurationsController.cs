@@ -80,6 +80,35 @@ namespace Quivi.Backoffice.Api.Controllers
             };
         }
 
+        [HttpPut("paybyrd/PaymentTerminal")]
+        public async Task<UpsertAcquirerConfigurationResponse> UpsertPaybyrdTerminal([FromBody] UpsertPaybyrdTerminalAcquirerConfigurationRequest request)
+        {
+            var result = await commandProcessor.Execute(new UpsertMerchantAcquirerConfigurationAsyncCommand
+            {
+                MerchantId = User.SubMerchantId(idConverter)!.Value,
+                ChargeMethod = ChargeMethod.PaymentTerminal,
+                ChargePartner = ChargePartner.Paybyrd,
+                UpdateAction = r =>
+                {
+                    if (string.IsNullOrWhiteSpace(request.ApiKey) == false)
+                        r.ApiKey = request.ApiKey;
+
+                    if (string.IsNullOrWhiteSpace(request.TerminalId) == false)
+                        r.TerminalId = request.TerminalId;
+
+                    if (request.IsActive.HasValue)
+                        r.Inactive = request.IsActive.Value == false;
+
+                    return Task.CompletedTask;
+                }
+            });
+
+            return new UpsertAcquirerConfigurationResponse
+            {
+                Data = mapper.Map<Dtos.AcquirerConfiguration>(result),
+            };
+        }
+
         [HttpPut("paybyrd/{name}")]
         public async Task<UpsertAcquirerConfigurationResponse> UpsertPaybyrd(ChargeMethod name, [FromBody] UpsertPaybyrdAcquirerConfigurationRequest request)
         {

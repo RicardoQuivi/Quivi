@@ -60,7 +60,7 @@ export const useTransactionsApi = () => {
         });
     }
 
-    const processPaybyrd = (id: string, request: ProcessPaybyrdChargeRequest) => {
+    const processPaybyrdCreditCard = (id: string, request: ProcessPaybyrdChargeRequest) => {
         const url = new URL(`api/transactions/${id}/Paybyrd/${ChargeMethod[request.method]}`, import.meta.env.VITE_API_URL).toString();
         return httpClient.httpPut<ProcessTransactionResponse>(url, request, {
             'Accept-Language': i18n.language,
@@ -72,7 +72,7 @@ export const useTransactionsApi = () => {
         getInvoice,
         create,
         processCash,
-        processPaybyrd,
+        processPaybyrdCreditCard,
     }), [httpClient, i18n, i18n.language]);
 
     return state;

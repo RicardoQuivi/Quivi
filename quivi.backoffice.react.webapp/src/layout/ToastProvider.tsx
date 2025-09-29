@@ -36,19 +36,21 @@ const showToast = (type: ToastType, title: string, message: string, options?: To
         autoClose: autoClose,
         className: '!p-0 !bg-transparent !shadow-none',
         hideProgressBar: true,
-        closeButton: <></>
+        closeButton: false,
     })
 };
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const { t } = useTranslation();
     return <>
-        <ToastContext.Provider value={{
-            success: (m, options) => showToast("success",t("common.toast.success"), m, options),
-            error: (m, options) => showToast("error", t("common.toast.error"), m, options),
-            info: (m, options) => showToast("info", t("common.toast.info"), m, options),
-            warning: (m, options) => showToast("warning", t("common.toast.warning"), m, options),
-        }}>
+        <ToastContext.Provider
+            value={{
+                success: (m, options) => showToast("success",t("common.toast.success"), m, options),
+                error: (m, options) => showToast("error", t("common.toast.error"), m, options),
+                info: (m, options) => showToast("info", t("common.toast.info"), m, options),
+                warning: (m, options) => showToast("warning", t("common.toast.warning"), m, options),
+            }}
+        >
             {children}
         </ToastContext.Provider>
         <ToastContainer

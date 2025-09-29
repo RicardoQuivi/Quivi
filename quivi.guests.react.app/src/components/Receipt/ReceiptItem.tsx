@@ -49,7 +49,7 @@ const ReceiptItemLine: React.FC<ReceiptItemLineProps> = ({
                         }
                         {
                             item.info != undefined &&
-                            <Chip label={<span>{item.info}</span>} variant="outlined" size="small" avatar={<>&nbsp;<InfoIcon color={theme.primaryColor.hex} /></>}/>
+                            <Chip label={item.info} variant="outlined" size="small" color="info" avatar={<InfoIcon color={theme.primaryColor.hex} />}/>
                         }
                     </Stack>
                     :

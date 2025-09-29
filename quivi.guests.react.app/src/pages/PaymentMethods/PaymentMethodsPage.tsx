@@ -113,6 +113,7 @@ export const PaymentMethodsPage = (props: Props) => {
                 navigate(`/c/${channelContext.channelId}/session/pay/${chargeId}`)
             }
         } catch (err) {
+            toast.error(t("unexpectedError"));
             navigate(-2);
         }
     }

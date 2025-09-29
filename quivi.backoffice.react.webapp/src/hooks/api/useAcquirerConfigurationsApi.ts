@@ -6,6 +6,7 @@ import { UpsertCashAcquirerConfigurationRequest } from "./Dtos/acquirerconfigura
 import { useAuthenticatedHttpClient } from "../../context/AuthContext";
 import { UpsertPaybyrdAcquirerConfigurationRequest } from "./Dtos/acquirerconfigurations/UpsertPaybyrdAcquirerConfigurationRequest";
 import { ChargeMethod } from "./Dtos/ChargeMethod";
+import { UpsertPaybyrdTerminalAcquirerConfigurationRequest } from "./Dtos/acquirerconfigurations/UpsertPaybyrdTerminalAcquirerConfigurationRequest";
 
 export const useAcquirerConfigurationsApi = () => {
     const client = useAuthenticatedHttpClient();
@@ -31,10 +32,16 @@ export const useAcquirerConfigurationsApi = () => {
         return client.put<UpsertAcquirerConfigurationResponse>(url, request, {});
     }
 
+    const upsertPaybyrdTerminal = (request: UpsertPaybyrdTerminalAcquirerConfigurationRequest) => {
+        const url = new URL(`api/acquirerConfigurations/paybyrd/${ChargeMethod[ChargeMethod.PaymentTerminal]}`, import.meta.env.VITE_API_URL).toString();
+        return client.put<UpsertAcquirerConfigurationResponse>(url, request, {});
+    }
+
     const state = useMemo(() => ({
         get,
         upsertCash,
         upsertPaybyrd,
+        upsertPaybyrdTerminal,
     }), [client]);
 
     return state;

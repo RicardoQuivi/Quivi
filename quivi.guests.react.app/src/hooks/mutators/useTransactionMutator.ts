@@ -44,7 +44,7 @@ export const useTransactionMutator = () => {
         }
     })
 
-    const processPaybyrdMutator = useMutator({
+    const processPaybyrdCreditCardMutator = useMutator({
         entityType: getEntityType(Entity.Transactions),
         getKey: (e: ExtendedTransaction) => e.id,
         updateCall: async (mutator: PaybyrdProcessMutator, entities: ExtendedTransaction[]) => {
@@ -54,7 +54,7 @@ export const useTransactionMutator = () => {
                     throw new Error();
                 }
 
-                const response = await api.processPaybyrd(entity.id, {
+                const response = await api.processPaybyrdCreditCard(entity.id, {
                     ...mutator,
                     method: entity.method,
                 });
@@ -76,14 +76,14 @@ export const useTransactionMutator = () => {
             const result = await processCashMutator.mutate([entity], {});
             return result.response[0];
         },
-        processPaybyrd: async (entity: Transaction, data: PaybyrdProcessMutator) => {
-            const result = await processPaybyrdMutator.mutate([entity], data);
+        processPaybyrdCreditCard: async (entity: Transaction, data: PaybyrdProcessMutator) => {
+            const result = await processPaybyrdCreditCardMutator.mutate([entity], data);
             const rEntity = result.response[0];
             return {
                 entity: rEntity as Transaction,
                 threeDsUrl: rEntity.threeDsUrl,
             };
-        }
+        },
     }), [api]);
     
     return result;

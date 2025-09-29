@@ -108,7 +108,7 @@ namespace Quivi.Application.Services.Acquirers.Paybyrd
                 });
         }
 
-        protected static string GetApiKey(Charge charge) => charge.MerchantAcquirerConfiguration?.ApiKey ?? throw new Exception("Api Key is not set for the charge.");
+        protected static string GetApiKey(Charge charge) => charge.MerchantAcquirerConfiguration?.ApiKey ?? throw new Exception($"{nameof(MerchantAcquirerConfiguration.ApiKey)} is not set for the charge.");
         private static string? GetAcquirerId(Charge charge) => charge.AcquirerCharge?.AcquirerId;
         private string GetWebwookUrl() => appHostsSettings.Background.CombineUrl($"/api/paybyrd");
     }

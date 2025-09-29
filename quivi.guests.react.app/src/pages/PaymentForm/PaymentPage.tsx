@@ -10,6 +10,7 @@ import { TransactionStatus } from "../../hooks/api/Dtos/transactions/Transaction
 import { CashPaymentPage } from "./Methods/CashPaymentPage";
 import { PaybyrdCreditCardPaymentPage } from "./Methods/Paybyrd/PaybyrdCreditCardPaymentPage";
 import { PaybyrdMbWayPaymentPage } from "./Methods/Paybyrd/PaybyrdMbWayPaymentPage";
+import TerminalPaymentPage from "./Methods/TerminalPaymentPage";
 
 interface Props {
     readonly onSuccess?: (c: Transaction) => any;
@@ -96,12 +97,19 @@ export const PaymentPage = (props: Props) => {
         />
     }
 
-    if( transaction.method == ChargeMethod.CreditCard) {
+    if(transaction.method == ChargeMethod.CreditCard) {
          return <PaybyrdCreditCardPaymentPage
             transaction={transaction}
             nextTransaction={nextTransaction}
             onSuccess={onInternalSuccess}
             onFail={onInternalFail}
+        />
+    }
+
+    if(transaction.method == ChargeMethod.PaymentTerminal) {
+         return <TerminalPaymentPage
+            transaction={transaction}
+            nextTransaction={nextTransaction}
         />
     }
 

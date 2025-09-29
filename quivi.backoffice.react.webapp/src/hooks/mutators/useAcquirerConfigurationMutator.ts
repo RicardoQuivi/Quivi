@@ -5,6 +5,7 @@ import { useAcquirerConfigurationsApi } from "../api/useAcquirerConfigurationsAp
 import { UpsertCashAcquirerConfigurationRequest } from "../api/Dtos/acquirerconfigurations/UpsertCashAcquirerConfigurationRequest";
 import { AcquirerConfiguration } from "../api/Dtos/acquirerconfigurations/AcquirerConfiguration";
 import { UpsertPaybyrdAcquirerConfigurationRequest } from "../api/Dtos/acquirerconfigurations/UpsertPaybyrdAcquirerConfigurationRequest";
+import { UpsertPaybyrdTerminalAcquirerConfigurationRequest } from "../api/Dtos/acquirerconfigurations/UpsertPaybyrdTerminalAcquirerConfigurationRequest";
 
 export const useAcquirerConfigurationMutator = () => {
     const api = useAcquirerConfigurationsApi();
@@ -27,6 +28,15 @@ export const useAcquirerConfigurationMutator = () => {
         }
     })
 
+    const upsertPaybyrdTerminal = useMutator({
+        entityType: getEntityType(Entity.AcquirerConfigurations),
+        getKey: (e: AcquirerConfiguration) => e.id,
+        updateCall: async (request: UpsertPaybyrdTerminalAcquirerConfigurationRequest) => {
+            const response = await api.upsertPaybyrdTerminal(request);
+            return [response.data];
+        }
+    })
+
     const result = useMemo(() => ({
         upsertCash: async (request: UpsertCashAcquirerConfigurationRequest) => {
             const result = await upsertCash.mutate([], request);
@@ -34,6 +44,10 @@ export const useAcquirerConfigurationMutator = () => {
         },
         upsertPaybyrd: async (request: UpsertPaybyrdAcquirerConfigurationRequest) => {
             const result = await upsertPaybyrd.mutate([], request);
+            return result.response;
+        },
+        upsertPaybyrdTerminal: async (request: UpsertPaybyrdTerminalAcquirerConfigurationRequest) => {
+            const result = await upsertPaybyrdTerminal.mutate([], request);
             return result.response;
         },
     }), [api]);

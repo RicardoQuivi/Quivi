@@ -382,7 +382,7 @@ namespace Quivi.Application.Extensions
 
             serviceColection.RegisterScoped<IEnumerable<IPosSyncStrategy>>(s =>
             {
-                List<IPosSyncStrategy> result = new List<IPosSyncStrategy>();
+                List<IPosSyncStrategy> result = new();
                 foreach (var implementation in implementations)
                     result.Add((IPosSyncStrategy)s.GetService(implementation)!);
                 return result;
@@ -396,10 +396,12 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterScoped<CashAcquirerProcessor>();
             serviceCollection.RegisterScoped<PaybyrdCreditCardAcquirerProcessor>();
             serviceCollection.RegisterScoped<PaybyrdMbWayAcquirerProcessor>();
+            serviceCollection.RegisterScoped<PaybyrdTerminalAcquirerProcessor>();
             serviceCollection.RegisterScoped<IEnumerable<IAcquirerProcessor>>(p => [
                 p.GetService<CashAcquirerProcessor>()!,
                 p.GetService<PaybyrdCreditCardAcquirerProcessor>()!,
                 p.GetService<PaybyrdMbWayAcquirerProcessor>()!,
+                p.GetService<PaybyrdTerminalAcquirerProcessor>()!,
             ]);
             return serviceCollection;
         }

@@ -45,12 +45,28 @@ export const AcquirerConfigurationFormPage = () => {
                 })
             }
         } else if(state.partner == ChargePartner.Paybyrd) {
-            if([ChargeMethod.CreditCard, ChargeMethod.MbWay].includes(state.method)) {
-                await mutator.upsertPaybyrd({
-                    method: state.method,
-                    apiKey: state.states[ChargePartner.Paybyrd][state.method].apiKey,
-                    isActive: state.isActive,
-                })
+            const data = state.states[ChargePartner.Paybyrd][state.method];
+            switch(state.method)
+            {
+                case ChargeMethod.CreditCard:
+                case ChargeMethod.MbWay:
+                    await mutator.upsertPaybyrd({
+                        method: state.method,
+                        apiKey: data.apiKey,
+                        isActive: state.isActive,
+                    });
+                    break;
+                case ChargeMethod.PaymentTerminal:
+                    if('terminalId' in data == false ) {
+                        throw new Error('This should never happen.');
+                    }
+
+                    await mutator.upsertPaybyrdTerminal({
+                        apiKey: data.apiKey,
+                        terminalId: data.terminalId,
+                        isActive: state.isActive,
+                    });
+                    break;
             }
         } else {
             throw new Error();

@@ -647,7 +647,8 @@
             "chargeMethod": "Charge method",
 
             "paybyrd": {
-                "apiKey": "Api Key"
+                "apiKey": "Api Key",
+                "terminalId": "Terminal serial number"
             }
         },
         "transactions": {

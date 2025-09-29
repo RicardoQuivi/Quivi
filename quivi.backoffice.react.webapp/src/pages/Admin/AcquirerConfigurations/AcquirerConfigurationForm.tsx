@@ -18,8 +18,11 @@ const schema = yup.object<AcquirerConfigurationFormState>({
 export interface PaybyrdState {
     readonly apiKey: string;
 }
+export interface PaybyrdTerminalState extends PaybyrdState {
+    readonly terminalId: string;
+}
 
-type States = PaybyrdState;
+type States = PaybyrdState | PaybyrdTerminalState;
 
 export interface AcquirerConfigurationFormState {
     readonly isActive: boolean;
@@ -27,6 +30,7 @@ export interface AcquirerConfigurationFormState {
     readonly partner: ChargePartner;
     readonly method: ChargeMethod;
 }
+
 const getState = (model: AcquirerConfiguration | undefined) => {
     const states = {} as Record<ChargePartner, Record<ChargeMethod, States>>;
     const partner = model?.partner ?? ChargePartner.Quivi;
@@ -36,9 +40,16 @@ const getState = (model: AcquirerConfiguration | undefined) => {
         let partnerSettings = model?.settings[ChargePartner[ChargePartner.Paybyrd]];
         let method = model?.method ?? ChargeMethod.MbWay;
         let settings = partnerSettings?.[ChargeMethod[method]];
-        let state: PaybyrdState = {
+        let state: PaybyrdState | PaybyrdTerminalState = {
             apiKey: settings?.apiKey ?? "",
         };
+
+        if(method == ChargeMethod.PaymentTerminal) {
+            let aux = state as any;
+            aux["terminalId"] = settings?.terminalId ?? "";
+            state = aux;
+        }
+
         let result = {} as Record<ChargeMethod, States>;
         result[method] = state;
         states[partner] = result;
@@ -56,7 +67,7 @@ const getOptions = (partner: ChargePartner) => {
     switch(partner)
     {
         case ChargePartner.Quivi: return [ChargeMethod.Cash];
-        case ChargePartner.Paybyrd: return [ChargeMethod.MbWay, ChargeMethod.CreditCard];
+        case ChargePartner.Paybyrd: return [ChargeMethod.MbWay, ChargeMethod.CreditCard, ChargeMethod.PaymentTerminal];
     }
     throw new Error("Not implemented");
 }
@@ -173,15 +184,29 @@ export const AcquirerConfigurationForm = (props: Props) => {
 interface PaybyrdFormProps {
     readonly partner: ChargePartner;
     readonly method: ChargeMethod;
-    readonly state?: Record<ChargeMethod, PaybyrdState>;
-    readonly onChange: (state: Record<ChargeMethod, PaybyrdState>) => any;
+    readonly state?: Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>;
+    readonly onChange: (state: Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>) => any;
 
 }
 const PaybyrdForm = (props: PaybyrdFormProps) => {
     const { t } = useTranslation();
     
-    const state = useMemo(() => props.state?.[props.method] ?? {
-        apiKey: "",
+    const state = useMemo<PaybyrdState | PaybyrdTerminalState>(() => {
+        const result = props.state?.[props.method];
+        if(result != undefined) {
+            return result;
+        }
+
+        if(props.method != ChargeMethod.PaymentTerminal) {
+            return {
+                apiKey: "",
+            }
+        }
+
+        return {
+            apiKey: "",
+            terminalId: "",
+        }
     }, [props.method, props.state])
 
     if(props.partner != ChargePartner.Paybyrd) {
@@ -194,7 +219,7 @@ const PaybyrdForm = (props: PaybyrdFormProps) => {
             type="text"
             value={state.apiKey ?? ""}
             onChange={(e) => {
-                const result = { ...(props.state ?? {}) } as Record<ChargeMethod, PaybyrdState>;
+                const result = { ...(props.state ?? {}) } as Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>;
                 result[props.method] = {
                     ...state,
                     apiKey: e,
@@ -202,5 +227,21 @@ const PaybyrdForm = (props: PaybyrdFormProps) => {
                 props.onChange(result);
             }}
         />
+        {
+            'terminalId' in state &&
+            <TextField
+                label={t("pages.acquirerConfigurations.paybyrd.terminalId")}
+                type="text"
+                value={state.terminalId ?? ""}
+                onChange={(e) => {
+                    const result = { ...(props.state ?? {}) } as Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>;
+                    result[props.method] = {
+                        ...state,
+                        terminalId: e,
+                    }
+                    props.onChange(result);
+                }}
+            />
+        }
     </div>
 }

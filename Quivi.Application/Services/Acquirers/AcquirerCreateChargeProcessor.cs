@@ -340,18 +340,16 @@ namespace Quivi.Application.Services.Acquirers
 
         private bool ValidatePayAtTheTablePayment(CreateParameters command, Session session)
         {
-            var items = session.GetValidOrderMenuItems().AsConvertedSessionItems();
-            var totals = items.Aggregate((total: 0.0M, totalPaid: 0.0M), (r, item) =>
+            var items = session.GetValidOrderMenuItems().AsPaidSessionItems();
+            var totals = items.Aggregate((Total: 0.0M, TotalPaid: 0.0M), (r, item) =>
             {
-                var first = item.Source.First();
-                var paidQuantity = item.Source.SelectMany(s => s.PosChargeInvoiceItems!).Sum(s => s.Quantity);
-
-                r.total += item.Quantity * item.Price;
-                r.totalPaid += paidQuantity * item.Price;
+                var unitPrice = item.GetUnitPrice();
+                r.Total += item.Quantity * unitPrice;
+                r.TotalPaid += item.PaidQuantity * unitPrice;
                 return r;
             });
 
-            var outstanding = totals.total - totals.totalPaid;
+            var outstanding = totals.Total - totals.TotalPaid;
 
             var unmatchedAmount = command.Amount - outstanding;
             if (unmatchedAmount > 0)

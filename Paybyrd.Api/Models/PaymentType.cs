@@ -3,5 +3,6 @@
     public enum PaymentType
     {
         Card,
+        POS,
     }
 }
