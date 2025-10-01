@@ -2,9 +2,9 @@
 import { useTranslation } from 'react-i18next';
 import { useQuiviTheme } from '../../hooks/theme/useQuiviTheme';
 import { Alert, Rating } from '@mui/material';
-import { LoadingAnimation } from '../../components/LoadingAnimation/LoadingAnimation';
 import { StarIcon, StarOutlineIcon } from '../../icons';
 import { useReviewMutator } from '../../hooks/mutators/useReviewMutator';
+import LoadingButton from '../../components/Buttons/LoadingButton';
 
 interface Props {
     readonly transactionId: string,
@@ -71,23 +71,19 @@ export const Review = (props: Props) => {
                         </Alert>
                     }
                 </div>
+                <LoadingButton
+                    isLoading={state.isLoading}
+                    type="submit"
+                    className="mt-6"
+                    disabled={state.stars < 4 && state.textReview.length == 0}
+                >
+                    {t("review.send")}
+                </LoadingButton>
                 {
-                    state.isLoading
-                    ?
-                    <div className="loader-container">
-                        <LoadingAnimation />
-                        <p>{t("review.sending")}</p>
-                    </div>
-                    :
-                    <>
-                        <input type="submit" className={`primary-button mt-6 ${state.stars < 4 && state.textReview.length == 0 ? "disabled" : ""}`} value={t("review.send")} />
-                        {
-                            state.reviewError &&
-                            <Alert variant="outlined" severity="warning">
-                                {t("review.reviewErrorMessage")}
-                            </Alert>
-                        }
-                    </>
+                    state.reviewError &&
+                    <Alert variant="outlined" severity="warning">
+                        {t("review.reviewErrorMessage")}
+                    </Alert>
                 }
             </form>
         </div>

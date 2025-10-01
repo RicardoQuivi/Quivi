@@ -193,7 +193,11 @@ export const CartPage = () => {
 
     return <Page
         title={t("cart.title")}
-        headerProps={{hideCart: true}}
+        headerProps={{
+            ordering: {
+                hideCart: true,
+            }
+        }}
         footer={getFooter()}
     >
         { 

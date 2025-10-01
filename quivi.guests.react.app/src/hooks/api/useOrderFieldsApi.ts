@@ -12,7 +12,7 @@ export const useOrderFieldsApi = () => {
         const queryParams = new URLSearchParams();
         queryParams.set(`channelId`, request.channelId);
         const url = new URL(`api/OrderFields?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetOrderFieldsResponse>(url, {
+        return httpClient.get<GetOrderFieldsResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

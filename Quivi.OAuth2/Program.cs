@@ -15,7 +15,7 @@ namespace Quivi.OAuth2
 
             builder.Services.AddCors(options =>
             {
-                var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Enumerable.Empty<string>();
+                var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
                 options.AddPolicy("CorsPolicy", builder =>
                 {
                     builder

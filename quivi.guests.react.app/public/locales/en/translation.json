@@ -60,7 +60,9 @@
     "description": "With a Quivi account you can save your billing details and speed up future payments!",
     "register": "Register",
     "alreadyHasAccount": "Already have an account?",
-    "login": "Login"
+    "login": "Login",
+    "confirmationPending": "Almost there!",
+    "confirmationPendingDescription": "Access your email and follow the steps to activate your account."
   },
 
   "resetPassword": {
@@ -79,8 +81,16 @@
   },
 
   "confirmEmail": {
-    "title": "Almost there!",
-    "description": "Access your email and follow the steps to activate your account."
+    "title": "Confirming email",
+    "confirmingYourEmail": "Confirming your email",
+    "confirmingYourEmailDescription": "Please stand by while we confirm your email address. After confirmation, you will be able to sign in and access Quivi.",
+    "confirmed": "Your email was confirmed!",
+    "confirmedDescription": "You can now have full access to benefits of using Quivi! Login below to continue.",
+    "tokenExpired": "Expired",
+    "tokenExpiredDescription": "Your email could not be confirmed since the link already expired. We sent you another fresh link. Please check your inbox for another link.",
+    "resendConfirmation": "Send another confirmation email",
+    "resendAwait": "Await to send another",
+    "login": "Login"
   },
 
   "forgotPassword": {
@@ -414,16 +424,7 @@
     "CH001": "Some items might not be available for payment anymore. Please select different items to pay.",
     "CH003": "The amount available for payment has changed recently. Please try again with a different amount."
   },
-
-  "qrCodeCategory": {
-    "0": "Table",
-    "1": "Card",
-    "2": "Room",
-    "3": "Studio",
-    "4": "",
-    "5": "Beach Hut"
-  },
-
+  
   "digitalMenu": {
     "cartItemAdded": "New item in Order",
     "unavailable": "Unavailable",

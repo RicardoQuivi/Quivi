@@ -5,6 +5,7 @@ using Quivi.Backoffice.Api.Requests.Users;
 using Quivi.Backoffice.Api.Responses.Users;
 using Quivi.Backoffice.Api.Validations;
 using Quivi.Infrastructure.Abstractions.Cqrs;
+using Quivi.Infrastructure.Abstractions.Events.Data.Users;
 using Quivi.Infrastructure.Validations;
 
 namespace Quivi.Backoffice.Api.Controllers
@@ -28,6 +29,7 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 Email = request.Email,
                 Password = request.Password,
+                UserType = UserAppType.Backoffice,
 
                 OnEmailAlreadyExists = () => validator.AddError(m => m.Email, ValidationError.InvalidEmail),
                 OnInvadidEmail = () => validator.AddError(m => m.Email, ValidationError.InvalidEmail),
@@ -52,6 +54,7 @@ namespace Quivi.Backoffice.Api.Controllers
             {
                 Email = request.Email,
                 Code = request.Code,
+                UserType = UserAppType.Backoffice,
 
                 OnCodeExpired = () => validator.AddError(p => p.Code, ValidationError.Expired),
             });
@@ -69,6 +72,7 @@ namespace Quivi.Backoffice.Api.Controllers
             await commandProcessor.Execute(new ForgotUserPasswordAsyncCommand
             {
                 Email = request.Email,
+                UserType = UserAppType.Backoffice,
             });
 
             return new ForgotUserPasswordResponse

@@ -16,7 +16,7 @@ export const usePaymentMethodsApi = () => {
         }
 
         const url = new URL(`api/paymentmethods/${request.channelId}?${queryParams.toString()}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetPaymentMethodsResponse>(url, {
+        return httpClient.get<GetPaymentMethodsResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

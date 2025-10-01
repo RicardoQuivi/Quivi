@@ -7,31 +7,29 @@ interface Props {
     readonly username?: string,
 }
 
-const getImage = (url: string, onLoad: () => any): HTMLImageElement => {
-    const image = new Image();
-    image.onload = onLoad;
-    image.src = url;
-    return image;
-}
+const loadImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = (err) => reject(err);
+    img.src = url;
+});
 
-const MerchantHeader: React.FC<Props> = ({
-    logo,
-    username,
-}) => {    
+const MerchantHeader: React.FC<Props> = (props: Props) => {    
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(true);
     const [image, setImage] = useState<HTMLImageElement>();
 
     useEffect(() => {
-        setIsLoading(true);
-        setImage(getImage(logo, () => setIsLoading(false)));
-    }, [logo])
+        setImage(undefined);
+        loadImage(props.logo).then(setImage)
+    }, [props.logo])
+
+    const isLoading = image == undefined;
 
     return (
         <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", height: "100%"}}>
             {
-                username != undefined && username != "" &&
-                <h2 style={{fontWeight: 400}}>{t("home.hello")}&nbsp;<span className="semi-bold">{username}</span></h2>
+                !!props.username &&
+                <h2 style={{fontWeight: 400}}>{t("home.hello")}&nbsp;<span className="semi-bold">{props.username}</span></h2>
             }
             <div style={{
                     width: "100%", 
@@ -42,7 +40,7 @@ const MerchantHeader: React.FC<Props> = ({
                     flex: "1 1",
                     margin: "1rem 0",
 
-                    backgroundImage: isLoading || image == undefined ? undefined : `url(${image.src})`,
+                    backgroundImage: isLoading ? undefined : `url(${image.src})`,
                     backgroundSize: "contain",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",
@@ -52,5 +50,4 @@ const MerchantHeader: React.FC<Props> = ({
         </div>
     );
 };
-
 export default MerchantHeader;

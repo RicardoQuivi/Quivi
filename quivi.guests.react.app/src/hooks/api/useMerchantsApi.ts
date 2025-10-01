@@ -7,7 +7,7 @@ export const useMerchantsApi = () => {
     
     const get = (merchantId: string) => {
         const url = new URL(`api/merchants/${merchantId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMerchantResponse>(url);
+        return httpClient.get<GetMerchantResponse>(url);
     }
 
     const state = useMemo(() => ({

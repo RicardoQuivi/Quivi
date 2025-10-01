@@ -34,35 +34,35 @@ export const useTransactionsApi = () => {
         }
 
         const url = new URL(`api/transactions?${queryParams.toString()}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetTransactionsResponse>(url, {
+        return httpClient.get<GetTransactionsResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }
 
     const getInvoice = (id: string) => {
         const url = new URL(`api/transactions/${id}/invoices`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetTransactionInvoicesResponse>(url, {
+        return httpClient.get<GetTransactionInvoicesResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }
 
     const create = (request: CreateTransactionRequest) => {
         const url = new URL(`api/transactions`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateTransactionResponse>(url, request, {
+        return httpClient.post<CreateTransactionResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }
 
     const processCash = (id: string) => {
         const url = new URL(`api/transactions/${id}/Cash`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPut<ProcessTransactionResponse>(url, {}, {
+        return httpClient.put<ProcessTransactionResponse>(url, {}, {
             'Accept-Language': i18n.language,
         });
     }
 
     const processPaybyrdCreditCard = (id: string, request: ProcessPaybyrdChargeRequest) => {
         const url = new URL(`api/transactions/${id}/Paybyrd/${ChargeMethod[request.method]}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPut<ProcessTransactionResponse>(url, request, {
+        return httpClient.put<ProcessTransactionResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }

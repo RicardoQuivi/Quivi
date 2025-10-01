@@ -8,7 +8,9 @@ import { AuthProvider } from './context/AuthContext.tsx'
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/styles';
 
-const theme = createTheme({});
+const theme = createTheme({
+  
+});
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider theme={theme}>
     <AuthProvider>

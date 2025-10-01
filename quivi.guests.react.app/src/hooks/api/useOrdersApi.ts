@@ -34,28 +34,28 @@ export const useOrdersApi = () => {
         }
         
         const url = new URL(`api/orders?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetOrdersResponse>(url, {
+        return httpClient.get<GetOrdersResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }
 
     const create = (request: CreateOrderRequest) => {
         const url = new URL(`api/orders`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<CreateOrderResponse>(url, request, {
+        return httpClient.post<CreateOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }
 
     const update = (request: UpdateOrderRequest) => {
         const url = new URL(`api/orders`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPut<UpdateOrderResponse>(url, request, {
+        return httpClient.put<UpdateOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }
 
     const submit = (request: SubmitOrderRequest) => {
         const url = new URL(`api/orders/${request.id}/submit`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPost<SubmitOrderResponse>(url, request, {
+        return httpClient.post<SubmitOrderResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }

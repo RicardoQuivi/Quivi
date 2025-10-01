@@ -94,8 +94,9 @@ namespace Quivi.OAuth2.Controllers
             var refreshToken = request.RefreshToken() ?? "";
             var rawMerchantId = request.MerchantId();
             string? merchantId = string.IsNullOrWhiteSpace(rawMerchantId) ? null : rawMerchantId;
+            var audience = request.ClientId ?? "backoffice";
 
-            var tokenIdentity = await GetClaimsPrincipalFromToken(refreshToken);
+            var tokenIdentity = await GetClaimsPrincipalFromToken(refreshToken, audience);
             if (tokenIdentity == null)
                 return BadRequest();
 
@@ -131,7 +132,7 @@ namespace Quivi.OAuth2.Controllers
             var subjectToken = request.SubjectToken() ?? "";
             var tokenType = request.SubjectType() ?? "";
 
-            var tokenIdentity = await GetClaimsPrincipalFromToken(subjectToken);
+            var tokenIdentity = await GetClaimsPrincipalFromToken(subjectToken, "backoffice");
             if (tokenIdentity == null)
                 return BadRequest();
 
@@ -222,6 +223,8 @@ namespace Quivi.OAuth2.Controllers
             var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, QuiviClaims.Email, QuiviClaims.Role);
             identity.SetClaim(QuiviClaims.UserId, idConverter.ToPublicId(user.Id));
             identity.SetClaim(QuiviClaims.Email, user.Email);
+            if (string.IsNullOrWhiteSpace(user.FullName) == false)
+                identity.SetClaim(QuiviClaims.Name, user.FullName);
 
             await SetRoles(identity, user);
             await identityFunc(identity);
@@ -248,13 +251,13 @@ namespace Quivi.OAuth2.Controllers
             return user;
         }
 
-        private async Task<IPrincipal?> GetClaimsPrincipalFromToken(string token)
+        private async Task<IPrincipal?> GetClaimsPrincipalFromToken(string token, string audience)
         {
             var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             if (!result.Succeeded)
                 return null;
 
-            var identity = await GetIdentity(token, "backoffice");
+            var identity = await GetIdentity(token, audience);
             return identity;
         }
 

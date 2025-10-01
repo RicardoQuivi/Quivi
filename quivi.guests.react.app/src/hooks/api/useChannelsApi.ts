@@ -7,7 +7,7 @@ export const useChannelsApi = () => {
     
     const get = (channelId: string) => {
         const url = new URL(`api/channels/${channelId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetChannelResponse>(url);
+        return httpClient.get<GetChannelResponse>(url);
     }
 
     const state = useMemo(() => ({

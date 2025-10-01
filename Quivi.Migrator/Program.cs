@@ -161,6 +161,28 @@ namespace Quivi.Migrator
                     }
                 });
             }
+
+            var guestsApp = await appManager.FindByClientIdAsync("guests");
+            if (guestsApp is null)
+            {
+                await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "guests",
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Introspection,
+
+                        Permissions.Endpoints.Token,
+
+                        // Enable these based on your grant type
+                        Permissions.GrantTypes.Password,
+                        Permissions.GrantTypes.RefreshToken,
+
+                        // Allow requesting scopes (optional)
+                        Permissions.Prefixes.Scope + "api",
+                    }
+                });
+            }
         }
     }
 }

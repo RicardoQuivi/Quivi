@@ -11,7 +11,7 @@ namespace Quivi.Application.Commands.Users
     {
         public required string Email { get; init; }
         public required string Code { get; init; }
-
+        public required UserAppType UserType { get; init; }
         public required Action OnCodeExpired { get; init; }
     }
 
@@ -54,6 +54,7 @@ namespace Quivi.Application.Commands.Users
             {
                 Id = user.Id,
                 Code = code,
+                Type = command.UserType,
             });
             command.OnCodeExpired();
         }

@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const authApi = useAuthApi();
     const { t } = useTranslation();
 
-    const [state, setState] = useState(getState());
+    const [state, setState] = useState(() => getState());
     const [expiresAt, setExpiresAt] = useState<number>();
 
     const signIn = async (email: string, password: string) => {
@@ -153,17 +153,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [expiresAt])
     
     return (
-        <AuthContext.Provider value={{
-            token: state?.accessToken,
-            signIn,
-            signOut,
-            user:  state == undefined ? undefined : {
-                isAdmin: state.isAdmin,
-                email: state.email,
-                username: state.email,
-                vatNumber: state.vatNumber,
-            },
-        }}>
+        <AuthContext.Provider
+            value={{
+                token: state?.accessToken,
+                signIn,
+                signOut,
+                user:  state == undefined ? undefined : {
+                    isAdmin: state.isAdmin,
+                    email: state.email,
+                    username: state.name,
+                    vatNumber: state.vatNumber,
+                },
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -181,10 +183,11 @@ interface DecodedToken {
     readonly aud: string;
     readonly exp: number;
     readonly email: string;
+    readonly name?: string;
     readonly sub: string;
     readonly iss: string;
     readonly jti: string;
-    readonly role: string[];
+    readonly role?: string[];
     readonly vat?: string;
 }
 class TokenData {
@@ -197,6 +200,7 @@ class TokenData {
     public readonly expire: number;
     public readonly userId: string;
     public readonly email: string;
+    public readonly name: string;
     public readonly isAdmin: boolean;
     public readonly vatNumber?: string;
 
@@ -213,6 +217,7 @@ class TokenData {
         this.email = decoded.email;
         this.issuer = decoded.iss;
         this.vatNumber = decoded.vat;
-        this.isAdmin = decoded.role.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
+        this.name = decoded.name ?? this.email;
+        this.isAdmin = decoded.role?.find(p => ["Admin", "SuperAdmin"].includes(p)) != undefined;
     }
 }

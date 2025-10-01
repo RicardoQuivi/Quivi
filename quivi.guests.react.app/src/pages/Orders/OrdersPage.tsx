@@ -41,7 +41,7 @@ export const OrdersPage = () => {
                                 sx={{
                                     cursor: "pointer",
                                     margin: "15px 0",
-                                    "-webkit-tap-highlight-color": "transparent",
+                                    WebkitTapHighlightColor: "transparent",
                                 }}
                                 onClick={() => navigate(`/c/${o.channelId}/orders/${o.id}/track`)}
                             >

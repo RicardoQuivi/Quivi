@@ -12,7 +12,7 @@ export const useJobsApi = () => {
         const queryParams = new URLSearchParams();
         request.ids.filter(id => !!id).forEach((id, i) => queryParams.set(`ids[${i}]`, id));       
         const url = new URL(`api/jobs?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetJobsResponse>(url, {
+        return httpClient.get<GetJobsResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

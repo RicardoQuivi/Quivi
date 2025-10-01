@@ -3,5 +3,8 @@
     public enum ValidationError
     {
         Invalid,
+        InvalidEmail,
+        InvalidPassword,
+        Expired,
     }
 }

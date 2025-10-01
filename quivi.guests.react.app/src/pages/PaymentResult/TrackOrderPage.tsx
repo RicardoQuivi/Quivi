@@ -118,7 +118,12 @@ export const TrackOrderPage = () => {
 
     return <Page 
         title={orderQuery.isFirstLoading == false && orderQuery.data.length > 1 ? t("orderAndPayResult.title") : undefined}
-        headerProps={{ hideCart: true, hideOrder: true }} 
+        headerProps={{ 
+            ordering: {
+                hideCart: true, 
+                hideOrder: true,
+            }
+        }} 
         footer={getFooter()}
     >
         { 

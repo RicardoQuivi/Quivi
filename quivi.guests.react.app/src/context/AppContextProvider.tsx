@@ -80,16 +80,25 @@ interface ChannelContextType {
     readonly posIntegrationId: string;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+const AppContext = createContext<AppContextType | null>(null);
 
 const hasFlag = (features: ChannelFeature, f: ChannelFeature): boolean => (features & f) == f;
 
 export const AppContextProvider = (props: {
     readonly children: React.ReactNode;
 }) => {
-    const { id: channelId } = useParams<{ id: string}>();
-
+    const { id: urlChannelId } = useParams<{ id: string }>();
     const browserStorageService = useBrowserStorageService();
+
+    const channelId = useMemo(() => {
+        if(urlChannelId != undefined) {
+            return urlChannelId;
+        }
+
+        const savedChannelId = browserStorageService.getChannelId();
+        return savedChannelId ?? undefined;
+    }, [urlChannelId])
+
     const webEvents = useWebEvents();
     const invalidator = useInvalidator();
 
@@ -112,18 +121,6 @@ export const AppContextProvider = (props: {
 
         browserStorageService.saveChannelId(channel.id);
     }, [channel])
-
-    useEffect(() => {
-        init();
-    }, [])
-
-    const init = async () => {
-        const emailConfirmed = new URLSearchParams(location.search.toLowerCase()).has('register');
-        if (emailConfirmed) {
-            window.location.replace("/login?confirmed=true");
-            return;
-        }
-    }
 
     const result = useMemo<AppContextType | undefined | null>(() => {
         if(channelId == undefined) {
@@ -222,7 +219,7 @@ export const AppContextProvider = (props: {
         return () => webEvents.client.removeMerchantListener(listener);
     }, [webEvents.client, result?.merchant.id])
 
-    if(result == undefined) {
+    if(result === undefined) {
         return <SplashScreen />;
     }
 
@@ -238,12 +235,12 @@ export const useAppContext = (): ChannelContextType | null => {
     if(context === undefined) {
         throw Error("useAppContext can only be used inside AppContextProvider");
     }
-    return context.context;
+    return context?.context ?? null;
 };
 
 export const useChannelContext = (): ChannelContextType => {
     const context = useContext(AppContext);
-    if(context === undefined) {
+    if(context === null) {
         throw Error("useChannelContext requires a channel");
     }
     return context.context;
@@ -251,7 +248,7 @@ export const useChannelContext = (): ChannelContextType => {
 
 export const useCurrentMerchant = (): Merchant => {
     const context = useContext(AppContext);
-    if(context === undefined) {
+    if(context === null) {
         throw Error("useCurrentMerchant requires a channel");
     }
     return context.merchant;
@@ -259,7 +256,7 @@ export const useCurrentMerchant = (): Merchant => {
 
 export const useCurrentPosIntegration = (): PosIntegration => {
     const context = useContext(AppContext);
-    if(context === undefined) {
+    if(context === null) {
         throw Error("useCurrentPosIntegration requires a channel");
     }
     return context.integration;

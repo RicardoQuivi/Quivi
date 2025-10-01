@@ -45,20 +45,18 @@ const svgToDataUrl = (svgElement: JSX.Element) => {
     return `url("data:image/svg+xml,${encodedData}")`;
 };
 
-interface Props {
+export interface NavActionsOrderingProps {
     readonly hideOrder?: boolean;
     readonly hideCart?: boolean;
+}
+interface Props {
+    readonly ordering: NavActionsOrderingProps | false;
     readonly hideFlag?: boolean;
 }
-export const NavActions: React.FC<Props> = ({
-    hideOrder,
-    hideCart,
-    hideFlag,
-}) => {
+export const NavActions = (props: Props) => {
     const theme = useQuiviTheme();
     const location = useLocation();
-    const navigate = useNavigate();
-    const cart = useCart();
+
     const { t, i18n } = useTranslation();
 
     const channelContext = useChannelContext();
@@ -68,92 +66,18 @@ export const NavActions: React.FC<Props> = ({
     const userInitial = auth.user?.username.slice(0, 1).toUpperCase();
     const isAuth = auth.user != undefined;
 
-    const ordersContext = useOrdersContext();
-
     const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const currentFlagBackground = useMemo(() => svgToDataUrl(<CountryIcon language={i18n.language}/>), [i18n.language])
 
-    const onOrderClick = () => {
-        if(ordersContext.data.length == 1) {
-            const order = ordersContext.data[0];
-            navigate(`/c/${order.channelId}/orders/${order.id}/track`)
-            return;
-        }
-        navigate(`/c/${channelContext.channelId}/orders`);
-    };
-
-    const onCartClick = () => navigate(`/c/${channelContext.channelId}/cart`);
-
-    const shouldDisplayOrder = () => {
-        if(hideOrder == true) {
-            return false;
-        }
-
-        if(features.physicalKiosk == true) {
-            return false;
-        }
-
-        if(ordersContext.data.length == 1) {
-            const order = ordersContext.data[0];
-            if(order.state == OrderState.Draft) {
-                return false;
-            }
-
-            if(order.state == OrderState.Completed) {
-                return false;
-            }
-
-            if(order.state == OrderState.Rejected) {
-                return false;
-            }
-        }
-
-        return ordersContext.data.length > 0;
-    }
-
     return <>
         <Stack direction="row" spacing={1}>
-             {
-                shouldDisplayOrder() &&
-                <button type="button" className="nav__menu nav__menu--live" style={{width: "auto", paddingLeft: "15px", paddingRight: "15px"}} onClick={onOrderClick}>
-                    <StyledBadge color="primary" overlap="rectangular" primarycolor={theme.primaryColor.hex}>
-                        <Trans
-                            t={t}
-                            i18nKey={ordersContext.data.length == 1 ? "navbar.seeOrder" : "navbar.seeOrders"}
-                            values={{
-                                count: ordersContext.data.length
-                            }}
-                            components={{
-                                b:  <b style={{marginRight: "0.25rem"}}/>,
-                            }}
-                        />
-                    </StyledBadge>
-                </button>
+            {
+                props.ordering !== false &&
+                <OrderingHeader {...props.ordering} />
             }
             {
-                features.ordering.isActive && cart.totalItems > 0 && hideCart != true &&
-                <button type="button" className="nav__menu nav__menu--not-auth" onClick={onCartClick}>
-                    <StyledBadge
-                        badgeContent={cart.totalItems}
-                        color="primary"
-                        overlap="rectangular"
-                        primarycolor={theme.primaryColor.hex}
-                        sx={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignContent: "center",
-                            justifyContent: "center",
-                            flexWrap: "wrap"
-                        }}
-                    >
-                        <CartIcon fill={theme.primaryColor.hex} width="60%" height="60%" />
-                    </StyledBadge>
-                </button>
-            }
-            {
-                hideFlag != false &&
+                props.hideFlag != false &&
                 <button
                     type="button"
                     className="nav__menu nav__menu--not-auth"
@@ -162,35 +86,31 @@ export const NavActions: React.FC<Props> = ({
                         backgroundImage: currentFlagBackground,
                         backgroundSize: 'cover',
                         backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center'
+                        backgroundPosition: 'center',
                     }}
                 />
             }
             {
                 features.physicalKiosk == false &&
-                <>
-                    {
-                        !isAuth 
+                (
+                    !isAuth 
+                    ?
+                        <button type="button" className="nav__menu nav__menu--not-auth" onClick={() => setMenuOpen(true)}>
+                            <ProfileIcon stroke={theme.primaryColor.hex} width="60%" height="60%" />
+                        </button>
+                    :
+                    (
+                        isUserAccount 
                         ?
-                            <button type="button" className="nav__menu nav__menu--not-auth" onClick={() => setMenuOpen(true)}>
-                                <ProfileIcon stroke={theme.primaryColor.hex} width="60%" height="60%" />
+                            <button type="button" className="nav__menu nav__menu--auth settings-icon" onClick={() => setMenuOpen(true)}>
+                                <SettingsIcon />
                             </button>
                         :
-                        <>
-                            {
-                                isUserAccount 
-                                ?
-                                    <button type="button" className="nav__menu nav__menu--auth settings-icon" onClick={() => setMenuOpen(true)}>
-                                        <SettingsIcon />
-                                    </button>
-                                :
-                                    <button type="button" className="nav__menu nav__menu--auth" onClick={() => setMenuOpen(true)}>
-                                        <span>{userInitial}</span>
-                                    </button>
-                            }
-                        </>
-                    }
-                </>
+                            <button type="button" className="nav__menu nav__menu--auth" onClick={() => setMenuOpen(true)}>
+                                <span>{userInitial}</span>
+                            </button>
+                    )
+                )
             }
         </Stack>
 
@@ -203,7 +123,7 @@ export const NavActions: React.FC<Props> = ({
                     </div>
                 </div>
                 {
-                    <Grid container spacing={2} className="mb-8" style={{}}>
+                    <Grid container spacing={2} className="mb-8">
                         {
                             languages.map(l =>
                                 <Grid
@@ -246,4 +166,93 @@ export const NavActions: React.FC<Props> = ({
         </Dialog>
         <ExpandedMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>;
+}
+
+const OrderingHeader = (props: NavActionsOrderingProps) => {
+    const { t } = useTranslation();
+    const theme = useQuiviTheme();
+    const navigate = useNavigate();
+    const ordersContext = useOrdersContext();
+    const channelContext = useChannelContext();
+    
+    const cart = useCart();
+
+    const shouldDisplayOrder = useMemo(() => {
+        if(props.hideOrder == true) {
+            return false;
+        }
+
+        if(channelContext.features.physicalKiosk == true) {
+            return false;
+        }
+
+        if(ordersContext.data.length == 1) {
+            const order = ordersContext.data[0];
+            if(order.state == OrderState.Draft) {
+                return false;
+            }
+
+            if(order.state == OrderState.Completed) {
+                return false;
+            }
+
+            if(order.state == OrderState.Rejected) {
+                return false;
+            }
+        }
+
+        return ordersContext.data.length > 0;
+    }, [ordersContext.data, props.hideOrder, channelContext.features])
+
+    const onOrderClick = () => {
+        if(ordersContext.data.length == 1) {
+            const order = ordersContext.data[0];
+            navigate(`/c/${order.channelId}/orders/${order.id}/track`)
+            return;
+        }
+        navigate(`/c/${channelContext.channelId}/orders`);
+    };
+
+    return <>
+    {
+        shouldDisplayOrder &&
+        <button type="button" className="nav__menu nav__menu--live" style={{width: "auto", paddingLeft: "15px", paddingRight: "15px"}} onClick={onOrderClick}>
+            <StyledBadge color="primary" overlap="rectangular" primarycolor={theme.primaryColor.hex}>
+                <Trans
+                    t={t}
+                    i18nKey={ordersContext.data.length == 1 ? "navbar.seeOrder" : "navbar.seeOrders"}
+                    values={{
+                        count: ordersContext.data.length
+                    }}
+                    components={{
+                        b: <b style={{marginRight: "0.25rem"}}/>,
+                    }}
+                />
+            </StyledBadge>
+        </button>
+    }
+    {
+        channelContext.features.ordering.isActive && 
+        cart.totalItems > 0 &&
+        props.hideCart != true &&
+        <button type="button" className="nav__menu nav__menu--not-auth" onClick={() => navigate(`/c/${channelContext.channelId}/cart`)}>
+            <StyledBadge
+                badgeContent={cart.totalItems}
+                color="primary"
+                overlap="rectangular"
+                primarycolor={theme.primaryColor.hex}
+                sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignContent: "center",
+                    justifyContent: "center",
+                    flexWrap: "wrap"
+                }}
+            >
+                <CartIcon fill={theme.primaryColor.hex} width="60%" height="60%" />
+            </StyledBadge>
+        </button>
+    }
+    </>
 }

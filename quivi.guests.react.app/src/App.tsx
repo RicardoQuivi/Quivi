@@ -21,6 +21,12 @@ import { PaySessionPage } from "./pages/PaymentForm/PaySessionPage";
 import { SessionChargeCompletedPage } from "./pages/PaymentResult/SessionChargeCompletedPage";
 import { OrdersPage } from "./pages/Orders/OrdersPage";
 import { OrderingContextProvider } from "./context/OrderingContextProvider";
+import RegisterPage from "./pages/Authentication/RegisterPage";
+import LoginPage from "./pages/Authentication/LoginPage";
+import { ConfirmEmailPage } from "./pages/Authentication/ConfirmEmailPage";
+import { ForgotPasswordPage } from "./pages/Authentication/ForgotPasswordPage";
+import { RecoverPasswordPage } from "./pages/Authentication/RecoverPasswordPage";
+import { UserHomePage } from "./pages/Authentication/UserHomePage";
 
 export const App = () => {
     const theme = useQuiviTheme();
@@ -38,8 +44,12 @@ export const App = () => {
                             <Route element={<AppContextsRoute/>}>
                                 <Route path="/scancode" element={<ScanQrCode />} />
 
-                                <Route path="/user/login" element={<></>} />
-                                <Route path="/user/profile" element={<></>} />
+                                <Route path="/user/register" element={<RegisterPage />} />
+                                <Route path="/user/confirm" element={<ConfirmEmailPage />} />
+                                <Route path="/user/login" element={<LoginPage />} />
+                                <Route path="/user/forgotpassword" element={<ForgotPasswordPage />} />
+                                <Route path="/user/home" element={<UserHomePage />} />
+                                <Route path="/user/recover" element={<RecoverPasswordPage />} />
 
                                 <Route element={<ChannelLayoutRoute />}>
                                     <Route path="/c/:id" element={<ChannelProfilePage />} />
@@ -88,11 +98,7 @@ export const App = () => {
 
 const AppContextsRoute = () => {
     return <AppContextProvider>
-        <OrderingContextProvider>
-            <StrictMode>
-                <Outlet />
-            </StrictMode>
-        </OrderingContextProvider>
+        <Outlet />
     </AppContextProvider>
 }
 
@@ -108,5 +114,11 @@ const ChannelLayoutRoute = () => {
         return <Navigate to={`/c/${appContext.channelId}`} replace />
     }
     
-    return <Outlet />
+    return (
+    <OrderingContextProvider>
+        <StrictMode>
+            <Outlet />
+        </StrictMode>
+    </OrderingContextProvider>
+    )
 }

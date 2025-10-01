@@ -180,7 +180,7 @@ export const SessionPaymentSuccess: React.FC<Props> = ({
                 review != undefined && 
                 <div className="container">
                     <Link to={`/c/${channelContext.channelId}`} className="secondary-button mb-4">{t("paymentResult.home")}</Link>
-                    <Link to="/user/profile" className="secondary-button">{t("paymentResult.seeAccount")}</Link>
+                    <Link to="/user/home" className="secondary-button">{t("paymentResult.seeAccount")}</Link>
                 </div>
             }
         </>

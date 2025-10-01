@@ -16,7 +16,6 @@ import { CloseIcon, InfoIcon } from "../../icons";
 import { MenuSelector } from "../../components/Menu/MenuSelector";
 import { Link, Navigate, useNavigate } from "react-router";
 import Receipt from "../../components/Receipt/Receipt";
-import { Modal } from "../../components/Shared/Modal";
 import { PaymentSplitter } from "../../helpers/paymentSplitter";
 import { useSessionsQuery } from "../../hooks/queries/implementations/useSessionsQuery";
 import { PosIntegrationState } from "../../hooks/api/Dtos/posIntegrations/PosIntegrationState";
@@ -305,7 +304,7 @@ export const SessionSummaryPage = () => {
                 />
             )
         }
-        <Modal
+        <Dialog
             onClose={() => setPaySplitModalIsOpen(prevState => !prevState)}
             isOpen={paySplitModalIsOpen}
         >
@@ -321,7 +320,7 @@ export const SessionSummaryPage = () => {
                 features.payAtTheTable.freePayment &&
                 <Link to={`/c/${channelContext.channelId}/session/pay/custom`} className="secondary-button">{t("pay.payCustomAmount")}</Link>
             }
-        </Modal>
+        </Dialog>
         <Dialog isOpen={notMyBillModalIsOpen} onClose={() => setNotMyBillModalIsOpen(false)} >
             <div className="container" style={{ paddingTop: "1.75rem", paddingBottom: "1.75rem" }}>
                 <div className="modal__header">

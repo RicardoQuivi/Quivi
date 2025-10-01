@@ -24,11 +24,13 @@ const StyledCircularProgress = styled(CircularProgress)(({
 type Props = {
     primaryButton?: boolean
     className?: string;
-    onClick: () => void | Promise<void>;
+    onClick?: () => void | Promise<void>;
     children: React.ReactNode;
     disabled?: boolean;
     style?: React.CSSProperties;
-    isLoading: boolean;
+    isLoading?: boolean;
+    type?: "button" | "submit";
+    form?: string;
 }
 
 const LoadingButton: React.FC<Props> = ({
@@ -38,7 +40,9 @@ const LoadingButton: React.FC<Props> = ({
     children,
     disabled,
     style,
-    isLoading
+    isLoading = false,
+    type,
+    form,
 }) => {
     const theme = useQuiviTheme();
     const spanRef = useRef<HTMLDivElement>(null);
@@ -53,10 +57,12 @@ const LoadingButton: React.FC<Props> = ({
     return (
         <button 
             disabled={isDisabled} 
-            type="button" 
+            form={form}
+            type={type}
             className={`${(primaryButton ?? true) ? `primary-button ${isDisabled ? "primary-button--inactive" : ""}` : `secondary-button ${isDisabled ? "secondary-button--inactive" : ""}`} ${className || ""}`} 
-            onClick={() => onClick()}
-            style={style}>
+            onClick={onClick}
+            style={style}
+        >
             <div style={{position: "relative", width: "100%", height: "100%"}}>
                 <div style={{visibility: isLoading ? "hidden" : "visible"}} ref={spanRef}>
                     {children}

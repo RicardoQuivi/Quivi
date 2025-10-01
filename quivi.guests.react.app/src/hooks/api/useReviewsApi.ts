@@ -12,14 +12,14 @@ export const useReviewsApi = () => {
 
     const get = (request: GetReviewRequest) => {
         const url = new URL(`api/reviews/${request.transactionId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetReviewResponse>(url, {
+        return httpClient.get<GetReviewResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }
 
     const patch = (request: PatchReviewRequest) => {
         const url = new URL(`api/reviews/${request.transactionId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpPatch<PatchReviewResponse>(url, request, {
+        return httpClient.patch<PatchReviewResponse>(url, request, {
             'Accept-Language': i18n.language,
         });
     }

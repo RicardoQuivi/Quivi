@@ -2,10 +2,10 @@ import { motion } from "framer-motion"
 import { pageTransition, pageVariants } from "../pages/transitions";
 import { TableNav } from "./Navbar/TableNav";
 import { Box } from "@mui/material";
+import type { NavActionsOrderingProps } from "./Navbar/NavActions";
 
 interface HeaderProps {
-    readonly hideCart?: boolean;
-    readonly hideOrder?: boolean;
+    readonly ordering: NavActionsOrderingProps | false;
     readonly hideFlag?: boolean;
 }
 
@@ -36,8 +36,16 @@ export const Page = ({
         >
             <TableNav
                 title={title}
-                hideCart={headerProps?.hideCart}
-                hideOrder={headerProps?.hideOrder}
+                ordering={(
+                    headerProps === undefined 
+                    ? 
+                    {
+                        hideCart: undefined,
+                        hideOrder: undefined,
+                    }
+                    :
+                    headerProps.ordering
+                )}
                 hideFlag={headerProps?.hideFlag}
             />
             <Box 

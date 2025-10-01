@@ -22,7 +22,7 @@ export const useMenuCategoriesApi = () => {
         }
         
         const url = new URL(`api/menuCategories?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMenuCategoriesResponse>(url, {
+        return httpClient.get<GetMenuCategoriesResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

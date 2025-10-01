@@ -30,24 +30,31 @@ namespace Quivi.Hangfire.EventHandlers
         public override async Task Run(OnUserForgotPasswordEvent message)
         {
             var applicationUser = await userManager.FindByIdAsync(message.Id.ToString());
-            if (applicationUser == null)
+            if (applicationUser?.Email == null)
                 throw new Exception("This should never happen. If it did, then an event for a non existent user was sent.");
 
             await emailService.SendAsync(new MailMessage
             {
-                ToAddress = applicationUser.Email!,
+                ToAddress = applicationUser.Email,
                 Subject = "Recuperar Password",
                 Body = emailEngine.ForgotPassword(new ForgotPasswordParameters
                 {
-                    Email = applicationUser.Email!,
-                    ResetPasswordUrl = $"{hostsSettings.Backoffice.TrimEnd('/')}/forgotPassword/reset?email={WebUtility.UrlEncode(applicationUser.Email)}&code={WebUtility.UrlEncode(message.Code)}",
+                    Email = applicationUser.Email,
+                    ResetPasswordUrl = GetUrl(message.UserType, applicationUser.Email, message.Code),
                 }),
             });
+        }
 
-            //TODO: Implement email razor
-            //_backgroundJobHandler.Enqueue(() => _emailService.SendForgot(user.Email,
-            //                                    _webConfigHelpers.GetMerchantEmailPasswordResetUrl(user.InternaId, code),
-            //                                    _webConfigHelpers.WebDashboardServerUrl));
+        private string GetUrl(UserAppType userType, string email, string code)
+        {
+            switch (userType)
+            {
+                case UserAppType.Backoffice: return $"{hostsSettings.Backoffice.TrimEnd('/')}/forgotPassword/reset?email={WebUtility.UrlEncode(email)}&code={WebUtility.UrlEncode(code)}";
+                case UserAppType.Guests: return $"{hostsSettings.GuestsApp.TrimEnd('/')}/user/recover?email={WebUtility.UrlEncode(email)}&code={WebUtility.UrlEncode(code)}";
+                default:
+                    break;
+            }
+            throw new NotImplementedException();
         }
     }
 }

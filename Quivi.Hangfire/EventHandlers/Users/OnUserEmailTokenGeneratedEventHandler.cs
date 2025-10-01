@@ -29,20 +29,35 @@ namespace Quivi.Hangfire.EventHandlers.Users
 
         public override async Task Run(OnUserEmailTokenGeneratedEvent message)
         {
+            if (message.Type.HasValue == false)
+                return;
+
             var applicationUser = await userManager.FindByIdAsync(message.Id.ToString());
-            if (applicationUser == null)
+            if (applicationUser?.Email == null)
                 throw new Exception("This should never happen. If it did, then an event for a non existent user was sent.");
 
             await emailService.SendAsync(new MailMessage
             {
-                ToAddress = applicationUser.Email!,
+                ToAddress = applicationUser.Email,
                 Subject = "Confirme o seu email",
                 Body = emailEngine.ConfirmEmail(new ConfirmEmailParameters
                 {
-                    Email = applicationUser.Email!,
-                    ConfirmUrl = $"{hostsSettings.Backoffice.TrimEnd('/')}/signUp/confirmEmail?email={WebUtility.UrlEncode(applicationUser.Email)}&code={WebUtility.UrlEncode(message.Code)}",
+                    Email = applicationUser.Email,
+                    ConfirmUrl = GetUrl(message.Type.Value, applicationUser.Email, message.Code),
                 }),
             });
+        }
+
+        private string GetUrl(UserAppType userType, string email, string code)
+        {
+            switch (userType)
+            {
+                case UserAppType.Backoffice: return $"{hostsSettings.Backoffice.TrimEnd('/')}/signUp/confirmEmail?email={WebUtility.UrlEncode(email)}&code={WebUtility.UrlEncode(code)}";
+                case UserAppType.Guests: return $"{hostsSettings.GuestsApp.TrimEnd('/')}/user/confirm?email={WebUtility.UrlEncode(email)}&code={WebUtility.UrlEncode(code)}";
+                default:
+                    break;
+            }
+            throw new NotImplementedException();
         }
     }
 }

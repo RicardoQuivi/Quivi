@@ -9,6 +9,7 @@ namespace Quivi.Application.Commands.Users
     public class ForgotUserPasswordAsyncCommand : ICommand<Task>
     {
         public required string Email { get; init; }
+        public required UserAppType UserType { get; init; }
     }
 
     public class ForgotUserPasswordAsyncCommandHandler : ICommandHandler<ForgotUserPasswordAsyncCommand, Task>
@@ -34,6 +35,7 @@ namespace Quivi.Application.Commands.Users
             {
                 Id = user.Id,
                 Code = code,
+                UserType = command.UserType,
             });
         }
     }

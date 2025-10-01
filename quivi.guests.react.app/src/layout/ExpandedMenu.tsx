@@ -4,9 +4,11 @@ import { useQuiviTheme } from "../hooks/theme/useQuiviTheme";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { CloseIcon, QuiviFullIcon } from "../icons";
-import { Modal } from "../components/Shared/Modal";
+import { ButtonsSection } from "./ButtonsSection";
+import LoadingButton from "../components/Buttons/LoadingButton";
+import Dialog from "../components/Shared/Dialog";
+import { Box, Stack } from "@mui/material";
 
-//TODO: Add navigations bellow
 interface Props {
     readonly isOpen: boolean;
     readonly onClose: () => any;
@@ -29,17 +31,17 @@ export const ExpandedMenu = (props: Props) => {
 
     const goToLogin = () => {
         props.onClose();
-        //appNavigation.goTo(urlBuilder => urlBuilder.auth.LoginUrl());
+        navigate("/user/login");
     }
 
     const goToAccount = () => {
         props.onClose();
-        //appNavigation.goTo(urlBuilder => urlBuilder.profile.ProfileUrl());
+        navigate("/user/home");
     }
 
     const goToRegister = () => {
         props.onClose();
-        //appNavigation.goTo(urlBuilder => urlBuilder.auth.RegisterUrl());
+        navigate("/user/register");
     }
 
     const goToSettings = () => {
@@ -54,13 +56,34 @@ export const ExpandedMenu = (props: Props) => {
     }
 
     return <>
-        <Modal 
+        <Dialog 
             onClose={() => setLogoutModalIsOpen(false)}
             isOpen={logoutModalIsOpen}
         >
-            <button type="button" className="secondary-button mb-4" onClick={logOut}>{t("expandedMenu.logout")}</button>
-            <button type="button" className="clear-button" onClick={() => setLogoutModalIsOpen(false)}>{t("cancel")}</button>
-        </Modal>
+            <Stack direction="column" className="container">
+                <Box className="modal__header">
+                    <h3>{t("expandedMenu.logout")}</h3>
+                    <Box className="close-icon" onClick={() => setLogoutModalIsOpen(false)}>
+                        <CloseIcon />
+                    </Box>
+                </Box>
+                <p className="mb-5">{t("expandedMenu.logoutConfirmation")}</p>
+                <ButtonsSection>
+                    <LoadingButton
+                        onClick={() => setLogoutModalIsOpen(false)}
+                        primaryButton={false}
+                    >
+                        {t("cancel")}
+                    </LoadingButton>
+                    <LoadingButton
+                        onClick={logOut}
+                        primaryButton
+                    >
+                        {t("expandedMenu.logout")}
+                    </LoadingButton>
+                </ButtonsSection>
+            </Stack>
+        </Dialog>
         <div
             className={`expanded-menu ${props.isOpen ? "open" : ""}`}
             style={{
@@ -78,7 +101,7 @@ export const ExpandedMenu = (props: Props) => {
                             <QuiviFullIcon fill={theme.primaryColor.hex} />
                         </button>
                         <button type="button" className="nav__close" onClick={props.onClose}>
-                            <CloseIcon />
+                            <CloseIcon height="100%" width="auto" />
                         </button>
                     </div>
                 </div>
@@ -96,7 +119,15 @@ export const ExpandedMenu = (props: Props) => {
                                 :
                                     <button type="button" onClick={goToAccount}>{t("expandedMenu.account")}</button>
                             }
-                            <button type="button" onClick={() => setLogoutModalIsOpen(true)}>{t("expandedMenu.logout")}</button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setLogoutModalIsOpen(true);
+                                    props.onClose();
+                                }}
+                            >
+                                {t("expandedMenu.logout")}
+                            </button>
                         </>
                         :
                         <>

@@ -1,4 +1,4 @@
-﻿import { useRef, useState, type CSSProperties } from "react";
+﻿import { useRef, type CSSProperties } from "react";
 import { styled } from '@mui/styles';
 import type { Theme } from "@mui/material/styles";
 import { type IColor } from "../../hooks/theme/useQuiviTheme";
@@ -36,9 +36,9 @@ export interface SquareButtonProps {
     readonly children: React.ReactNode;
 }
 export const SquareButton: React.FC<SquareButtonProps> = (props) => {
-    const [showShadow] = useState(props.showShadow || false);
-    const [borderRadius] = useState(props.borderRadius || undefined);
-    const [customClass] = useState(props.className || "");
+    const showShadow = props.showShadow ?? false;
+    const borderRadius = props.borderRadius ?? undefined;
+    const customClass = props.className ?? "";
     
     const spanRef = useRef<HTMLDivElement>(null);
 

@@ -71,7 +71,15 @@ export const GenericPaymentPage = ({
         return footer;
     }
 
-    return <Page title={t("pay.title")} headerProps={{hideCart: true}} footer={getFooter(transaction)}>
+    return <Page
+        title={t("pay.title")}
+        headerProps={{
+            ordering: {
+                hideCart: true,
+            }
+        }}
+        footer={getFooter(transaction)}
+    >
         {
             transaction.status == TransactionStatus.Expired
             ?

@@ -25,7 +25,13 @@ export const SessionChargeCompletedPage = () => {
     })
     const transaction = useMemo(() => transactionsQuery.data.length == 0 ? undefined : transactionsQuery.data[0], [transactionsQuery.data]);
 
-    return <Page headerProps={{hideCart: true}}>
+    return <Page
+        headerProps={{
+            ordering: {
+                hideCart: true, 
+            }
+        }}
+    >
     {
         transactionsQuery.isFirstLoading
         ?

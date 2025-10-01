@@ -7,7 +7,7 @@ export const usePosIntegrationsApi = () => {
     
     const get = (posIntegrationId: string) => {
         const url = new URL(`api/posintegrations/${posIntegrationId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetPosIntegrationResponse>(url);
+        return httpClient.get<GetPosIntegrationResponse>(url);
     }
 
     const state = useMemo(() => ({

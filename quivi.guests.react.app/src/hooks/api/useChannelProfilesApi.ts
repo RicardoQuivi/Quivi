@@ -7,7 +7,7 @@ export const useChannelProfilesApi = () => {
     
     const get = (channelProfileId: string) => {
         const url = new URL(`api/channelprofiles/${channelProfileId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetChannelProfileResponse>(url);
+        return httpClient.get<GetChannelProfileResponse>(url);
     }
 
     const state = useMemo(() => ({

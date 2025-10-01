@@ -72,7 +72,14 @@ export const PaymentPage = (props: Props) => {
     }
 
     if(transaction == undefined) {
-        return <Page title={t("pay.title")} headerProps={{hideCart: true}}>
+        return <Page
+            title={t("pay.title")}
+            headerProps={{
+                ordering: {
+                    hideCart: true,
+                }
+            }}
+        >
             <div className="flex flex-fd-c flex-ai-c flex-jc-c mt-10">
                 <LoadingAnimation />
             </div>

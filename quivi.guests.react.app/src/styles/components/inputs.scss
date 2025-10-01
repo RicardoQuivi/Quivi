@@ -41,13 +41,13 @@ input {
         .eye-toggle {
             position: absolute;
             right: 0;
-            top: 34px;
-            padding: 8px;
+            top: calc(0.5rem + 19px);
+            padding: 0.5rem;
             cursor: pointer;
 
             svg {
-                height: 20px;
-                width: 20px;
+                height: 19px;
+                width: auto;
             }
         }
     }
@@ -55,7 +55,9 @@ input {
 
 .input--phonenumber {
     overflow: hidden;
-
+    align-items: center;
+    display: flex;
+    
     input {
         border-left: none;
         border-bottom-left-radius: 0;

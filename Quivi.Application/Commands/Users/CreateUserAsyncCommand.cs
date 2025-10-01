@@ -18,9 +18,11 @@ namespace Quivi.Application.Commands.Users
             public string? VatNumber { get; init; }
         }
 
+        public string? Name { get; init; }
         public required string Email { get; init; }
         public string? Password { get; init; }
         public CreatePersonData? PersonData { get; init; }
+        public UserAppType? UserType { get; init; }
 
 
         public required Action OnInvadidEmail { get; init; }
@@ -69,12 +71,14 @@ namespace Quivi.Application.Commands.Users
             {
                 Id = applicationUser.Id,
                 Code = code,
+                Type = command.UserType,
             });
             return applicationUser;
         }
 
         private async Task<ApplicationUser?> CreateUser(CreateUserAsyncCommand command)
         {
+            string? name = command.Name?.Trim();
             string emailAddress = command.Email.Trim();
 
             ApplicationUser? applicationUser = await userManager.FindByEmailAsync(emailAddress);
@@ -96,7 +100,7 @@ namespace Quivi.Application.Commands.Users
                 {
                     var personQuery = await repository.GetAsync(new Infrastructure.Abstractions.Repositories.Criterias.GetPeopleCriteria
                     {
-                        Emails = [command.Email]
+                        Emails = [command.Email],
                     });
                     var person = personQuery.FirstOrDefault();
                     if (person == null)
@@ -120,6 +124,7 @@ namespace Quivi.Application.Commands.Users
             {
                 UserName = emailAddress,
                 Email = emailAddress,
+                FullName = string.IsNullOrWhiteSpace(name) ? null : name,
 
                 CreatedDate = now,
                 ModifiedDate = now,

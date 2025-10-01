@@ -27,6 +27,8 @@ import { ReactComponent as DownloadIcon } from "./download.svg?react";
 import { ReactComponent as CheckIcon } from "./check.svg?react";
 import { ReactComponent as StarIcon } from "./star.svg?react";
 import { ReactComponent as StarOutlineIcon } from "./start-outline.svg?react";
+import { ReactComponent as EyeIcon } from "./eye.svg?react";
+import { ReactComponent as EyeOffIcon } from "./eyeoff.svg?react";
 
 export {
     CloseIcon,
@@ -58,4 +60,6 @@ export {
     CheckIcon,
     StarIcon,
     StarOutlineIcon,
+    EyeIcon,
+    EyeOffIcon,
 };

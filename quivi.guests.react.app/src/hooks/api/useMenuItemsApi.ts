@@ -29,7 +29,7 @@ export const useMenuItemsApi = () => {
         }
         
         const url = new URL(`api/menuItems?${queryParams}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetMenuItemsResponse>(url, {
+        return httpClient.get<GetMenuItemsResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

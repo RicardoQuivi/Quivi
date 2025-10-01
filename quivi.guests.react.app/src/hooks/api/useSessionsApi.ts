@@ -10,7 +10,7 @@ export const useSessionsApi = () => {
 
     const get = (request: GetSessionRequest) => {
         const url = new URL(`api/sessions/${request.channelId}`, import.meta.env.VITE_API_URL).toString();
-        return httpClient.httpGet<GetSessionResponse>(url, {
+        return httpClient.get<GetSessionResponse>(url, {
             'Accept-Language': i18n.language,
         });
     }

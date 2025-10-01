@@ -2,20 +2,18 @@
 import { useQuiviTheme } from "../../hooks/theme/useQuiviTheme";
 import { Link, useNavigate, useNavigationType } from "react-router";
 import { ArrowLeftIcon, HomeIcon } from "../../icons";
-import { NavActions } from "./NavActions";
+import { NavActions, type NavActionsOrderingProps } from "./NavActions";
 import { useMemo } from "react";
-import { Box } from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 
 interface Props {
     readonly title?: string;
-    readonly hideCart?: boolean;
-    readonly hideOrder?: boolean;
+    readonly ordering: NavActionsOrderingProps | false;
     readonly hideFlag?: boolean;
 }
 export const TableNav: React.FC<Props> = ({
     title,
-    hideCart,
-    hideOrder,
+    ordering,
     hideFlag,
 }) => {
     const theme = useQuiviTheme();
@@ -25,7 +23,10 @@ export const TableNav: React.FC<Props> = ({
 
     const canGoBack = useMemo(() => navType === "PUSH", [navType])
 
-    return (
+    return <Stack
+        direction="column"
+        alignItems="center"
+    >
         <Box
             className="container"
             sx={{
@@ -37,7 +38,6 @@ export const TableNav: React.FC<Props> = ({
                     title
                     ?
                         <Box
-                            className="page-title__content"
                             onClick={() => {
                                 if(canGoBack) {
                                     navigate(-1);
@@ -47,12 +47,14 @@ export const TableNav: React.FC<Props> = ({
                             }} 
                             sx={{
                                 cursor: canGoBack ? "pointer" : undefined,
+                                display: "flex",
+                                alignItems: "center",
                             }}
                         >
                             <Box className="nav__menu">
-                                <ArrowLeftIcon width="60%" height="60%" />
+                                <ArrowLeftIcon width="auto" height="50%" />
                             </Box>
-                            <h2>{title}</h2>
+                            <Typography variant="h6" component="h2" fontWeight="bold">{title}</Typography>
                         </Box>
                     :
                     <Link to={!appContext?.channelId ? "/user/home" : `/c/${appContext.channelId}`}>
@@ -61,12 +63,19 @@ export const TableNav: React.FC<Props> = ({
                         </Box>
                     </Link>
                 }
-                <NavActions
-                    hideCart={hideCart}
-                    hideOrder={hideOrder}
-                    hideFlag={hideFlag}
-                />
+                {
+                    !!appContext?.channelId &&
+                    <NavActions
+                        ordering={ordering}
+                        hideFlag={hideFlag}
+                    />
+                }
             </Box>
         </Box>
-    );
+        <Divider
+            sx={{
+                width: "90%",
+            }}
+        />
+    </Stack>
 }

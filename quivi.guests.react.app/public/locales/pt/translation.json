@@ -60,7 +60,9 @@
     "description": "Com uma conta Quivi pode guardar os seus dados de faturamento e agilizar pagamentos futuros!",
     "register": "Registar",
     "alreadyHasAccount": "Já tem conta?",
-    "login": "Entrar"
+    "login": "Entrar",
+    "confirmationPending": "Quase lá!",
+    "confirmationPendingDescription": "Verifique o seu e-mail e siga os passos para ativar a sua conta."
   },
 
   "resetPassword": {
@@ -79,8 +81,16 @@
   },
 
   "confirmEmail": {
-    "title": "Quase lá!",
-    "description": "Verifique o seu e-mail e siga os passos para ativar a sua conta."
+    "title": "Confirmar email",
+    "confirmingYourEmail": "A confirmar o seu email",
+    "confirmingYourEmailDescription": "Aguarde por favor enquanto estamos a confirmar o seu email. Após conclusão poderá iniciar sessão e aceder ao Quivi.",
+    "confirmed": "O seu email foi confirmado!",
+    "confirmedDescription": "Já tem acesso completo aos benefícios de usar o Quivi! Faça login abaixo para continuar.",
+    "tokenExpired": "Expirado",
+    "tokenExpiredDescription": "O seu email não pode ser confirmado uma vez que o link já expirou. Foi enviado um novo email. Por favor verifique a sua caixa de entrada para um novo email.",
+    "resendConfirmation": "Enviar novo email de confirmação",
+    "resendAwait": "Aguarde para reenviar",
+    "login": "Entrar"
   },
 
   "forgotPassword": {
@@ -414,16 +424,7 @@
     "CH001": "Alguns itens podem já não estar disponíveis para pagamento. Por favor, selecione itens diferentes para pagar.",
     "CH003": "O montante disponível para pagar mudou recentemente. Por favor, tente novamente com um montante diferente."
   },
-
-  "qrCodeCategory": {
-    "0": "Mesa",
-    "1": "Cartão",
-    "2": "Quarto",
-    "3": "Gabinete",
-    "4": "",
-    "5": "Palhota"
-  },
-
+  
   "digitalMenu": {
     "cartItemAdded": "Novo item no pedido",
     "unavailable": "Indisponível",
