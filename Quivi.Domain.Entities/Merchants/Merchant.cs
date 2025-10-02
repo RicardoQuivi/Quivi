@@ -46,8 +46,6 @@ namespace Quivi.Domain.Entities.Merchants
         public ICollection<Person>? People { get; set; }
         public ICollection<Merchant>? ChildMerchants { get; set; }
         public ICollection<MerchantFee>? Fees { get; set; }
-        //TODO: Migrate this or add it to MerchantInvoiceDocument?
-        //public ICollection<MerchantInvoice> MerchantInvoices { get; set; }
         public ICollection<MerchantFile>? Files { get; set; }
         public ICollection<PreparationGroup>? PreparationGroups { get; set; }
         public ICollection<Location>? Locations { get; set; }

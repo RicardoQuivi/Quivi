@@ -44,10 +44,10 @@ namespace Quivi.Application.Commands.PreparationGroups
             this.eventService = eventService;
         }
 
-        public async Task<string> Handle(AddCommitedPreparationGroupAsyncCommand command)
+        public Task<string> Handle(AddCommitedPreparationGroupAsyncCommand command)
         {
             var jobId = backgroundJobHandler.Enqueue(() => Execute(command));
-            return jobId;
+            return Task.FromResult(jobId);
         }
 
         public void Contextualize(IJobContextualizer contextualizer, AddCommitedPreparationGroupAsyncCommand command)

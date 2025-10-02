@@ -1,6 +1,7 @@
 ﻿using Quivi.Application.Commands.MenuItems;
 using Quivi.Application.Extensions;
 using Quivi.Application.Queries.Merchants;
+using Quivi.Application.Queries.PreparationGroups;
 using Quivi.Application.Queries.PrinterNotificationsContacts;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
@@ -13,7 +14,6 @@ using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationMessages;
 using Quivi.Infrastructure.Abstractions.Events.Data.PrinterNotificationTargets;
 using Quivi.Infrastructure.Abstractions.Pos.EscPos;
 using Quivi.Infrastructure.Abstractions.Repositories;
-using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
 using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Application.Commands.PreparationGroups
@@ -30,7 +30,6 @@ namespace Quivi.Application.Commands.PreparationGroups
         private readonly IQueryProcessor queryProcessor;
         private readonly IIdConverter idConverter;
         private readonly IDateTimeProvider dateTimeProvider;
-        private readonly IPreparationGroupsRepository groupsRepository;
         private readonly IPrinterNotificationMessagesRepository repository;
         private readonly IEscPosPrinterService printerService;
         private readonly IEventService eventService;
@@ -42,7 +41,6 @@ namespace Quivi.Application.Commands.PreparationGroups
         }
 
         public PrintPreparationGroupAsyncCommandHandler(IQueryProcessor queryProcessor,
-                                                        IPreparationGroupsRepository preparationGroupsRepository,
                                                         IIdConverter idConverter,
                                                         IDateTimeProvider dateTimeProvider,
                                                         IEventService eventService,
@@ -52,7 +50,6 @@ namespace Quivi.Application.Commands.PreparationGroups
             this.queryProcessor = queryProcessor;
             this.idConverter = idConverter;
             this.dateTimeProvider = dateTimeProvider;
-            this.groupsRepository = preparationGroupsRepository;
             this.eventService = eventService;
             this.repository = repository;
             this.printerService = printerService;
@@ -60,8 +57,7 @@ namespace Quivi.Application.Commands.PreparationGroups
 
         public async Task Handle(PrintPreparationGroupAsyncCommand command)
         {
-            //TODO: This should be a query instead of this
-            var groupsQuery = await groupsRepository.GetAsync(new GetPreparationGroupsCriteria
+            var groupsQuery = await queryProcessor.Execute(new GetPreparationGroupsAsyncQuery
             {
                 MerchantIds = [command.MerchantId],
                 Ids = [command.PreparationGroupId],

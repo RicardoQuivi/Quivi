@@ -194,7 +194,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.ChargeId);
                 entity.HasOne(c => c.Charge)
                         .WithOne(d => d.Deposit)
-                        .HasForeignKey<Deposit>(d => d.ChargeId); //TODO: Check
+                        .HasForeignKey<Deposit>(d => d.ChargeId);
 
                 entity.HasOne(r => r.Consumer)
                             .WithMany()
@@ -212,7 +212,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasOne(c => c.MerchantCustomCharge)
                         .WithOne(c => c.Charge)
-                        .HasForeignKey<Charge>(c => c.Id); //TODO: Check
+                        .HasForeignKey<Charge>(c => c.Id);
             });
 
             modelBuilder.Entity<DepositCapture>(entity =>
@@ -220,7 +220,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.DepositId);
                 entity.HasOne(c => c.Deposit)
                         .WithOne(d => d.DepositCapture)
-                        .HasForeignKey<DepositCapture>(d => d.DepositId); //TODO: Check
+                        .HasForeignKey<DepositCapture>(d => d.DepositId);
 
                 entity.HasOne(m => m.Person)
                         .WithMany()
@@ -232,7 +232,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.DepositId);
                 entity.HasOne(c => c.Deposit)
                         .WithOne(d => d.DepositSurchargeJournal)
-                        .HasForeignKey<DepositSurchargeJournal>(d => d.DepositId); //TODO: Check
+                        .HasForeignKey<DepositSurchargeJournal>(d => d.DepositId);
 
                 entity.HasOne(m => m.Journal)
                         .WithMany(m => m.DepositSurchargeJournals)
@@ -244,7 +244,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.DepositId);
                 entity.HasOne(c => c.Deposit)
                         .WithOne(d => d.DepositSurchage)
-                        .HasForeignKey<DepositSurcharge>(d => d.DepositId); //TODO: Check
+                        .HasForeignKey<DepositSurcharge>(d => d.DepositId);
             });
 
             modelBuilder.Entity<DepositJournal>(entity =>
@@ -252,7 +252,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.DepositId);
                 entity.HasOne(c => c.Deposit)
                         .WithOne(d => d.DepositJournal)
-                        .HasForeignKey<DepositJournal>(d => d.DepositId); //TODO: Check
+                        .HasForeignKey<DepositJournal>(d => d.DepositId);
 
                 entity.HasOne(m => m.Journal)
                         .WithMany(m => m.DepositJournals)
@@ -264,7 +264,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(m => m.DepositId);
                 entity.HasOne(c => c.Deposit)
                         .WithOne(d => d.DepositCaptureJournal)
-                        .HasForeignKey<DepositCaptureJournal>(d => d.DepositId); //TODO: Check
+                        .HasForeignKey<DepositCaptureJournal>(d => d.DepositId);
 
                 entity.HasOne(m => m.Journal)
                         .WithMany(m => m.DepositCaptureJournals)
@@ -300,7 +300,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasKey(c => c.ChargeId);
                 entity.HasOne(c => c.Charge)
                         .WithOne(c => c.MerchantCustomCharge)
-                        .HasForeignKey<MerchantCustomCharge>(c => c.ChargeId); //TODO: Check
+                        .HasForeignKey<MerchantCustomCharge>(c => c.ChargeId);
             });
 
             modelBuilder.Entity<ApiClient>(entity =>
@@ -347,7 +347,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasOne(b => b.JournalDetails)
                         .WithOne(b => b.Journal)
-                        .HasForeignKey<Journal>(m => m.Id); //TODO: Check
+                        .HasForeignKey<Journal>(m => m.Id);
             });
 
             modelBuilder.Entity<DepositRefundJournal>(entity =>
@@ -356,7 +356,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
                 entity.HasOne(m => m.Deposit)
                         .WithOne(m => m.DepositRefundJournal)
-                        .HasForeignKey<DepositRefundJournal>(m => m.DepositId); //TODO: Check
+                        .HasForeignKey<DepositRefundJournal>(m => m.DepositId);
 
                 entity.HasOne(m => m.Journal)
                         .WithMany(m => m.DepositRefundJournals)
