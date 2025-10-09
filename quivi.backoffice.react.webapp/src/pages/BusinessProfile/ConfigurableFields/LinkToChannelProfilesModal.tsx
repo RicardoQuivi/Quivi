@@ -13,6 +13,7 @@ import { useConfigurableFieldAssociationsQuery } from "../../../hooks/queries/im
 import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelProfile";
 import { UpdateConfigurableFieldAssociation } from "../../../hooks/api/Dtos/configurableFieldAssociations/UpdateConfigurableFieldAssociationsRequest";
 import { useConfigurableFieldAssociationMutator } from "../../../hooks/mutators/useConfigurableFieldAssociationMutator";
+import { Collections } from "../../../utilities/Collectionts";
 
 const pageSize = 12;
 
@@ -39,22 +40,10 @@ export const LinkToChannelProfilesModal = (props: Props) => {
 
     const [toggles, setToggles] = useState(() => new Set<string>());
 
-    const associations = useMemo(() => {
-        const set = new Set<string>();
-        
-        for(const a of associationsQuery.data) {
-            set.add(a.channelProfileId);
-        }
-
-        return set;
-    }, [associationsQuery.data])
+    const associations = useMemo(() => Collections.toSet(associationsQuery.data, a => a.channelProfileId), [associationsQuery.data])
 
     const selected = useMemo(() => {
-        const set = new Set<string>();
-        
-        for(const a of associationsQuery.data) {
-            set.add(a.channelProfileId);
-        }
+        const set = new Set<string>(associations);
 
         for(const t of toggles.keys()) {
             if(set.has(t)) {
@@ -75,7 +64,7 @@ export const LinkToChannelProfilesModal = (props: Props) => {
         }
 
         return result;
-    }, [toggles, associationsQuery.data, profilesQuery.data])
+    }, [toggles, associations, profilesQuery.data])
 
     useEffect(() => {
         if(props.model == undefined) {

@@ -4,6 +4,7 @@ interface ModalButtonProps {
     readonly onClick?: () => any;
     readonly content: React.ReactNode;
     readonly disabled?: boolean;
+    readonly isLoading?: boolean;
 }
 
 interface ModalButtonsFooterProps {
@@ -21,6 +22,7 @@ export const ModalButtonsFooter = (props: ModalButtonsFooterProps) => {
                 onClick={props.secondaryButton.onClick}
                 className="w-full"
                 disabled={props.secondaryButton.disabled}
+                isLoading={props.secondaryButton.isLoading}
             >
                 {props.secondaryButton.content}
             </Button>
@@ -30,6 +32,7 @@ export const ModalButtonsFooter = (props: ModalButtonsFooterProps) => {
             onClick={props.primaryButton.onClick}
             className="w-full"
             disabled={props.primaryButton.disabled}
+            isLoading={props.primaryButton.isLoading}
         >
             {props.primaryButton.content}
         </Button>

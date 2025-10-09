@@ -13,6 +13,7 @@ import { UpdateConfigurableFieldAssociation } from "../../../hooks/api/Dtos/conf
 import { useConfigurableFieldAssociationMutator } from "../../../hooks/mutators/useConfigurableFieldAssociationMutator";
 import { useConfigurableFieldsQuery } from "../../../hooks/queries/implementations/useConfigurableFieldsQuery";
 import { ConfigurableField } from "../../../hooks/api/Dtos/configurableFields/ConfigurableField";
+import { Collections } from "../../../utilities/Collectionts";
 
 const pageSize = 12;
 
@@ -39,22 +40,10 @@ export const LinkToConfigurableFieldsModal = (props: Props) => {
 
     const [toggles, setToggles] = useState(() => new Set<string>());
 
-    const associations = useMemo(() => {
-        const set = new Set<string>();
-        
-        for(const a of associationsQuery.data) {
-            set.add(a.configurableFieldId);
-        }
-
-        return set;
-    }, [associationsQuery.data])
+    const associations = useMemo(() => Collections.toSet(associationsQuery.data, a => a.configurableFieldId), [associationsQuery.data])
 
     const selected = useMemo(() => {
-        const set = new Set<string>();
-        
-        for(const a of associationsQuery.data) {
-            set.add(a.configurableFieldId);
-        }
+        const set = new Set<string>(associations);
 
         for(const t of toggles.keys()) {
             if(set.has(t)) {
@@ -75,7 +64,7 @@ export const LinkToConfigurableFieldsModal = (props: Props) => {
         }
 
         return result;
-    }, [toggles, associationsQuery.data, configurableFieldsQuery.data])
+    }, [toggles, associations, configurableFieldsQuery.data])
 
     useEffect(() => {
         if(props.model == undefined) {
