@@ -21,7 +21,7 @@ import { useChannelProfileMutator } from "../../../hooks/mutators/useChannelProf
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import { Divider } from "../../../components/dividers/Divider";
 import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
-import { LinkToConfigurableFieldsModal } from "./LinkToConfigurableFieldsModalTeste";
+import { LinkToConfigurableFieldsModal } from "./LinkToConfigurableFieldsModal";
 
 export const ChannelProfilesPage = () => {
     const { t } = useTranslation();
