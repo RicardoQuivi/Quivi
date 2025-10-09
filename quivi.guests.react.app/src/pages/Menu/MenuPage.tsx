@@ -157,6 +157,20 @@ export const MenuPage: React.FC<Props> = ({
     }
 
     useEffect(() => {
+        if(categoriesQuery.isLoading == true) {
+            return;
+        }
+
+        if(categoriesQuery.data.length != 0) {
+            return;
+        }
+
+        navigate(`/c/${channelContext.channelId}`, {
+            replace: true,
+        });
+    }, [categoriesQuery.data])
+
+    useEffect(() => {
         if(tabSettings.isScrollingTo == undefined) {
             if(tabSettings.pickedCategoryId == undefined) {
                 return;
