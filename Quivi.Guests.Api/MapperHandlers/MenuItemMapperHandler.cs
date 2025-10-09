@@ -31,7 +31,7 @@ namespace Quivi.Guests.Api.MapperHandlers
                 PriceType = model.PriceType.ToString(),
                 ImageUrl = model.ImageUrl?.Replace(ImageSize.Full.ToString(), ImageSize.Thumbnail.ToString()),
                 Modifiers = mapper.Map<Dtos.MenuItemModifierGroup>(model.MenuItemModifierGroups?.OrderBy(r => r.SortIndex).Select(r => r.MenuItemModifierGroup).ToList() ?? []),
-                IsAvailable = model.IsUnavailable || model.Stock == false,
+                IsAvailable = model.Stock,
             };
         }
 

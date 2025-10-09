@@ -7,6 +7,7 @@ using Quivi.Domain.Entities.Merchants;
 using Quivi.Domain.Entities.Notifications;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework.Extensions;
+using Quivi.Domain.Repositories.EntityFramework.Functions;
 using Quivi.Domain.Repositories.EntityFramework.Identity;
 
 namespace Quivi.Domain.Repositories.EntityFramework
@@ -30,6 +31,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             BuildIdentity(modelBuilder);
             BuildQuivi(modelBuilder);
+            BuildFunctions(modelBuilder);
         }
 
         private void BuildIdentity(ModelBuilder modelBuilder)
@@ -142,6 +144,10 @@ namespace Quivi.Domain.Repositories.EntityFramework
                         .WithMany(m => m.ChannelProfiles)
                         .HasForeignKey(m => m.PosIntegrationId)
                         .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasMany(m => m.AssociatedAvailabilityGroups)
+                        .WithOne(m => m.ChannelProfile)
+                        .HasForeignKey(m => m.ChannelProfileId);
 
                 entity.HasDeletedIndex();
             });
@@ -678,14 +684,13 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<MenuItem>(entity =>
             {
-                entity.Ignore(x => x.IsUnavailable);
                 entity.HasKey(i => i.Id);
                 entity.HasOne(i => i.Merchant)
                         .WithMany(i => i.MenuItems)
                         .HasForeignKey(i => i.MerchantId)
                         .OnDelete(DeleteBehavior.NoAction);
 
-                entity.HasMany(m => m.MenuItemWeeklyAvailabilities)
+                entity.HasMany(m => m.AssociatedAvailabilityGroups)
                         .WithOne(m => m.MenuItem)
                         .HasForeignKey(m => m.MenuItemId);
 
@@ -710,17 +715,61 @@ namespace Quivi.Domain.Repositories.EntityFramework
                 entity.HasDeletedIndex();
             });
 
-            modelBuilder.Entity<MenuItemWeeklyAvailability>(entity =>
+            modelBuilder.Entity<AvailabilityGroup>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasMany(m => m.WeeklyAvailabilities)
+                        .WithOne(m => m.AvailabilityGroup)
+                        .HasForeignKey(m => m.AvailabilityGroupId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(m => m.AssociatedMenuItems)
+                        .WithOne(m => m.AvailabilityGroup)
+                        .HasForeignKey(m => m.AvailabilityGroupId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(m => m.AssociatedChannelProfiles)
+                        .WithOne(m => m.AvailabilityGroup)
+                        .HasForeignKey(m => m.AvailabilityGroupId)
+                        .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<AvailabilityMenuItemAssociation>(entity =>
+            {
+                entity.HasKey(m => new { m.AvailabilityGroupId, m.MenuItemId });
+
+                entity.HasOne(m => m.AvailabilityGroup)
+                        .WithMany(m => m.AssociatedMenuItems)
+                        .HasForeignKey(m => m.AvailabilityGroupId);
+
+                entity.HasOne(m => m.MenuItem)
+                        .WithMany(m => m.AssociatedAvailabilityGroups)
+                        .HasForeignKey(m => m.MenuItemId);
+            });
+
+            modelBuilder.Entity<AvailabilityProfileAssociation>(entity =>
+            {
+                entity.HasKey(m => new { m.AvailabilityGroupId, m.ChannelProfileId });
+
+                entity.HasOne(m => m.AvailabilityGroup)
+                        .WithMany(m => m.AssociatedChannelProfiles)
+                        .HasForeignKey(m => m.AvailabilityGroupId);
+
+                entity.HasOne(m => m.ChannelProfile)
+                        .WithMany(m => m.AssociatedAvailabilityGroups)
+                        .HasForeignKey(m => m.ChannelProfileId);
+            });
+
+            modelBuilder.Entity<WeeklyAvailability>(entity =>
             {
                 entity.HasKey(m => m.Id);
                 entity.Ignore(m => m.StartAt);
                 entity.Ignore(m => m.EndAt);
 
-                entity.HasOne(m => m.MenuItem)
-                        .WithMany(m => m.MenuItemWeeklyAvailabilities)
-                        .HasForeignKey(m => m.MenuItemId);
-
-                entity.HasDeletedIndex();
+                entity.HasOne(m => m.AvailabilityGroup)
+                        .WithMany(m => m.WeeklyAvailabilities)
+                        .HasForeignKey(m => m.AvailabilityGroupId);
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -1088,6 +1137,21 @@ namespace Quivi.Domain.Repositories.EntityFramework
             });
         }
 
+        private void BuildFunctions(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDbFunction(() => QuiviDbFunctions.ToTimeZone(string.Empty, (string?)null))
+                .HasName("fn_ToTimeZone")
+                .HasSchema("dbo");
+
+            modelBuilder.HasDbFunction(() => QuiviDbFunctions.ToTimeZone(DateTime.MinValue, (string?)null))
+                        .HasName("fn_ToTimeZone")
+                        .HasSchema("dbo");
+
+            modelBuilder.HasDbFunction(() => QuiviDbFunctions.ToWeeklyAvailabilityInSeconds(default))
+                .HasName("fn_ToWeeklyAvailabilityInSeconds")
+                .HasSchema("dbo");
+        }
+
         public DbSet<Person> People { get; set; }
         public DbSet<Settlement> Settlements { get; set; }
         public DbSet<SettlementDetail> SettlementDetails { get; set; }
@@ -1125,7 +1189,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
         public DbSet<DepositSurcharge> DepositSurcharges { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
         public DbSet<ItemsModifierGroup> ItemsModifierGroups { get; set; }
-        public DbSet<MenuItemWeeklyAvailability> MenuItemWeeklyAvailabilities { get; set; }
+        public DbSet<AvailabilityGroup> Availabilities { get; set; }
         public DbSet<PosNotificationInboxMessage> PosNotificationInboxMessages { get; set; }
         public DbSet<PosNotificationMessage> PosNotificationMessages { get; set; }
         public DbSet<NotificationsContact> NotificationsContacts { get; set; }

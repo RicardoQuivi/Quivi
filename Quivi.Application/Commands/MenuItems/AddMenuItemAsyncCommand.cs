@@ -82,7 +82,7 @@ namespace Quivi.Application.Commands.MenuItems
                 }).ToList(),
                 ImageUrl = command.ImageUrl,
                 LocationId = command.LocationId,
-                Stock = false,
+                Stock = true,
 
                 CreatedDate = now,
                 ModifiedDate = now,

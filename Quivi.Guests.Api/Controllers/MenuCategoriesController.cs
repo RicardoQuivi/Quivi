@@ -30,7 +30,7 @@ namespace Quivi.Guests.Api.Controllers
             var categoriesQuery = await queryProcessor.Execute(new GetItemCategoriesAsyncQuery
             {
                 ChannelIds = [idConverter.FromPublicId(request.ChannelId)],
-                AvailableAt = new Availability
+                AvailableAt = new AvailabilityAt
                 {
                     UtcDate = request.AtDate?.UtcDateTime ?? DateTime.UtcNow,
                     ChannelId = idConverter.FromPublicId(request.ChannelId),

@@ -12,8 +12,8 @@ namespace Quivi.Domain.Entities.Pos
         public ChannelFeature Features { get; set; } = ChannelFeature.AllowsOrderAndPay | ChannelFeature.AllowsPayAtTheTable;
         public TimeSpan? SendToPreparationTimer
         {
-            get => SendToPreparationTimerSeconds.HasValue ? TimeSpan.FromSeconds(SendToPreparationTimerSeconds.Value) : (TimeSpan?)null;
-            set => SendToPreparationTimerSeconds = value.HasValue ? (int)value.Value.TotalSeconds : (int?)null;
+            get => SendToPreparationTimerSeconds.HasValue ? TimeSpan.FromSeconds(SendToPreparationTimerSeconds.Value) : null;
+            set => SendToPreparationTimerSeconds = value.HasValue ? (int)value.Value.TotalSeconds : null;
         }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
@@ -27,6 +27,7 @@ namespace Quivi.Domain.Entities.Pos
         public PosIntegration? PosIntegration { get; set; }
 
         public ICollection<OrderConfigurableFieldChannelProfileAssociation>? AssociatedOrderConfigurableFields { get; set; }
+        public ICollection<AvailabilityProfileAssociation>? AssociatedAvailabilityGroups { get; set; }
         public ICollection<Channel>? Channels { get; set; }
         #endregion
     }

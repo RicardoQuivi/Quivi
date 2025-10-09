@@ -3,6 +3,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Infrastructure.Abstractions.Repositories;
 using Quivi.Infrastructure.Abstractions.Repositories.Criterias;
+using Quivi.Infrastructure.Extensions;
 
 namespace Quivi.Infrastructure.Repositories
 {
@@ -40,8 +41,38 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.HiddenFromGuestsApp.HasValue)
                 query = query.Where(q => q.HiddenFromGuestApp == criteria.HiddenFromGuestsApp.Value);
 
-            if (criteria.IncludeWeeklyAvailabilities)
-                query = query.Include(x => x.MenuItemWeeklyAvailabilities);
+            if (criteria.AvailableAt != null)
+            {
+                var allAvailableItemIds = Context.Set<AvailabilityGroup>()
+                                            .Where(q => q.AssociatedChannelProfiles!.SelectMany(a => a.ChannelProfile!.Channels!).Select(a => a.Id).Contains(criteria.AvailableAt.ChannelId))
+                                            .WithWeeklyAvailabilities(m => m.WeeklyAvailabilities!,
+                                                                        m => m.Merchant!.TimeZone!,
+                                                                        criteria.AvailableAt.UtcDate)
+                                            .SelectMany(s => s.AssociatedMenuItems!.Select(m => m.MenuItemId));
+
+                query = query.Where(x => (x.Stock && allAvailableItemIds.Contains(x.Id)) || x.ShowWhenNotAvailable);
+
+                var allValidItemIds1 = Set.Where(x => x.Stock).SelectMany(m => m.AssociatedAvailabilityGroups!.Select(a => a.AvailabilityGroup!))
+                                                                .WithWeeklyAvailabilities(m => m.WeeklyAvailabilities!,
+                                                                                    m => m.Merchant!.TimeZone,
+                                                                                    criteria.AvailableAt.UtcDate)
+                                                                .Select(m => m.Id);
+
+                query = query.Where(item => item.ShowWhenNotAvailable || item.MenuItemModifierGroups!.All(m => m.MenuItemModifierGroup!.MinSelection == 0 || m.MenuItemModifierGroup!.MenuItemModifiers!.Where(i => allValidItemIds1.Contains(i.MenuItemId)).Any()));
+
+
+                query = query.Where(x => x.Stock || x.ShowWhenNotAvailable)
+                                .Where(x => allAvailableItemIds.Contains(x.Id) || x.ShowWhenNotAvailable);
+
+                var allValidItemIds2 = Set.Where(x => x.Stock)
+                                            .Where(x => allAvailableItemIds.Contains(x.Id))
+                                            .Select(m => m.Id);
+
+                query = query.Where(item => item.ShowWhenNotAvailable || item.MenuItemModifierGroups!.All(m => m.MenuItemModifierGroup!.MinSelection == 0 || m.MenuItemModifierGroup!.MenuItemModifiers!.Where(i => allValidItemIds2.Contains(i.MenuItemId)).Any()));
+            }
+
+            if (criteria.IncludeAvailabilities)
+                query = query.Include(x => x.AssociatedAvailabilityGroups);
 
             if (criteria.IncludeMenuItemCategoryAssociations)
                 query = query.Include(x => x.MenuItemCategoryAssociations!);
@@ -50,35 +81,10 @@ namespace Quivi.Infrastructure.Repositories
                 query = query.Include(x => x.MenuItemModifiers);
 
             if (criteria.IncludeModifierGroupsAssociations)
-            {
                 query = query.Include(x => x.MenuItemModifierGroups!);
-                //.ThenInclude(mg => mg.MenuItemModifierGroup!)
-                //.ThenInclude(x => x.MenuItemModifiers!)
-                //.ThenInclude(m => m.MenuItem!);
-
-                //if (criteria.IncludeTranslations)
-                //{
-                //    query = query.Include(g => g.MenuItemModifierGroups!)
-                //                    .ThenInclude(g => g.MenuItemModifierGroup)
-                //                    .ThenInclude(g => g.ItemsModifierGroupTranslations);
-
-                //    query = query.Include(x => x.MenuItemModifierGroups!)
-                //                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
-                //                    .ThenInclude(mg => mg.MenuItemModifiers!)
-                //                    .ThenInclude(m => m.MenuItem!)
-                //                    .ThenInclude(m => m.MenuItemTranslations!);
-                //}
-
-                //if (criteria.IncludeWeeklyAvailabilities)
-                //    query = query.Include(x => x.MenuItemModifierGroups!)
-                //                    .ThenInclude(mg => mg.MenuItemModifierGroup!)
-                //                    .ThenInclude(mg => mg.MenuItemModifiers!)
-                //                    .ThenInclude(m => m.MenuItem!)
-                //                    .ThenInclude(m => m.MenuItemWeeklyAvailabilities!);
-            }
 
             if (criteria.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers)
-                query = query.Include(x => x.MenuItemModifierGroups!).ThenInclude(q => q.MenuItemModifierGroup).ThenInclude(q => q.MenuItemModifiers!);
+                query = query.Include(x => x.MenuItemModifierGroups!).ThenInclude(q => q.MenuItemModifierGroup!).ThenInclude(q => q.MenuItemModifiers!);
 
             if (criteria.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem)
                 query = query.Include(x => x.MenuItemModifierGroups!).ThenInclude(q => q.MenuItemModifierGroup).ThenInclude(q => q.MenuItemModifiers!).ThenInclude(q => q.MenuItem);

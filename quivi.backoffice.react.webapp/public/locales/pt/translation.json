@@ -6,9 +6,20 @@
     },
     "dateHelper": {
         "at": "às",
+        "allDay": "Todo o dia",
+        "weekdays": {
+            "Sunday": "Domingo",
+            "Monday": "Segunda-feira",
+            "Tuesday": "Terça-feira",
+            "Wednesday": "Quarta-feira",
+            "Thursday": "Quinta-feira",
+            "Friday": "Sexta-feira",
+            "Saturday": "Sábado"
+        },
         "units": {
             "justNow": "Há instantes",
             "timeAgo": "Há {{value}} {{time}}",
+            "longTimeAgo": "Há muito tempo atrás",
             "minute": "Minuto",
             "minutes": "Minutos",
             "hour": "Hora",
@@ -76,6 +87,7 @@
             "RequireUppercase": "Pelo menos 1 maíscula",
             "RequireDigit": "Pelo menos 1 número"
         },
+        "cancel": "Cancelar",
         "yes": "Sim",
         "no": "Não",
         "options": "Opções",
@@ -118,9 +130,9 @@
         "openLink": "Abrir ligação",
         "resendEmailTimerDescription": "até solicitação de novo email estar disponível.",
         "operations": {
-            "pluralNew": "Novos {{name}}",
-            "new": "Novo {{name}}",
-            "edit": "Editar {{name}}",
+            "pluralNew": "Criar {{name}}",
+            "new": "Criar {{name}}",
+            "edit": "Guardar {{name}}",
             "delete": "Eliminar {{name}}",
             "save": "Guardar {{name}}",
             "deleteDescription": "Tem a certeza que deseja eliminar o registo <b>{{name}}</b> de <b>{{entity}}</b>?",
@@ -187,8 +199,11 @@
             "merchantDocument": "Documento fiscal",
             "merchantDocuments": "Documentos fiscais",
 
+            "configurableField": "Campos configuráveis",
             "configurableFields": "Campo configurável",
-            "configurableField": "Campos configuráveis"
+
+            "availability": "Disponibilidade",
+            "availabilities": "Disponibilidades"
         },
         "vatNumber": "NIF",
         "postalCode": "Código Postal",
@@ -248,6 +263,7 @@
         "select": "Selecionar",
         "selected": "Selecionado",
         "mode": "Modo",
+        "add": "Adicionar",
         "edit": "Editar",
         "delete": "Eliminar",
         "previous": "Anterior",
@@ -389,6 +405,7 @@
             "": "Perfil de Negócio",
             "basicInfo": "Informação Básica",
             "menuManagement": "Gestão de Menus",
+            "availabilities": "Disponibilidades",
             "configurableFields": "Campos configuráveis",
             "channelProfiles": "Perfis de Canal",
             "channels": "Canais"
@@ -602,6 +619,24 @@
                 "title": "O item foi adicionado",
                 "description": "Deseja criar a criar um novo registo com os dados deste novo item como referência?"
             }
+        },
+        "availabilities": {
+            "title": "Disponibilidades",
+            "weeklyAvailabilities": "Disponibilidade semanal",
+            "weeklyAvailabilitiesDescription": "Defina os horários diários onde haverá disponibilidade",
+            "weekday": "Dia da semana",
+            "schedules": "Horários",
+            "noAvailability": "Sem disponibilidade",
+            "startAt": "Início do periodo",
+            "endAt": "Fim do periodo",
+            "addPeriod": "Adicionar periodo",
+            "extendingToNextDayWarning": "Parte do horário seleccionado irá estender até {{nextDay}}",
+            "associatedMenuItems": "Itens associados",
+            "linkToMenuItems": "Atribuir itens",
+            "associatedChannelProfiles": "Perfis de canais associados",
+            "linkToChannelProfiles": "Atribuir perfis de canal",
+            "autoAddNewMenuItems": "Associar automaticamente novos itens",
+            "autoAddNewChannelProfiles": "Associar automaticamente novos perfis de canais"
         },
         "locals": {
             "title": "Locais"

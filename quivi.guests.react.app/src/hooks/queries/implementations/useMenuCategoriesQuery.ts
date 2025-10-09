@@ -21,7 +21,7 @@ export const useMenuCategoriesQuery = (request: GetMenuCategoriesRequest | undef
         },
         query: request => api.get(request),
         
-        refreshOnAnyUpdate: false,
+        refreshOnAnyUpdate: true,
         canUseOptimizedResponse: _ => false,
         getResponseFromEntities: (e) => ({
             data: e,

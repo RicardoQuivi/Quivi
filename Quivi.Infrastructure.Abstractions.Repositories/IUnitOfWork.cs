@@ -36,6 +36,10 @@
         IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations { get; }
         IOrderAdditionalInfosRepository OrderAdditionalInfos { get; }
         IPosChargeInvoiceItemsRepository PosChargeInvoiceItems { get; }
+        IAvailabilityGroupsRepository Availabilities { get; }
+        IAvailabilityProfileAssociationsRepository AvailabilityProfileAssociations { get; }
+        IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations { get; }
+        IWeeklyAvailabilitiesRepository WeeklyAvailabilities { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

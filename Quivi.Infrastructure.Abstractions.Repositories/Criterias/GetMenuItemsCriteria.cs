@@ -9,13 +9,13 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
         public IEnumerable<int>? ChannelIds { get; init; }
         public string? Search { get; init; }
         public IEnumerable<int>? ItemCategoryIds { get; init; }
-        public Availability? AvailableAt { get; init; }
+        public AvailabilityAt? AvailableAt { get; init; }
         public bool? IsDeleted { get; init; }
         public bool? Stock { get; init; }
         public bool? HasCategory { get; init; }
         public bool? HiddenFromGuestsApp { get; init; }
 
-        public bool IncludeWeeklyAvailabilities { get; init; }
+        public bool IncludeAvailabilities { get; init; }
         public bool IncludeMenuItemCategoryAssociations { get; init; }
         public bool IncludeModifierGroupsAssociations { get; init; }
         public bool IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers { get; init; }

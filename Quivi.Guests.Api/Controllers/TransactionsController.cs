@@ -6,7 +6,6 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Guests.Api.Dtos.Requests.Transactions;
 using Quivi.Guests.Api.Dtos.Responses.Transactions;
 using Quivi.Guests.Api.Validations;
-using Quivi.Infrastructure.Abstractions;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
@@ -21,24 +20,18 @@ namespace Quivi.Guests.Api.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly IQueryProcessor queryProcessor;
-        private readonly ICommandProcessor commandProcessor;
         private readonly IMapper mapper;
-        private readonly IDateTimeProvider dateTimeProvider;
         private readonly IIdConverter idConverter;
         private readonly IAcquirerChargeProcessor chargeProcessor;
 
         public TransactionsController(IQueryProcessor queryProcessor,
                                        IMapper mapper,
                                        IIdConverter idConverter,
-                                       ICommandProcessor commandProcessor,
-                                       IDateTimeProvider dateTimeProvider,
                                        IAcquirerChargeProcessor chargeProcessor)
         {
             this.queryProcessor = queryProcessor;
             this.idConverter = idConverter;
             this.mapper = mapper;
-            this.commandProcessor = commandProcessor;
-            this.dateTimeProvider = dateTimeProvider;
             this.chargeProcessor = chargeProcessor;
         }
 
@@ -160,15 +153,21 @@ namespace Quivi.Guests.Api.Controllers
         [HttpPut("{id}/" + nameof(ChargeMethod.Cash))]
         public Task<PutTransactionResponse> Cash(string id, [FromBody] PutCashTransactionRequest request) => StartCharge(id);
 
-        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/CreditCard")]
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/" + nameof(ChargeMethod.CreditCard))]
         public Task<PutTransactionResponse> Paybyrd(string id, ChargeMethod method, [FromBody] PutPaybyrdCreditCardTransactionRequest request) => StartCharge(id, () => new
         {
             RedirectUrl = request.RedirectUrl,
             TokenId = request.TokenId,
         });
 
-        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/MbWay")]
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/" + nameof(ChargeMethod.MbWay))]
         public Task<PutTransactionResponse> PaybyrdMbWay(string id, ChargeMethod method, [FromBody] PutPaybyrdMbWayTransactionRequest request) => StartCharge(id, () =>
+        {
+            return null;
+        });
+
+        [HttpPut("{id}/" + nameof(ChargePartner.Paybyrd) + "/" + nameof(ChargeMethod.PaymentTerminal))]
+        public Task<PutTransactionResponse> PaybyrdTerminal(string id, ChargeMethod method, [FromBody] PutPaybyrdMbWayTransactionRequest request) => StartCharge(id, () =>
         {
             return null;
         });

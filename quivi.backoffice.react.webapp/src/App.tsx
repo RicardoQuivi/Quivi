@@ -39,6 +39,8 @@ import { ConfigurableFieldsPage } from "./pages/BusinessProfile/ConfigurableFiel
 import { ConfigurableFieldFormPage } from "./pages/BusinessProfile/ConfigurableFields/ConfigurableFieldFormPage";
 import { PayoutsPage } from "./pages/Payouts/PayoutsPage";
 import { InvoicingPage } from "./pages/Invoicing/InvoicingPage";
+import { AvailabilitiesPage } from "./pages/BusinessProfile/Availabilities/AvailabilitiesPage";
+import { AvailabilityFormPage } from "./pages/BusinessProfile/Availabilities/AvailabilityFormPage";
 
 export const App = () => {
     return <>
@@ -56,37 +58,36 @@ export const App = () => {
                 <Route element={<AuthLayoutRoute />}>
                     <Route path="/" element={<DashboardPage />} />
 
-                    {/* Admin */}
+                    {/* Admin - Integrations */}
                     <Route path="/admin/integrations" element={<PosIntegrationsPage />} />
                     <Route path="/admin/integrations/add" element={<PosIntegrationFormPage />} />
                     <Route path="/admin/integrations/:id/edit" element={<PosIntegrationFormPage />} />
-
+                    
+                    {/* Admin - Acquirer Configurations */}
                     <Route path="/admin/acquirerConfigurations" element={<AcquirerConfigurationsPage />} />
                     <Route path="/admin/acquirerConfigurations/add" element={<AcquirerConfigurationFormPage />} />
                     <Route path="/admin/acquirerConfigurations/:id/edit" element={<AcquirerConfigurationFormPage />} />
 
+                    {/* Admin - Transactions */}
                     <Route path="/admin/transactions" element={<TransactionsPage isAdmin />} />
                     <Route path="/admin/transactions/:id" element={<TransactionsPage isAdmin />} />
-
 
                     {/* Merchant */}
                     <Route path="/businessProfile/merchant/setup" element={<SetUpNewMerchantPage />} />
                     <Route path="/businessProfile/merchant" element={<MerchantProfileInfo />} />
-
 
                     {/* Channel Profile */}
                     <Route path="/businessProfile/channelprofiles" element={<ChannelProfilesPage />} />
                     <Route path="/businessProfile/channelprofiles/add" element={<ChannelProfileFormPage />} />
                     <Route path="/businessProfile/channelprofiles/:id/edit" element={<ChannelProfileFormPage />} />
 
-                    {/* Configurable Fields*/}
+                    {/* Configurable Fields */}
                     <Route path="/businessProfile/configurablefields" element={<ConfigurableFieldsPage />} />
                     <Route path="/businessProfile/configurablefields/add" element={<ConfigurableFieldFormPage />} />
                     <Route path="/businessProfile/configurablefields/:id/edit" element={<ConfigurableFieldFormPage />} />
 
                     {/* Channel */}
                     <Route path="/businessProfile/channels" element={<ChannelsPage />} />
-
 
                     {/* Menu Management */}
                     <Route path="/businessProfile/menumanagement" element={<MenuManagementPage categories="All" />} />
@@ -100,11 +101,14 @@ export const App = () => {
                     <Route path="/businessProfile/menumanagement/modifiers/add" element={<ModifierGroupFormPage />} />
                     <Route path="/businessProfile/menumanagement/modifiers/:id/edit" element={<ModifierGroupFormPage />} />
 
+                    {/* Availabilities */}
+                    <Route path="/businessProfile/availabilities" element={<AvailabilitiesPage />} />
+                    <Route path="/businessProfile/availabilities/add" element={<AvailabilityFormPage />} />
+                    <Route path="/businessProfile/availabilities/:id/edit" element={<AvailabilityFormPage />} />
 
                     {/* Transactions */}
                     <Route path="/transactions" element={<TransactionsPage />} />
                     <Route path="/transactions/:id" element={<TransactionsPage />} />
-
 
                     {/* Payouts */}
                     <Route path="/payouts" element={<PayoutsPage />} />
@@ -112,24 +116,20 @@ export const App = () => {
                     {/* Invoicing */}
                     <Route path="/invoicing" element={<InvoicingPage />} />
 
-
                     {/* Locals */}
                     <Route path="/settings/locals" element={<LocalsPage />} />
                     <Route path="/settings/locals/add" element={<LocalFormPage />} />
                     <Route path="/settings/locals/:id/edit" element={<LocalFormPage />} />
-
 
                     {/* Custom Charge Methods */}
                     <Route path="/settings/chargemethods" element={<CustomChargeMethodsPage />} />
                     <Route path="/settings/chargemethods/add" element={<CustomChargeMethodFormPage />} />
                     <Route path="/settings/chargemethods/:id/edit" element={<CustomChargeMethodFormPage />} />
 
-
                     {/* Employees */}
                     <Route path="/settings/employees" element={<EmployeesPage />} />
                     <Route path="/settings/employees/add" element={<EmployeeFormPage />} />
                     <Route path="/settings/employees/:id/edit" element={<EmployeeFormPage />} />
-
 
                     {/* Printers */}
                     <Route path="/settings/printersmanagement" element={<PrinterPage />} />
@@ -138,7 +138,6 @@ export const App = () => {
                     <Route path="/settings/printersmanagement/workers/:id/edit" element={<PrinterWorkerFormPage />} />
                     <Route path="/settings/printersmanagement/printers/add" element={<PrinterFormPage />} />
                     <Route path="/settings/printersmanagement/printers/:id/edit" element={<PrinterFormPage />} />
-
 
                     {/* Terms And Conditions */}
                     <Route path="/termsAndConditions" element={<TermsAndConditionsPage />} />
@@ -157,9 +156,7 @@ const LayoutContent = () => {
         <Backdrop />
 
         <div
-            className={`flex-1 transition-all duration-300 ease-in-out ${
-            isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
-            } ${isMobileOpen ? "ml-0" : ""}`}
+            className={`flex-1 transition-all duration-300 ease-in-out ${isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"} ${isMobileOpen ? "ml-0" : ""}`}
         >
             <AppHeader />
             <div className="p-4 mx-auto md:p-6">

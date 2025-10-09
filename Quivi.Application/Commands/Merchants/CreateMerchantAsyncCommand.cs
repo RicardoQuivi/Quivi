@@ -1,4 +1,5 @@
-﻿using Quivi.Application.Commands.CustomChargeMethods;
+﻿using Quivi.Application.Commands.AvailabilityGroups;
+using Quivi.Application.Commands.CustomChargeMethods;
 using Quivi.Application.Commands.MerchantAcquirerConfigurations;
 using Quivi.Application.Commands.PosIntegrations;
 using Quivi.Application.Configurations;
@@ -121,6 +122,7 @@ namespace Quivi.Application.Commands.Merchants
                     IntegrationType = IntegrationType.QuiviViaFacturalusa,
                 });
                 await CreateCustomChargeMethods(subMerchant);
+                await CreateAvailabilityGroup(subMerchant);
                 await CreateAcquirerConfigurations(subMerchant);
 
                 await commandProcessor.Execute(new AddUserToMerchantsAsyncCommand
@@ -174,6 +176,24 @@ namespace Quivi.Application.Commands.Merchants
                 OnNameAlreadyExists = () => throw new Exception("New Merchant. This cannot happen."),
             });
         }
+
+        private Task CreateAvailabilityGroup(Merchant subMerchant)
+        {
+            return commandProcessor.Execute(new AddAvailabilityGroupAsyncCommand
+            {
+                MerchantId = subMerchant.Id,
+                OnCreate = t =>
+                {
+                    t.Name = "Todos os dias";
+                    t.AutoAddNewMenuItems = true;
+                    t.AutoAddNewChannelProfiles = true;
+                    t.WeekdayAvailabilities.AddAvailability(TimeSpan.Zero, TimeSpan.FromDays(7));
+                    return Task.CompletedTask;
+                },
+                OnInvalidName = () => throw new Exception("New Merchant. This cannot happen."),
+            });
+        }
+
 
         private async Task CreateAcquirerConfigurations(Merchant subMerchant)
         {

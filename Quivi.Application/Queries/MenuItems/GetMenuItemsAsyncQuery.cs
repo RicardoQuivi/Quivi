@@ -16,9 +16,9 @@ namespace Quivi.Application.Queries.MenuItems
         public bool? IsDeleted { get; init; }
         public bool? Stock { get; init; }
         public bool? HasCategory { get; init; }
-        public Availability? AvailableAt { get; init; }
+        public AvailabilityAt? AvailableAt { get; init; }
         public bool? HiddenFromGuestsApp { get; init; }
-        public bool IncludeWeeklyAvailabilities { get; init; }
+        public bool IncludeAvailabilities { get; init; }
         public bool IncludeMenuItemCategoryAssociations { get; init; }
         public bool IncludeTranslations { get; init; }
         public bool IncludeModifierGroupsAssociations { get; init; }
@@ -56,7 +56,7 @@ namespace Quivi.Application.Queries.MenuItems
                 IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers = query.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiers,
                 IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem = query.IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem,
                 IncludeTranslations = query.IncludeTranslations,
-                IncludeWeeklyAvailabilities = query.IncludeWeeklyAvailabilities,
+                IncludeAvailabilities = query.IncludeAvailabilities,
 
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,

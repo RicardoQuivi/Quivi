@@ -20,7 +20,7 @@ interface Props {
     readonly model: ChannelProfile | undefined;
     readonly onClose: () => void;
 }
-export const LinkToConfigurableFIeldsModal = (props: Props) => {
+export const LinkToConfigurableFieldsModal = (props: Props) => {
     const { t } = useTranslation();
     const toast = useToast();
     const mutator = useConfigurableFieldAssociationMutator();

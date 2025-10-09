@@ -15,5 +15,7 @@ namespace Quivi.SignalR.Hubs.Guests
         Task OnReviewOperation(OnReviewOperation evt);
         Task OnConfigurableFieldOperation(OnConfigurableFieldOperation evt);
         Task OnConfigurableFieldAssociationOperation(OnConfigurableFieldAssociationOperation evt);
+        Task OnMenuItemOperation(OnMenuItemOperation evt);
+        Task OnMenuItemAvailabilityChanged(OnMenuItemAvailabilityChanged evt);
     }
 }

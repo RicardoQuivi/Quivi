@@ -6,6 +6,16 @@
     },
     "dateHelper": {
         "at": "at",
+        "allDay": "All day",
+        "weekdays": {
+            "Sunday": "Sunday",
+            "Monday": "Monday",
+            "Tuesday": "Tuesday",
+            "Wednesday": "Wednesday",
+            "Thursday": "Thursday",
+            "Friday": "Friday",
+            "Saturday": "Saturday"
+        },
         "units": {
             "justNow": "Just now",
             "timeAgo": "{{value}} {{time}} ago",
@@ -77,6 +87,7 @@
             "RequireUppercase": "At least 1 uppercase",
             "RequireDigit": "At least one number"
         },
+        "cancel": "Cancel",
         "yes": "Yes",
         "no": "No",
         "options": "Options",
@@ -189,7 +200,10 @@
             "merchantDocuments": "Fiscal documents",
 
             "configurableFields": "Configurable field",
-            "configurableField": "Configurable fields"
+            "configurableField": "Configurable fields",
+
+            "availability": "Availability",
+            "availabilities": "Availabilities"
         },
         "vatNumber": "VAT Number",
         "postalCode": "Postal code",
@@ -228,7 +242,7 @@
                 "description": "For specific cases or solutions"
             },
             "features": {
-                "visibleOnPos": "Visível no PoS",
+                "visibleOnPos": "Visible on PoS",
                 "allowsFreePayments": "Free payments",
                 "freePaymentsAsTipOnly": "Consider it as tip",
                 "sessions": "Sessions",
@@ -243,12 +257,13 @@
                 "physicalKiosk": "Physical and shared kiosk"
             },
             "default": {
-                "name": "Modo pré-definido"
+                "name": "Default mode"
             }
         },
         "select": "Select",
         "selected": "Selected",
         "mode": "Mode",
+        "add": "Add",
         "edit": "Edit",
         "delete": "Delete",
         "previous": "Previous",
@@ -374,10 +389,10 @@
     },
     "sidebar": {
         "switchMerchant": {
-            "title": "Alterar comerciante",
+            "title": "Switch merchant",
             "selectGroup": "Select whole group",
             "selectSubMerchant": "Select sub-merchant",
-            "success": "Youa re now in the context of merchant {{name}}."
+            "success": "You are now in the context of merchant {{name}}."
         },
         "home": "Home",
         "administration": {
@@ -390,6 +405,7 @@
             "": "Business Profile",
             "basicInfo": "Basic Information",
             "menuManagement": "Menu Management",
+            "availabilities": "Availabilities",
             "configurableFields": "Configurable fields",
             "channelProfiles": "Channel Profiles",
             "channels": "Channels"
@@ -558,7 +574,7 @@
             "minimumPrePaidOrderAmount": "Minimum amount for pre-paid orders",
             "preparationTimer": "Automatic dispatch timer for preparation",
             "integration": "Integration",
-            "linkToConfigurableFields": "Associar Configurable fields to {{name}}"
+            "linkToConfigurableFields": "Link Configurable fields to {{name}}"
         },
         "channels": {
             "title": "Channels",
@@ -603,6 +619,24 @@
                 "title": "Item was added",
                 "description": "Do you want to continue creating a new entry with the data of this newly added item as reference?"
             }
+        },
+        "availabilities": {
+            "title": "Availabilities",
+            "weeklyAvailabilities": "Weekly availability",
+            "weeklyAvailabilitiesDescription": "Set daily ranges for availability slots",
+            "weekday": "Weekday",
+            "schedules": "Schedules",
+            "noAvailability": "No availability",
+            "startAt": "Period start",
+            "endAt": "Period end",
+            "addPeriod": "Add period",
+            "extendingToNextDayWarning": "The selected schedule will extend to {{nextDay}}",
+            "associatedMenuItems": "Associated items",
+            "linkToMenuItems": "Link items",
+            "associatedChannelProfiles": "Associated channel profiles",
+            "linkToChannelProfiles": "Link channel profiles",
+            "autoAddNewMenuItems": "Automatically link new items",
+            "autoAddNewChannelProfiles": "Automatically link new channel profiles"
         },
         "locals": {
             "title": "Locals"

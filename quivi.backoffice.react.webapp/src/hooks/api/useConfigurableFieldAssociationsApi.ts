@@ -23,7 +23,7 @@ export const useConfigurableFieldAssociationsApi = () => {
 
     const patch = (request: UpdateConfigurableFieldAssociationsRequest) => {
         if(request.channelProfileId != undefined) {
-            const url = new URL(`api/ConfigurableFields/${request.channelProfileId}/associations`, import.meta.env.VITE_API_URL).toString();
+            const url = new URL(`api/ChannelProfiles/${request.channelProfileId}/associations`, import.meta.env.VITE_API_URL).toString();
             return client.patch<GetConfigurableFieldAssociationsResponse>(url, {
                 associations: request.associations
             }, {});

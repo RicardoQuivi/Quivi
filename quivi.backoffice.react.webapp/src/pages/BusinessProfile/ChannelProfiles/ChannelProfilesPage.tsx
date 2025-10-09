@@ -21,7 +21,7 @@ import { useChannelProfileMutator } from "../../../hooks/mutators/useChannelProf
 import { QueryPagination } from "../../../components/pagination/QueryPagination";
 import { Divider } from "../../../components/dividers/Divider";
 import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
-import { LinkToConfigurableFIeldsModal } from "./LinkToConfigurableFIeldsModal";
+import { LinkToConfigurableFieldsModal } from "./LinkToConfigurableFieldsModal";
 
 export const ChannelProfilesPage = () => {
     const { t } = useTranslation();
@@ -167,7 +167,7 @@ export const ChannelProfilesPage = () => {
             getName={s => s.name}
             onClose={() => setState(s => ({ ...s, deleteEntity: undefined}))}
         />
-        <LinkToConfigurableFIeldsModal
+        <LinkToConfigurableFieldsModal
             model={state.linkEntity}
             onClose={() => setState(s => ({ ...s, linkEntity: undefined}))}
         />

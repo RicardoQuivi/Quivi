@@ -1246,6 +1246,82 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.ToTable("PushNotificationsContact");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AutoAddNewChannelProfiles")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AutoAddNewMenuItems")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MerchantId");
+
+                    b.ToTable("Availabilities");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityMenuItemAssociation", b =>
+                {
+                    b.Property<int>("AvailabilityGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("AvailabilityGroupId", "MenuItemId");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.ToTable("AvailabilityMenuItemAssociation");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityProfileAssociation", b =>
+                {
+                    b.Property<int>("AvailabilityGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChannelProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("AvailabilityGroupId", "ChannelProfileId");
+
+                    b.HasIndex("ChannelProfileId");
+
+                    b.ToTable("AvailabilityProfileAssociation");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.Channel", b =>
                 {
                     b.Property<int>("Id")
@@ -1790,43 +1866,6 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .HasFilter("[DeletedDate] IS NULL");
 
                     b.ToTable("MenuItemTranslation");
-                });
-
-            modelBuilder.Entity("Quivi.Domain.Entities.Pos.MenuItemWeeklyAvailability", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EndAtSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("StartAtSeconds")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedDate")
-                        .HasDatabaseName("IX_T_DeletedDate_NotDeleted")
-                        .HasFilter("[DeletedDate] IS NULL");
-
-                    b.HasIndex("MenuItemId");
-
-                    b.ToTable("MenuItemWeeklyAvailabilities");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.MerchantCustomCharge", b =>
@@ -2712,6 +2751,30 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.ToTable("SpatialChannel");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.WeeklyAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AvailabilityGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EndAtSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StartAtSeconds")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityGroupId");
+
+                    b.ToTable("WeeklyAvailability");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Repositories.EntityFramework.Identity.ApplicationRole", b =>
                 {
                     b.Property<int>("Id")
@@ -3491,6 +3554,55 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("PushDevice");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityGroup", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Merchants.Merchant", "Merchant")
+                        .WithMany()
+                        .HasForeignKey("MerchantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Merchant");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityMenuItemAssociation", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Pos.AvailabilityGroup", "AvailabilityGroup")
+                        .WithMany("AssociatedMenuItems")
+                        .HasForeignKey("AvailabilityGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Quivi.Domain.Entities.Pos.MenuItem", "MenuItem")
+                        .WithMany("AssociatedAvailabilityGroups")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AvailabilityGroup");
+
+                    b.Navigation("MenuItem");
+                });
+
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityProfileAssociation", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Pos.AvailabilityGroup", "AvailabilityGroup")
+                        .WithMany("AssociatedChannelProfiles")
+                        .HasForeignKey("AvailabilityGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Quivi.Domain.Entities.Pos.ChannelProfile", "ChannelProfile")
+                        .WithMany("AssociatedAvailabilityGroups")
+                        .HasForeignKey("ChannelProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AvailabilityGroup");
+
+                    b.Navigation("ChannelProfile");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.Channel", b =>
                 {
                     b.HasOne("Quivi.Domain.Entities.Pos.ChannelProfile", "ChannelProfile")
@@ -3687,17 +3799,6 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                         .WithMany("MenuItemTranslations")
                         .HasForeignKey("MenuItemId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("MenuItem");
-                });
-
-            modelBuilder.Entity("Quivi.Domain.Entities.Pos.MenuItemWeeklyAvailability", b =>
-                {
-                    b.HasOne("Quivi.Domain.Entities.Pos.MenuItem", "MenuItem")
-                        .WithMany("MenuItemWeeklyAvailabilities")
-                        .HasForeignKey("MenuItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("MenuItem");
@@ -4136,6 +4237,17 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("Channel");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.WeeklyAvailability", b =>
+                {
+                    b.HasOne("Quivi.Domain.Entities.Pos.AvailabilityGroup", "AvailabilityGroup")
+                        .WithMany("WeeklyAvailabilities")
+                        .HasForeignKey("AvailabilityGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AvailabilityGroup");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Repositories.EntityFramework.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("Quivi.Domain.Repositories.EntityFramework.Identity.ApplicationRole", null)
@@ -4326,6 +4438,15 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("Contacts");
                 });
 
+            modelBuilder.Entity("Quivi.Domain.Entities.Pos.AvailabilityGroup", b =>
+                {
+                    b.Navigation("AssociatedChannelProfiles");
+
+                    b.Navigation("AssociatedMenuItems");
+
+                    b.Navigation("WeeklyAvailabilities");
+                });
+
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.Channel", b =>
                 {
                     b.Navigation("Orders");
@@ -4337,6 +4458,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.ChannelProfile", b =>
                 {
+                    b.Navigation("AssociatedAvailabilityGroups");
+
                     b.Navigation("AssociatedOrderConfigurableFields");
 
                     b.Navigation("Channels");
@@ -4376,6 +4499,8 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.MenuItem", b =>
                 {
+                    b.Navigation("AssociatedAvailabilityGroups");
+
                     b.Navigation("MenuItemCategoryAssociations");
 
                     b.Navigation("MenuItemModifierGroups");
@@ -4383,8 +4508,6 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
                     b.Navigation("MenuItemModifiers");
 
                     b.Navigation("MenuItemTranslations");
-
-                    b.Navigation("MenuItemWeeklyAvailabilities");
 
                     b.Navigation("PreparationGroupItems");
                 });

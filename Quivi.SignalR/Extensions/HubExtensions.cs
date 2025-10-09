@@ -50,6 +50,13 @@ namespace Quivi.SignalR.Extensions
             }
         }
 
+        private class ChannelProfileGroup<T> : AGroup<T> where T : class
+        {
+            public ChannelProfileGroup(IGroupManager groupManager, IHubClients<T> hubClients, string channelId) : base(groupManager, hubClients, channelId, "ChannelProfiles")
+            {
+            }
+        }
+
         private class JobGroup<T> : AGroup<T> where T : class
         {
             public JobGroup(IGroupManager groupManager, IHubClients<T> hubClients, string jobId) : base(groupManager, hubClients, jobId, "Jobs")
@@ -97,6 +104,24 @@ namespace Quivi.SignalR.Extensions
                 return;
 
             var group = new MerchantGroup<T>(hub.Groups, hub.Clients, id);
+            await func(group);
+        }
+
+        public static async Task WithChannelProfileId<THub, T>(this IHubContext<THub, T> context, string id, Func<IGroup<T>, Task> func) where THub : Hub<T> where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var group = new ChannelProfileGroup<T>(context.Groups, context.Clients, id);
+            await func(group);
+        }
+
+        public static async Task WithChannelProfileId<T>(this Hub<T> hub, string? id, Func<IGroup<T>, Task> func) where T : class
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            var group = new ChannelProfileGroup<T>(hub.Groups, hub.Clients, id);
             await func(group);
         }
 

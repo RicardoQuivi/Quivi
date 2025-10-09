@@ -1,5 +1,6 @@
 using Hangfire;
 using Quivi.Application.Extensions;
+using Quivi.Hangfire.Extensions;
 using Quivi.Hangfire.Hangfire;
 using Quivi.Hangfire.Printing;
 using Quivi.Hangfire.Settings;
@@ -10,11 +11,12 @@ namespace Quivi.Hangfire
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.RegisterAll(builder.Configuration);
+            builder.Services.RegisterRecurringJobs();
             builder.Services.AddHangfireServer();
             builder.Services.AddControllers();
 
@@ -44,6 +46,9 @@ namespace Quivi.Hangfire
                 AsyncAuthorization = authenticationfilters,
                 DashboardTitle = "Quivi's Hangfire Dashboard",
             });
+
+
+            await app.Services.AddRecurringJobs();
             app.Run();
         }
     }

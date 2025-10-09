@@ -50,12 +50,12 @@ const queryMatches = (q: Query, type: EntityType, id?: string): boolean => {
 const invalidateQuery = (query: QueryClient, type: EntityType, id?: string): Promise<void> => {
     console.debug(`Event ${type} of Id ${id} received!`)
     return query.invalidateQueries({ 
-        predicate: (q) =>  queryMatches(q, type, id),
+        predicate: (q) => queryMatches(q, type, id),
     });
 }
 
 interface InvalidatorContextType {
-    readonly invalidate: (entitity: Entity, id: string) => Promise<void>;
+    readonly invalidate: (entitity: Entity, id?: string) => Promise<void>;
 }
 const InvalidatorContext = createContext<InvalidatorContextType | undefined>(undefined);
 
@@ -91,7 +91,7 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
     // }, [webEvents.client])
     
     const result = useMemo<InvalidatorContextType>(() => ({
-        invalidate: (entity: Entity, id: string) => invalidateQuery(queryClient, getEntityType(entity), id),
+        invalidate: (entity: Entity, id?: string) => invalidateQuery(queryClient, getEntityType(entity), id),
     }), []);
 
     return (

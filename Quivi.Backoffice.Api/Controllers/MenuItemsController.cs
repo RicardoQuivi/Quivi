@@ -99,7 +99,7 @@ namespace Quivi.Backoffice.Api.Controllers
         [HttpPatch("{id}")]
         public async Task<PatchMenuItemResponse> Patch(string id, [FromBody] PatchMenuItemRequest request)
         {
-            var result = await commandProcessor.Execute(new UpdateMenuItemAsyncCommand
+            var result = await commandProcessor.Execute(new UpdateMenuItemsAsyncCommand
             {
                 Criteria = new GetMenuItemsCriteria
                 {

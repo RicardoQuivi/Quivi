@@ -247,12 +247,12 @@ export const ModifierGroupBaseForm = (props: Props) => {
                             }
 
                             return (
-                                <div className="flex items-center gap-3">
-                                    <Avatar
-                                        src={item.imageUrl}
-                                        alt={item.name}
-                                        size="large"
-                                    />
+                            <div className="flex items-center gap-3">
+                                <Avatar
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    size="large"
+                                />
                                 <div>
                                     <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                         {item.name}

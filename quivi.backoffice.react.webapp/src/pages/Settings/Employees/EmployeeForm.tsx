@@ -10,6 +10,7 @@ import { TimeField } from '../../../components/inputs/TimeField';
 import { MultiSelectionZone } from '../../../components/inputs/MultiSelectionZone';
 import { CloseLineIcon } from '../../../icons';
 import { Spinner } from '../../../components/spinners/Spinner';
+import { TimeSpanHelper } from '../../../utilities/timespanHelpers';
 
 const schema = yup.object<EmployeeFormState>({
     name: yup.string().required(),
@@ -21,32 +22,13 @@ export interface EmployeeFormState {
     readonly restrictions: EmployeeRestriction[];
 }
 
-const getTimeInSeconds = (time: string): number => {
-    const aux = time.split(":");
-    if(aux.length == 0) {
-        return 0;
-    }
-    if(aux.length == 1) {
-        return +aux[0];
-    }
-    if(aux.length == 2) {
-        return (+aux[0])*60+(+aux[1]);
-    }
-    if(aux.length == 3) {
-        return (+aux[0])*60*60+(+aux[1])*60+(+aux[2]);
-    }
-    return (+aux[0])*60*60*24+(+aux[1])*60*60+(+aux[2])*60+(+aux[3]);
-}
-
-const toDate = (time: string | undefined): Date| undefined => {
+const toDate = (time: string | undefined): Date | undefined => {
     if(time == undefined) {
         return undefined;
     }
-    const totalSeconds = getTimeInSeconds(time);
-
-    const t = new Date(1970, 0, 1); // Epoch
-    t.setSeconds(totalSeconds);
-    return t;
+    
+    const timespan = TimeSpanHelper.fromString(time);
+    return TimeSpanHelper.toDate(timespan);
 }
 
 const getState = (model: Employee | undefined) => {

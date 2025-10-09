@@ -1,0 +1,183 @@
+import { useTranslation } from "react-i18next";
+import { Spinner } from "../../../components/spinners/Spinner";
+import { Modal, ModalSize } from "../../../components/ui/modal"
+import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
+import { useToast } from "../../../layout/ToastProvider";
+import { useEffect, useMemo, useState } from "react";
+import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
+import { MultiSelectionZone } from "../../../components/inputs/MultiSelectionZone";
+import { QueryPagination } from "../../../components/pagination/QueryPagination";
+import { Availability } from "../../../hooks/api/Dtos/availabilities/Availability";
+import { useMenuItemsQuery } from "../../../hooks/queries/implementations/useMenuItemsQuery";
+import { Collections } from "../../../utilities/Collectionts";
+import { MenuItem } from "../../../hooks/api/Dtos/menuItems/MenuItem";
+import { useAvailabilityMenuItemsAssociationsQuery } from "../../../hooks/queries/implementations/useAvailabilityMenuItemsAssociationsQuery";
+import { useAvailabilityMenuItemAssociationMutator } from "../../../hooks/mutators/useAvailabilityMenuItemAssociationMutator";
+import { UpdateAvailabilityMenuItemAssociation } from "../../../hooks/api/Dtos/availabilityMenuItemAssociations/UpdateAvailabilityMenuItemAssociationsRequest";
+
+const pageSize = 10;
+
+interface Props {
+    readonly model: Availability | undefined;
+    readonly onClose: () => void;
+}
+export const LinkToMenuItemsModal = (props: Props) => {
+    const { t } = useTranslation();
+    const toast = useToast();
+    const mutator = useAvailabilityMenuItemAssociationMutator();
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [page, setPage] = useState(0);
+
+    const associationsQuery = useAvailabilityMenuItemsAssociationsQuery(props.model == undefined ? undefined : {
+        availabilityIds: [props.model.id],
+        page: 0,
+    })
+    const menuItemsQuery = useMenuItemsQuery({
+        page: page,
+        pageSize: pageSize,
+    })
+
+    const [toggles, setToggles] = useState(() => new Set<string>());
+
+    const associations = useMemo(() => Collections.toSet(associationsQuery.data, a => a.menuItemId), [associationsQuery.data])
+
+    const selected = useMemo(() => {
+        const set = new Set<string>(associations);
+
+        for(const t of toggles.keys()) {
+            if(set.has(t)) {
+                set.delete(t);
+                continue;
+            }
+
+            set.add(t);
+        }
+
+        const result = [] as MenuItem[];
+        for(const p of menuItemsQuery.data) {
+            if(set.has(p.id) == false) {
+                continue;
+            }
+
+            result.push(p);
+        }
+
+        return result;
+    }, [toggles, associations, menuItemsQuery.data])
+
+    useEffect(() => {
+        if(props.model == undefined) {
+            return;
+        }
+
+        setToggles(new Set<string>());
+    }, [props.model])
+
+    const save = async () => {
+        if(props.model == undefined) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            if(toggles.size != 0) {
+                const aux = [] as UpdateAvailabilityMenuItemAssociation[];
+
+                for(const a of associations) {
+                    if(toggles.has(a)) {
+                        aux.push({
+                            id: a,
+                            active: false,
+                        })
+                    }
+                }
+
+                for(const a of toggles) {
+                    if(associations.has(a) == false) {
+                        aux.push({
+                            id: a,
+                            active: true,
+                        })
+                    }
+                }
+
+                await mutator.patchAvailability(props.model, associationsQuery.data, {
+                    associations: aux,
+                })
+            }
+            toast.success(t("common.operations.success.edit"));
+        } catch {
+            toast.error(t("common.operations.failure.generic"));
+        } finally {
+            props.onClose();
+            setIsSubmitting(false);
+        }
+    }
+
+    return <Modal
+        isOpen={props.model != undefined}
+        onClose={props.onClose}
+        size={ModalSize.Medium}
+        title={t("pages.availabilities.linkToMenuItems", {
+            name: props.model?.name ?? <Skeleton />,
+        })}
+        footer={(
+            <ModalButtonsFooter 
+                primaryButton={{
+                    content: isSubmitting
+                                ?
+                                <Spinner />
+                                :
+                                t("common.confirm"),
+                    disabled: isSubmitting || toggles.size == 0,
+                    onClick: save,
+                }}
+                secondaryButton={{
+                    content: t("common.close"),
+                    onClick: props.onClose,
+                }}
+            />
+        )}
+    >
+        <div>
+            {
+                menuItemsQuery.isFirstLoading || associationsQuery.isFirstLoading
+                ?
+                <MultiSelectionZone
+                    options={[1, 2, 3, 4, 5, 6]}
+                    selected={[1, 2, 3, 4, 5, 6]}
+                    getId={s => `Loading-${s}`}
+                    render={_ => <h5 className="text-sm font-medium text-gray-800 dark:text-white/90 w-full">
+                        <Skeleton className="w-full" />
+                    </h5>}
+                    checkIcon={Spinner}
+                />
+                :
+                <MultiSelectionZone
+                    options={menuItemsQuery.data}
+                    selected={selected}
+                    getId={s => s.id}
+                    render={s => <h5 className="text-sm font-medium text-gray-800 dark:text-white/90">{s.name}</h5>}
+                    onChange={(_, d) => setToggles(t => {
+                        const result = new Set<string>(t);
+
+                        if(result.has(d.id)) {
+                            result.delete(d.id)
+                        } else {
+                            result.add(d.id);
+                        }
+
+                        return result;
+                    })}
+                />
+            }
+            <br/>
+            <QueryPagination
+                query={menuItemsQuery}
+                onPageIndexChange={setPage}
+                pageSize={pageSize}
+            />
+        </div>
+    </Modal>
+}

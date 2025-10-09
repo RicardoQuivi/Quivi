@@ -371,16 +371,16 @@ namespace Quivi.Application.Extensions
             return serviceCollection;
         }
 
-        private static IServiceCollection RegisterPosSyncStrategies(this IServiceCollection serviceColection)
+        private static IServiceCollection RegisterPosSyncStrategies(this IServiceCollection serviceCollection)
         {
-            serviceColection.RegisterScoped<GenericPosSyncService>();
-            serviceColection.RegisterScoped<IPosSyncService, GenericPosSyncService>();
+            serviceCollection.RegisterScoped<GenericPosSyncService>();
+            serviceCollection.RegisterScoped<IPosSyncService, GenericPosSyncService>();
 
             var implementations = GetAllImplementations<IPosSyncStrategy>();
             foreach (var implementation in implementations)
-                serviceColection.RegisterScoped(implementation);
+                serviceCollection.RegisterScoped(implementation);
 
-            serviceColection.RegisterScoped<IEnumerable<IPosSyncStrategy>>(s =>
+            serviceCollection.RegisterScoped<IEnumerable<IPosSyncStrategy>>(s =>
             {
                 List<IPosSyncStrategy> result = new();
                 foreach (var implementation in implementations)
@@ -388,7 +388,7 @@ namespace Quivi.Application.Extensions
                 return result;
             });
 
-            return serviceColection;
+            return serviceCollection;
         }
 
         private static IServiceCollection RegisterChargeMethods(this IServiceCollection serviceCollection)

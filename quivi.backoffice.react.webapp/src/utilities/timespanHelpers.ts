@@ -1,62 +1,91 @@
 import { TimeSpan } from "../hooks/api/Dtos/TimeSpan";
 
-export const fromStringToTimespan = (time: string): TimeSpan => {
-    const aux = time.split(":");
-    if(aux.length == 0) {
+export class TimeSpanHelper {
+    static fromString = (timespan: string): TimeSpan => {
+        const ms = parseTimeSpan(timespan);
+        const abs = Math.abs(ms);
+
+        const days = Math.floor(abs / 86400000);
+        const hours = Math.floor((abs % 86400000) / 3600000);
+        const minutes = Math.floor((abs % 3600000) / 60000);
+        const seconds = Math.floor((abs % 60000) / 1000);
+        //const milliseconds = abs % 1000;
+
         return {
-            hours: 0,
-            minutes: 0,
-            seconds: 0,
+            days: days,
+            hours: hours,
+            minutes: minutes,
+            seconds: seconds,
+        }
+    }
+
+    static toDate = (input: TimeSpan): Date => {
+        const t = new Date(1970, 0, 1);
+        const totalSeconds = input.hours*60*60+input.minutes*60+input.seconds;
+        t.setSeconds(totalSeconds);
+        return t;
+    }
+
+    static fromDate = (timespan: Date): TimeSpan => this.fromSeconds(timespan.getMilliseconds() / 1000);
+
+    static toString = (timespan: TimeSpan) => {
+        let values = [
+            timespan.hours.toString().padStart(2, '0'),
+            timespan.minutes.toString().padStart(2, '0'),
+            timespan.seconds.toString().padStart(2, '0'),
+        ]
+
+        let result = values.join(":");
+        if(timespan.days != 0) {
+            result = `${timespan.days}.${result}`;
+        }
+
+        return result;
+    }
+
+    static fromSeconds = (totalSeconds: number): TimeSpan => {
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return {
+            days,
+            hours,
+            minutes,
+            seconds
         };
     }
-    if(aux.length == 1) {
-        return {
-            hours: 0,
-            minutes: 0,
-            seconds: +aux[0],
-        }
-    }
-    if(aux.length == 2) {
-        return {
-            hours: 0,
-            minutes: +aux[0],
-            seconds: +aux[1],
-        }
-    }
-    if(aux.length == 3) {
-        return {
-            hours: +aux[0],
-            minutes: +aux[1],
-            seconds: +aux[2],
-        }
-    }
 
-    return {
-        hours: (+aux[0]*24) + (+aux[1]),
-        minutes: +aux[2],
-        seconds: +aux[3],
+    static toSeconds = (timespan: TimeSpan): number => {
+        let result = timespan.seconds;
+        result += timespan.minutes * 60;
+        result += timespan.hours * 60 * 60;
+        result += timespan.days * 60 * 60 * 24;
+        return result;
     }
 }
 
-export const fromTimespanToDate = (input: TimeSpan): Date => {
-    const t = new Date(1970, 0, 1);
-    const totalSeconds = input.hours*60*60+input.minutes*60+input.seconds;
-    t.setSeconds(totalSeconds);
-    return t;
-}
+function parseTimeSpan(timespan: string): number {
+    // Returns total milliseconds
+    const regex = /^(-)?(?:(\d+)\.)?(\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))?$/;
+    const match = timespan.match(regex);
 
-export const fromDateToTimespan = (timespan: Date): TimeSpan => ({
-    hours: timespan.getHours(),
-    minutes: timespan.getMinutes(),
-    seconds: timespan.getSeconds(),
-})
+    if (!match) {
+        throw new Error(`Invalid TimeSpan format: ${timespan}`);
+    }
 
-export const fromTimespanToString = (timespan: TimeSpan) => {
-    const values = [
-        timespan.hours.toString().padStart(2, '0'),
-        timespan.minutes.toString().padStart(2, '0'),
-        timespan.seconds.toString().padStart(2, '0'),
-    ]
+    const [
+    , sign, days, hours, minutes, seconds, fraction
+    ] = match;
 
-    return values.join(":")
+    const signFactor = sign ? -1 : 1;
+
+    const totalMilliseconds =
+    ((parseInt(days || "0") * 24 * 60 * 60) +
+        (parseInt(hours) * 60 * 60) +
+        (parseInt(minutes) * 60) +
+        parseInt(seconds)) * 1000 +
+    (fraction ? parseFloat("0." + fraction) * 1000 : 0);
+
+    return totalMilliseconds * signFactor;
 }

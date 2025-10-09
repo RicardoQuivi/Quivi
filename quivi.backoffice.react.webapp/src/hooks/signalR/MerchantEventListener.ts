@@ -16,6 +16,9 @@ import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSync
 import { OnMerchantDocumentOperation } from "./Dtos/OnMerchantDocumentOperation";
 import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
 import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
+import { OnAvailabilityOperation } from "./Dtos/OnAvailabilityOperation";
+import { OnAvailabilityMenuItemAssociationOperation } from "./Dtos/OnAvailabilityMenuItemAssociationOperation";
+import { OnAvailabilityChannelProfileAssociationOperation } from "./Dtos/OnAvailabilityChannelProfileAssociationOperation";
 
 export interface MerchantEventListener {
     readonly onChannelEvent?: (evt: OnChannelEvent) => any;
@@ -34,6 +37,9 @@ export interface MerchantEventListener {
     readonly onTransactionSyncAttemptOperation?: (evt: OnTransactionSyncAttemptOperationEvent) => any;
     readonly onReviewOperation?: (evt: OnReviewOperationEvent) => any;
     readonly onMerchantDocumentOperation?: (evt: OnMerchantDocumentOperation) => any;
-    readonly onConfigurableFieldOperation ?: (evt: OnConfigurableFieldOperation) => any;
-    readonly onConfigurableFieldAssociationOperation ?: (evt: OnConfigurableFieldAssociationOperation) => any;
+    readonly onConfigurableFieldOperation?: (evt: OnConfigurableFieldOperation) => any;
+    readonly onConfigurableFieldAssociationOperation?: (evt: OnConfigurableFieldAssociationOperation) => any;
+    readonly onAvailabilityOperation?: (evt: OnAvailabilityOperation) => any;
+    readonly onAvailabilityMenuItemAssociationOperation?: (evt: OnAvailabilityMenuItemAssociationOperation) => any;
+    readonly onAvailabilityChannelProfileAssociationOperation?: (evt: OnAvailabilityChannelProfileAssociationOperation) => any;
 }

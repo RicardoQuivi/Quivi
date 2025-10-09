@@ -36,7 +36,7 @@ namespace Quivi.Guests.Api.Controllers
                 ItemCategoryIds = string.IsNullOrWhiteSpace(request.MenuItemCategoryId) ? null : [idConverter.FromPublicId(request.MenuItemCategoryId)],
                 Ids = request.Ids?.Select(idConverter.FromPublicId),
                 HiddenFromGuestsApp = false,
-                AvailableAt = request.IgnoreCalendarAvailability ? null : new Availability
+                AvailableAt = request.IgnoreCalendarAvailability ? null : new AvailabilityAt
                 {
                     UtcDate = request.AtDate?.UtcDateTime ?? dateTimeProvider.GetUtcNow(),
                     ChannelId = idConverter.FromPublicId(request.ChannelId),

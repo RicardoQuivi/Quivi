@@ -68,7 +68,7 @@ namespace Quivi.Pos.Api.Controllers
         public async Task<UpdateMenuItemStockResponse> UpdateStock([FromBody] UpdateMenuItemStockRequest request)
         {
             var stockMap = request.StockMap.ToDictionary(kv => idConverter.FromPublicId(kv.Key), kv => kv.Value);
-            var result = await commandProcessor.Execute(new UpdateMenuItemAsyncCommand
+            var result = await commandProcessor.Execute(new UpdateMenuItemsAsyncCommand
             {
                 Criteria = new GetMenuItemsCriteria
                 {

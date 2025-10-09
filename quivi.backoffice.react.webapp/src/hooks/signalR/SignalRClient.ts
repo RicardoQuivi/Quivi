@@ -20,6 +20,9 @@ import { OnTransactionSyncAttemptOperationEvent } from "./Dtos/OnTransactionSync
 import { OnMerchantDocumentOperation } from "./Dtos/OnMerchantDocumentOperation";
 import { OnConfigurableFieldAssociationOperation } from "./Dtos/OnConfigurableFieldAssociationOperation";
 import { OnConfigurableFieldOperation } from "./Dtos/OnConfigurableFieldOperation";
+import { OnAvailabilityOperation } from "./Dtos/OnAvailabilityOperation";
+import { OnAvailabilityMenuItemAssociationOperation } from "./Dtos/OnAvailabilityMenuItemAssociationOperation";
+import { OnAvailabilityChannelProfileAssociationOperation } from "./Dtos/OnAvailabilityChannelProfileAssociationOperation";
 
 export interface IWebClient {
     addUserListener(listener: UserEventListener): void;
@@ -170,6 +173,15 @@ export class SignalRClient implements IWebClient {
 
         this.connection.off('OnConfigurableFieldAssociationOperation');
         this.connection.on('OnConfigurableFieldAssociationOperation', (evt: OnConfigurableFieldAssociationOperation) => this.merchantListeners.forEach(l => l.onConfigurableFieldAssociationOperation?.(evt)));
+
+        this.connection.off('OnAvailabilityOperation');
+        this.connection.on('OnAvailabilityOperation', (evt: OnAvailabilityOperation) => this.merchantListeners.forEach(l => l.onAvailabilityOperation?.(evt)));
+
+        this.connection.off('OnAvailabilityMenuItemAssociationOperation');
+        this.connection.on('OnAvailabilityMenuItemAssociationOperation', (evt: OnAvailabilityMenuItemAssociationOperation) => this.merchantListeners.forEach(l => l.onAvailabilityMenuItemAssociationOperation?.(evt)));
+        
+        this.connection.off('OnAvailabilityChannelProfileAssociationOperation');
+        this.connection.on('OnAvailabilityChannelProfileAssociationOperation', (evt: OnAvailabilityChannelProfileAssociationOperation) => this.merchantListeners.forEach(l => l.onAvailabilityChannelProfileAssociationOperation?.(evt)));
     }
 
     addUserListener(listener: UserEventListener): void {

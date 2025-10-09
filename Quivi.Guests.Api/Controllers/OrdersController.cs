@@ -208,7 +208,7 @@ namespace Quivi.Guests.Api.Controllers
                 Ids = decodedItems.Select(d => d.Id),
                 IncludeModifierGroupsAssociations = true,
                 IncludeModifierGroupsAssociationsMenuItemModifierGroupMenuItemModifiersMenuItem = true,
-                AvailableAt = new Availability
+                AvailableAt = new AvailabilityAt
                 {
                     UtcDate = dateTimeProvider.GetUtcNow(),
                     ChannelId = order.ChannelId,

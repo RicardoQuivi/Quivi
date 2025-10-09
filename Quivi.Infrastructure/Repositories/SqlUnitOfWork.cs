@@ -47,6 +47,10 @@ namespace Quivi.Infrastructure.Repositories
         public IOrderConfigurableFieldChannelProfileAssociationsRepository OrderConfigurableFieldChannelProfileAssociations => new SqlOrderConfigurableFieldChannelProfileAssociationsRepository(quiviContext);
         public IOrderAdditionalInfosRepository OrderAdditionalInfos => new SqlOrderAdditionalInfosRepository(quiviContext);
         public IPosChargeInvoiceItemsRepository PosChargeInvoiceItems => new SqlPosChargeInvoiceItemsRepository(quiviContext);
+        public IAvailabilityGroupsRepository Availabilities => new SqlAvailabilityGroupsRepository(quiviContext);
+        public IAvailabilityProfileAssociationsRepository AvailabilityProfileAssociations => new SqlAvailabilityProfileAssociationsRepository(quiviContext);
+        public IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations => new SqlAvailabilityMenuItemAssociationsRepository(quiviContext);
+        public IWeeklyAvailabilitiesRepository WeeklyAvailabilities => new SqlWeeklyAvailabilitiesRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

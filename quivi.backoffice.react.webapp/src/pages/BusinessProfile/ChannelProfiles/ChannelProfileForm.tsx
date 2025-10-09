@@ -3,7 +3,6 @@ import { ChannelFeatures, ChannelProfile } from "../../../hooks/api/Dtos/channel
 import { usePosIntegrationsQuery } from "../../../hooks/queries/implementations/usePosIntegrationsQuery";
 import { useEffect, useMemo, useState } from "react";
 import { PosIntegration } from "../../../hooks/api/Dtos/posIntegrations/PosIntegration";
-import { fromDateToTimespan, fromStringToTimespan, fromTimespanToDate, fromTimespanToString } from "../../../utilities/timespanHelpers";
 import useChannelHelper, { ChannelMode } from "../../../utilities/useChannelHelper";
 import { useIntegrationHelper } from "../../../utilities/useIntegrationHelper";
 import Label from "../../../components/form/Label";
@@ -18,6 +17,7 @@ import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
 import { Spinner } from "../../../components/spinners/Spinner";
+import { TimeSpanHelper } from "../../../utilities/timespanHelpers";
 
 const schema = yup.object<QrCodeProfileFormState>({
     name: yup.string().required(),
@@ -66,8 +66,8 @@ export const ChannelProfileForm = (props: Props) => {
         name: props.model?.name ?? "",
         features: props.model?.features ?? channelHelper.getDefaultFeatures(ChannelMode.OnSite),
         minimumPrePaidOrderAmount: props.model?.minimumPrePaidOrderAmount ?? 0,
-        originalSendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : fromTimespanToDate(fromStringToTimespan(props.model.sendToPreparationTimer)),
-        sendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : fromTimespanToDate(fromStringToTimespan(props.model.sendToPreparationTimer)),
+        originalSendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : TimeSpanHelper.toDate(TimeSpanHelper.fromString(props.model.sendToPreparationTimer)),
+        sendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : TimeSpanHelper.toDate(TimeSpanHelper.fromString(props.model.sendToPreparationTimer)),
         posIntegration: undefined as PosIntegration | undefined,
 
         mode: "default" as "custom" | "default",
@@ -80,8 +80,8 @@ export const ChannelProfileForm = (props: Props) => {
         name: props.model?.name ?? "",
         features: props.model?.features ?? channelHelper.getDefaultFeatures(ChannelMode.OnSite),
         minimumPrePaidOrderAmount: props.model?.minimumPrePaidOrderAmount ?? 0,
-        originalSendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : fromTimespanToDate(fromStringToTimespan(props.model.sendToPreparationTimer)),
-        sendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : fromTimespanToDate(fromStringToTimespan(props.model.sendToPreparationTimer)),
+        originalSendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : TimeSpanHelper.toDate(TimeSpanHelper.fromString(props.model.sendToPreparationTimer)),
+        sendToPreparationTimer: props.model?.sendToPreparationTimer == undefined ? null : TimeSpanHelper.toDate(TimeSpanHelper.fromString(props.model.sendToPreparationTimer)),
         posIntegration: props.model?.posIntegrationId == undefined ? undefined : (integrationsMap.get(props.model?.posIntegrationId) ?? defaultIntegration),
 
         mode: props.model != undefined && channelHelper.getMode(props.model.features) == ChannelMode.Other ? "custom" : "default",
@@ -117,7 +117,7 @@ export const ChannelProfileForm = (props: Props) => {
             ?
             null
             :
-            fromTimespanToString(fromDateToTimespan(state.sendToPreparationTimer))
+            TimeSpanHelper.toString(TimeSpanHelper.fromDate(state.sendToPreparationTimer))
         );
 
         await props.onSubmit({
@@ -178,7 +178,8 @@ export const ChannelProfileForm = (props: Props) => {
                         checked={state.sendToPreparationTimer != null}
                         onChange={() => setState(s => ({
                                                 ...s, 
-                                                sendToPreparationTimer: s.sendToPreparationTimer == null ? fromTimespanToDate({
+                                                sendToPreparationTimer: s.sendToPreparationTimer == null ? TimeSpanHelper.toDate({
+                                                    days: 0,
                                                     hours: 0,
                                                     minutes: 2,
                                                     seconds: 0,
@@ -191,7 +192,8 @@ export const ChannelProfileForm = (props: Props) => {
                         checked={state.sendToPreparationTimer == null}
                         onChange={() => setState(s => ({
                                                 ...s, 
-                                                sendToPreparationTimer: s.sendToPreparationTimer == null ? fromTimespanToDate({
+                                                sendToPreparationTimer: s.sendToPreparationTimer == null ? TimeSpanHelper.toDate({
+                                                    days: 0,
                                                     hours: 0,
                                                     minutes: 2,
                                                     seconds: 0,

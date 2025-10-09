@@ -42,6 +42,9 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
             case Entity.ConfigurableFields: return t("common.entities.configurableField");
             case Entity.ConfigurableFieldAssociations: return t("common.entities.configurableFieldAssociation");
             case Entity.Settlements: return t("common.entities.settlements");
+            case Entity.Availabilities: return t("common.entities.availabilities");
+            case Entity.AvailabilityChannelProfileAssociations: return t("common.entities.availabilityChannelProfileAssociation");
+            case Entity.AvailabilityMenuItemAssociations: return t("common.entities.availabilityMenuItemAssociation");
         }
     }
 
@@ -75,7 +78,7 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
 
     return <Modal
         isOpen={props.model != undefined}
-        onClose={() => props.onClose()}
+        onClose={props.onClose}
         size={ModalSize.Medium}
         title={getTitle()}
         footer={(
@@ -91,7 +94,7 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
                 }}
                 secondaryButton={{
                     content: t("common.close"),
-                    onClick: () => props.onClose(),
+                    onClick: props.onClose,
                 }}
             />
         )}

@@ -25,6 +25,16 @@ namespace Quivi.SignalR.Hubs.Guests
             await group.RemoveAsync(Context.ConnectionId);
         });
 
+        public Task JoinChannelProfileEvents(string channelProfileId) => this.WithChannelProfileId(channelProfileId, async group =>
+        {
+            await group.AddAsync(Context.ConnectionId);
+        });
+
+        public Task LeaveChannelProfileEvents(string channelProfileId) => this.WithChannelProfileId(channelProfileId, async group =>
+        {
+            await group.RemoveAsync(Context.ConnectionId);
+        });
+
         public Task JoinJobEvents(string jobId) => this.WithJobId(jobId, async group =>
         {
             await group.AddAsync(Context.ConnectionId);

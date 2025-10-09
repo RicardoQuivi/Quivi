@@ -4,6 +4,7 @@ using Quivi.Infrastructure.Abstractions.Events;
 using Quivi.Infrastructure.Abstractions.Events.Data.MenuItems;
 using Quivi.SignalR.Extensions;
 using Quivi.SignalR.Hubs.Backoffice;
+using Quivi.SignalR.Hubs.Guests;
 using Quivi.SignalR.Hubs.Pos;
 
 namespace Quivi.SignalR.EventHandlers.MenuItems
@@ -12,14 +13,17 @@ namespace Quivi.SignalR.EventHandlers.MenuItems
     {
         private readonly IHubContext<BackofficeHub, IBackofficeClient> backofficeHub;
         private readonly IHubContext<PosHub, IPosClient> posHub;
+        private readonly IHubContext<GuestsHub, IGuestClient> guestsHub;
         private readonly IIdConverter idConverter;
 
         public OnMenuItemOperationEventHandler(IHubContext<BackofficeHub, IBackofficeClient> backofficeHub,
                                                 IHubContext<PosHub, IPosClient> posHub,
+                                                IHubContext<GuestsHub, IGuestClient> guestsHub,
                                                 IIdConverter idConverter)
         {
             this.backofficeHub = backofficeHub;
             this.posHub = posHub;
+            this.guestsHub = guestsHub;
             this.idConverter = idConverter;
         }
         public async Task Process(OnMenuItemOperationEvent message)
@@ -37,6 +41,11 @@ namespace Quivi.SignalR.EventHandlers.MenuItems
             });
 
             await posHub.WithMerchantId(evt.MerchantId, async g =>
+            {
+                await g.Client.OnMenuItemOperation(evt);
+            });
+
+            await guestsHub.WithMerchantId(evt.MerchantId, async g =>
             {
                 await g.Client.OnMenuItemOperation(evt);
             });

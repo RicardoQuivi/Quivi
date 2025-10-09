@@ -16,7 +16,7 @@ namespace Quivi.Application.Queries.ItemCategories
         public string? Name { get; init; }
         public bool? IsDeleted { get; init; }
         public bool? HasItems { get; set; }
-        public Availability? AvailableAt { get; set; }
+        public AvailabilityAt? AvailableAt { get; set; }
 
         public bool IncludeMenuItems { get; set; }
         public bool IncludeTranslations { get; set; }

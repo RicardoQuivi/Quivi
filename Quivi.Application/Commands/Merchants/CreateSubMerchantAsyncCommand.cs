@@ -113,15 +113,9 @@ namespace Quivi.Application.Commands.Merchants
             };
 
             SetUpFees(merchant);
-            SetAcquiringCredentials(merchant, now);
 
             repo.Add(merchant);
             return merchant;
-        }
-
-        private void SetAcquiringCredentials(Merchant merchant, DateTime now)
-        {
-            //TODO: AcquirerCredentials
         }
 
         private static void SetUpFees(Merchant merchant)

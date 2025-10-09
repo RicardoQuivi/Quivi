@@ -8,8 +8,11 @@ namespace Quivi.Infrastructure.Repositories
 {
     public class SqlItemCategoriesRepository : ARepository<ItemCategory, GetItemCategoriesCriteria>, IItemCategoriesRepository
     {
+        private readonly SqlMenuItemsRepository menuItemsRepository;
+
         public SqlItemCategoriesRepository(QuiviContext context) : base(context)
         {
+            menuItemsRepository = new SqlMenuItemsRepository(context);
         }
 
         public override IOrderedQueryable<ItemCategory> GetFilteredQueryable(GetItemCategoriesCriteria criteria)
@@ -50,7 +53,17 @@ namespace Quivi.Infrastructure.Repositories
                 query = query.Where(x => x.DeletedDate.HasValue == criteria.IsDeleted.Value);
 
             if (criteria.WithItems.HasValue)
-                query = query.Where(q => q.MenuItemCategoryAssociations!.Any(c => c.MenuItem!.DeletedDate.HasValue == false && c.MenuItem.DeletedDate.HasValue == false) == criteria.WithItems.Value);
+                query = query.Where(q => q.MenuItemCategoryAssociations!.Any(c => c.MenuItem!.DeletedDate.HasValue == false) == criteria.WithItems.Value);
+
+            if (criteria.AvailableAt != null)
+            {
+                var availableItems = menuItemsRepository.GetFilteredQueryable(new GetMenuItemsCriteria
+                {
+                    AvailableAt = criteria.AvailableAt,
+                }).Select(s => s.Id);
+
+                query = query.Where(item => item.MenuItemCategoryAssociations!.Any(c => c.MenuItem!.DeletedDate.HasValue == false && availableItems.Contains(c.MenuItemId)));
+            }
 
             return query.OrderBy(p => p.SortIndex);
         }

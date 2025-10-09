@@ -17,13 +17,6 @@ interface TimeFieldProps {
     readonly format: string;
 }
 export const TimeField = (props: TimeFieldProps) => {
-    const formatTimeValue = (date?: Date): string => {
-        if (!date) return "";
-        const hours = date.getHours().toString().padStart(2, "0");
-        const minutes = date.getMinutes().toString().padStart(2, "0");
-        return `${hours}:${minutes}`;
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const timeStr = e.target.value;
         const [hoursStr, minutesStr] = timeStr.split(":");
@@ -60,3 +53,10 @@ export const TimeField = (props: TimeFieldProps) => {
     </div>
     )
 }
+
+const formatTimeValue = (date?: Date): string => {
+    if (!date) return "";
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+};

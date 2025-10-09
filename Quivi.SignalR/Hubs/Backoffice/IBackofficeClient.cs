@@ -23,5 +23,8 @@ namespace Quivi.SignalR.Hubs.Backoffice
         Task OnMerchantDocumentOperation(OnMerchantDocumentOperation evt);
         Task OnConfigurableFieldOperation(OnConfigurableFieldOperation evt);
         Task OnConfigurableFieldAssociationOperation(OnConfigurableFieldAssociationOperation evt);
+        Task OnAvailabilityOperation(OnAvailabilityOperation evt);
+        Task OnAvailabilityMenuItemAssociationOperation(OnAvailabilityMenuItemAssociationOperation evt);
+        Task OnAvailabilityChannelProfileAssociationOperation(OnAvailabilityChannelProfileAssociationOperation evt);
     }
 }

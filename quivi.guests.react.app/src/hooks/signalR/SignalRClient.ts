@@ -13,6 +13,8 @@ import type { OnConfigurableFieldOperation } from "./dtos/OnConfigurableFieldOpe
 import type { OnConfigurableFieldAssociationOperation } from "./dtos/OnConfigurableFieldAssociationOperation";
 import type { OnReviewOperationEvent } from "./dtos/OnReviewOperationEvent";
 import type { OnPosChargeSyncAttemptEvent } from "./dtos/OnPosChargeSyncAttemptEvent";
+import type { ChannelProfileListener } from "./ChannelProfileListener";
+import type { OnMenuItemAvailabilityChanged } from "./dtos/OnMenuItemAvailabilityChanged";
 
 export interface IWebClient {
     addMerchantListener(listener: MerchantListener): void;
@@ -23,6 +25,9 @@ export interface IWebClient {
 
     addChannelListener(listener: ChannelListener): void;
     removeChannelListener(listener: ChannelListener): void;
+
+    addChannelProfileListener(listener: ChannelProfileListener): void;
+    removeChannelProfileListener(listener: ChannelProfileListener): void;
 
     addJobListener(listener: JobListener): void;
     removeJobListener(listener: JobListener): void;
@@ -44,6 +49,7 @@ export class SignalRClient implements IWebClient {
 
     public readonly merchantListeners: Set<MerchantListener> = new Set<MerchantListener>();
     public readonly channelListeners: Set<ChannelListener> = new Set<ChannelListener>();
+    public readonly channelProfileListeners: Set<ChannelProfileListener> = new Set<ChannelProfileListener>();
     public readonly jobListeners: Set<JobListener> = new Set<JobListener>();
     public readonly transactionListeners: Set<TransactionListener> = new Set<TransactionListener>();
 
@@ -104,6 +110,7 @@ export class SignalRClient implements IWebClient {
         this.connectToUserEvents();
         this.connectToMerchantEvents();
         this.connectToChannelEvents();
+        this.connectToChannelProfileEvents();
         this.connectToJobEvents();
         this.connectToTransactionEvents();
     }
@@ -135,6 +142,14 @@ export class SignalRClient implements IWebClient {
         this.connection.on('OnPosChargeSyncAttemptOperation', (evt: OnPosChargeSyncAttemptEvent) => this.channelListeners.forEach(l => l.onPosChargeSyncAttemptEvent?.(evt)));
 
         this.channelListeners.forEach(l => this.connection.invoke('JoinChannelEvents', l.channelId));
+    }
+
+
+    private connectToChannelProfileEvents() {
+        this.connection.off('OnMenuItemAvailabilityChanged');
+        this.connection.on('OnMenuItemAvailabilityChanged', (evt: OnMenuItemAvailabilityChanged) => this.channelProfileListeners.forEach(l => l.onMenuItemAvailabilityChanged?.(evt)));
+
+        this.channelProfileListeners.forEach(l => this.connection.invoke('JoinChannelProfileEvents', l.channelProfileId));
     }
 
     private connectToJobEvents() {
@@ -220,6 +235,28 @@ export class SignalRClient implements IWebClient {
                     return;
             }
             this.connection.invoke("LeaveChannelEvents", listener.channelId);
+        }
+    }
+
+    addChannelProfileListener(listener: ChannelProfileListener): void {
+        let listeners = this.channelProfileListeners;
+        if(listeners.has(listener)) {
+            return;
+        }
+
+        listeners.add(listener);
+        if (this.connection.state == HubConnectionState.Connected) {
+            this.connection.invoke("JoinChannelProfileEvents", listener.channelProfileId);
+        }
+    }
+    removeChannelProfileListener(listener: ChannelProfileListener): void {
+        let listeners = this.channelProfileListeners;
+        if (listeners.delete(listener) && this.connection.state == HubConnectionState.Connected) {
+            for (let item of listeners.values()) {
+                if (item.channelProfileId == listener.channelProfileId)
+                    return;
+            }
+            this.connection.invoke("LeaveChannelProfileEvents", listener.channelProfileId);
         }
     }
 

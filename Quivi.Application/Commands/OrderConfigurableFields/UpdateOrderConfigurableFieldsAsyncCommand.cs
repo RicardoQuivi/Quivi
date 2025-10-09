@@ -37,7 +37,6 @@ namespace Quivi.Application.Commands.OrderConfigurableFields
 
         IUpdatableTranslations<IUpdatableOrderConfigurableFieldTranslation> Translations { get; }
         IUpdatableRelationship<IUpdatableChannelProfileAssociation, int> ChannelProfiles { get; }
-
     }
 
     public class UpdateOrderConfigurableFieldsAsyncCommand : AUpdateAsyncCommand<IEnumerable<OrderConfigurableField>, IUpdatableOrderConfigurableField>
@@ -211,9 +210,7 @@ namespace Quivi.Application.Commands.OrderConfigurableFields
                     return base.HasChanges;
                 }
             }
-
         }
-
 
         public async Task<IEnumerable<OrderConfigurableField>> Handle(UpdateOrderConfigurableFieldsAsyncCommand command)
         {

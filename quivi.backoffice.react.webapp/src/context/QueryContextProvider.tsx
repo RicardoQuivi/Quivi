@@ -113,6 +113,9 @@ export const QueryContextProvider = (props: QueryContextProviderProps) => {
             onMerchantDocumentOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.MerchantDocuments), evt.id),
             onConfigurableFieldOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.ConfigurableFields), evt.id),
             onConfigurableFieldAssociationOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.ConfigurableFieldAssociations), `${evt.channelProfileId}-${evt.configurableFieldId}`),
+            onAvailabilityOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.Availabilities), evt.id),
+            onAvailabilityMenuItemAssociationOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.AvailabilityMenuItemAssociations), `${evt.availabilityId}-${evt.menuItemId}`),
+            onAvailabilityChannelProfileAssociationOperation: (evt) => invalidateQuery(queryClient, getEntityType(Entity.AvailabilityChannelProfileAssociations), `${evt.availabilityId}-${evt.channelProfileId}`),
         }
         webEvents.client.addMerchantListener(listener);
         return () => webEvents.client.removeMerchantListener(listener);

@@ -73,6 +73,11 @@ const items: NavItem[] = [
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
             },
             {
+                name: "sidebar.businessProfile.availabilities",
+                path: "/businessProfile/availabilities",
+                show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
+            },
+            {
                 name: "sidebar.businessProfile.configurableFields",
                 path: "/businessProfile/configurablefields",
                 show: (u) => u.merchantActivated == true && u.subMerchantId != undefined,
