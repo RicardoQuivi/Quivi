@@ -5,7 +5,6 @@ import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
 import { useToast } from '../../../layout/ToastProvider';
 import { TextField } from '../../../components/inputs/TextField';
-import { Spinner } from '../../../components/spinners/Spinner';
 import { Availability } from '../../../hooks/api/Dtos/availabilities/Availability';
 import { ResponsiveTable } from '../../../components/tables/ResponsiveTable';
 import { DayOfWeek } from '../../../hooks/api/Dtos/DayOfWeek';
@@ -115,6 +114,7 @@ interface Props {
     readonly model?: Availability;
     readonly onSubmit: (state: AvailabilityFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const AvailabilityForm = (props: Props) => {
     const { t } = useTranslation();
@@ -185,6 +185,7 @@ export const AvailabilityForm = (props: Props) => {
                         value={state.name}
                         onChange={v => setState(s => ({ ...s, name: v }))}
                         errorMessage={form.touchedErrors.get("name")?.message}
+                        isLoading={props.isLoading}
                     />
                     
                     <ToggleSwitch
@@ -192,6 +193,7 @@ export const AvailabilityForm = (props: Props) => {
                         value={state.autoAddNewMenuItems}
                         onChange={v => setState(s => ({ ...s, autoAddNewMenuItems: v }))}
                         errorMessage={form.touchedErrors.get("autoAddNewMenuItems")?.message}
+                        isLoading={props.isLoading}
                     />
 
                     <ToggleSwitch
@@ -199,6 +201,7 @@ export const AvailabilityForm = (props: Props) => {
                         value={state.autoAddNewChannelProfiles}
                         onChange={v => setState(s => ({ ...s, autoAddNewChannelProfiles: v }))}
                         errorMessage={form.touchedErrors.get("autoAddNewChannelProfiles")?.message}
+                        isLoading={props.isLoading}
                     />
                 </div>
             </div>
@@ -212,6 +215,7 @@ export const AvailabilityForm = (props: Props) => {
                 </p>
 
                 <ResponsiveTable
+                    isLoading={props.isLoading}
                     columns={[
                         {
                             key: "name",
@@ -321,16 +325,11 @@ export const AvailabilityForm = (props: Props) => {
         <Button
             size="md"
             onClick={save}
-            disabled={form.isValid == false}
+            disabled={form.isValid == false || props.isLoading}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

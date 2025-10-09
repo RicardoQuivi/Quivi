@@ -15,7 +15,7 @@ import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelP
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
 import { UpdateAvailabilityChannelProfileAssociation } from "../../../hooks/api/Dtos/availabilityChannelProfileAssociations/UpdateAvailabilityChannelProfileAssociationsRequest";
 
-const pageSize = 10;
+const pageSize = 12;
 
 interface Props {
     readonly model: Availability | undefined;

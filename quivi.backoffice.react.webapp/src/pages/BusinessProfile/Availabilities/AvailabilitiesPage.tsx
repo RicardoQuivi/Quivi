@@ -116,7 +116,7 @@ export const AvailabilitiesPage = () => {
         <DeleteEntityModal
             model={state.deleteEntity}
             entity={Entity.Availabilities}
-            action={s => mutator.delete(s)}
+            action={mutator.delete}
             getName={s => s.name}
             onClose={() => setState(s => ({ ...s, deleteEntity: undefined}))}
         />

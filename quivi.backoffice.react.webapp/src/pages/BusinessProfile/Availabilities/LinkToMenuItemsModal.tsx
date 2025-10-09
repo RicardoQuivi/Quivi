@@ -15,7 +15,7 @@ import { useAvailabilityMenuItemsAssociationsQuery } from "../../../hooks/querie
 import { useAvailabilityMenuItemAssociationMutator } from "../../../hooks/mutators/useAvailabilityMenuItemAssociationMutator";
 import { UpdateAvailabilityMenuItemAssociation } from "../../../hooks/api/Dtos/availabilityMenuItemAssociations/UpdateAvailabilityMenuItemAssociationsRequest";
 
-const pageSize = 10;
+const pageSize = 12;
 
 interface Props {
     readonly model: Availability | undefined;

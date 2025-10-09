@@ -14,7 +14,7 @@ import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelP
 import { UpdateConfigurableFieldAssociation } from "../../../hooks/api/Dtos/configurableFieldAssociations/UpdateConfigurableFieldAssociationsRequest";
 import { useConfigurableFieldAssociationMutator } from "../../../hooks/mutators/useConfigurableFieldAssociationMutator";
 
-const pageSize = 10;
+const pageSize = 12;
 
 interface Props {
     readonly model: ConfigurableField | undefined;

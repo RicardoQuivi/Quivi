@@ -14,7 +14,7 @@ import { useConfigurableFieldAssociationMutator } from "../../../hooks/mutators/
 import { useConfigurableFieldsQuery } from "../../../hooks/queries/implementations/useConfigurableFieldsQuery";
 import { ConfigurableField } from "../../../hooks/api/Dtos/configurableFields/ConfigurableField";
 
-const pageSize = 10;
+const pageSize = 12;
 
 interface Props {
     readonly model: ChannelProfile | undefined;

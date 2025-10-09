@@ -36,10 +36,10 @@ export const useReviewsQuery = (request: GetReviewsRequest | undefined) => {
         isFirstLoading: queryResult.isFirstLoading,
         isLoading: queryResult.isLoading,
         data: queryResult.data,
-        page: queryResult.response?.page ?? 0,
+        page: queryResult.response?.page ?? request?.page ?? 0,
         totalPages: queryResult.response?.totalPages ?? 0,
         totalItems: queryResult.response?.totalItems ?? 0,
-    }), [queryResult])
+    }), [queryResult, request?.page ?? 0])
 
     return result;
 }

@@ -75,6 +75,7 @@ export const AvailabilityFormPage = () => {
         <ComponentCard title={title}>
             <AvailabilityForm
                 model={availability}
+                isLoading={id != undefined && availability == undefined}
                 onSubmit={submit}
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.availability")
