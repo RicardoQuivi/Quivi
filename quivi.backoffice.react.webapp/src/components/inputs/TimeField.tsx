@@ -1,6 +1,7 @@
 import { TimeIcon } from "../../icons";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { Skeleton } from "../ui/skeleton/Skeleton";
 import { InputErrorMessage } from "./InputErrorMessage";
 
 interface TimeFieldProps {
@@ -15,6 +16,7 @@ interface TimeFieldProps {
     readonly onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     readonly className?: string;
     readonly format: string;
+    readonly isLoading?: boolean;
 }
 export const TimeField = (props: TimeFieldProps) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,10 +46,17 @@ export const TimeField = (props: TimeFieldProps) => {
                 disabled={props.disabled}
                 autoComplete={props.autoComplete}
                 placeholder={props.placeholder}
+                className={props.isLoading ? "invisible": undefined}
             />
-            <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-                <TimeIcon className="size-6" />
-            </span>
+            {
+                props.isLoading == true
+                ?
+                <Skeleton className="absolute inset-0"/>
+                :
+                <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                    <TimeIcon className="size-6" />
+                </span>
+            }
         </div>
         <InputErrorMessage message={props.errorMessage} />
     </div>
@@ -55,7 +64,9 @@ export const TimeField = (props: TimeFieldProps) => {
 }
 
 const formatTimeValue = (date?: Date): string => {
-    if (!date) return "";
+    if (!date) {
+        return "";
+    }
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;

@@ -5,10 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PosIntegration } from "../../../hooks/api/Dtos/posIntegrations/PosIntegration";
 import useChannelHelper, { ChannelMode } from "../../../utilities/useChannelHelper";
 import { useIntegrationHelper } from "../../../utilities/useIntegrationHelper";
-import Label from "../../../components/form/Label";
-import Input from "../../../components/form/input/InputField";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
-import Radio from "../../../components/form/input/Radio";
 import { ChannelModeCard } from "./ChannelModeCard";
 import { useQuiviForm } from "../../../hooks/api/exceptions/useQuiviForm";
 import * as yup from 'yup';
@@ -16,8 +13,9 @@ import Button from "../../../components/ui/button/Button";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
-import { Spinner } from "../../../components/spinners/Spinner";
 import { TimeSpanHelper } from "../../../utilities/timespanHelpers";
+import { CurrencyField } from "../../../components/inputs/CurrencyField";
+import Checkbox from "../../../components/form/input/Checkbox";
 
 const schema = yup.object<QrCodeProfileFormState>({
     name: yup.string().required(),
@@ -36,6 +34,7 @@ interface Props {
     readonly model?: ChannelProfile;
     readonly onSubmit: (state: QrCodeProfileFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const ChannelProfileForm = (props: Props) => {
     const { t } = useTranslation();
@@ -137,6 +136,7 @@ export const ChannelProfileForm = (props: Props) => {
                 value={state.name}
                 onChange={v => setState(s => ({...s, name: v }))}
                 errorMessage={form.touchedErrors.get("name")?.message}
+                isLoading={props.isLoading}
             />
             <div>
                 {
@@ -152,31 +152,27 @@ export const ChannelProfileForm = (props: Props) => {
                         placeholder={t("common.entities.posIntegration")}
                         onChange={e => setState(s => ({ ...s, integration: e }))}
                         value={state.posIntegration ?? defaultIntegration}
+                        isLoading={props.isLoading}
                     />
                 }
             </div>
-            <div>
-                <Label htmlFor="minPrePaidOrderAmount">{t("pages.channelProfiles.minimumPrePaidOrderAmount")}</Label>
-                <div className="relative">
-                    <Input
-                        type="text"
-                        placeholder={t("pages.channelProfiles.minimumPrePaidOrderAmount")}
-                        id="minPrePaidOrderAmount"
-                        value={state.minimumPrePaidOrderAmount}
-                        onChange={(e) => setState(s => ({...s, minimumPrePaidOrderAmount: +e.target.value}))}
-                    />
-                    <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-4 top-1/2 dark:text-gray-400">
+            <CurrencyField
+                label={t("pages.channelProfiles.minimumPrePaidOrderAmount")}
+                value={state.minimumPrePaidOrderAmount}
+                onChange={(e) => setState(s => ({ ...s, minimumPrePaidOrderAmount: e }))}
+                endElement={<span className="h-full mx-3 text-gray-500 pointer-events-none dark:text-gray-400 flex flex-col justify-center">
                         €
-                    </span>
-                </div>
-            </div>
+                    </span>}
+                errorMessage={form.touchedErrors.get("minimumPrePaidOrderAmount")?.message}
+                decimalPlaces={2}
+                minValue={0}
+                isLoading={props.isLoading}
+            />
             <div className="flex items-center gap-3">
-                <Label className="mb-0">{t("pages.channelProfiles.preparationTimer")}</Label>
-                <div className="flex flex-wrap items-center gap-4">
-                    <Radio
-                        label={t("common.active")}
-                        checked={state.sendToPreparationTimer != null}
-                        onChange={() => setState(s => ({
+                <Checkbox
+                    label={t("pages.channelProfiles.preparationTimer")}
+                    checked={state.sendToPreparationTimer != null}
+                    onChange={() => setState(s => ({
                                                 ...s, 
                                                 sendToPreparationTimer: s.sendToPreparationTimer == null ? TimeSpanHelper.toDate({
                                                     days: 0,
@@ -186,22 +182,8 @@ export const ChannelProfileForm = (props: Props) => {
                                                 }) : null
                                             }))
                         }
-                    />
-                    <Radio
-                        label={t("common.inactive")}
-                        checked={state.sendToPreparationTimer == null}
-                        onChange={() => setState(s => ({
-                                                ...s, 
-                                                sendToPreparationTimer: s.sendToPreparationTimer == null ? TimeSpanHelper.toDate({
-                                                    days: 0,
-                                                    hours: 0,
-                                                    minutes: 2,
-                                                    seconds: 0,
-                                                }) : null
-                                            }))
-                        }
-                    />
-                </div>
+                    isLoading={props.isLoading}
+                />
             </div>
         </div>
         <div className="p-3 border border-gray-200 rounded-t-xl dark:border-gray-800">
@@ -232,6 +214,7 @@ export const ChannelProfileForm = (props: Props) => {
                         features={state.features}
                         onChange={setFeatures}
                         onClick={setFeatures}
+                        isLoading={props.isLoading}
                     />
                 </div>
                 :
@@ -242,6 +225,7 @@ export const ChannelProfileForm = (props: Props) => {
                             features={state.features}
                             onChange={setFeatures}
                             onClick={setFeatures}
+                            isLoading={props.isLoading}
                         />
                     </div>
                     <div className="grow">
@@ -250,6 +234,7 @@ export const ChannelProfileForm = (props: Props) => {
                             features={state.features}
                             onChange={setFeatures}
                             onClick={setFeatures}
+                            isLoading={props.isLoading}
                         />
                     </div>
                     <div className="grow">
@@ -258,6 +243,7 @@ export const ChannelProfileForm = (props: Props) => {
                             features={state.features}
                             onChange={setFeatures}
                             onClick={setFeatures}
+                            isLoading={props.isLoading}
                         />
                     </div>
                     <div className="grow">
@@ -266,6 +252,7 @@ export const ChannelProfileForm = (props: Props) => {
                             features={state.features}
                             onChange={setFeatures}
                             onClick={setFeatures}
+                            isLoading={props.isLoading}
                         />
                     </div>
                 </>
@@ -277,14 +264,9 @@ export const ChannelProfileForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

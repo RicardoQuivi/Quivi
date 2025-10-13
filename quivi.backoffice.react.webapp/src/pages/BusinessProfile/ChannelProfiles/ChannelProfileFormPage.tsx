@@ -82,6 +82,7 @@ export const ChannelProfileFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.channelProfile")
                 })}
+                isLoading={id != undefined && profile == undefined}
             />
         </ComponentCard>
     </>

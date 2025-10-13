@@ -20,7 +20,6 @@ import { MultiSelect } from "../../../../components/inputs/MultiSelect";
 import { useMenuCategoriesQuery } from "../../../../hooks/queries/implementations/useMenuCategoriesQuery";
 import { MenuCategory } from "../../../../hooks/api/Dtos/menuCategories/MenuCategory";
 import { useMenuCategoryMutator } from "../../../../hooks/mutators/useMenuCategoryMutator";
-import { Spinner } from "../../../../components/spinners/Spinner";
 import { CurrencyField } from "../../../../components/inputs/CurrencyField";
 import { useModifierGroupsQuery } from "../../../../hooks/queries/implementations/useModifierGroupsQuery";
 import { ModifierGroup } from "../../../../hooks/api/Dtos/modifierGroups/ModifierGroup";
@@ -143,6 +142,7 @@ interface Props {
     readonly onSubmit: (state: MenuItemFormState) => Promise<any>;
     readonly submitText: string;
     readonly categoryId?: string;
+    readonly isLoading: boolean;
 }
 export const MenuItemForm = (props: Props) => {
     const { t } = useTranslation();
@@ -271,6 +271,7 @@ export const MenuItemForm = (props: Props) => {
                     value={state.name}
                     onChange={(e) => setState(s => ({ ...s, name: e }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <div className="col-span-1 grid grid-cols-7 gap-4">
                     <CurrencyField
@@ -289,6 +290,7 @@ export const MenuItemForm = (props: Props) => {
                         decimalPlaces={2}
                         minValue={0}
                         className="col-span-5 sm:col-span-7 md:col-span-7 lg:col-span-7 xl:col-span-5"
+                        isLoading={props.isLoading}
                     />
                     <div
                         className="col-span-2 sm:col-span-7 md:col-span-7 lg:col-span-7 xl:col-span-2"
@@ -300,6 +302,7 @@ export const MenuItemForm = (props: Props) => {
                             getId={e => e.toString()}
                             render={e => `${e}%`}
                             onChange={e => setState(s => ({ ...s, vatRate: e}))}
+                            isLoading={props.isLoading}
                         />
                     </div>
                 </div>
@@ -312,6 +315,7 @@ export const MenuItemForm = (props: Props) => {
                     getId={c => c.id}
 
                     onCreateOption={createAndAssignCategory}
+                    isLoading={props.isLoading}
                 />
                 <MultiSelect
                     label={t("common.entities.modifierGroups")}
@@ -322,12 +326,14 @@ export const MenuItemForm = (props: Props) => {
                     getId={c => c.id}
 
                     onCreateOption={setCreateModifierNameModal}
+                    isLoading={props.isLoading}
                 />
                 <TextAreaField
                     label={t("common.description")}
                     value={state.description}
                     onChange={e => setState(s => ({ ...s, description: e}))}
                     rows={5}
+                    isLoading={props.isLoading}
                 />
                 <ImageInput
                     label={t("common.image")}
@@ -335,6 +341,7 @@ export const MenuItemForm = (props: Props) => {
                     value={state.imageUrl}
                     inlineEditor
                     onUploadHandlerChanged={setLogoUploadHandler}
+                    isLoading={props.isLoading}
                 />
             </div>
 
@@ -367,6 +374,7 @@ export const MenuItemForm = (props: Props) => {
                                 translations: aux,
                             };
                         })}
+                        isLoading={props.isLoading}
                     />
                     <TextAreaField
                         label={t("common.description")}
@@ -383,6 +391,8 @@ export const MenuItemForm = (props: Props) => {
                             };
                         })}
                         className="flex-1"
+                        rows={5}
+                        isLoading={props.isLoading}
                     />
                 </div>
             </div>
@@ -411,6 +421,7 @@ export const MenuItemForm = (props: Props) => {
                         onChange={setLocal}
                         render={e => e?.name ?? t("common.noLocation")}
                         label={t(`common.entities.local`)}
+                        isLoading={props.isLoading}
                     />
                 }
                 </div>
@@ -428,14 +439,9 @@ export const MenuItemForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

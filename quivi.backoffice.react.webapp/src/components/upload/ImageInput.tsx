@@ -13,6 +13,7 @@ import { FileDropZone } from './FileDropZone';
 import { UploadHandler } from './UploadHandler';
 import Label from '../form/Label';
 import { Spinner } from '../spinners/Spinner';
+import { Skeleton } from '../ui/skeleton/Skeleton';
 
 const readFile = (file: File): Promise<string> => new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -89,6 +90,7 @@ interface Props {
     readonly aspectRatio: number;
     readonly inlineEditor?: boolean;
     readonly onUploadHandlerChanged: (saveFunction: undefined | UploadHandler<string>) => void;
+    readonly isLoading?: boolean;
 }
 
 interface ImageInputState {
@@ -103,6 +105,7 @@ export const ImageInput: React.FC<Props> = ({
     aspectRatio,
     inlineEditor,
     onUploadHandlerChanged,
+    isLoading,
 }) => {
     const  { t } = useTranslation();
     const fileApi = useFileStorageApi();
@@ -195,164 +198,173 @@ export const ImageInput: React.FC<Props> = ({
             <Label>{label}</Label>
         }
         <div className="relative">
-            {
-                !dropZoneActive &&
-                <div 
-                    className="absolute top-0 bottom-0 left-0 right-0 flex flex-col"
-                    style={inlineEditor == true && state.edit.isOpen == false ? {
-                        backgroundColor: "white",
-                        backgroundImage: "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
-                        backgroundSize: "40px 40px",
-                        backgroundPosition: "0 0, 0 20px, 20px -20px, -20px 0px"
-                    } : {}}
-                >
-                    <div className={`flex flex-col items-center absolute top-0 bottom-0 size-full ${inlineEditor == true && state.edit.isOpen ? "visible" : "invisible"}`}>
-                        <div className="flex-auto w-full">
-                            <CropImage
-                                imageSrc={state.edit.imageSrc}
-                                aspectRatio={aspectRatio}
-                                onChange={(image, area) => setCropResult({
-                                    area: area,
-                                    image: image,
-                                })}
-                                initialCroppedAreaPixels={cropResult.area}
-                                hideZoomSlider
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end w-full">
-                            <IconButton
-                                className="w-full"
-                                onClick={() => {
-                                    onUploadHandlerChanged(undefined);
-                                    setState(s => ({ 
-                                        ...s,
-                                        edit: {
-                                            isOpen: false,
-                                            imageSrc: s.image.url,
-                                        },
-                                    }));
-                                }}
-                            >
-                                <CloseLineIcon className="fill-error-500 dark:fill-error-500 h-6 w-6" />
-                            </IconButton>
-                            <IconButton
-                                className="w-full"
-                                onClick={async () => {
-                                    if(cropResult.image == undefined) {
-                                        return;
-                                    }
-
-                                    const blob = await toBlob(cropResult.image, cropResult.area);
-                                    const saveFunction = () => save(blob, state.image.name);
-                                    onUploadHandlerChanged(new UploadHandler(saveFunction));
-                                    setState(s => ({
-                                        ...s,
-                                        image: {
-                                            ...s.image,
-                                            url: URL.createObjectURL(blob),
-                                        },
-                                        edit: {
-                                            ...s.edit,
-                                            isOpen: false,
-                                        },
-                                    }));
-                                }}
-                            >
-                                <CheckLineIcon className="h-6 w-6" />
-                            </IconButton>
-                        </div>
-                    </div>
-                    
-                    <div
-                        className={`size-full bg-no-repeat bg-center bg-contain ${inlineEditor == true && state.edit.isOpen ? "invisible" : "visible"}`}
-                        style={{
-                            backgroundImage: `url("${state.image.url ?? defaultValue ?? "/Images/image-placeholder.svg"}")`,
-                        }}
+            <div
+                className={isLoading == true ? "invisible" : ""}
+            >
+                {
+                    isLoading != true &&
+                    !dropZoneActive &&
+                    <div 
+                        className="absolute top-0 bottom-0 left-0 right-0 flex flex-col"
+                        style={inlineEditor == true && state.edit.isOpen == false ? {
+                            backgroundColor: "white",
+                            backgroundImage: "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                            backgroundSize: "40px 40px",
+                            backgroundPosition: "0 0, 0 20px, 20px -20px, -20px 0px"
+                        } : {}}
                     >
-                        <div className="flex items-center gap-3 py-2 px-2 mt-6 lg:justify-end w-full bottom-0 left-0 right-0 absolute justify-end bg-gray-900/60 dark:bg-gray-100/60">
-                            {
-                                !!state.edit.imageSrc &&
-                                <Tooltip message={t("imageEditor.edit")}>
-                                    <IconButton
-                                        onClick={() => setState(s => ({ 
+                        <div className={`flex flex-col items-center absolute top-0 bottom-0 size-full ${inlineEditor == true && state.edit.isOpen ? "visible" : "invisible"}`}>
+                            <div className="flex-auto w-full">
+                                <CropImage
+                                    imageSrc={state.edit.imageSrc}
+                                    aspectRatio={aspectRatio}
+                                    onChange={(image, area) => setCropResult({
+                                        area: area,
+                                        image: image,
+                                    })}
+                                    initialCroppedAreaPixels={cropResult.area}
+                                    hideZoomSlider
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end w-full">
+                                <IconButton
+                                    className="w-full"
+                                    onClick={() => {
+                                        onUploadHandlerChanged(undefined);
+                                        setState(s => ({ 
                                             ...s,
                                             edit: {
-                                                ...s.edit,
-                                                isOpen: true,
-                                                imageSrc: s.edit.imageSrc,
+                                                isOpen: false,
+                                                imageSrc: s.image.url,
                                             },
-                                        }))}
-                                        className='dark:text-gray-900 text-white'
-                                    >
-                                        <PencilIcon className="h-6 w-6" />
-                                    </IconButton>
-                                </Tooltip>
-                            }
-                            <Tooltip message={t("imageEditor.upload")}>
-                                <label
-                                    className='"fill-white dark:fill-gray-800 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white dark:text-gray-900 text-white cursor-pointer'
+                                        }));
+                                    }}
                                 >
-                                    <input
-                                        type="file"
-                                        accept="image/jpeg,image/gif,image/png"
-                                        onChange={onImageChange}
-                                        className="hidden"
-                                    />
-                                    <UploadIcon className="h-6 w-6" />
-                                </label>
-                            </Tooltip>
+                                    <CloseLineIcon className="fill-error-500 dark:fill-error-500 h-6 w-6" />
+                                </IconButton>
+                                <IconButton
+                                    className="w-full"
+                                    onClick={async () => {
+                                        if(cropResult.image == undefined) {
+                                            return;
+                                        }
 
-                            {
-                                state.image.url != value &&
-                                <Tooltip message={t("imageEditor.undo")}>
-                                    <IconButton
-                                        onClick={() => {
-                                            onUploadHandlerChanged(undefined);
-                                            setState(s => ({ ...s, image: { ...s.image, url: value, }, edit: { ...s.edit, imageSrc: "" } }));
-                                        }}
-                                        className='dark:text-gray-900 text-white'
-                                    >
-                                        <UndoIcon className="h-6 w-6" />
-                                    </IconButton>
-                                </Tooltip>
-                            }
-                            {
-                                !!state.image.url &&
-                                <Tooltip message={t("imageEditor.delete")}>
-                                    <IconButton
-                                        onClick={() => {
-                                            const image = "";
-                                            setState(s => ({
+                                        const blob = await toBlob(cropResult.image, cropResult.area);
+                                        const saveFunction = () => save(blob, state.image.name);
+                                        onUploadHandlerChanged(new UploadHandler(saveFunction));
+                                        setState(s => ({
+                                            ...s,
+                                            image: {
+                                                ...s.image,
+                                                url: URL.createObjectURL(blob),
+                                            },
+                                            edit: {
+                                                ...s.edit,
+                                                isOpen: false,
+                                            },
+                                        }));
+                                    }}
+                                >
+                                    <CheckLineIcon className="h-6 w-6" />
+                                </IconButton>
+                            </div>
+                        </div>
+                        
+                        <div
+                            className={`size-full bg-no-repeat bg-center bg-contain ${inlineEditor == true && state.edit.isOpen ? "invisible" : "visible"}`}
+                            style={{
+                                backgroundImage: `url("${state.image.url ?? defaultValue ?? "/Images/image-placeholder.svg"}")`,
+                            }}
+                        >
+                            <div className="flex items-center gap-3 py-2 px-2 mt-6 lg:justify-end w-full bottom-0 left-0 right-0 absolute justify-end bg-gray-900/60 dark:bg-gray-100/60">
+                                {
+                                    !!state.edit.imageSrc &&
+                                    <Tooltip message={t("imageEditor.edit")}>
+                                        <IconButton
+                                            onClick={() => setState(s => ({ 
                                                 ...s,
-                                                image: {
-                                                    name: image,
-                                                    url: image,
-                                                }
-                                            }))
-                                            const saveFunction = !value ? undefined : async () => image;
-                                            onUploadHandlerChanged(saveFunction == undefined ? undefined : new UploadHandler(saveFunction));
-                                        }}
-                                        className='dark:text-gray-900 text-white'
+                                                edit: {
+                                                    ...s.edit,
+                                                    isOpen: true,
+                                                    imageSrc: s.edit.imageSrc,
+                                                },
+                                            }))}
+                                            className='dark:text-gray-900 text-white'
+                                        >
+                                            <PencilIcon className="h-6 w-6" />
+                                        </IconButton>
+                                    </Tooltip>
+                                }
+                                <Tooltip message={t("imageEditor.upload")}>
+                                    <label
+                                        className='"fill-white dark:fill-gray-800 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white dark:text-gray-900 text-white cursor-pointer'
                                     >
-                                        <TrashBinIcon className="h-6 w-6"/>
-                                    </IconButton>
+                                        <input
+                                            type="file"
+                                            accept="image/jpeg,image/gif,image/png"
+                                            onChange={onImageChange}
+                                            className="hidden"
+                                        />
+                                        <UploadIcon className="h-6 w-6" />
+                                    </label>
                                 </Tooltip>
-                            }
+
+                                {
+                                    state.image.url != value &&
+                                    <Tooltip message={t("imageEditor.undo")}>
+                                        <IconButton
+                                            onClick={() => {
+                                                onUploadHandlerChanged(undefined);
+                                                setState(s => ({ ...s, image: { ...s.image, url: value, }, edit: { ...s.edit, imageSrc: "" } }));
+                                            }}
+                                            className='dark:text-gray-900 text-white'
+                                        >
+                                            <UndoIcon className="h-6 w-6" />
+                                        </IconButton>
+                                    </Tooltip>
+                                }
+                                {
+                                    !!state.image.url &&
+                                    <Tooltip message={t("imageEditor.delete")}>
+                                        <IconButton
+                                            onClick={() => {
+                                                const image = "";
+                                                setState(s => ({
+                                                    ...s,
+                                                    image: {
+                                                        name: image,
+                                                        url: image,
+                                                    }
+                                                }))
+                                                const saveFunction = !value ? undefined : async () => image;
+                                                onUploadHandlerChanged(saveFunction == undefined ? undefined : new UploadHandler(saveFunction));
+                                            }}
+                                            className='dark:text-gray-900 text-white'
+                                        >
+                                            <TrashBinIcon className="h-6 w-6"/>
+                                        </IconButton>
+                                    </Tooltip>
+                                }
+                            </div>
                         </div>
                     </div>
+                }
+                <div className={`size-full relative flex flex-col justify-center ${isLoading ? "invisible" : dropZoneActive ? "visible" : "collapse"}`}>
+                    <FileDropZone
+                        allowedFiles={[
+                            FileExtension.JPEG,
+                            FileExtension.JPG,
+                            FileExtension.PNG,
+                        ]}
+                        onFilesDroped={(files) => onFileChanged(files[0])}
+                    />
                 </div>
-            }
-            <div className={`size-full relative flex flex-col justify-center ${dropZoneActive ? "visible" : "collapse"}`}>
-                <FileDropZone
-                    allowedFiles={[
-                        FileExtension.JPEG,
-                        FileExtension.JPG,
-                        FileExtension.PNG,
-                    ]}
-                    onFilesDroped={(files) => onFileChanged(files[0])}
-                />
             </div>
+            {
+                isLoading == true &&
+                <Skeleton className="absolute inset-0"/>
+            }
         </div>
         {
             inlineEditor != true &&

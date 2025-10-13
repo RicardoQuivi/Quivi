@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import CreatableSelect from 'react-select/creatable';
 import { useState } from "react";
 import { ChevronDownIcon, CloseIcon } from "../../icons";
+import { Skeleton } from "../ui/skeleton/Skeleton";
 
 interface Props<T,> {
     readonly label?: React.ReactNode,
@@ -25,6 +26,8 @@ interface Props<T,> {
 
     readonly createOptionLabel?: (value: string) => React.ReactNode;
     readonly onCreateOption?: (value: string) => Promise<any> | any;
+
+    readonly isLoading?: boolean
 }
 
 export const MultiSelect = <T,>(props: Props<T>) => {
@@ -42,7 +45,7 @@ export const MultiSelect = <T,>(props: Props<T>) => {
         components={{
             SingleValue: CustomSingleValue,
             Option: p =>  <CustomOption {...p} render={props.render} createOptionLabel={props.createOptionLabel} />,
-            SelectContainer: p => <CustomContainer label={props.label} {...p} />,
+            SelectContainer: p => <CustomContainer label={props.label} isLoading={props.isLoading} {...p} />,
             IndicatorsContainer: ({
                 clearValue,
                 getStyles,
@@ -147,18 +150,28 @@ const CustomMultiValue = (props: CustomMultiValueProps<any>) => {
 }
 
 interface CustomContainerProps<T> extends ContainerProps<T> {
-    readonly label?: React.ReactNode, 
+    readonly label?: React.ReactNode,
+    readonly isLoading?: boolean;
 }
 const CustomContainer = (props: CustomContainerProps<any>) => {
     const {
         children,
+        isLoading,
         ...rProps
     } = props;
 
     return (
         <components.SelectContainer {...rProps} className="flex flex-col cursor-pointer">
             { props.label != undefined && <Label>{props.label}</Label> }
-            {children}
+            <div className="relative">
+                <div className={isLoading ? "invisible" : undefined}>
+                    {children}
+                </div>
+                {
+                    props.isLoading == true &&
+                    <Skeleton className="absolute inset-0"/>
+                }
+            </div>
         </components.SelectContainer>
     )
 }

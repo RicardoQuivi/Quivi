@@ -84,6 +84,7 @@ export const PrinterFormPage = () => {
                     name: t("common.entities.printer")
                 })}
                 printerWorkerId={params.get("printerWorkerId") ?? undefined}
+                isLoading={id != undefined && item == undefined}
             />
         </ComponentCard>
     </>

@@ -9,7 +9,6 @@ import { Employee, EmployeeRestriction } from '../../../hooks/api/Dtos/employees
 import { TimeField } from '../../../components/inputs/TimeField';
 import { MultiSelectionZone } from '../../../components/inputs/MultiSelectionZone';
 import { CloseLineIcon } from '../../../icons';
-import { Spinner } from '../../../components/spinners/Spinner';
 import { TimeSpanHelper } from '../../../utilities/timespanHelpers';
 
 const schema = yup.object<EmployeeFormState>({
@@ -65,6 +64,7 @@ interface Props {
     readonly model?: Employee;
     readonly onSubmit: (state: EmployeeFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const EmployeeForm = (props: Props) => {
     const { t } = useTranslation();
@@ -98,6 +98,7 @@ export const EmployeeForm = (props: Props) => {
                     value={state.name}
                     onChange={v => setState(s => ({ ...s, name: v }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <TimeField
                     label={t("common.inactivityPeriod")}
@@ -105,6 +106,7 @@ export const EmployeeForm = (props: Props) => {
                     onChange={v => setState(s => ({ ...s, inactivityPeriod: v }))}
                     errorMessage={form.touchedErrors.get("inactivityPeriod")?.message}
                     format={'HH:mm'}
+                    isLoading={props.isLoading}
                 />
             </div>
             <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-1 gap-4">
@@ -130,6 +132,7 @@ export const EmployeeForm = (props: Props) => {
                         </div>
                     )}
                     onChange={r => setState(s => ({ ...s, restrictions: new Set(r)}))}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -139,14 +142,9 @@ export const EmployeeForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

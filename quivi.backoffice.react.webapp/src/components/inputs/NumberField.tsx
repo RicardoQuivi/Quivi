@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import Label from "../form/Label";
 import { InputErrorMessage } from "./InputErrorMessage";
+import { Skeleton } from "../ui/skeleton/Skeleton";
 
 interface NumberFieldProps {
     readonly label?: string;
@@ -16,6 +17,7 @@ interface NumberFieldProps {
     readonly startElement?: React.ReactNode;
     readonly endElement?: React.ReactNode;
     readonly decimalPlaces?: number;
+    readonly isLoading?: boolean;
 }
 export const NumberField = (props: NumberFieldProps) => {
     let borderClasses = 'rounded-lg border';
@@ -51,34 +53,40 @@ export const NumberField = (props: NumberFieldProps) => {
             <Label>{props.label}</Label>
         }
         <div className="relative flex flex-col">
-            <div className={`gap-0 flex flex-row`}>
+            <div>
+                <div className={`gap-0 flex flex-row ${props.isLoading ? "invisible" : ""}`}>
+                    {
+                        props.startElement != undefined &&
+                        <div
+                            className={`${borderClasses} rounded-r-none box-border h-11 flex-none`}
+                        >
+                            {props.startElement}
+                        </div>
+                    }
+                    <input
+                        type="number"
+                        name={props.name}
+                        value={value}
+                        onChange={(e) => props.onChange?.(+e.target.value.replace(',', '.'))}
+                        disabled={props.disabled}
+                        autoComplete={props.autoComplete}
+                        onKeyUp={props.onKeyUp}
+                        placeholder={props.placeholder}
+                        className={`${inputClasses} grow min-w-0 text-right`}
+                        step={step}
+                    />
+                    {
+                        props.endElement != undefined &&
+                        <div
+                            className={`${borderClasses} rounded-l-none box-border h-11 flex-none`}
+                        >
+                            {props.endElement}
+                        </div>
+                    }
+                </div>
                 {
-                    props.startElement != undefined &&
-                    <div
-                        className={`${borderClasses} rounded-r-none box-border h-11 flex-none`}
-                    >
-                        {props.startElement}
-                    </div>
-                }
-                <input
-                    type="number"
-                    name={props.name}
-                    value={value}
-                    onChange={(e) => props.onChange?.(+e.target.value.replace(',', '.'))}
-                    disabled={props.disabled}
-                    autoComplete={props.autoComplete}
-                    onKeyUp={props.onKeyUp}
-                    placeholder={props.placeholder}
-                    className={`${inputClasses} grow min-w-0 text-right`}
-                    step={step}
-                />
-                {
-                    props.endElement != undefined &&
-                    <div
-                        className={`${borderClasses} rounded-l-none box-border h-11 flex-none`}
-                    >
-                        {props.endElement}
-                    </div>
+                    props.isLoading == true &&
+                    <Skeleton className="absolute inset-0"/>
                 }
             </div>
             <InputErrorMessage message={props.errorMessage} />

@@ -96,6 +96,7 @@ export const PosIntegrationFormPage = () => {
         <ComponentCard title={title}>
             <PosIntegrationForm
                 model={integration}
+                isLoading={id != undefined && integration == undefined}
                 onSubmit={submit}
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.posIntegration")

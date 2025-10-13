@@ -75,6 +75,7 @@ export const CustomChargeMethodFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.customChargeMethod")
                 })}
+                isLoading={id != undefined && customChargeMethod == undefined}
             />
         </ComponentCard>
     </>

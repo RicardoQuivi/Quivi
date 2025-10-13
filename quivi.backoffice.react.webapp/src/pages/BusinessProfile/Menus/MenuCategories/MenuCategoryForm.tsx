@@ -10,7 +10,6 @@ import { Language } from "../../../../hooks/api/Dtos/Language";
 import { LanguageSelector } from "../../../../components/ui/language/LanguageSelector";
 import { useToast } from "../../../../layout/ToastProvider";
 import { TextField } from "../../../../components/inputs/TextField";
-import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<MenuCategoryFormState>({
     name: yup.string().required(),
@@ -50,6 +49,7 @@ interface Props {
     readonly model?: MenuCategory;
     readonly onSubmit: (state: MenuCategoryFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const MenuCategoryForm = (props: Props) => {
     const { t } = useTranslation();
@@ -92,6 +92,7 @@ export const MenuCategoryForm = (props: Props) => {
                     value={state.name}
                     onChange={(e) => setState(s => ({ ...s, name: e }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <ImageInput
                     label={t("common.image")}
@@ -99,6 +100,7 @@ export const MenuCategoryForm = (props: Props) => {
                     value={state.imageUrl}
                     inlineEditor
                     onUploadHandlerChanged={setLogoUploadHandler}
+                    isLoading={props.isLoading}
                 />
             </div>
 
@@ -129,6 +131,7 @@ export const MenuCategoryForm = (props: Props) => {
                             translations: aux,
                         };
                     })}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -138,14 +141,9 @@ export const MenuCategoryForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

@@ -6,7 +6,6 @@ import { useQuiviForm } from "../../../../hooks/api/exceptions/useQuiviForm";
 import Button from "../../../../components/ui/button/Button";
 import { useToast } from "../../../../layout/ToastProvider";
 import { TextField } from "../../../../components/inputs/TextField";
-import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<PrinterWorkerFormState>({
     identifier: yup.string().required(),
@@ -28,6 +27,7 @@ interface Props {
     readonly model?: PrinterWorker;
     readonly onSubmit: (state: PrinterWorkerFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const PrinterWorkerForm = (props: Props) => {
     const { t } = useTranslation();
@@ -62,6 +62,7 @@ export const PrinterWorkerForm = (props: Props) => {
                     value={state.identifier}
                     onChange={(e) => setState(s => ({ ...s, identifier: e }))}
                     errorMessage={form.touchedErrors.get("identifier")?.message}
+                    isLoading={props.isLoading}
                 />
                 <TextField
                     label={t("common.name")}
@@ -69,6 +70,7 @@ export const PrinterWorkerForm = (props: Props) => {
                     value={state.name}
                     onChange={(e) => setState(s => ({ ...s, name: e }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -78,14 +80,9 @@ export const PrinterWorkerForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

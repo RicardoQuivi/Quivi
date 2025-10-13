@@ -2,6 +2,7 @@ import { useState } from "react";
 import Label from "../form/Label";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import { InputErrorMessage } from "./InputErrorMessage";
+import { Skeleton } from "../ui/skeleton/Skeleton";
 
 interface PasswordFieldProps {
     readonly label?: string;
@@ -13,6 +14,7 @@ interface PasswordFieldProps {
     readonly disabled?: boolean;
     readonly autoComplete?: string;
     readonly onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    readonly isLoading?: boolean;
 }
 export const PasswordField = (props: PasswordFieldProps) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -35,33 +37,39 @@ export const PasswordField = (props: PasswordFieldProps) => {
         }
 
         <div className="relative flex flex-col grid grid-cols-1">
-            <div className="relative">
-                <input
-                    type={showPassword ? "text" : "password"}
-                    name={props.name}
-                    value={props.value}
-                    onChange={(e) => props.onChange?.(e.target.value)}
-                    disabled={props.disabled}
-                    autoComplete={props.autoComplete}
-                    onKeyUp={props.onKeyUp}
-                    placeholder={props.placeholder}
-                    className={inputClasses}
-                />
-                <span
-                    onClick={() => setShowPassword(s => !s)}
-                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-                >
+            <div>
+                <div className={`relative ${props.isLoading ? "invisible" : ""}`}>
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name={props.name}
+                        value={props.value}
+                        onChange={(e) => props.onChange?.(e.target.value)}
+                        disabled={props.disabled}
+                        autoComplete={props.autoComplete}
+                        onKeyUp={props.onKeyUp}
+                        placeholder={props.placeholder}
+                        className={inputClasses}
+                    />
+                    <span
+                        onClick={() => setShowPassword(s => !s)}
+                        className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    >
+                    {
+                        !!props.value &&
+                        (
+                            showPassword
+                            ?
+                                <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                            :
+                                <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        )
+                    }
+                    </span>
+                </div>
                 {
-                    !!props.value &&
-                    (
-                        showPassword
-                        ?
-                            <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-                        :
-                            <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-                    )
+                    props.isLoading == true &&
+                    <Skeleton className="absolute inset-0"/>
                 }
-                </span>
             </div>
             <InputErrorMessage message={props.errorMessage} />
         </div>

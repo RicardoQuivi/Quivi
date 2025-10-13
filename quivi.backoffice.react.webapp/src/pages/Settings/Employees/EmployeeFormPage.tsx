@@ -77,6 +77,7 @@ export const EmployeeFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.employee")
                 })}
+                isLoading={id != undefined && employee == undefined}
             />
         </ComponentCard>
     </>

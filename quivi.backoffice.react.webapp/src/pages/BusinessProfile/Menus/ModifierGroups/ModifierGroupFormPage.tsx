@@ -85,6 +85,7 @@ export const ModifierGroupFormPage = () => {
                     name: t("common.entities.modifierGroup")
                 })}
                 categoryId={params.get("categoryId") ?? undefined}
+                isLoading={id != undefined && item == undefined}
             />
         </ComponentCard>
     </>

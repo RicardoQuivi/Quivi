@@ -6,7 +6,6 @@ import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/
 import { useMemo, useState } from "react";
 import CurrencySpan from "../../../components/currency/CurrencySpan";
 import { usePosIntegrationsQuery } from "../../../hooks/queries/implementations/usePosIntegrationsQuery";
-import { PosIntegration } from "../../../hooks/api/Dtos/posIntegrations/PosIntegration";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import Button from "../../../components/ui/button/Button";
 import { LinkIcon, PencilIcon, PlusIcon, TrashBinIcon } from "../../../icons";
@@ -22,6 +21,7 @@ import { QueryPagination } from "../../../components/pagination/QueryPagination"
 import { Divider } from "../../../components/dividers/Divider";
 import { ResponsiveTable } from "../../../components/tables/ResponsiveTable";
 import { LinkToConfigurableFieldsModal } from "./LinkToConfigurableFieldsModal";
+import { Collections } from "../../../utilities/Collectionts";
 
 export const ChannelProfilesPage = () => {
     const { t } = useTranslation();
@@ -39,20 +39,14 @@ export const ChannelProfilesPage = () => {
         page: state.page,
         pageSize: state.pageSize,
     })
-    const integrationIds = useMemo(() => profilesQuery.data.map(d => d.posIntegrationId), [profilesQuery.data])
+    const integrationIds = useMemo(() => Collections.uniqueIds(profilesQuery.data, p => p.posIntegrationId), [profilesQuery.data])
 
     const integrationsQuery = usePosIntegrationsQuery(integrationIds.length == 0 ? undefined : {
         ids: integrationIds,
         page: 0,
         pageSize: undefined,
     });
-    const integrationsMap = useMemo(() => {
-        const result = new Map<string, PosIntegration>();
-        for(const integration of integrationsQuery.data) {
-            result.set(integration.id, integration);
-        }
-        return result;
-    }, [integrationsQuery.data]);
+    const integrationsMap = useMemo(() => Collections.toMap(integrationsQuery.data, i => i.id), [integrationsQuery.data]);
 
     return <>
         <PageMeta

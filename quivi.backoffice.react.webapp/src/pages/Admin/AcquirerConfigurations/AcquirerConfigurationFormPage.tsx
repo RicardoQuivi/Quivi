@@ -100,6 +100,7 @@ export const AcquirerConfigurationFormPage = () => {
             <AcquirerConfigurationForm
                 model={acquirer}
                 onSubmit={submit}
+                isLoading={id != undefined && acquirer == undefined}
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.acquirerConfiguration")
                 })}

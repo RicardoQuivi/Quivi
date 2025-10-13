@@ -8,7 +8,6 @@ import { TextField } from '../../../components/inputs/TextField';
 import { CustomChargeMethod } from '../../../hooks/api/Dtos/customchargemethods/CustomChargeMethod';
 import { ImageInput } from '../../../components/upload/ImageInput';
 import { UploadHandler } from '../../../components/upload/UploadHandler';
-import { Spinner } from '../../../components/spinners/Spinner';
 
 const schema = yup.object<CustomChargeMethodFormState>({
     name: yup.string().required(),
@@ -29,6 +28,7 @@ interface Props {
     readonly model?: CustomChargeMethod;
     readonly onSubmit: (state: CustomChargeMethodFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const CustomChargeMethodForm = (props: Props) => {
     const { t } = useTranslation();
@@ -68,6 +68,7 @@ export const CustomChargeMethodForm = (props: Props) => {
                     value={state.name}
                     onChange={v => setState(s => ({ ...s, name: v }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <ImageInput
                     label={t("common.logo")}
@@ -75,6 +76,7 @@ export const CustomChargeMethodForm = (props: Props) => {
                     value={state.logoUrl}
                     inlineEditor
                     onUploadHandlerChanged={setLogoUploadHandler}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -84,14 +86,9 @@ export const CustomChargeMethodForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

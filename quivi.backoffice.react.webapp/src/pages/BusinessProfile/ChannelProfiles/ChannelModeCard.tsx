@@ -19,6 +19,7 @@ interface ChannelModeCardProps {
     readonly features: ChannelFeatures;
     readonly onClick?: (features: ChannelFeatures) => any;
     readonly onChange?: (features: ChannelFeatures) => any;
+    readonly isLoading?: boolean;
 }
 
 export const ChannelModeCard = (props: ChannelModeCardProps) => {
@@ -77,10 +78,13 @@ export const ChannelModeCard = (props: ChannelModeCardProps) => {
 
     const getFeature = (feature: Feature) => {
         if(feature.children == undefined) {
-            let checkbox = <Checkbox checked={feature.isChecked} disabled={feature.action == undefined} onChange={() => feature.action?.()}/>
-            if(feature.isFixed) {
-                checkbox = feature.isChecked ? <CheckLineIcon className="text-success-500"  /> : <CloseIcon className="text-gray-400" />
+            let checkbox = <Checkbox checked={feature.isChecked} disabled={feature.action == undefined} onChange={feature.action} isLoading={props.isLoading} />
+            if(props.isLoading !== true) {
+                if(feature.isFixed) {
+                    checkbox = feature.isChecked ? <CheckLineIcon className="text-success-500"  /> : <CloseIcon className="text-gray-400" />
+                }
             }
+            
             return (
                 <li
                     key={feature.description}
@@ -307,10 +311,12 @@ export const ChannelModeCard = (props: ChannelModeCardProps) => {
                 <Button
                     disabled={state.isActive}
                     onClick={() => state.isActive == false && props.onClick?.(channelHelper.getDefaultFeatures(props.mode))}
-                    className="w-full mt-auto"
+                    className="w-full mt-auto flex flex-row"
                     size="md"
                     variant="outline"
+                    isLoading={props.isLoading}
                 >
+                    <div className="w-full flex flex-row gap-2 justify-center">
                     {
                         state.isActive
                         ?
@@ -321,6 +327,7 @@ export const ChannelModeCard = (props: ChannelModeCardProps) => {
                         :
                         t("common.select")
                     }
+                    </div>
                 </Button>
             }
         </div>

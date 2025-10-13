@@ -3,6 +3,7 @@ import Label from "../form/Label";
 import { useTranslation } from "react-i18next";
 import CurrencyInput from 'react-currency-input-field';
 import { InputErrorMessage } from "./InputErrorMessage";
+import { Skeleton } from "../ui/skeleton/Skeleton";
 
 interface CurrencyFieldProps {
     readonly label?: string;
@@ -20,6 +21,7 @@ interface CurrencyFieldProps {
     readonly decimalPlaces?: number;
     readonly minValue?: number;
     readonly maxValue?: number;
+    readonly isLoading?: boolean;
 }
 export const CurrencyField = (props: CurrencyFieldProps) => {
     const { i18n } = useTranslation();
@@ -57,58 +59,64 @@ export const CurrencyField = (props: CurrencyFieldProps) => {
             <Label>{props.label}</Label>
         }
         <div className="relative flex flex-col">
-            <div className={`gap-0 flex flex-row`}>
-                {
-                    props.startElement != undefined &&
-                    <div
-                        className={`${borderClasses} rounded-r-none box-border h-11 flex-none`}
-                    >
-                        {props.startElement}
-                    </div>
-                }
-                <CurrencyInput
-                    name={props.name}
-                    value={value}
-                    onValueChange={(_value, _name, values) => {
-                        const newValue = values?.float ?? 0;
+            <div>
+                <div className={`gap-0 flex flex-row ${props.isLoading == true ? "invisible" : ""}`}>
+                    {
+                        props.startElement != undefined &&
+                        <div
+                            className={`${borderClasses} rounded-r-none box-border h-11 flex-none`}
+                        >
+                            {props.startElement}
+                        </div>
+                    }
+                    <CurrencyInput
+                        name={props.name}
+                        value={value}
+                        onValueChange={(_value, _name, values) => {
+                            const newValue = values?.float ?? 0;
 
-                        if(props.minValue != undefined){
-                            if(newValue < props.minValue) {
-                                return;
+                            if(props.minValue != undefined){
+                                if(newValue < props.minValue) {
+                                    return;
+                                }
                             }
-                        }
 
-                        if(props.maxValue != undefined){
-                            if(newValue > props.maxValue) {
-                                return;
+                            if(props.maxValue != undefined){
+                                if(newValue > props.maxValue) {
+                                    return;
+                                }
                             }
-                        }
-                        props.onChange?.(values?.float ?? 0);
-                    }}
-                    disabled={props.disabled}
-                    autoComplete={props.autoComplete}
-                    onKeyUp={props.onKeyUp}
-                    placeholder={props.placeholder}
-                    className={`${inputClasses} grow min-w-0 text-right`}
-                    decimalsLimit={props.decimalPlaces}
-                    fixedDecimalLength={props.decimalPlaces}
-                    decimalScale={props.decimalPlaces}
-                    intlConfig={{
-                        locale: i18n.language,
-                        currency: 'EUR',
-                    }}
-                    step={step}
-                    allowDecimals
-                    suffix={""}
-                    prefix={" "}
-                />
+                            props.onChange?.(values?.float ?? 0);
+                        }}
+                        disabled={props.disabled}
+                        autoComplete={props.autoComplete}
+                        onKeyUp={props.onKeyUp}
+                        placeholder={props.placeholder}
+                        className={`${inputClasses} grow min-w-0 text-right`}
+                        decimalsLimit={props.decimalPlaces}
+                        fixedDecimalLength={props.decimalPlaces}
+                        decimalScale={props.decimalPlaces}
+                        intlConfig={{
+                            locale: i18n.language,
+                            currency: 'EUR',
+                        }}
+                        step={step}
+                        allowDecimals
+                        suffix={""}
+                        prefix={" "}
+                    />
+                    {
+                        props.endElement != undefined &&
+                        <div
+                            className={`${borderClasses} rounded-l-none box-border h-11 flex-none`}
+                        >
+                            {props.endElement}
+                        </div>
+                    }
+                </div>
                 {
-                    props.endElement != undefined &&
-                    <div
-                        className={`${borderClasses} rounded-l-none box-border h-11 flex-none`}
-                    >
-                        {props.endElement}
-                    </div>
+                    props.isLoading == true &&
+                    <Skeleton className="absolute inset-0"/>
                 }
             </div>
             <InputErrorMessage message={props.errorMessage} />

@@ -4,7 +4,7 @@ import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../components/common/ComponentCard";
 import { useMerchantsQuery } from "../../../hooks/queries/implementations/useMerchantsQuery";
 import { useAuthenticatedUser } from "../../../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ImageInput } from "../../../components/upload/ImageInput";
 import { UploadHandler } from "../../../components/upload/UploadHandler";
 import { Merchant } from "../../../hooks/api/Dtos/merchants/Merchant";
@@ -19,7 +19,6 @@ import { ChargeMethod } from "../../../hooks/api/Dtos/ChargeMethod";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { FeeUnit } from "../../../hooks/api/Dtos/merchants/FeeUnit";
 import { MerchantFee } from "../../../hooks/api/Dtos/merchants/MerchantFee";
-import { Spinner } from "../../../components/spinners/Spinner";
 
 const mapApiRecordToEnum = <TEnum extends { [key: string]: string | number }, TValue>(apiData: Record<string, TValue>, enumType: TEnum): Record<TEnum[keyof TEnum] & number, TValue> => {
     const result = {} as Record<TEnum[keyof TEnum] & number, TValue>;
@@ -54,20 +53,21 @@ export const MerchantProfileInfo = () => {
     const user = useAuthenticatedUser();
     const mutator = useMerchantMutator();
     
-    const merchantQuery = useMerchantsQuery({
-        ids: user.subMerchantId == undefined ? undefined : [user.subMerchantId],
+    const merchantQuery = useMerchantsQuery(user.subMerchantId == undefined ? undefined : {
+        ids: [user.subMerchantId],
         page: 0,
         pageSize: 1,
     })
 
-    const [state, setState] = useState(() => getState(merchantQuery.data.length == 0 ? undefined : merchantQuery.data[0]))
+    const merchant = useMemo(() => merchantQuery.data.length == 0 ? undefined : merchantQuery.data[0], [merchantQuery.data])
+    
+    const [state, setState] = useState(() => getState(merchant))
     const [logoUploadHandler, setLogoUploadHandler] = useState<UploadHandler<string>>();
     const form = useQuiviForm(state, schema);
 
-    useEffect(() => setState(getState(merchantQuery.data.length == 0 ? undefined : merchantQuery.data[0])), [merchantQuery.data])
+    useEffect(() => setState(getState(merchant)), [merchantQuery.data])
 
     const save = () => form.submit(async () => {
-        const merchant = merchantQuery.data.length == 0 ? undefined : merchantQuery.data[0];
         if(merchant == undefined) {
             return;
         }
@@ -164,6 +164,7 @@ export const MerchantProfileInfo = () => {
                         value={state.logoUrl}
                         inlineEditor
                         onUploadHandlerChanged={setLogoUploadHandler}
+                        isLoading={merchant == undefined}
                     />
                 </div>
                 {
@@ -194,6 +195,7 @@ export const MerchantProfileInfo = () => {
                                     onChange={e => setState(s => ({ ...s, surchargeFeeUnit: e}))}
                                 />}
                                 className="col-span-1 sm:col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2"
+                                isLoading={merchant == undefined}
                             />
                             <NumberField
                                 value={getFeeValue(ChargeMethod.CreditCard)}
@@ -213,6 +215,7 @@ export const MerchantProfileInfo = () => {
                                     onChange={e => setFeeUnit(ChargeMethod.CreditCard, e)}
                                 />}
                                 className="col-span-1"
+                                isLoading={merchant == undefined}
                             />
                             <NumberField
                                 value={getFeeValue(ChargeMethod.MbWay)}
@@ -232,6 +235,7 @@ export const MerchantProfileInfo = () => {
                                     onChange={e => setFeeUnit(ChargeMethod.MbWay, e)}
                                 />}
                                 className="col-span-1"
+                                isLoading={merchant == undefined}
                             />
                         </div>
                     </div>
@@ -243,12 +247,9 @@ export const MerchantProfileInfo = () => {
                 onClick={save}
                 disabled={form.isValid == false}
                 variant="primary"
+                isLoading={form.isSubmitting || merchant == undefined}
             >
                 {
-                    form.isSubmitting
-                    ?
-                    <Spinner />
-                    :
                     t("common.operations.save", {
                         name: t(`common.entities.merchant`),
                     })

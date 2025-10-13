@@ -103,6 +103,7 @@ export const MenuItemFormPage = (props: Props) => {
                     name: t("common.entities.menuItem")
                 })}
                 categoryId={params.get("categoryId") ?? undefined}
+                isLoading={id != undefined && item == undefined}
             />
         </ComponentCard>
 

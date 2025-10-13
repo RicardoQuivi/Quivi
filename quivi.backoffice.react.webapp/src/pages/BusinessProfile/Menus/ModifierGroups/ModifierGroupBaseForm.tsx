@@ -15,6 +15,7 @@ import { Skeleton } from "../../../../components/ui/skeleton/Skeleton";
 import Avatar from "../../../../components/ui/avatar/Avatar";
 import { ResponsiveTable } from "../../../../components/tables/ResponsiveTable";
 import { CurrencyField } from "../../../../components/inputs/CurrencyField";
+import { Collections } from "../../../../utilities/Collectionts";
 
 const syncedRecord = <T1, T2>(left: Record<string, T1>, right: Record<string, T2>, create: (a: T1) => T2): Record<string, T2> => {
     const result: Record<string, T2> = {};
@@ -117,7 +118,8 @@ interface Props {
     readonly model?: ModifierGroup;
     readonly onSubmit: (state: ModifierGroupFormState) => Promise<any>;
     readonly categoryId?: string;
-    readonly onFormChange: (isValid: boolean, submit: () => Promise<void>) => any
+    readonly onFormChange: (isValid: boolean, submit: () => Promise<void>) => any;
+    readonly isLoading?: boolean;
 }
 export const ModifierGroupBaseForm = (props: Props) => {
     const { t } = useTranslation();
@@ -126,20 +128,7 @@ export const ModifierGroupBaseForm = (props: Props) => {
     const itemsQuery = useMenuItemsQuery({
         page: 0,
     });
-    const itemsMap = useMemo(() => {
-        if(itemsQuery.isFirstLoading) {
-            return undefined;
-        }
-
-        const map = new Map<string, MenuItem>();
-        if(itemsQuery.data.length > 0) {
-            for(const l of itemsQuery.data) {
-                map.set(l.id, l);
-            }
-        }
-
-        return map;
-    }, [itemsQuery.data])   
+    const itemsMap = useMemo(() => itemsQuery.isFirstLoading ? undefined : Collections.toMap(itemsQuery.data, i => i.id), [itemsQuery.data])   
 
     const [currentLanguage, setCurrentLanguage] = useState(Language.Portuguese);
     const [items, setItems] = useState<MenuItem[] | undefined>(() => getItems(undefined, props.model, itemsMap));
@@ -210,6 +199,7 @@ export const ModifierGroupBaseForm = (props: Props) => {
                 value={state.name}
                 onChange={(e) => setState(s => ({ ...s, name: e }))}
                 errorMessage={form.touchedErrors.get("name")?.message}
+                isLoading={props.isLoading}
             />
             <div className="col-span-1 grid grid-cols-2 gap-4">
                 <NumberField
@@ -218,6 +208,7 @@ export const ModifierGroupBaseForm = (props: Props) => {
                     onChange={(e) => setState(s => ({ ...s, minSelection: e }))}
                     errorMessage={form.touchedErrors.get("minSelection")?.message}
                     className="col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-1"
+                    isLoading={props.isLoading}
                 />
                 <NumberField
                     label={t("pages.modifierGroups.maxSelection")}
@@ -225,6 +216,7 @@ export const ModifierGroupBaseForm = (props: Props) => {
                     onChange={(e) => setState(s => ({ ...s, maxSelection: e }))}
                     errorMessage={form.touchedErrors.get("maxSelection")?.message}
                     className="col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-1"
+                    isLoading={props.isLoading}
                 />
             </div>
             <MultiSelect
@@ -234,8 +226,10 @@ export const ModifierGroupBaseForm = (props: Props) => {
                 onChange={setItems}
                 render={c => c.name}
                 getId={c => c.id}
+                isLoading={props.isLoading}
             />
             <ResponsiveTable
+                isLoading={props.isLoading}
                 columns={[
                     {
                         key: "name",
@@ -324,6 +318,7 @@ export const ModifierGroupBaseForm = (props: Props) => {
                             translations: aux,
                         };
                     })}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>

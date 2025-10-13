@@ -12,7 +12,6 @@ import Button from "../../../components/ui/button/Button";
 import { useChannelMutator } from "../../../hooks/mutators/useChannelMutator";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
-import { Spinner } from "../../../components/spinners/Spinner";
 
 interface NewChannel {
     name: string;
@@ -166,13 +165,10 @@ export const AddChannelsModal = (props: Props) => {
         footer={(
             <ModalButtonsFooter 
                 primaryButton={{
-                    content: isSubmitting
-                                ?
-                                <Spinner />
-                                :
-                                t("common.confirm"),
+                    content: t("common.confirm"),
                     disabled: channelsToAdd.length == 0,
                     onClick: onClickConfirmBtn,
+                    isLoading: isSubmitting,
                 }}
                 secondaryButton={{
                     content: t("common.close"),

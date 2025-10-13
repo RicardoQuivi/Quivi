@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
 import { useToast } from '../../../layout/ToastProvider';
-import { Spinner } from '../../../components/spinners/Spinner';
 import { IntegrationType, PosIntegration } from '../../../hooks/api/Dtos/posIntegrations/PosIntegration';
 import { SingleSelect } from '../../../components/inputs/SingleSelect';
 import { useIntegrationHelper } from '../../../utilities/useIntegrationHelper';
@@ -49,6 +48,7 @@ const getState = (model: PosIntegration | undefined): PosIntegrationFormState =>
 interface Props {
     readonly model?: PosIntegration;
     readonly onSubmit: (state: PosIntegrationFormState) => Promise<any>;
+    readonly isLoading: boolean;
     readonly submitText: string;
 }
 export const PosIntegrationForm = (props: Props) => {
@@ -91,11 +91,13 @@ export const PosIntegrationForm = (props: Props) => {
                         getId={e => e.toString()}
                         render={e => integrationHelper.getStrategyName(e)}
                         onChange={e => setState(s => ({ ...s, type: e}))}
+                        isLoading={props.isLoading}
                     />
 
                     <QuiviFiaFacturaLusaForm 
                         type={state.type}
                         state={state.states[IntegrationType.QuiviViaFacturalusa] as QuiviViaFacturaLusaState}
+                        isLoading={props.isLoading}
                         onChange={state => setState(s => {
                             const result = {...s};
                             result.states[IntegrationType.QuiviViaFacturalusa] = state;
@@ -111,14 +113,9 @@ export const PosIntegrationForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }
@@ -128,6 +125,7 @@ interface QuiviFiaFacturaLusaFormProps {
     readonly type: IntegrationType;
     readonly state: QuiviViaFacturaLusaState;
     readonly onChange: (state: QuiviViaFacturaLusaState) => any;
+    readonly isLoading: boolean;
 
 }
 const QuiviFiaFacturaLusaForm = (props: QuiviFiaFacturaLusaFormProps) => {
@@ -146,6 +144,7 @@ const QuiviFiaFacturaLusaForm = (props: QuiviFiaFacturaLusaFormProps) => {
                 ...props.state,
                 accessToken: e,
             })}
+            isLoading={props.isLoading}
         />
 
         <TextField
@@ -156,6 +155,7 @@ const QuiviFiaFacturaLusaForm = (props: QuiviFiaFacturaLusaFormProps) => {
                 ...props.state,
                 invoicePrefix: e,
             })}
+            isLoading={props.isLoading}
         />
 
         <div
@@ -168,6 +168,7 @@ const QuiviFiaFacturaLusaForm = (props: QuiviFiaFacturaLusaFormProps) => {
                     ...props.state,
                     skipInvoice: !e,
                 })}
+                isLoading={props.isLoading}
             />
 
             <ToggleSwitch
@@ -177,6 +178,7 @@ const QuiviFiaFacturaLusaForm = (props: QuiviFiaFacturaLusaFormProps) => {
                     ...props.state,
                     includeTipInInvoice: e,
                 })}
+                isLoading={props.isLoading}
             />
         </div>
     </div>

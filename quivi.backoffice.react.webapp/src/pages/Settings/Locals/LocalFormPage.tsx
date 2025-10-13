@@ -73,6 +73,7 @@ export const LocalFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.local")
                 })}
+                isLoading={id != undefined && local == undefined}
             />
         </ComponentCard>
     </>

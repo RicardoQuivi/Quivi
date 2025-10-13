@@ -74,6 +74,7 @@ export const PrinterWorkerFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.printerWorker")
                 })}
+                isLoading={id != undefined && worker == undefined}
             />
         </ComponentCard>
     </>

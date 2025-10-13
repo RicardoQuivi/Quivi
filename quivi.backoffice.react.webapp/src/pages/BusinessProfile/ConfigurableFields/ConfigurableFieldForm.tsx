@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import Button from "../../../components/ui/button/Button";
 import { useToast } from "../../../layout/ToastProvider";
 import { TextField } from "../../../components/inputs/TextField";
-import { Spinner } from "../../../components/spinners/Spinner";
 import { ConfigurableFieldType } from "../../../hooks/api/Dtos/configurableFields/ConfigurableFieldType";
 import { PrintedOn } from "../../../hooks/api/Dtos/configurableFields/PrintedOn";
 import { ConfigurableField } from "../../../hooks/api/Dtos/configurableFields/ConfigurableField";
@@ -101,6 +100,7 @@ interface Props {
     readonly model?: ConfigurableField;
     readonly onSubmit: (state: ConfigurableFieldFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const ConfigurableFieldForm = (props: Props) => {
     const { t } = useTranslation();
@@ -164,6 +164,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                     value={state.name}
                     onChange={(e) => setState(s => ({ ...s, name: e }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <SingleSelect 
                     value={state.printedOn} 
@@ -171,7 +172,8 @@ export const ConfigurableFieldForm = (props: Props) => {
                     getId={t => t.toString()} 
                     render={getPrintedOnName} 
                     onChange={t => setState(s => ({...s, printedOn: t}))}
-                    label={t("pages.configurableFields.printable")}                    
+                    label={t("pages.configurableFields.printable")}
+                    isLoading={props.isLoading}
                 />
                 <SingleSelect 
                     value={state.type} 
@@ -179,7 +181,8 @@ export const ConfigurableFieldForm = (props: Props) => {
                     getId={t => t.toString()} 
                     render={getTypeName} 
                     onChange={t => setState(s => ({...s, type: t}))}
-                    label={t("common.type")}                    
+                    label={t("common.type")}
+                    isLoading={props.isLoading}
                 />
                 {
                     state.type == ConfigurableFieldType.Check 
@@ -188,6 +191,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                         label={t("common.defaultValue")}
                         checked={state.defaultValue == "1"}
                         onChange={(e) => setState(s => ({ ...s, defaultValue: e ? "1" : "0" }))}
+                        isLoading={props.isLoading}
                     />
                     :
                     (
@@ -199,6 +203,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                             value={state.defaultValue == undefined ? 0 : +state.defaultValue}
                             decimalPlaces={0}
                             errorMessage={form.touchedErrors.get("defaultValue")?.message}
+                            isLoading={props.isLoading}
                         />
                         :
                         <TextField
@@ -206,6 +211,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                             onChange={(e) => setState(s => ({ ...s, defaultValue: e }))}
                             value={state.defaultValue ?? ""}
                             errorMessage={form.touchedErrors.get("defaultValue")?.message}
+                            isLoading={props.isLoading}
                         />
                     )
                 }
@@ -233,6 +239,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                         </div>
                     )}
                     onChange={r => setState(s => ({ ...s, features: new Set(r)}))}
+                    isLoading={props.isLoading}
                 />
             </div>
 
@@ -263,6 +270,7 @@ export const ConfigurableFieldForm = (props: Props) => {
                             translations: aux,
                         };
                     })}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -273,14 +281,9 @@ export const ConfigurableFieldForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

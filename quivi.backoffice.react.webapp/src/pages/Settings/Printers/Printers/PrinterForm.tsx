@@ -14,7 +14,6 @@ import { PrinterWorker } from "../../../../hooks/api/Dtos/printerWorkers/Printer
 import { usePrinterWorkersQuery } from "../../../../hooks/queries/implementations/usePrinterWorkersQuery";
 import { MultiSelectionZone } from "../../../../components/inputs/MultiSelectionZone";
 import { NotificationType } from "../../../../hooks/api/Dtos/notifications/NotificationType";
-import { Spinner } from "../../../../components/spinners/Spinner";
 
 const schema = yup.object<PrinterFormState>({
     name: yup.string().required(),
@@ -70,6 +69,7 @@ interface Props {
     readonly onSubmit: (state: PrinterFormState) => Promise<any>;
     readonly submitText: string;
     readonly printerWorkerId?: string;
+    readonly isLoading: boolean;
 }
 export const PrinterForm = (props: Props) => {
     const { t } = useTranslation();
@@ -161,12 +161,14 @@ export const PrinterForm = (props: Props) => {
                     value={state.name}
                     onChange={v => setState(s => ({ ...s, name: v }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
                 <TextField
                     label={t("common.hardwareAddress")}
                     value={state.address}
                     onChange={v => setState(s => ({ ...s, address: v }))}
                     errorMessage={form.touchedErrors.get("address")?.message}
+                    isLoading={props.isLoading}
                 />
 
                 <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 col-span-1 gap-4">
@@ -190,6 +192,7 @@ export const PrinterForm = (props: Props) => {
                             onChange={setWorker}
                             render={e => e.name}
                             label={t(`common.entities.printerWorker`)}
+                            isLoading={props.isLoading}
                         />
                     }
                     </div>
@@ -219,6 +222,7 @@ export const PrinterForm = (props: Props) => {
                             onChange={setLocal}
                             render={e => e?.name ?? t("common.noLocation")}
                             label={t(`common.entities.local`)}
+                            isLoading={props.isLoading}
                         />
                     }
                     </div>
@@ -248,6 +252,7 @@ export const PrinterForm = (props: Props) => {
                         </div>
                     )}
                     onChange={r => setState(s => ({ ...s, notifications: new Set(r)}))}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -257,14 +262,9 @@ export const PrinterForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

@@ -1,5 +1,6 @@
 import { ComponentType, SVGProps, useMemo } from "react";
 import { CheckLineIcon } from "../../icons";
+import { Spinner } from "../spinners/Spinner";
 
 interface MultiSelectionZoneProps<T> {
     readonly options: T[];
@@ -8,6 +9,7 @@ interface MultiSelectionZoneProps<T> {
     readonly getId: (o: T) => string;
     readonly render: (o: T) => React.ReactNode;
     readonly checkIcon?: ComponentType<SVGProps<SVGSVGElement>>;
+    readonly isLoading?: boolean;
 }
 export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
     const selectedIds = useMemo(() => {
@@ -31,7 +33,7 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
                     return (
                     <div
                         key={id}
-                        className={`${selected ? selectedBorder : unselectedBorder} flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] cursor-pointer`}
+                        className={`${selected ? selectedBorder : unselectedBorder} flex ${props.isLoading == true ? "pointer-events-none" : "cursor-pointer"} items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] cursor-pointer`}
                         onClick={() => {
                             props.onChange?.(props.options.filter(o => {
                                 const thisId = props.getId(o);
@@ -45,15 +47,23 @@ export const MultiSelectionZone = <T,>(props: MultiSelectionZoneProps<T>) => {
                     >
                         <div className="relative h-7 flex-none rounded-full text-success-500 p-1">
                             {
-                                props.checkIcon == undefined
+                                props.isLoading == true
                                 ?
-                                <CheckLineIcon
-                                    className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
+                                <Spinner
+                                    className="object-cover object-center size-full rounded-full"
                                 />
                                 :
-                                <props.checkIcon
-                                    className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
-                                />
+                                (
+                                    props.checkIcon == undefined
+                                    ?
+                                    <CheckLineIcon
+                                        className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
+                                    />
+                                    :
+                                    <props.checkIcon
+                                        className={`object-cover object-center size-full rounded-full ${selected ? "" : "collapse"}`}
+                                    />
+                                )
                             }
                         </div>
                         <div className="w-full flex-1">

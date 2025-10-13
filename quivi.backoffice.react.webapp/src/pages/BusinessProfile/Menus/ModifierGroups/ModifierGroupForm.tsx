@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "../../../../components/ui/button/Button";
 import { ModifierGroup } from "../../../../hooks/api/Dtos/modifierGroups/ModifierGroup";
-import { Spinner } from "../../../../components/spinners/Spinner";
 import { ModifierGroupBaseForm, ModifierGroupFormState } from "./ModifierGroupBaseForm";
 
 interface Props {
@@ -9,6 +8,7 @@ interface Props {
     readonly onSubmit: (state: ModifierGroupFormState) => Promise<any>;
     readonly submitText: string;
     readonly categoryId?: string;
+    readonly isLoading: boolean;
 }
 export const ModifierGroupForm = (props: Props) => {
     const [state, setState] = useState({
@@ -34,21 +34,17 @@ export const ModifierGroupForm = (props: Props) => {
                 ...s,
                 submit: isValid == false ? undefined : submit,
             }))}
+            isLoading={props.isLoading}
         />
 
         <Button
             size="md"
             onClick={state.submit}
-            disabled={state.submit == undefined || state.isSubmitting}
+            disabled={state.submit == undefined}
             variant="primary"
+            isLoading={state.isSubmitting}
         >
-            {
-                state.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

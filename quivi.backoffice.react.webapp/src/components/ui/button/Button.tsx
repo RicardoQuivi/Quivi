@@ -54,8 +54,8 @@ const Button: React.FC<ButtonProps> = ({
             type={type}
         >
             {startIcon && <span className="flex items-center">{startIcon}</span>}
-            <div className="relative">
-                <div className={isLoading == true ? "invisible" : undefined}>
+            <div className="relative w-full">
+                <div className={isLoading == true ? "invisible" : "w-full flex justify-center"}>
                     {children}
                 </div>
                 {

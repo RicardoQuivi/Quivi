@@ -6,7 +6,6 @@ import Button from '../../../components/ui/button/Button';
 import { useToast } from '../../../layout/ToastProvider';
 import { AcquirerConfiguration } from '../../../hooks/api/Dtos/acquirerconfigurations/AcquirerConfiguration';
 import { ToggleSwitch } from '../../../components/inputs/ToggleSwitch';
-import { Spinner } from '../../../components/spinners/Spinner';
 import { ChargePartner } from '../../../hooks/api/Dtos/acquirerconfigurations/ChargePartner';
 import { TextField } from '../../../components/inputs/TextField';
 import { ChargeMethod } from '../../../hooks/api/Dtos/ChargeMethod';
@@ -75,6 +74,7 @@ interface Props {
     readonly model?: AcquirerConfiguration;
     readonly onSubmit: (state: AcquirerConfigurationFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const AcquirerConfigurationForm = (props: Props) => {
     const { t } = useTranslation();
@@ -130,6 +130,7 @@ export const AcquirerConfigurationForm = (props: Props) => {
                                 setState(s => ({ ...s, partner: e, method: method, }));
                             }}
                             disabled={props.model != undefined}
+                            isLoading={props.isLoading}
                         />
 
                         <SingleSelect
@@ -140,6 +141,7 @@ export const AcquirerConfigurationForm = (props: Props) => {
                             render={e => ChargeMethod[e]}
                             onChange={e => setState(s => ({ ...s, method: e}))}
                             disabled={props.model != undefined}
+                            isLoading={props.isLoading}
                         />
                     </div>
                    
@@ -152,6 +154,7 @@ export const AcquirerConfigurationForm = (props: Props) => {
                             result.states[ChargePartner.Paybyrd] = state;
                             return result;
                         })}
+                        isLoading={props.isLoading}
                     />
 
                     <ToggleSwitch
@@ -159,6 +162,7 @@ export const AcquirerConfigurationForm = (props: Props) => {
                         value={state.isActive}
                         onChange={v => setState(s => ({ ...s, isActive: v }))}
                         errorMessage={form.touchedErrors.get("isActive")?.message}
+                        isLoading={props.isLoading}
                     />
                 </div>
             </div>
@@ -169,14 +173,9 @@ export const AcquirerConfigurationForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }
@@ -186,7 +185,7 @@ interface PaybyrdFormProps {
     readonly method: ChargeMethod;
     readonly state?: Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>;
     readonly onChange: (state: Record<ChargeMethod, PaybyrdState | PaybyrdTerminalState>) => any;
-
+    readonly isLoading: boolean;
 }
 const PaybyrdForm = (props: PaybyrdFormProps) => {
     const { t } = useTranslation();
@@ -226,6 +225,7 @@ const PaybyrdForm = (props: PaybyrdFormProps) => {
                 }
                 props.onChange(result);
             }}
+            isLoading={props.isLoading}
         />
         {
             'terminalId' in state &&
@@ -241,6 +241,7 @@ const PaybyrdForm = (props: PaybyrdFormProps) => {
                     }
                     props.onChange(result);
                 }}
+                isLoading={props.isLoading}
             />
         }
     </div>

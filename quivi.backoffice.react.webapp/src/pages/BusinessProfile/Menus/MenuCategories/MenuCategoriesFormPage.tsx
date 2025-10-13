@@ -72,6 +72,7 @@ export const MenuCategoryFormPage = () => {
 
         <ComponentCard title={title}>
             <MenuCategoryForm
+                isLoading={id != undefined && category == undefined}
                 model={category}
                 onSubmit={submit}
                 submitText={t(`common.operations.save`, {

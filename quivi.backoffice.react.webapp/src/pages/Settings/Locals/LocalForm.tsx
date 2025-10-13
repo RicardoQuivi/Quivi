@@ -6,7 +6,6 @@ import { useQuiviForm } from '../../../hooks/api/exceptions/useQuiviForm';
 import Button from '../../../components/ui/button/Button';
 import { useToast } from '../../../layout/ToastProvider';
 import { TextField } from '../../../components/inputs/TextField';
-import { Spinner } from '../../../components/spinners/Spinner';
 
 const schema = yup.object<LocalFormState>({
     name: yup.string().required(),
@@ -24,6 +23,7 @@ interface Props {
     readonly model?: Local;
     readonly onSubmit: (state: LocalFormState) => Promise<any>;
     readonly submitText: string;
+    readonly isLoading: boolean;
 }
 export const LocalForm = (props: Props) => {
     const { t } = useTranslation();
@@ -55,6 +55,7 @@ export const LocalForm = (props: Props) => {
                     value={state.name}
                     onChange={v => setState(s => ({ ...s, name: v }))}
                     errorMessage={form.touchedErrors.get("name")?.message}
+                    isLoading={props.isLoading}
                 />
             </div>
         </div>
@@ -64,14 +65,9 @@ export const LocalForm = (props: Props) => {
             onClick={save}
             disabled={form.isValid == false}
             variant="primary"
+            isLoading={form.isSubmitting || props.isLoading}
         >
-            {
-                form.isSubmitting
-                ?
-                <Spinner />
-                :
-                props.submitText
-            }
+            {props.submitText}
         </Button>
     </>
 }

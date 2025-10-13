@@ -88,6 +88,7 @@ export const ConfigurableFieldFormPage = () => {
                 submitText={t(`common.operations.save`, {
                     name: t("common.entities.configurableField")
                 })}
+                isLoading={id != undefined && configurableField == undefined}
             />
         </ComponentCard>
     </>

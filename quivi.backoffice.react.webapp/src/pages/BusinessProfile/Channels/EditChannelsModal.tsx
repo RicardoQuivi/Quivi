@@ -10,7 +10,6 @@ import Alert from "../../../components/ui/alert/Alert";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { SingleSelect } from "../../../components/inputs/SingleSelect";
 import { TextField } from "../../../components/inputs/TextField";
-import { Spinner } from "../../../components/spinners/Spinner";
 
 interface Props {
     readonly applyToAll?: boolean;
@@ -108,13 +107,10 @@ export const EditChannelsModal = (props: Props) => {
         footer={(
             <ModalButtonsFooter 
                 primaryButton={{
-                    content: state.isSubmiting
-                                ?
-                                <Spinner />
-                                :
-                                t("common.confirm"),
+                    content: t("common.confirm"),
                     onClick: onSubmit,
                     disabled: profilesQuery.isFirstLoading,
+                    isLoading: state.isSubmiting,
                 }}
                 secondaryButton={{
                     content: t("common.close"),
