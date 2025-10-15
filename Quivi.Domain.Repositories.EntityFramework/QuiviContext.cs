@@ -1174,6 +1174,7 @@ namespace Quivi.Domain.Repositories.EntityFramework
         public DbSet<JournalDetails> JournalDetails { get; set; }
         public DbSet<MerchantService> MerchantServices { get; set; }
         public DbSet<PosCharge> PosCharges { get; set; }
+        public DbSet<PosChargeInvoiceItem> PosChargeInvoiceItems { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<CustomChargeMethod> CustomChargeMethods { get; set; }
         public DbSet<Order> Orders { get; set; }

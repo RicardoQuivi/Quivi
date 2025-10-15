@@ -22,7 +22,7 @@ namespace Quivi.Backoffice.Api.Controllers
     public class AvailabilitiesController : ControllerBase
     {
         private readonly IQueryProcessor queryProcessor;
-        public readonly ICommandProcessor commandProcessor;
+        private readonly ICommandProcessor commandProcessor;
         private readonly IIdConverter idConverter;
         private readonly IMapper mapper;
 

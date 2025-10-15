@@ -41,6 +41,8 @@ import { PayoutsPage } from "./pages/Payouts/PayoutsPage";
 import { InvoicingPage } from "./pages/Invoicing/InvoicingPage";
 import { AvailabilitiesPage } from "./pages/BusinessProfile/Availabilities/AvailabilitiesPage";
 import { AvailabilityFormPage } from "./pages/BusinessProfile/Availabilities/AvailabilityFormPage";
+import { SalesDashboardPage } from "./pages/Reports/SalesDashboardPage";
+import { AdminDashboardPage } from "./pages/Admin/AdminDashboardPage";
 
 export const App = () => {
     return <>
@@ -57,6 +59,9 @@ export const App = () => {
 
                 <Route element={<AuthLayoutRoute />}>
                     <Route path="/" element={<DashboardPage />} />
+
+                    {/* Admin - Dashboard */}
+                    <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
 
                     {/* Admin - Integrations */}
                     <Route path="/admin/integrations" element={<PosIntegrationsPage />} />
@@ -115,6 +120,9 @@ export const App = () => {
 
                     {/* Invoicing */}
                     <Route path="/invoicing" element={<InvoicingPage />} />
+
+                    {/* Reports - Dashboard */}
+                    <Route path="/reports/dashboard" element={<SalesDashboardPage />} />
 
                     {/* Locals */}
                     <Route path="/settings/locals" element={<LocalsPage />} />

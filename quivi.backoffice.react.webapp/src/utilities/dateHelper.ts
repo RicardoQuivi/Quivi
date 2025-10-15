@@ -10,6 +10,8 @@ export enum TimeUnit {
     Months,
 }
 
+const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+
 export const useDateHelper = () => {
     const { t } = useTranslation();
 
@@ -76,9 +78,6 @@ export const useDateHelper = () => {
         const minutes = date.getMinutes();
         const seconds = date.getSeconds();
 
-        const monthNames = [
-            "january", "february", "march", "april", "may", " june", "july", "august", "september", "october", "november", "december"
-        ];
 
         // Define tokens and their replacement logic
         const tokens: { token: string; replace: () => string }[] = [

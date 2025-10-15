@@ -51,6 +51,7 @@ namespace Quivi.Infrastructure.Repositories
         public IAvailabilityProfileAssociationsRepository AvailabilityProfileAssociations => new SqlAvailabilityProfileAssociationsRepository(quiviContext);
         public IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations => new SqlAvailabilityMenuItemAssociationsRepository(quiviContext);
         public IWeeklyAvailabilitiesRepository WeeklyAvailabilities => new SqlWeeklyAvailabilitiesRepository(quiviContext);
+        public IReportsRepository Reports => new SqlReportsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

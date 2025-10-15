@@ -40,6 +40,7 @@
         IAvailabilityProfileAssociationsRepository AvailabilityProfileAssociations { get; }
         IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations { get; }
         IWeeklyAvailabilitiesRepository WeeklyAvailabilities { get; }
+        IReportsRepository Reports { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

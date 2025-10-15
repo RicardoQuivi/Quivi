@@ -7,6 +7,7 @@
     "dateHelper": {
         "at": "at",
         "allDay": "All day",
+        "allTime": "All time",
         "weekdays": {
             "Sunday": "Sunday",
             "Monday": "Monday",
@@ -87,6 +88,7 @@
             "RequireUppercase": "At least 1 uppercase",
             "RequireDigit": "At least one number"
         },
+        "loading": "Loading...",
         "cancel": "Cancel",
         "yes": "Yes",
         "no": "No",
@@ -415,7 +417,8 @@
         "invoicing": "Invoicing",
         "reports": {
             "": "Reports",
-            "dailySales": "Daily Sales"
+            "dashboard": "Dashboard",
+            "sales": "Sales"
         },
         "settings": {
             "": "Settings",
@@ -744,6 +747,51 @@
         },
         "invoicing": {
             "title": "Invoicing"
+        },
+        "reports": {
+            "sales": {
+                "title": "Sales"
+            }
+        },
+        "adminDashboard": {
+            "title" : "Dashboard"
+        }
+    },
+    "widgets": {
+        "analytics": {
+            "vsLastMonth": "vs same period of last month",
+            "totalSales": "Total sales",
+            "totalAmount": "Total amount",
+            "totalTips": "Total tips",
+            "totalRefunds": "Total refunds"
+        },
+        "sales": {
+            "title": "Sales",
+            "descriptionHourly": "Sales of the last {{value}} hours",
+            "descriptionDaily": "Sales of the last {{value}} days",
+            "descriptionMonthly": "Sales of the last {{value}} months"
+        },
+        "topMenuItems": {
+            "topQuantity": "Top best selling products",
+            "topBilledAmount": "Top billed products",
+            "quantityLabel": "Sold quantity",
+            "billedLabel": "Billed amount"
+        },
+        "topMenuCategories": {
+            "topQuantity": "Top best selling products per category",
+            "topBilledAmount": "Top billed products per category",
+            "quantityLabel": "Sold items",
+            "billedLabel": "Billed amount"
+        },
+        "topChargeMethods": {
+            "topQuantity": "Top used charge methods",
+            "topBilledAmount": "Top billing per charge method",
+            "quantityLabel": "Invoices",
+            "billedLabel": "Billed amount"
+        },
+        "compareChargeMethods": {
+            "perQuantityTitle": "Charge methods sales",
+            "perBillingTitle": "Charge methods billing"
         }
     }
 }

@@ -2345,7 +2345,7 @@ namespace Quivi.Domain.Repositories.EntityFramework.Migrations
 
                     b.HasIndex("PosChargeId");
 
-                    b.ToTable("PosChargeInvoiceItem");
+                    b.ToTable("PosChargeInvoiceItems");
                 });
 
             modelBuilder.Entity("Quivi.Domain.Entities.Pos.PosChargeSelectedMenuItem", b =>

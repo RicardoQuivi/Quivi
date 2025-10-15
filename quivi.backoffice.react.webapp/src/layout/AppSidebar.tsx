@@ -41,6 +41,11 @@ const items: NavItem[] = [
         show: (u) => u.isAdmin,
         subItems: [
             { 
+                name: "sidebar.reports.dashboard",
+                path: "/admin/dashboard",
+                show: (u) => u.isAdmin && u.subMerchantId != undefined,
+            },
+            { 
                 name: "sidebar.administration.integrations",
                 path: "/admin/integrations",
                 show: (u) => u.isAdmin && u.subMerchantId != undefined,
@@ -118,8 +123,8 @@ const items: NavItem[] = [
         show: (u) => u.merchantActivated == true,
         subItems: [
             { 
-                name: "sidebar.reports.dailySales",
-                path: "/reports/dailySales",
+                name: "sidebar.reports.dashboard",
+                path: "/reports/dashboard",
                 show: (u) => u.merchantActivated == true,
             },
         ],

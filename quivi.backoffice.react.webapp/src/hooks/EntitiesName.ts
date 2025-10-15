@@ -16,6 +16,7 @@ export enum Entity {
     Transactions,
     Reviews,
     MerchantDocuments,
+    Sales,
     ConfigurableFields,
     ConfigurableFieldAssociations,
     Settlements,

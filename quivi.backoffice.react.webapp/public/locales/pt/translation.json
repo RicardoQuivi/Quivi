@@ -7,6 +7,7 @@
     "dateHelper": {
         "at": "às",
         "allDay": "Todo o dia",
+        "allTime": "Desde sempre",
         "weekdays": {
             "Sunday": "Domingo",
             "Monday": "Segunda-feira",
@@ -87,6 +88,7 @@
             "RequireUppercase": "Pelo menos 1 maíscula",
             "RequireDigit": "Pelo menos 1 número"
         },
+        "loading": "A carregar...",
         "cancel": "Cancelar",
         "yes": "Sim",
         "no": "Não",
@@ -415,7 +417,8 @@
         "invoicing": "Faturação",
         "reports": {
             "": "Relatórios",
-            "dailySales": "Vendas diárias"
+            "dashboard": "Dashboard",
+            "sales": "Vendas"
         },
         "settings": {
             "": "Definições",
@@ -744,6 +747,51 @@
         },
         "invoicing": {
             "title": "Faturação"
+        },
+        "reports": {
+            "sales": {
+                "title": "Vendas"
+            }
+        },
+        "adminDashboard": {
+            "title" : "Dashboard"
+        }
+    },
+    "widgets": {
+        "analytics": {
+            "vsLastMonth": "vs igual periodo do mês passado",
+            "totalSales": "Total vendas",
+            "totalAmount": "Total montante",
+            "totalTips": "Total gratificações",
+            "totalRefunds": "Total devoluções"
+        },
+        "sales": {
+            "title": "Vendas",
+            "descriptionHourly": "Vendas das últimas {{value}} horas",
+            "descriptionDaily": "Vendas dos últimos {{value}} dias",
+            "descriptionMonthly": "Vendas das últimos {{value}} meses"
+        },
+        "topMenuItems": {
+            "topQuantity": "Top produtos mais vendidos",
+            "topBilledAmount": "Top produtos faturados",
+            "quantityLabel": "Quantidade vendida",
+            "billedLabel": "Montante faturado"
+        },
+        "topMenuCategories": {
+            "topQuantity": "Top produtos mais vendidos por categoria",
+            "topBilledAmount": "Top produtos faturados por categoria",
+            "quantityLabel": "Itens vendidos",
+            "billedLabel": "Montante faturado"
+        },
+        "topChargeMethods": {
+            "topQuantity": "Top métodos pagamentos mais utilizados",
+            "topBilledAmount": "Top métodos pagamentos com mais faturação",
+            "quantityLabel": "Faturas emitidas",
+            "billedLabel": "Montante faturado"
+        },
+        "compareChargeMethods": {
+            "perQuantityTitle": "Vendas por método de pagamento",
+            "perBillingTitle": "Faturação por método de pagamento"
         }
     }
 }

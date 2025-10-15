@@ -45,6 +45,7 @@ export const DeleteEntityModal = <T,>(props: Props<T>) => {
             case Entity.Availabilities: return t("common.entities.availabilities");
             case Entity.AvailabilityChannelProfileAssociations: return t("common.entities.availabilityChannelProfileAssociation");
             case Entity.AvailabilityMenuItemAssociations: return t("common.entities.availabilityMenuItemAssociation");
+            case Entity.Sales: throw new Error("Not deletable");
         }
     }
 

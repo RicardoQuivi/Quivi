@@ -273,6 +273,12 @@ namespace Quivi.Application.Extensions
                     return property.GetValue(unitOfWork)!;
                 });
 
+            serviceCollection.RegisterScoped(p =>
+            {
+                var unitOfWork = p.GetService<IUnitOfWork>()!;
+                return unitOfWork.Reports;
+            });
+
             return serviceCollection;
         }
 
