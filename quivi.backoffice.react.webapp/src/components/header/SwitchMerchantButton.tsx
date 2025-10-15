@@ -184,7 +184,9 @@ const MerchantCard = (props: MerchantCardProps) => {
                 props.merchant.parentId != undefined &&
                 <Button
                     className="mt-4 w-full"
-                    onClick={async () => {
+                    onClick={async (e) => {
+                        e.stopPropagation();
+
                         setIsLoading(true);
                         await props.onMerchantSelect();
                         setIsLoading(false);
