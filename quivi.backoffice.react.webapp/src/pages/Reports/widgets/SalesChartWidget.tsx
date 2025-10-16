@@ -8,7 +8,7 @@ import { useSalesQuery } from "../../../hooks/queries/implementations/useSalesQu
 import { Collections } from "../../../utilities/Collectionts";
 import { CurrencyHelper } from "../../../utilities/currencyHelper";
 import Chart from "react-apexcharts";
-import { PeriodSelector } from "./PeriodSelector";
+import { OptionSelector } from "./OptionSelector";
 
 const defaultOptions: ApexOptions = {
     colors: [
@@ -247,9 +247,21 @@ export const SalesChartWidget = (props: Props) => {
                     {getChartLabel()}
                 </span>
             </div>
-            <PeriodSelector
-                period={state.period}
-                showFromEver={false}
+            <OptionSelector
+                options={[
+                    SalesPeriod.Hourly,
+                    SalesPeriod.Daily,
+                    SalesPeriod.Monthly,
+                ]}
+                getKey={s => s}
+                render={s => {
+                    switch(s) {
+                        case SalesPeriod.Hourly: return `24 ${t("dateHelper.units.hours")}`;
+                        case SalesPeriod.Daily: return `31 ${t("dateHelper.units.days")}`;
+                        case SalesPeriod.Monthly: return `12 ${t("dateHelper.units.months")}`;
+                    }
+                }}
+                selected={state.period}
                 onChange={p => setState(s => ({ ...s, period: p! }))}
             />
         </div>

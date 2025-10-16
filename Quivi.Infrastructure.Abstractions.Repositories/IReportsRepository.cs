@@ -10,5 +10,6 @@ namespace Quivi.Infrastructure.Abstractions.Repositories
         Task<IPagedData<ProductSales>> GetProductSalesAsync(GetProductSalesCriteria criteria);
         Task<IPagedData<CategorySales>> GetCategorySalesAsync(GetCategorySalesCriteria criteria);
         Task<IPagedData<ChargeMethodSales>> GetChargeMethodSalesAsync(GetChargeMethodSalesCriteria criteria);
+        Task<IPagedData<PartnerChargeMethodSales>> GetPartnerChargeMethodSalesAsync(GetPartnerChargeMethodSalesCriteria criteria);
     }
 }

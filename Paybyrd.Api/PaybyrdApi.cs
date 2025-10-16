@@ -76,17 +76,17 @@ namespace Paybyrd.Api
         #region IPabyrdApi
         public Task<CreatePaymentResponse> CreatePayment(string apiKey, CreatePaymentRequest request) => Post<CreatePaymentResponse>(apiAdress, "/api/v2/payment", apiKey, request);
         public Task<CapturePaymentTransactionResponse> CapturePayment(string apiKey, CapturePaymentTransactionRequest request) => Post<CapturePaymentTransactionResponse>(apiAdress, $"/api/v2/capture/{request.TransactionId}", apiKey, request);
-        public Task<GetPaymentResponse> GetPayment(string apiKey, GetPaymentRequest request) => Get<GetPaymentResponse>(apiAdress, $"api/v2/transactions/{request.TransactionId}", apiKey);
+        public Task<GetPaymentResponse> GetPayment(string apiKey, GetPaymentRequest request) => Get<GetPaymentResponse>(apiAdress, $"/api/v2/transactions/{request.TransactionId}", apiKey);
         public Task<RefundPaymentResponse> RefundPayment(string apiKey, RefundPaymentRequest request) => Post<RefundPaymentResponse>(apiAdress, $"/api/v2/refund/{request.TransactionId}", apiKey, request);
 
         public Task<CreateOrderResponse> CreateOrder(string apiKey, CreateOrderRequest request) => Post<CreateOrderResponse>(apiAdress, $"/api/v2/orders", apiKey, request);
-        public Task<GetOrderResponse> GetOrder(string apiKey, GetOrderRequest request) => Get<GetOrderResponse>(apiAdress, $"api/v2/orders/{request.OrderId}", apiKey);
+        public Task<GetOrderResponse> GetOrder(string apiKey, GetOrderRequest request) => Get<GetOrderResponse>(apiAdress, $"/api/v2/orders/{request.OrderId}", apiKey);
         #endregion
 
         #region IPaybyrdWebhooksApi
         public Task<GetSettingsResponse> GetSettings(string apiKey) => Get<GetSettingsResponse>(webHooksAddress, $"/api/v1/settings", apiKey);
         public Task<CreateWebhookResponse> Create(string apiKey, CreateWebhookRequest request) => Post<CreateWebhookResponse>(webHooksAddress, $"/api/v1/settings", apiKey, request);
-        public Task Delete(string apiKey, DeleteWebhookRequest request) => Delete(webHooksAddress, $"api/v1/settings/{request.WebhookId}", apiKey);
+        public Task Delete(string apiKey, DeleteWebhookRequest request) => Delete(webHooksAddress, $"/api/v1/settings/{request.WebhookId}", apiKey);
         #endregion
     }
 }

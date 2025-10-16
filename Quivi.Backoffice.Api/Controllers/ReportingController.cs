@@ -151,5 +151,39 @@ namespace Quivi.Backoffice.Api.Controllers
                 TotalPages = query.NumberOfPages,
             };
         }
+
+        [HttpGet("sales/chargemethods/quivi")]
+        public async Task<GetPartnerChargeMethodSalesResponse> GetQuiviChargeMethodSales([FromQuery] GetPartnerChargeMethodSalesRequest request)
+        {
+            request ??= new();
+
+            bool adminView = request.AdminView == true && (User.IsAdmin() || User.IsSuperAdmin());
+            var merchantId = User.MerchantId(idConverter);
+            var subMerchantId = User.SubMerchantId(idConverter);
+
+            var query = await queryProcessor.Execute(new GetPartnerChargeMethodSalesAsyncQuery
+            {
+                Period = request.Period,
+
+                ChargePartners = request.ChargePartners,
+                ChargeMethods = request.ChargeMethods,
+
+                ParentMerchantIds = adminView ? null : [merchantId!.Value],
+                MerchantIds = adminView || subMerchantId.HasValue == false ? null : [subMerchantId.Value],
+
+                From = request.From?.UtcDateTime,
+                To = request.To?.UtcDateTime,
+
+                PageIndex = request.Page,
+                PageSize = request.PageSize,
+            });
+            return new GetPartnerChargeMethodSalesResponse
+            {
+                Data = mapper.Map<Dtos.PartnerChargeMethodSales>(query),
+                Page = query.CurrentPage,
+                TotalItems = query.TotalItems,
+                TotalPages = query.NumberOfPages,
+            };
+        }
     }
 }

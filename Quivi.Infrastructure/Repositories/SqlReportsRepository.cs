@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Quivi.Domain.Entities.Charges;
 using Quivi.Domain.Entities.Pos;
 using Quivi.Domain.Repositories.EntityFramework;
 using Quivi.Domain.Repositories.EntityFramework.Models;
@@ -609,7 +610,7 @@ namespace Quivi.Infrastructure.Repositories
         }
         #endregion
 
-        #region CategorySales
+        #region ChargeMethodSales
         public Task<IPagedData<ChargeMethodSales>> GetChargeMethodSalesAsync(GetChargeMethodSalesCriteria criteria)
         {
             IQueryable<PosCharge> query = Filter(criteria);
@@ -770,6 +771,232 @@ namespace Quivi.Infrastructure.Repositories
         private IQueryable<PosCharge> Filter(GetChargeMethodSalesCriteria criteria)
         {
             IQueryable<PosCharge> query = context.PosCharges.Where(s => s!.CaptureDate.HasValue);
+
+            if (criteria.ParentMerchantIds != null)
+                query = query.Where(item => item.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds!.Contains(item.Merchant.ParentMerchantId.Value));
+
+            if (criteria.MerchantIds != null)
+                query = query.Where(item => criteria.MerchantIds!.Contains(item.MerchantId));
+
+            if (criteria.From != null)
+                query = query.Where(item => criteria.From <= item.CaptureDate);
+
+            if (criteria.To != null)
+                query = query.Where(item => item.CaptureDate < criteria.To);
+
+            return query;
+        }
+        #endregion
+
+        #region PartnerChargeMethodSales
+        public Task<IPagedData<PartnerChargeMethodSales>> GetPartnerChargeMethodSalesAsync(GetPartnerChargeMethodSalesCriteria criteria)
+        {
+            IQueryable<PosCharge> query = Filter(criteria);
+
+            if (criteria.Period.HasValue == false)
+                return NoPeriod(criteria, query);
+
+            switch (criteria.Period.Value)
+            {
+                case SalesPeriod.Hourly: return Hourly(criteria, query);
+                case SalesPeriod.Daily: return Daily(criteria, query);
+                case SalesPeriod.Monthly: return Monthly(criteria, query);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private static async Task<IPagedData<PartnerChargeMethodSales>> NoPeriod(GetPartnerChargeMethodSalesCriteria criteria, IQueryable<PosCharge> query)
+        {
+            var preparedQuery = query.GroupBy(g => new { g.Charge!.ChargePartner, g.Charge.ChargeMethod })
+                                        .Select(s => new
+                                        {
+                                            From = s.Min(i => i.CaptureDate)!.Value,
+                                            To = s.Max(i => i.CaptureDate)!.Value,
+
+                                            ChargePartner = s.Key.ChargePartner,
+                                            ChargeMethod = s.Key.ChargeMethod,
+
+                                            TotalSuccess = s.Count(i => i.Charge!.Status == ChargeStatus.Completed),
+                                            TotalFailed = s.Count(i => i.Charge!.Status == ChargeStatus.Expired || i.Charge!.Status == ChargeStatus.Failed),
+                                            TotalProcessing = s.Count(i => i.Charge!.Status == ChargeStatus.Requested || i.Charge!.Status == ChargeStatus.Processing),
+
+                                            TotalBilledAmount = s.Sum(i => i.Payment + i.Tip),
+                                        })
+                                        .OrderByDescending(a => a.ChargePartner)
+                                        .ThenBy(a => a.ChargeMethod);
+
+            var pagedResult = await preparedQuery.ToPagedDataAsync(criteria.PageIndex, criteria.PageSize);
+
+            var data = pagedResult.Select(s => new PartnerChargeMethodSales
+            {
+                From = s.From,
+                To = s.To,
+
+                ChargePartner = s.ChargePartner,
+                ChargeMethod = s.ChargeMethod,
+
+                TotalQuantity = s.TotalSuccess + s.TotalFailed + s.TotalProcessing,
+                TotalSuccess = s.TotalSuccess,
+                TotalFailed = s.TotalFailed,
+                TotalProcessing = s.TotalProcessing,
+
+                TotalBilledAmount = s.TotalBilledAmount,
+            }).ToList();
+
+            return new PagedData<PartnerChargeMethodSales>(data)
+            {
+                CurrentPage = pagedResult.CurrentPage,
+                NumberOfPages = pagedResult.NumberOfPages,
+                TotalItems = pagedResult.TotalItems,
+            };
+        }
+
+        private static async Task<IPagedData<PartnerChargeMethodSales>> Hourly(GetPartnerChargeMethodSalesCriteria criteria, IQueryable<PosCharge> query)
+        {
+            var preparedQuery = query.GroupBy(g => new { g.Charge!.ChargePartner, g.Charge.ChargeMethod, g.CaptureDate!.Value.Date, g.CaptureDate!.Value.Hour })
+                                        .Select(s => new
+                                        {
+                                            Date = s.Key.Date,
+                                            Hour = s.Key.Hour,
+
+                                            ChargePartner = s.Key.ChargePartner,
+                                            ChargeMethod = s.Key.ChargeMethod,
+
+                                            TotalSuccess = s.Count(i => i.Charge!.Status == ChargeStatus.Completed),
+                                            TotalFailed = s.Count(i => i.Charge!.Status == ChargeStatus.Expired || i.Charge!.Status == ChargeStatus.Failed),
+                                            TotalProcessing = s.Count(i => i.Charge!.Status == ChargeStatus.Requested || i.Charge!.Status == ChargeStatus.Processing),
+
+                                            TotalBilledAmount = s.Sum(i => i.Payment + i.Tip),
+                                        })
+                                        .OrderBy(s => s.Date)
+                                        .ThenBy(s => s.Hour);
+
+            var pagedResult = await preparedQuery.ToPagedDataAsync(criteria.PageIndex, criteria.PageSize);
+
+            var data = pagedResult.Select(s => new PartnerChargeMethodSales
+            {
+                From = s.Date.AddHours(s.Hour),
+                To = s.Date.AddHours(s.Hour + 1),
+
+                ChargePartner = s.ChargePartner,
+                ChargeMethod = s.ChargeMethod,
+
+                TotalQuantity = s.TotalSuccess + s.TotalFailed + s.TotalProcessing,
+                TotalSuccess = s.TotalSuccess,
+                TotalFailed = s.TotalFailed,
+                TotalProcessing = s.TotalProcessing,
+
+                TotalBilledAmount = s.TotalBilledAmount,
+            }).ToList();
+
+            return new PagedData<PartnerChargeMethodSales>(data)
+            {
+                CurrentPage = pagedResult.CurrentPage,
+                NumberOfPages = pagedResult.NumberOfPages,
+                TotalItems = pagedResult.TotalItems,
+            };
+        }
+
+        private static async Task<IPagedData<PartnerChargeMethodSales>> Daily(GetPartnerChargeMethodSalesCriteria criteria, IQueryable<PosCharge> query)
+        {
+            var preparedQuery = query.GroupBy(g => new { g.Charge!.ChargePartner, g.Charge.ChargeMethod, g.CaptureDate!.Value.Date })
+                                        .Select(s => new
+                                        {
+                                            Date = s.Key.Date,
+
+                                            ChargePartner = s.Key.ChargePartner,
+                                            ChargeMethod = s.Key.ChargeMethod,
+
+                                            TotalSuccess = s.Count(i => i.Charge!.Status == ChargeStatus.Completed),
+                                            TotalFailed = s.Count(i => i.Charge!.Status == ChargeStatus.Expired || i.Charge!.Status == ChargeStatus.Failed),
+                                            TotalProcessing = s.Count(i => i.Charge!.Status == ChargeStatus.Requested || i.Charge!.Status == ChargeStatus.Processing),
+
+                                            TotalBilledAmount = s.Sum(i => i.Payment + i.Tip),
+                                        }).OrderBy(s => s.Date);
+
+            var pagedResult = await preparedQuery.ToPagedDataAsync(criteria.PageIndex, criteria.PageSize);
+
+            var data = pagedResult.Select(s => new PartnerChargeMethodSales
+            {
+                From = s.Date,
+                To = s.Date.AddDays(1),
+
+                ChargePartner = s.ChargePartner,
+                ChargeMethod = s.ChargeMethod,
+
+                TotalQuantity = s.TotalSuccess + s.TotalFailed + s.TotalProcessing,
+                TotalSuccess = s.TotalSuccess,
+                TotalFailed = s.TotalFailed,
+                TotalProcessing = s.TotalProcessing,
+
+                TotalBilledAmount = s.TotalBilledAmount,
+            }).ToList();
+            return new PagedData<PartnerChargeMethodSales>(data)
+            {
+                CurrentPage = pagedResult.CurrentPage,
+                NumberOfPages = pagedResult.NumberOfPages,
+                TotalItems = pagedResult.TotalItems,
+            };
+        }
+
+        private static async Task<IPagedData<PartnerChargeMethodSales>> Monthly(GetPartnerChargeMethodSalesCriteria criteria, IQueryable<PosCharge> query)
+        {
+            var aux = query.GroupBy(g => new { g.Charge!.ChargePartner, g.Charge.ChargeMethod, g.CaptureDate!.Value.Year, g.CaptureDate!.Value.Month })
+                            .Select(s => new
+                            {
+                                Year = s.Key.Year,
+                                Month = s.Key.Month,
+
+                                ChargePartner = s.Key.ChargePartner,
+                                ChargeMethod = s.Key.ChargeMethod,
+
+                                TotalSuccess = s.Count(i => i.Charge!.Status == ChargeStatus.Completed),
+                                TotalFailed = s.Count(i => i.Charge!.Status == ChargeStatus.Expired || i.Charge!.Status == ChargeStatus.Failed),
+                                TotalProcessing = s.Count(i => i.Charge!.Status == ChargeStatus.Requested || i.Charge!.Status == ChargeStatus.Processing),
+
+                                TotalBilledAmount = s.Sum(i => i.Payment + i.Tip),
+                            }).OrderBy(s => s.Year).ThenBy(s => s.Month);
+
+            var pagedResult = await aux.ToPagedDataAsync(criteria.PageIndex, criteria.PageSize);
+
+            var data = pagedResult.Select(s =>
+            {
+                var from = new DateTime(s.Year, s.Month, 1);
+                return new PartnerChargeMethodSales
+                {
+                    From = from,
+                    To = from.AddMonths(1),
+
+                    ChargePartner = s.ChargePartner,
+                    ChargeMethod = s.ChargeMethod,
+
+                    TotalQuantity = s.TotalSuccess + s.TotalFailed + s.TotalProcessing,
+                    TotalSuccess = s.TotalSuccess,
+                    TotalFailed = s.TotalFailed,
+                    TotalProcessing = s.TotalProcessing,
+
+                    TotalBilledAmount = s.TotalBilledAmount,
+                };
+            }).ToList();
+
+            return new PagedData<PartnerChargeMethodSales>(data)
+            {
+                CurrentPage = pagedResult.CurrentPage,
+                NumberOfPages = pagedResult.NumberOfPages,
+                TotalItems = pagedResult.TotalItems,
+            };
+        }
+
+        private IQueryable<PosCharge> Filter(GetPartnerChargeMethodSalesCriteria criteria)
+        {
+            IQueryable<PosCharge> query = context.PosCharges.Where(s => s!.CaptureDate.HasValue);
+
+            if (criteria.ChargePartners != null)
+                query = query.Where(item => criteria.ChargePartners!.Contains(item.Charge!.ChargePartner));
+
+            if (criteria.ChargeMethods != null)
+                query = query.Where(item => criteria.ChargeMethods!.Contains(item.Charge!.ChargeMethod));
 
             if (criteria.ParentMerchantIds != null)
                 query = query.Where(item => item.Merchant!.ParentMerchantId.HasValue && criteria.ParentMerchantIds!.Contains(item.Merchant.ParentMerchantId.Value));

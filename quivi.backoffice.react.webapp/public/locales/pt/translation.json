@@ -758,8 +758,18 @@
         }
     },
     "widgets": {
-        "analytics": {
-            "vsLastMonth": "vs igual periodo do mês passado",
+        "analyticMetric": {
+            "yesterday": "Ontem",
+            "lastWeek": "Semana",
+            "lastMonth": "Mês",
+            "analysedYesterday": "Hoje, durante todo o dia",
+            "analysedLastWeek": "Desde domingo até hoje às {{to}}",
+            "analysedLastMonth": "Desde dia 1 às até hoje às {{to}}",
+            "vsYesterday": "vs ontem em igual periodo",
+            "vsLastWeek": "vs semana passada em periodo equivalente",
+            "vsLastMonth": "vs mês passado em periodo equivalente"
+        },
+        "salesAnalytics": {
             "totalSales": "Total vendas",
             "totalAmount": "Total montante",
             "totalTips": "Total gratificações",
@@ -792,6 +802,17 @@
         "compareChargeMethods": {
             "perQuantityTitle": "Vendas por método de pagamento",
             "perBillingTitle": "Faturação por método de pagamento"
+        },
+        "chargeSuccessRate": {
+            "title": "{{name}}",
+            "methodName": "{{method}} via {{partner}}",
+            "success": "Sucesso",
+            "failed": "Falhada",
+            "inProgress": "A decorrer"
+        },
+        "acquirerAnalytics": {
+            "successRate": "Taxa de sucesso {{name}}",
+            "noTransactions": "N/A"
         }
     }
 }

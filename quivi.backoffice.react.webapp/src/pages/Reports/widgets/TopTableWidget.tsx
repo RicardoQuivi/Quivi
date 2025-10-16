@@ -1,4 +1,4 @@
-import { PeriodSelector } from "./PeriodSelector";
+import { OptionSelector } from "./OptionSelector";
 import { SalesPeriod } from "../../../hooks/api/Dtos/reporting/SalesPeriod";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { useTranslation } from "react-i18next";
@@ -26,9 +26,25 @@ export const TopTableWidget = <T,>(props: TopTableWidgetProps<T>) => {
                     {props.title}
                 </h3>
             </div>
-            <PeriodSelector
-                period={props.period}
-                showFromEver
+            <OptionSelector
+                options={[
+                    SalesPeriod.Hourly,
+                    SalesPeriod.Daily,
+                    SalesPeriod.Monthly,
+                    undefined,
+                ]}
+                getKey={s => s == undefined ? "ever" : s}
+                render={s => {
+                    if(s == undefined) {
+                        return t("dateHelper.allTime");
+                    }
+                    switch(s) {
+                        case SalesPeriod.Hourly: return `24 ${t("dateHelper.units.hours")}`;
+                        case SalesPeriod.Daily: return `31 ${t("dateHelper.units.days")}`;
+                        case SalesPeriod.Monthly: return `12 ${t("dateHelper.units.months")}`;
+                    }
+                }}
+                selected={props.period}
                 onChange={props.onPeriodChange}
             />
         </div>

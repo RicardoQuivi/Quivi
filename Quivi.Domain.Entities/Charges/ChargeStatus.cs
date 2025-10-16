@@ -2,7 +2,7 @@
 {
     public enum ChargeStatus
     {
-        Expired = -2, 
+        Expired = -2,
         Failed = -1,
 
         Requested = 0,

@@ -118,7 +118,7 @@ const SwitchMerchantModal = (props: SwitchMerchantModalProps) => {
     >
         <nav>
             <ol className="flex flex-wrap items-center gap-1.5">
-                <li 
+                <li
                     className={`flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-400 ${state.parentMerchant != undefined ? "cursor-pointer" : ""}`}
                     onClick={() => setState(s => s.parentMerchant == undefined ? s : ({...s, parentMerchant: undefined}))}
                 >

@@ -2,7 +2,9 @@ import { ApexOptions } from "apexcharts";
 import { useMemo } from "react";
 import Chart from "react-apexcharts";
 import { SalesPeriod } from "../../../hooks/api/Dtos/reporting/SalesPeriod";
-import { PeriodSelector } from "./PeriodSelector";
+import { OptionSelector } from "./OptionSelector";
+import { useTranslation } from "react-i18next";
+import { Spinner } from "../../../components/spinners/Spinner";
 
 const defaultOptions: ApexOptions = {
     chart: {
@@ -91,8 +93,11 @@ interface Props<T> {
     readonly getName: (d: T) => string;
     readonly getValue: (d: T) => number;
     readonly formatter?: (s: number) => string;
+    readonly isLoading?: boolean;
 }
 export const ComparisonChartWidget = <T,>(props: Props<T>) => {
+    const { t } = useTranslation();
+
     const series = useMemo(() => {
         const result = [];
         for(const d of props.data) {
@@ -123,7 +128,7 @@ export const ComparisonChartWidget = <T,>(props: Props<T>) => {
                             ...(defaultOptions.plotOptions?.pie?.donut?.labels ?? {}),
                             value: {
                                 ...(defaultOptions.plotOptions?.pie?.donut?.labels?.value ?? {}),
-                                formatter: formatter == undefined ? undefined : d => {
+                                formatter: formatter == undefined ? d => d : d => {
                                     return formatter(+d);
                                 },
                             }
@@ -135,28 +140,58 @@ export const ComparisonChartWidget = <T,>(props: Props<T>) => {
     }, [props.data, props.getName, props.formatter])
 
     return (
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-            <div className="flex items-center justify-between mb-9">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-9 gap-2">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
                         {props.title}
                     </h3>
                 </div>
-                <PeriodSelector
-                    period={props.period}
-                    showFromEver
+                <OptionSelector
+                    options={[
+                        SalesPeriod.Hourly,
+                        SalesPeriod.Daily,
+                        SalesPeriod.Monthly,
+                        undefined,
+                    ]}
+                    getKey={s => s == undefined ? "ever" : s}
+                    render={s => {
+                        if(s == undefined) {
+                            return t("dateHelper.allTime");
+                        }
+                        switch(s) {
+                            case SalesPeriod.Hourly: return `24 ${t("dateHelper.units.hours")}`;
+                            case SalesPeriod.Daily: return `31 ${t("dateHelper.units.days")}`;
+                            case SalesPeriod.Monthly: return `12 ${t("dateHelper.units.months")}`;
+                        }
+                    }}
+                    selected={props.period}
                     onChange={props.onPeriodChange}
                 />
             </div>
-            <div>
-                <div className="flex justify-center mx-auto">
+            <div className="flex items-center justify-center mx-auto flex-1">
+            {
+                props.isLoading
+                ?
+                <Spinner
+                    className="size-full h-[290px]"
+                />
+                :
+                (
+                    props.data.length == 0
+                    ?
+                    <span className="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                        {t("common.noDataAvailable")}
+                    </span>
+                    :
                     <Chart
                         options={options}
                         series={series}
                         type="donut"
                         height={290}
                     />
-                </div>
+                )
+            }
             </div>
         </div>
     );
