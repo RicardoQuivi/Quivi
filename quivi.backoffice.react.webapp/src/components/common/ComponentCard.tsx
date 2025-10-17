@@ -2,14 +2,14 @@ interface ComponentCardProps {
     readonly title?: string;
     readonly children?: React.ReactNode;
     readonly className?: string; // Additional custom classes for styling
-    readonly desc?: React.ReactNode; // Description text
+    readonly description?: React.ReactNode; // Description text
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
     title,
     children,
     className = "",
-    desc = "",
+    description: desc = "",
 }) => {
     return (
         <div

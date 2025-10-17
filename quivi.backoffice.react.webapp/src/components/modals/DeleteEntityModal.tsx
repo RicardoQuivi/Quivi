@@ -1,5 +1,5 @@
 import { Trans, useTranslation } from "react-i18next";
-import { Modal, ModalSize } from "../ui/modal"
+import { Modal, ModalSize } from "../ui/modal/Modal"
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
 import { useState } from "react";
 import { Entity } from "../../hooks/EntitiesName";

@@ -8,6 +8,7 @@ namespace Quivi.Application.Queries.PosChargeInvoiceItems
 {
     public class GetPosChargeInvoiceItemsAsyncQuery : APagedAsyncQuery<PosChargeInvoiceItem>
     {
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
         public IEnumerable<int>? PosChargeIds { get; init; }
         public DateTime? FromDate { get; init; }
@@ -15,6 +16,8 @@ namespace Quivi.Application.Queries.PosChargeInvoiceItems
         public bool? IsParent { get; init; }
 
         public bool IncludeOrderMenuItem { get; init; }
+        public bool IncludePosChargeChargeInvoiceDocuments { get; init; }
+        public bool IncludePosChargeChargeMerchantCustomChargeCustomChargeMethod { get; init; }
         public bool IncludeChildrenPosChargeInvoiceItems { get; init; }
     }
 
@@ -31,6 +34,7 @@ namespace Quivi.Application.Queries.PosChargeInvoiceItems
         {
             return repository.GetAsync(new GetPosChargeInvoiceItemCriteria
             {
+                ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,
                 PosChargeIds = query.PosChargeIds,
                 FromDate = query.FromDate,
@@ -38,6 +42,8 @@ namespace Quivi.Application.Queries.PosChargeInvoiceItems
                 IsParent = query.IsParent,
 
                 IncludeOrderMenuItem = query.IncludeOrderMenuItem,
+                IncludePosChargeChargeInvoiceDocuments = query.IncludePosChargeChargeInvoiceDocuments,
+                IncludePosChargeChargeMerchantCustomChargeCustomChargeMethod = query.IncludePosChargeChargeMerchantCustomChargeCustomChargeMethod,
                 IncludeChildrenPosChargeInvoiceItems = query.IncludeChildrenPosChargeInvoiceItems,
 
                 PageIndex = query.PageIndex,

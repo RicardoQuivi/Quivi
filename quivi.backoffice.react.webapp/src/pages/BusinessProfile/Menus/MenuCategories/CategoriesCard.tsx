@@ -41,7 +41,7 @@ export const CategoriesCard = (props: CategoriesCardProps) => {
     return (
     <ComponentCard
         title={t("common.entities.menuCategories")}
-        desc={
+        description={
             <Button
                 size="md"
                 variant="primary"

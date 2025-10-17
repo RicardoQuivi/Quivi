@@ -1,4 +1,4 @@
-import { Modal, ModalSize } from "../../../../components/ui/modal"
+import { Modal, ModalSize } from "../../../../components/ui/modal/Modal"
 import { ModalButtonsFooter } from "../../../../components/ui/modal/ModalButtonsFooter";
 import { useTranslation } from "react-i18next";
 import { useToast } from "../../../../layout/ToastProvider";

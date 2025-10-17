@@ -19,6 +19,17 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeOrderMenuItem)
                 query = query.Include(q => q.OrderMenuItem);
 
+            if (criteria.IncludePosChargeChargeInvoiceDocuments)
+                query = query.Include(q => q.PosCharge!)
+                            .ThenInclude(q => q.Charge!)
+                            .ThenInclude(q => q.InvoiceDocuments);
+
+            if (criteria.IncludePosChargeChargeMerchantCustomChargeCustomChargeMethod)
+                query = query.Include(q => q.PosCharge!)
+                            .ThenInclude(q => q.Charge!)
+                            .ThenInclude(q => q.MerchantCustomCharge!)
+                            .ThenInclude(q => q.CustomChargeMethod!);
+
             if (criteria.IncludeChildrenPosChargeInvoiceItems)
             {
                 query = query.Include(c => c.ChildrenPosChargeInvoiceItems);
@@ -26,6 +37,9 @@ namespace Quivi.Infrastructure.Repositories
                 if (criteria.IncludeOrderMenuItem)
                     query = query.Include(c => c.ChildrenPosChargeInvoiceItems!).ThenInclude(c => c.OrderMenuItem);
             }
+
+            if (criteria.ParentMerchantIds != null)
+                query = query.Where(c => criteria.ParentMerchantIds.Contains(c.PosCharge!.Merchant!.ParentMerchantId!.Value));
 
             if (criteria.MerchantIds != null)
                 query = query.Where(c => criteria.MerchantIds.Contains(c.PosCharge!.MerchantId));

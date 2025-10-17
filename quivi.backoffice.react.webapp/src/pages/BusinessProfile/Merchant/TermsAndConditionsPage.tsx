@@ -67,7 +67,7 @@ export const TermsAndConditionsPage = () => {
         <PageBreadcrumb pageTitle={t("pages.termsAndConditions.title")} />
 
         <ComponentCard
-            desc='Os presentes Termos e Condições destinam-se a regular o fornecimento da plataforma (doravante "QUIVI"), bem como das funcionalidades que lhe estão associadas.'
+            description='Os presentes Termos e Condições destinam-se a regular o fornecimento da plataforma (doravante "QUIVI"), bem como das funcionalidades que lhe estão associadas.'
             className="mt-4"
         >
             <ul>

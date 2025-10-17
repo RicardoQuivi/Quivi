@@ -8,7 +8,7 @@ import ComponentCard from "../../../../components/common/ComponentCard";
 import { MenuItemForm, MenuItemFormState } from "./MenuItemForm";
 import { useToast } from "../../../../layout/ToastProvider";
 import { useMenuItemMutator } from "../../../../hooks/mutators/useMenuItemMutator";
-import { Modal, ModalSize } from "../../../../components/ui/modal";
+import { Modal, ModalSize } from "../../../../components/ui/modal/Modal";
 import { ModalButtonsFooter } from "../../../../components/ui/modal/ModalButtonsFooter";
 import { MenuItem } from "../../../../hooks/api/Dtos/menuItems/MenuItem";
 
@@ -109,7 +109,7 @@ export const MenuItemFormPage = (props: Props) => {
 
         <Modal
             isOpen={cloneItemModalItem != undefined}
-            showCloseButton={false}
+            hideCloseButton
             size={ModalSize.Medium}
             title={t("pages.menuItems.copyItemModal.title")}
             footer={(

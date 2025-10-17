@@ -11,7 +11,7 @@ import { DayOfWeek } from '../../../hooks/api/Dtos/DayOfWeek';
 import { WeeklyAvailability } from '../../../hooks/api/Dtos/availabilities/WeeklyAvailability';
 import { PlusIcon, TrashBinIcon } from '../../../icons';
 import { EnumHelper } from '../../../utilities/enum';
-import { Modal, ModalSize } from '../../../components/ui/modal';
+import { Modal, ModalSize } from '../../../components/ui/modal/Modal';
 import { ModalButtonsFooter } from '../../../components/ui/modal/ModalButtonsFooter';
 import { TimeField } from '../../../components/inputs/TimeField';
 import { TimeSpanHelper } from '../../../utilities/timespanHelpers';

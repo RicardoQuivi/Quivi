@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Modal, ModalSize } from "../../../../components/ui/modal"
+import { Modal, ModalSize } from "../../../../components/ui/modal/Modal"
 import { ModalButtonsFooter } from "../../../../components/ui/modal/ModalButtonsFooter";
 import { Printer } from "../../../../hooks/api/Dtos/printers/Printer";
 import Button from "../../../../components/ui/button/Button";

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelProfile";
-import { Modal, ModalSize } from "../../../components/ui/modal";
+import { Modal, ModalSize } from "../../../components/ui/modal/Modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";

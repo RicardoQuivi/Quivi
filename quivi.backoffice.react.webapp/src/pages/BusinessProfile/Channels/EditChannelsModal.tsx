@@ -4,7 +4,7 @@ import { ChannelProfile } from "../../../hooks/api/Dtos/channelProfiles/ChannelP
 import { useEffect, useMemo, useState } from "react";
 import { useChannelsQuery } from "../../../hooks/queries/implementations/useChannelsQuery";
 import { useChannelProfilesQuery } from "../../../hooks/queries/implementations/useChannelProfilesQuery";
-import { Modal, ModalSize } from "../../../components/ui/modal";
+import { Modal, ModalSize } from "../../../components/ui/modal/Modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import Alert from "../../../components/ui/alert/Alert";
 import { Skeleton } from "../../../components/ui/skeleton/Skeleton";

@@ -10,7 +10,6 @@ import { TopCategoriesWidget } from "./widgets/TopCategoriesWidget";
 import { TopChargeMethodsWidget } from "./widgets/TopChargeMethodsWidget";
 import { ChargeMethodsComparisonChartWidget } from "./widgets/ChargeMethodsComparisonChartWidget";
 
-
 export const SalesDashboardPage = () => {
     const { t } = useTranslation();
 

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { CountryIcon } from "../../icons/CountryIcon";
-import { Modal, ModalSize } from "../ui/modal";
+import { Modal, ModalSize } from "../ui/modal/Modal";
 import { useState } from "react";
 
 const languages = [

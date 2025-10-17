@@ -14,6 +14,9 @@ import { GetPartnerChargeMethodSalesRequest } from "./Dtos/reporting/GetPartnerC
 import { GetPartnerChargeMethodSalesResponse } from "./Dtos/reporting/GetPartnerChargeMethodSalesResponse";
 import { ChargeMethod } from "./Dtos/ChargeMethod";
 import { ChargePartner } from "./Dtos/acquirerconfigurations/ChargePartner";
+import { ExportSalesRequest } from "./Dtos/reporting/ExportSalesRequest";
+import { ExportSalesResponse } from "./Dtos/reporting/ExportSalesResponse";
+import { ExportFileType } from "./Dtos/ExportFileType";
 
 export const useReportingApi = () => {
     const client = useAuthenticatedHttpClient();
@@ -73,7 +76,6 @@ export const useReportingApi = () => {
         const url = new URL(`api/reporting/sales/products?${queryParams}`, import.meta.env.VITE_API_URL).toString();
         return client.get<GetProductSalesResponse>(url, {});
     }
-
 
     const getCategorySales = (request: GetCategorySalesRequest) => {
         const queryParams = new URLSearchParams();
@@ -168,12 +170,39 @@ export const useReportingApi = () => {
         return client.get<GetPartnerChargeMethodSalesResponse>(url, {});
     }
 
+    const exportSales = (request: ExportSalesRequest) => {
+        const queryParams = new URLSearchParams();
+
+        if(request.from != undefined) {
+            queryParams.set("from", request.from);
+        }
+        
+        if(request.to != undefined) {
+            queryParams.set("to", request.to);
+        }
+
+        queryParams.set("labels.date", request.labels.date);
+        queryParams.set("labels.transactionId", request.labels.transactionId);
+        queryParams.set("labels.invoice", request.labels.invoice);
+        queryParams.set("labels.id", request.labels.id);
+        queryParams.set("labels.method", request.labels.method);
+        queryParams.set("labels.menuId", request.labels.menuId);
+        queryParams.set("labels.item", request.labels.item);
+        queryParams.set("labels.unitPrice", request.labels.unitPrice);
+        queryParams.set("labels.quantity", request.labels.quantity);
+        queryParams.set("labels.total", request.labels.total);
+
+        const url = new URL(`api/reporting/sales/export/${ExportFileType[request.type]}?${queryParams}`, import.meta.env.VITE_API_URL).toString();
+        return client.get<ExportSalesResponse>(url, {});
+    }
+
     const state = useMemo(() => ({
         getSales,
         getProductSales,
         getCategorySales,
         getChargeMethodSales,
         getPartnerChargeMethodSales,
+        exportSales,
     }), [client]);
 
     return state;

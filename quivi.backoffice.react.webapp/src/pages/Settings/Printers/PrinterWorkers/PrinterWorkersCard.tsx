@@ -28,7 +28,7 @@ export const PrinterWorkersCard = (props: PrinterWorkersCardProps) => {
     return (
     <ComponentCard
         title={t("common.entities.printerWorkers")}
-        desc={
+        description={
             <Button
                 size="md"
                 variant="primary"

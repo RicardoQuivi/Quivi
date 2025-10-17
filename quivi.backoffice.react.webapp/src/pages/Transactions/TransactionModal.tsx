@@ -1,4 +1,4 @@
-import { Modal, ModalSize } from "../../components/ui/modal";
+import { Modal, ModalSize } from "../../components/ui/modal/Modal";
 import { useTranslation } from "react-i18next";
 import { PublicId } from "../../components/publicids/PublicId";
 import Button from "../../components/ui/button/Button";

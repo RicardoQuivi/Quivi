@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Modal, ModalSize } from "../../../components/ui/modal";
+import { Modal, ModalSize } from "../../../components/ui/modal/Modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import { CSSProperties, useState } from "react";
 import { Spinner } from "../../../components/spinners/Spinner";

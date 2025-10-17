@@ -5,6 +5,9 @@
         }
     },
     "dateHelper": {
+        "datePicker": {
+            "rangeSeparator": "até"
+        },
         "at": "às",
         "allDay": "Todo o dia",
         "allTime": "Desde sempre",
@@ -131,6 +134,7 @@
         "close": "Fechar",
         "openLink": "Abrir ligação",
         "resendEmailTimerDescription": "até solicitação de novo email estar disponível.",
+        "fileFormat": "Formato do ficheiro",
         "operations": {
             "pluralNew": "Criar {{name}}",
             "new": "Criar {{name}}",
@@ -777,9 +781,24 @@
         },
         "sales": {
             "title": "Vendas",
+            "export": "Exportar",
             "descriptionHourly": "Vendas das últimas {{value}} horas",
             "descriptionDaily": "Vendas dos últimos {{value}} dias",
-            "descriptionMonthly": "Vendas das últimos {{value}} meses"
+            "descriptionMonthly": "Vendas das últimos {{value}} meses",
+            "dateRange": "Intervalo",
+            "exportLabels": {
+                "date": "Data",
+                "transactionId": "Id da transação",
+                "invoice": "Fatura",
+                "id": "Id",
+                "method": "Método de pagamento",
+                "menuId": "Id do item",
+                "item": "Item",
+                "unitPrice": "Preço unitário",
+                "quantity": "Quantidade",
+                "total": "Total"
+            },
+            "exportSuccess": "O ficheiro foi exportado com sucesso!"
         },
         "topMenuItems": {
             "topQuantity": "Top produtos mais vendidos",

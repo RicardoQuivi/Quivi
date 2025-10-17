@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, ModalSize } from "../ui/modal"
+import { Modal, ModalSize } from "../ui/modal/Modal"
 import { ApiException } from "../../hooks/api/exceptions/ApiException";
 import { useTranslation } from "react-i18next";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";

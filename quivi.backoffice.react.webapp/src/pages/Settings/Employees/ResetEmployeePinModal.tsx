@@ -2,7 +2,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Employee } from "../../../hooks/api/Dtos/employees/Employee";
 import { useToast } from "../../../layout/ToastProvider";
-import { Modal, ModalSize } from "../../../components/ui/modal";
+import { Modal, ModalSize } from "../../../components/ui/modal/Modal";
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import { useEmployeeMutator } from "../../../hooks/mutators/useEmployeeMutator";
 import { Spinner } from "../../../components/spinners/Spinner";

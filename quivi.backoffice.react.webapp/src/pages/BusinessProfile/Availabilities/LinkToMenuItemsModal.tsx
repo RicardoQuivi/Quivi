@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Spinner } from "../../../components/spinners/Spinner";
-import { Modal, ModalSize } from "../../../components/ui/modal"
+import { Modal, ModalSize } from "../../../components/ui/modal/Modal"
 import { ModalButtonsFooter } from "../../../components/ui/modal/ModalButtonsFooter";
 import { useToast } from "../../../layout/ToastProvider";
 import { useEffect, useMemo, useState } from "react";

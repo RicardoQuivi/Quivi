@@ -7,7 +7,7 @@ import React from 'react';
 import { FileExtension } from '../../hooks/api/Dtos/fileStorage/FileExtension';
 import { Tooltip } from '../ui/tooltip/Tooltip';
 import { IconButton } from '../ui/button/IconButton';
-import { Modal, ModalSize } from '../ui/modal';
+import { Modal, ModalSize } from '../ui/modal/Modal';
 import { ModalButtonsFooter } from '../ui/modal/ModalButtonsFooter';
 import { FileDropZone } from './FileDropZone';
 import { UploadHandler } from './UploadHandler';

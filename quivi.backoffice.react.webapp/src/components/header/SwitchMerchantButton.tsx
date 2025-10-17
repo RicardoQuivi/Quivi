@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Avatar from "../ui/avatar/Avatar";
 import { useAuth, useAuthenticatedUser } from "../../context/AuthContext";
 import { useMerchantsQuery } from "../../hooks/queries/implementations/useMerchantsQuery";
-import { Modal, ModalSize } from "../ui/modal";
+import { Modal, ModalSize } from "../ui/modal/Modal";
 import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { QueryPagination } from "../pagination/QueryPagination";

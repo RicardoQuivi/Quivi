@@ -5,6 +5,9 @@
         }
     },
     "dateHelper": {
+        "datePicker": {
+            "rangeSeparator": "to"
+        },
         "at": "at",
         "allDay": "All day",
         "allTime": "All time",
@@ -131,6 +134,7 @@
         "close": "Close",
         "openLink": "Open link",
         "resendEmailTimerDescription": "until requesting a new email is available.",
+        "fileFormat": "File format",
         "operations": {
             "pluralNew": "New {{name}}",
             "new": "New {{name}}",
@@ -777,9 +781,24 @@
         },
         "sales": {
             "title": "Sales",
+            "export": "Export",
             "descriptionHourly": "Sales of the last {{value}} hours",
             "descriptionDaily": "Sales of the last {{value}} days",
-            "descriptionMonthly": "Sales of the last {{value}} months"
+            "descriptionMonthly": "Sales of the last {{value}} months",
+            "dateRange": "Interval",
+            "exportLabels": {
+                "date": "Date",
+                "transactionId": "Transaction Id",
+                "invoice": "Invoice",
+                "id": "Id",
+                "method": "Payment method",
+                "menuId": "Item Id",
+                "item": "Item",
+                "unitPrice": "Unit price",
+                "quantity": "Quantity",
+                "total": "Total"
+            },
+            "exportSuccess": "File exported successfully!"
         },
         "topMenuItems": {
             "topQuantity": "Top best selling products",

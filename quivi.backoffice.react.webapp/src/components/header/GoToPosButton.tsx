@@ -1,6 +1,6 @@
 import { Trans, useTranslation } from "react-i18next";
 import { Placement, Tooltip } from "../ui/tooltip/Tooltip";
-import { Modal, ModalSize } from "../ui/modal";
+import { Modal, ModalSize } from "../ui/modal/Modal";
 import { useMemo, useState } from "react";
 import { ModalButtonsFooter } from "../ui/modal/ModalButtonsFooter";
 import { useAuth, useAuthenticatedUser } from "../../context/AuthContext";
