@@ -96,7 +96,7 @@ export const TopItemsWidget = (props: Props) => {
         }
 
         return {
-            title: t("widgets.topMenuItems.topQuantity"),
+            title: t("widgets.topMenuItems.topBilledAmount"),
             nameLabel: t("common.entities.menuItem"),
             valueLabel: t("widgets.topMenuItems.billedLabel"),
             getValue: (d: ProductSales) => <CurrencySpan value={d.totalBilledAmount} />,

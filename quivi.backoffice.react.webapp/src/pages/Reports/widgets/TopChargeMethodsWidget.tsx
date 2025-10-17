@@ -95,7 +95,7 @@ export const TopChargeMethodsWidget = (props: Props) => {
         }
 
         return {
-            title: t("widgets.topChargeMethods.topQuantity"),
+            title: t("widgets.topChargeMethods.topBilledAmount"),
             nameLabel: t("common.entities.customChargeMethod"),
             valueLabel: t("widgets.topChargeMethods.billedLabel"),
             getValue: (d: ChargeMethodSales) => <CurrencySpan value={d.totalBilledAmount} />,
