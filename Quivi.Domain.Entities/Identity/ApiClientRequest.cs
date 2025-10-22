@@ -6,8 +6,8 @@ namespace Quivi.Domain.Entities.Identity
     {
         public int ApiClientRequestId { get; set; }
 
-        public string RedeemCode { get; set; }
-        public string DeviceReference { get; set; }
+        public string? RedeemCode { get; set; }
+        public string? DeviceReference { get; set; }
         public ApiClientRequestStatus Status { get; set; }
 
         public DateTime CreatedDate { get; set; } //TODO: Removed Default Value

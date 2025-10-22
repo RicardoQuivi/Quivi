@@ -1,4 +1,6 @@
-﻿namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
+﻿using Quivi.Infrastructure.Abstractions.Repositories.Data;
+
+namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 {
     public record GetPosChargesCriteria : AGetPosChargesCriteria, IPagedCriteria
     {
@@ -15,5 +17,7 @@
 
         public int PageIndex { get; init; }
         public int? PageSize { get; init; }
+
+        public SortDirection SortDirection { get; init; } = SortDirection.Descending;
     }
 }

@@ -4,6 +4,6 @@
     {
         Processing = 0,
         Failed = 1,
-        Finished = 2
+        Finished = 2,
     }
 }

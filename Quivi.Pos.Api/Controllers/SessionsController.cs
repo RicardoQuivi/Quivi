@@ -35,6 +35,7 @@ namespace Quivi.Pos.Api.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
         public async Task<GetSessionsResponse> Get([FromQuery] GetSessionsRequest request)
         {
             IEnumerable<SessionStatus> states = [SessionStatus.Closed, SessionStatus.Ordering];

@@ -21,7 +21,7 @@ namespace Quivi.Domain.Entities.Identity
         public int? PersonId { get; set; }
         public Person? Person { get; set; }
 
-        public ICollection<ApiClientRequest> ApiClientRequests { get; set; }
+        public ICollection<ApiClientRequest>? ApiClientRequests { get; set; }
         #endregion
     }
 }

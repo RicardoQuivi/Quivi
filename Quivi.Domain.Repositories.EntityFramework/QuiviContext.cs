@@ -437,6 +437,8 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<MerchantService>(entity =>
             {
+                entity.Ignore(m => m.Id);
+
                 entity.HasKey(m => m.PersonId);
                 entity.HasOne(m => m.Person)
                         .WithOne(m => m.MerchantService)
@@ -472,12 +474,12 @@ namespace Quivi.Domain.Repositories.EntityFramework
             {
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.PhoneNumber).HasMaxLength(15);
-                entity.HasOne(p => p.Merchant)
+                entity.HasOne(p => p.ParentMerchant)
                         .WithMany()
-                        .HasForeignKey(p => p.MerchantId);
-                entity.HasOne(p => p.SubMerchant)
+                        .HasForeignKey(p => p.ParentMerchantId);
+                entity.HasOne(p => p.Merchant)
                         .WithMany(m => m.People)
-                        .HasForeignKey(p => p.SubMerchantId);
+                        .HasForeignKey(p => p.MerchantId);
                 entity.HasIndex(p => p.IsAnonymous)
                         .IsUnique()
                         .HasFilter("[IsAnonymous] = 1");
@@ -487,22 +489,24 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<Settlement>(entity =>
             {
-                entity.HasKey(x => x.SettlementId);
+                entity.HasKey(x => x.Id);
+
+                entity.HasIndex(x => x.Date).IsUnique();
             });
 
             modelBuilder.Entity<SettlementDetail>(entity =>
             {
-                entity.HasKey(x => x.SettlementDetailId);
+                entity.HasKey(m => m.JournalId);
                 entity.HasOne(x => x.Settlement)
                         .WithMany(x => x.SettlementDetails)
                         .HasForeignKey(x => x.SettlementId);
-                entity.HasOne(x => x.SubMerchant)
-                        .WithMany()
-                        .HasForeignKey(x => x.SubMerchantId)
-                        .OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(x => x.Merchant)
                         .WithMany()
                         .HasForeignKey(x => x.MerchantId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(x => x.ParentMerchant)
+                        .WithMany()
+                        .HasForeignKey(x => x.ParentMerchantId)
                         .OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(x => x.Journal)
                         .WithMany(j => j.SettlementDetails)
@@ -512,21 +516,20 @@ namespace Quivi.Domain.Repositories.EntityFramework
 
             modelBuilder.Entity<SettlementServiceDetail>(entity =>
             {
-                entity.HasKey(x => x.SettlementServiceDetailId);
-
+                entity.HasKey(m => m.JournalId);
                 entity.HasOne(x => x.Journal)
                         .WithMany(j => j.SettlementServiceDetails)
                         .HasForeignKey(x => x.JournalId)
                         .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(x => x.ParentMerchant)
+                        .WithMany()
+                        .HasForeignKey(x => x.ParentMerchantId)
+                        .OnDelete(DeleteBehavior.Restrict);
+
                 entity.HasOne(x => x.Merchant)
                         .WithMany()
                         .HasForeignKey(x => x.MerchantId)
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.SubMerchant)
-                        .WithMany()
-                        .HasForeignKey(x => x.SubMerchantId)
                         .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Settlement)

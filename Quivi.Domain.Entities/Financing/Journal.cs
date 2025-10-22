@@ -10,7 +10,7 @@ namespace Quivi.Domain.Entities.Financing
         public JournalState State { get; set; }
         public JournalMethod? Method { get; set; }
         public string? OrderRef { get; set; }
-        public ChargeMethod ChargeMethod { get; set; }
+        public ChargeMethod? ChargeMethod { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
 

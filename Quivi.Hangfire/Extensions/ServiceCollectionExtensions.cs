@@ -1,4 +1,5 @@
-﻿using Quivi.Application.Extensions;
+﻿using Hangfire.Dashboard.Management.v2.Support;
+using Quivi.Application.Extensions;
 using Quivi.Hangfire.Hangfire;
 using System.Reflection;
 
@@ -25,6 +26,19 @@ namespace Quivi.Hangfire.Extensions
                     result.Add((IRecurringJob)s.GetService(implementation)!);
                 return result;
             });
+        }
+
+        public static void RegisterManagementPages(this IServiceCollection serviceCollection)
+        {
+            Type interfaceType = typeof(IJob);
+            var classesTypes = Assembly.GetEntryAssembly()!.GetTypes()
+                                        .Where(t => t.IsClass)
+                                        .Where(t => !t.IsAbstract)
+                                        .Where(t => !t.IsGenericType)
+                                        .Where(t => t.FilterTypeInterfaces(interfaceType).Any());
+
+            foreach (var implementation in classesTypes)
+                serviceCollection.RegisterScoped(implementation);
         }
 
         private static IEnumerable<Type> FilterTypeInterfaces(this Type type, Type interfaceType)

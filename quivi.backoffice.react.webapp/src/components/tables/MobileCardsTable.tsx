@@ -1,10 +1,12 @@
-import { ITableAction, ITableColumn, ResponsiveTableProps } from "./ResponsiveTable";
+import { IParentTableColumn, isParentColumn, ITableAction, ITableColumn, ResponsiveTableProps, TableColumn } from "./ResponsiveTable";
 import { useMemo } from "react";
 import Popover from "../ui/popover/Popover";
 import { ThreeDotsVertical } from "../../icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Skeleton } from "../ui/skeleton/Skeleton";
+import React from "react";
+import { Divider } from "../dividers/Divider";
 
 const range = (count: number, startNumber: number = 1) => Array.from({length: count}, (_, i) => i + startNumber);
 
@@ -41,7 +43,7 @@ export const MobileCardsTable = <T,>(props: ResponsiveTableProps<T>) => {
 interface MobileCardProps<T> {
     readonly item: T | undefined;
     readonly name?: ITableColumn<T>;
-    readonly columns?: ITableColumn<T>[];
+    readonly columns?: TableColumn<T>[];
     readonly actions?: ITableAction<T>[];
     readonly onRowClick?: (item: T) => any;
     readonly rowClasses?: (item: T) => string | undefined;
@@ -64,6 +66,37 @@ const MobileCard = <T,>(props: MobileCardProps<T>) => {
         }
     }, [props.item, props.onRowClick, props.rowClasses]);
 
+    const {
+        flattenedColumns,
+        topColumns,
+    } = useMemo(() => {
+        if(props.columns == undefined) {
+            return {
+                flattenedColumns: undefined,
+                topColumns: undefined,
+            };
+        }
+
+        const topColumns = [] as IParentTableColumn<T>[];
+        const flattenedColumns = [] as ITableColumn<T>[];
+        for(const col of props.columns) {
+            if(isParentColumn(col) == false) {
+                flattenedColumns.push(col);
+                continue;
+            }
+
+            topColumns.push(col);
+            for(const c of col.children) {
+                flattenedColumns.push(c);
+            }
+        }
+        return {
+            flattenedColumns,
+            topColumns: topColumns.length == 0 ? undefined : topColumns,
+        };
+    }, [props.columns])
+
+
     return <div
         className={`rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] grid grid-cols-[1fr_auto] gap-2 ${rowClasses ?? ""}`}
         onClick={onRowClick}
@@ -84,12 +117,14 @@ const MobileCard = <T,>(props: MobileCardProps<T>) => {
                 </h4>
             }
             {
-                props.columns != undefined &&
+                flattenedColumns != undefined &&
                 <div
                     className="grid grid-cols-2 gap-5"
                 >
                 {
-                    props.columns.map((c, i) => (
+                    topColumns == undefined
+                    ?
+                    flattenedColumns.map((c, i) =>(
                         <div
                             key={c.key}
                             className={i % 2 === 0 ? 'pl-4 flex-col text-left justify-start' : 'pr-4 flex flex-col text-right justify-end'}
@@ -110,6 +145,39 @@ const MobileCard = <T,>(props: MobileCardProps<T>) => {
                             }
                         </div>
                     ))
+                    :
+                    topColumns.map(c => <React.Fragment
+                        key={c.key}
+                    >
+                        <Divider
+                            className="col-span-2"
+                        >
+                            {c.label}
+                        </Divider>
+                        {
+                            c.children.map((cc, i) => (
+                                <div
+                                    key={cc.key}
+                                    className={i % 2 === 0 ? 'pl-4 flex-col text-left justify-start' : 'pr-4 flex flex-col text-right justify-end'}
+                                >
+                                    <p 
+                                        className="py-1 text-gray-500 text-theme-xs dark:text-gray-400 font-bold"
+                                    >
+                                        {cc.label}
+                                    </p>
+                                    {
+                                        props.item == undefined
+                                        ?
+                                        <Skeleton />
+                                        :
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                            {cc.render(props.item)}
+                                        </div>
+                                    }
+                                </div>
+                            ))
+                        }
+                    </React.Fragment>)
                 }
                 </div>
             }

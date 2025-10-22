@@ -1,9 +1,11 @@
 ﻿using Hangfire;
+using Hangfire.Dashboard.Management.v2;
 using Hangfire.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using Quivi.Infrastructure.Abstractions.Jobs;
 using Quivi.Infrastructure.Jobs.Hangfire.Activators;
 using Quivi.Infrastructure.Jobs.Hangfire.Filters;
+using System.Reflection;
 
 namespace Quivi.Infrastructure.Jobs.Hangfire.Extensions
 {
@@ -18,6 +20,7 @@ namespace Quivi.Infrastructure.Jobs.Hangfire.Extensions
             {
                 var jobActivator = new ServiceProviderJobActivator(serviceProvider);
                 configuration.UseActivator(jobActivator).ConfigureHangfire(connectionString);
+                configuration.UseManagementPages(Assembly.GetEntryAssembly());
 
                 //GlobalConfiguration.Configuration.UseActivator(jobActivator);
             });

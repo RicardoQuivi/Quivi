@@ -41,6 +41,8 @@
         IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations { get; }
         IWeeklyAvailabilitiesRepository WeeklyAvailabilities { get; }
         IReportsRepository Reports { get; }
+        ISettlementsRepository Settlements { get; }
+        IMerchantServicesRepository MerchantServices { get; }
 
         Task<ITransaction> StartTransactionAsync();
         Task SaveChangesAsync();

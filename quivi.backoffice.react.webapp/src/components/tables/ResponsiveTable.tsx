@@ -9,6 +9,18 @@ export interface ITableAction<T> {
     readonly onClick?: (row: T) => any;
 }
 
+export type TableColumn<T> = ITableColumn<T> | IParentTableColumn<T>;
+
+export const isParentColumn = <T,>(col: TableColumn<T>): col is IParentTableColumn<T> => {
+    return 'children' in col;
+}
+
+export interface IParentTableColumn<T> {
+    readonly label: React.ReactNode;
+    readonly key: React.Key;
+    readonly children: ITableColumn<T>[];
+}
+
 export interface ITableColumn<T> {
     readonly render: (row: T) => React.ReactNode;
     readonly label: React.ReactNode;
@@ -17,7 +29,7 @@ export interface ITableColumn<T> {
 
 export interface ResponsiveTableProps<T> {
     readonly name?: ITableColumn<T>;
-    readonly columns?: ITableColumn<T>[];
+    readonly columns?: TableColumn<T>[];
     readonly actions?: ITableAction<T>[];
     readonly data: T[];
     

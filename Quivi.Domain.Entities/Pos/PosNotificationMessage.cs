@@ -16,7 +16,7 @@ namespace Quivi.Domain.Entities.Pos
         public int MerchantId { get; set; }
         public required Merchant Merchant { get; set; }
 
-        public ICollection<PosNotificationInboxMessage> PosNotificationInboxes { get; set; }
+        public ICollection<PosNotificationInboxMessage>? PosNotificationInboxes { get; set; }
         #endregion
     }
 }

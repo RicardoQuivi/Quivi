@@ -20,14 +20,14 @@ namespace Quivi.Domain.Entities.Financing
         public DateTime? DeletedDate { get; set; }
 
         #region Relationships
+        public int? ParentMerchantId { get; set; }
+        public Merchant? ParentMerchant { get; set; }
+
         public int? MerchantId { get; set; }
         public Merchant? Merchant { get; set; }
 
-        public int? SubMerchantId { get; set; }
-        public Merchant? SubMerchant { get; set; }
-
-        public ICollection<ApiClient> ApiClients { get; set; }
-        public ICollection<Posting> Postings { get; set; }
+        public ICollection<ApiClient>? ApiClients { get; set; }
+        public ICollection<Posting>? Postings { get; set; }
         public MerchantService? MerchantService { get; set; }
         #endregion
     }

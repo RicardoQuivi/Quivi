@@ -8,6 +8,7 @@ using Quivi.Domain.Entities.Pos;
 using Quivi.Infrastructure.Abstractions.Converters;
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Mapping;
+using Quivi.Infrastructure.Abstractions.Repositories.Data;
 using Quivi.Infrastructure.Abstractions.Services.Charges;
 using Quivi.Infrastructure.Abstractions.Services.Charges.Parameters;
 using Quivi.Infrastructure.Extensions;
@@ -72,6 +73,7 @@ namespace Quivi.Backoffice.Api.Controllers
 
                 PageIndex = request.Page,
                 PageSize = request.PageSize,
+                SortDirection = SortDirection.Descending,
             });
 
             return new GetTransactionsResponse

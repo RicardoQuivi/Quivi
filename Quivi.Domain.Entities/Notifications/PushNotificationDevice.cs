@@ -19,7 +19,7 @@ namespace Quivi.Domain.Entities.Notifications
         public int PersonId { get; set; }
         public required Person Person { get; set; }
 
-        public ICollection<PushNotificationsContact> Contacts { get; set; }
+        public ICollection<PushNotificationsContact>? Contacts { get; set; }
         #endregion
     }
 }

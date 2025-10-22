@@ -4,10 +4,8 @@ namespace Quivi.Domain.Entities.Financing
 {
     public class SettlementServiceDetail : IEntity
     {
-        public int SettlementServiceDetailId { get; set; }
-
-        public string? SubMerchantIban { get; set; }
-        public decimal SubMerchantVatRate { get; set; }
+        public string? MerchantIban { get; set; }
+        public decimal MerchantVatRate { get; set; }
 
         public decimal Amount { get; set; }
         public decimal VatAmount { get; set; }
@@ -18,19 +16,19 @@ namespace Quivi.Domain.Entities.Financing
 
         #region Relationship
         public int JournalId { get; set; }
-        public required Journal Journal { get; set; }
+        public Journal? Journal { get; set; }
+
+        public int ParentMerchantId { get; set; }
+        public Merchant? ParentMerchant { get; set; }
 
         public int MerchantId { get; set; }
-        public required Merchant Merchant { get; set; }
-        
-        public int SubMerchantId { get; set; }
-        public required Merchant SubMerchant { get; set; }
+        public Merchant? Merchant { get; set; }
 
         public int SettlementId { get; set; }
-        public required Settlement Settlement { get; set; }
+        public Settlement? Settlement { get; set; }
 
         public int MerchantServiceId { get; set; }
-        public required MerchantService MerchantService { get; set; }
+        public MerchantService? MerchantService { get; set; }
         #endregion
     }
 }

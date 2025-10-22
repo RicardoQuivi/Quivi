@@ -55,6 +55,8 @@ namespace Quivi.Infrastructure.Repositories
         public IAvailabilityMenuItemAssociationsRepository AvailabilityMenuItemAssociations => unitOfWork.AvailabilityMenuItemAssociations;
         public IWeeklyAvailabilitiesRepository WeeklyAvailabilities => unitOfWork.WeeklyAvailabilities;
         public IReportsRepository Reports => unitOfWork.Reports;
+        public ISettlementsRepository Settlements => unitOfWork.Settlements;
+        public IMerchantServicesRepository MerchantServices => unitOfWork.MerchantServices;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

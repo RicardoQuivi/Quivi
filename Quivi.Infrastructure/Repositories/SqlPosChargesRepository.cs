@@ -127,7 +127,13 @@ namespace Quivi.Infrastructure.Repositories
 
             query = Filter(query, criteria);
 
-            return query.OrderByDescending(o => o.CaptureDate.HasValue ? o.CaptureDate : o.CreatedDate);
+            Expression<Func<PosCharge, DateTime>> sortExpression = (PosCharge o) => o.CaptureDate.HasValue ? o.CaptureDate.Value : o.CreatedDate;
+            switch (criteria.SortDirection)
+            {
+                case Abstractions.Repositories.Data.SortDirection.Ascending: return query.OrderBy(sortExpression);
+                case Abstractions.Repositories.Data.SortDirection.Descending: return query.OrderByDescending(sortExpression);
+            }
+            throw new NotImplementedException();
         }
 
         public async Task<IReadOnlyDictionary<T, PosChargesResume>> GetResumeAsync<T>(GetPosChargesResumeCriteria criteria, Expression<Func<PosCharge, T>> grouping, T defaultKey)

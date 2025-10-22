@@ -6,9 +6,9 @@ namespace Quivi.Infrastructure.Repositories
     public class PagedData<T> : IPagedData<T>
     {
         private IEnumerable<T> Data { get; }
-        public int NumberOfPages { get; init; }
-        public int CurrentPage { get; init; }
-        public int TotalItems { get; init; }
+        public required int NumberOfPages { get; init; }
+        public required int CurrentPage { get; init; }
+        public required int TotalItems { get; init; }
 
         public PagedData(IEnumerable<T> Data)
         {

@@ -21,9 +21,10 @@ namespace Quivi.Application.Queries.PosCharges
 
         public int PageIndex { get; init; } = 0;
         public int? PageSize { get; init; } = 0;
+        public SortDirection SortDirection { get; init; }
     }
 
-    public class GetPosChargesAsyncQueryHandler : APagedQueryAsyncHandler<GetPosChargesAsyncQuery, PosCharge>
+    internal class GetPosChargesAsyncQueryHandler : APagedQueryAsyncHandler<GetPosChargesAsyncQuery, PosCharge>
     {
         private readonly IPosChargesRepository repository;
 
@@ -65,6 +66,8 @@ namespace Quivi.Application.Queries.PosCharges
 
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,
+
+                SortDirection = query.SortDirection,
             });
         }
     }

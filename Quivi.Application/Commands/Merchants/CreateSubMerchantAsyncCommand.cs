@@ -92,8 +92,8 @@ namespace Quivi.Application.Commands.Merchants
                     {
                         CreatedDate = now,
                         PersonType = PersonType.Channel,
-                        SubMerchant = merchant,
-                        MerchantId = merchant.ParentMerchantId,
+                        Merchant = merchant,
+                        ParentMerchantId = merchant.ParentMerchantId,
                     },
                 },
                 new ApiClient
@@ -106,8 +106,8 @@ namespace Quivi.Application.Commands.Merchants
                     {
                         CreatedDate = now,
                         PersonType = PersonType.Channel,
-                        SubMerchant = merchant,
-                        MerchantId = merchant.ParentMerchantId,
+                        Merchant = merchant,
+                        ParentMerchantId = merchant.ParentMerchantId,
                     },
                 },
             };

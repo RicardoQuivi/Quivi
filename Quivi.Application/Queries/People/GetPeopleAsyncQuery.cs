@@ -9,14 +9,16 @@ namespace Quivi.Application.Queries.People
 {
     public class GetPeopleAsyncQuery : APagedAsyncQuery<Person>
     {
+        public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
-        public IEnumerable<int>? SubMerchantIds { get; init; }
         public IEnumerable<int>? ChannelIds { get; init; }
         public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<string>? Emails { get; init; }
         public IEnumerable<BasicAuthClientType>? ClientTypes { get; init; }
         public IEnumerable<PersonType>? PersonTypes { get; init; }
         public bool? IsAnonymous { get; init; }
+
+        public bool IncludePostings { get; init; }
     }
 
     public class GetPeopleAsyncQueryHandler : APagedQueryAsyncHandler<GetPeopleAsyncQuery, Person>
@@ -32,14 +34,17 @@ namespace Quivi.Application.Queries.People
         {
             return repository.GetAsync(new GetPeopleCriteria
             {
+                ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,
-                SubMerchantIds = query.SubMerchantIds,
                 PersonTypes = query.PersonTypes,
                 ChannelIds = query.ChannelIds,
                 Emails = query.Emails,
                 Ids = query.Ids,
                 IsAnonymous = query.IsAnonymous,
                 ClientTypes = query.ClientTypes,
+
+                IncludePostings = query.IncludePostings,
+
                 PageSize = query.PageSize,
                 PageIndex = query.PageIndex,
             });

@@ -29,10 +29,10 @@ namespace Quivi.Infrastructure.Repositories
                 query = query.Where(q => criteria.JournalOrderRefs.Contains(q.Journal!.OrderRef));
 
             if (criteria.SettlementStartDate.HasValue)
-                query = query.Where(q => q.Journal!.SettlementDetails!.Any(sd => criteria.SettlementStartDate.Value <= sd.Settlement.Date) || q.Journal.SettlementServiceDetails!.Any(sd => criteria.SettlementStartDate.Value <= sd.Settlement.Date));
+                query = query.Where(q => q.Journal!.SettlementDetails!.Any(sd => criteria.SettlementStartDate.Value <= sd.Settlement!.Date) || q.Journal.SettlementServiceDetails!.Any(sd => criteria.SettlementStartDate.Value <= sd.Settlement!.Date));
 
             if (criteria.SettlementEndDate.HasValue)
-                query = query.Where(q => q.Journal!.SettlementDetails!.Any(sd => sd.Settlement.Date <= criteria.SettlementEndDate.Value) || q.Journal.SettlementServiceDetails!.Any(sd => sd.Settlement.Date <= criteria.SettlementEndDate.Value));
+                query = query.Where(q => q.Journal!.SettlementDetails!.Any(sd => sd.Settlement!.Date <= criteria.SettlementEndDate.Value) || q.Journal.SettlementServiceDetails!.Any(sd => sd.Settlement!.Date <= criteria.SettlementEndDate.Value));
 
 
             return query.OrderBy(q => q.CreatedDate);

@@ -2,6 +2,7 @@
 using Quivi.Infrastructure.Abstractions.Cqrs;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing;
 using Quivi.Infrastructure.Abstractions.Pos.Invoicing.Models;
+using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Pos.FacturaLusa.v2.Abstractions;
 using Quivi.Infrastructure.Pos.FacturaLusa.v2.Commands;
 using Quivi.Infrastructure.Pos.FacturaLusa.v2.Models;
@@ -178,17 +179,6 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2
         }
 
         #region Auxiliar Methods
-        private static DateTime ConvertUtcToLocalDateTime(DateTime utcDatetime, string timeZoneId = "GMT Standard Time")
-        {
-            if (utcDatetime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException($"The input datetime is not UTC DateKind. The current kind is '{utcDatetime.Kind}'");
-
-            if (string.IsNullOrEmpty(timeZoneId))
-                timeZoneId = "GMT Standard Time";
-            var tzi = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-            return TimeZoneInfo.ConvertTimeFromUtc(utcDatetime, tzi);
-        }
-
         private Task<byte[]> GetFileContent(string documentId, DocumentFileFormat format)
         {
             return QueryProcessor.Execute(new GetDocumentFileAsyncQuery
@@ -250,7 +240,7 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2
                 PaymentMethodCode = src.PaymentMethodCode,
                 SerieCode = src.SerieCode,
                 Items = src.Items.Select(Convert),
-                CreatedDateLocal = ConvertUtcToLocalDateTime(src.CreatedDateUtc),
+                CreatedDateLocal = src.CreatedDateUtc.FromUtcToTimeZone("GMT Standard Time"),
                 Observations = src.Notes,
                 VatType = Map(src.PricesType),
                 Reference = src.Reference,
@@ -282,7 +272,7 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2
                 PaymentMethodCode = src.PaymentMethodCode,
                 SerieCode = src.SerieCode,
                 Items = src.Items.Select(Convert),
-                CreatedDateLocal = ConvertUtcToLocalDateTime(src.CreatedDateUtc),
+                CreatedDateLocal = src.CreatedDateUtc.FromUtcToTimeZone("GMT Standard Time"),
                 Observations = src.Notes,
                 VatType = Map(src.PricesType),
             };
@@ -324,7 +314,7 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2
                 Items = src.Items.Select(Convert),
                 VatType = Map(src.PricesType),
                 Observations = src.Notes,
-                CreatedDateLocal = ConvertUtcToLocalDateTime(src.CreatedDateUtc),
+                CreatedDateLocal = src.CreatedDateUtc.FromUtcToTimeZone("GMT Standard Time"),
             };
         }
 
@@ -336,7 +326,7 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2
                 VatNumber = consumerBill.CustomerVatNumber,
                 Items = consumerBill.Items.Select(Convert),
                 SerieCode = consumerBill.SerieCode,
-                CreatedDateLocal = ConvertUtcToLocalDateTime(consumerBill.CreatedDateUtc),
+                CreatedDateLocal = consumerBill.CreatedDateUtc.FromUtcToTimeZone("GMT Standard Time"),
                 Observations = consumerBill.Notes,
                 VatType = Map(consumerBill.PricesType),
             };

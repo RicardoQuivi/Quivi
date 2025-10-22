@@ -17,6 +17,7 @@ namespace Quivi.Hangfire
 
             builder.Services.RegisterAll(builder.Configuration);
             builder.Services.RegisterRecurringJobs();
+            builder.Services.RegisterManagementPages();
             builder.Services.AddHangfireServer();
             builder.Services.AddControllers();
 

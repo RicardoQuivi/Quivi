@@ -4,6 +4,8 @@ namespace Quivi.Domain.Entities.Merchants
 {
     public class MerchantService : IEntity
     {
+        public int Id => PersonId;
+
         public required string Name { get; set; }
         public MerchantServiceType Type { get; set; }
         public DateTime CreatedDate { get; set; }

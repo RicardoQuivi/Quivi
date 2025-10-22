@@ -384,7 +384,9 @@
         "autoFill": "Auto preenchimento",
         "defaultValue": "Valor pré-definido",
         "none": "Nenhum",
-        "linkEntities": "Associar a {{name}}"
+        "linkEntities": "Associar a {{name}}",
+        "gross": "Bruto",
+        "net": "Liquido"
     },
     "imageEditor": {
         "edit": "Editar",
@@ -747,7 +749,8 @@
             "linkToChannelProfiles": "Associar Perfis de canal a {{name}}"
         },
         "payouts": {
-            "title": "Liquidações"
+            "title": "Liquidações",
+            "details": "Detalhes da liquidação - {{date}}"
         },
         "invoicing": {
             "title": "Faturação"

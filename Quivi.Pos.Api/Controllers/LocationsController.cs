@@ -33,6 +33,7 @@ namespace Quivi.Pos.Api.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
         public async Task<GetLocationsResponse> Get()
         {
             var query = await queryProcessor.Execute(new GetLocationsAsyncQuery

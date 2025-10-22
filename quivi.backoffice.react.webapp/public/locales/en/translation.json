@@ -384,7 +384,9 @@
         "autoFill": "Auto fill",
         "defaultValue": "Default value",
         "none": "None",
-        "linkEntities": "Link to {{name}}"
+        "linkEntities": "Link to {{name}}",
+        "gross": "Gross",
+        "net": "Net"
     },
     "imageEditor": {
         "edit": "Edit",
@@ -747,7 +749,8 @@
             "linkToChannelProfiles": "Link Channel profiles to {{name}}"
         },
         "payouts": {
-            "title": "Payouts"
+            "title": "Payouts",
+            "details": "Payout details - {{date}}"
         },
         "invoicing": {
             "title": "Invoicing"

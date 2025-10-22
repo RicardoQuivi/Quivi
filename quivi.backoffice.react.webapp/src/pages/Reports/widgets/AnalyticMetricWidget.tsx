@@ -16,7 +16,6 @@ interface AnalyticMetricWidgetProps {
     readonly title: string;
     readonly children: React.ReactNode;
     readonly percentage: number;
-    readonly showPeriods?: boolean;
     readonly onPeriodChange: (now: Date, analysisFrom: Date, analysisTo: Date, referenceFrom: Date, referenceTo: Date) => any;
     readonly isLoading?: boolean;
 }
@@ -30,8 +29,7 @@ export const AnalyticMetricWidget = (props: AnalyticMetricWidgetProps) => {
     useEffect(() => props.onPeriodChange?.(state.now, state.analysisPeriod.from, state.analysisPeriod.to, state.referencePeriod.from, state.referencePeriod.to), [state])
 
     const getAnalysedPeriodLavel = () => {
-        switch(state.period)
-        {
+        switch(state.period) {
             case MetricReferencePeriod.Yesterday: return t("widgets.analyticMetric.analysedYesterday");
             case MetricReferencePeriod.LastWeek: return t("widgets.analyticMetric.analysedLastWeek", {
                 to: dateHelper.toLocalString(state.analysisPeriod.to, "HH:mm"),

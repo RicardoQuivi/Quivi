@@ -20,6 +20,7 @@ export enum Entity {
     ConfigurableFields,
     ConfigurableFieldAssociations,
     Settlements,
+    SettlementDetails,
     Availabilities,
     AvailabilityMenuItemAssociations,
     AvailabilityChannelProfileAssociations,

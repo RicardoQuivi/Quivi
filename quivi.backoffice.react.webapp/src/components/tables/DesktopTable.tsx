@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ITableAction, ITableColumn, ResponsiveTableProps } from "./ResponsiveTable";
+import { IParentTableColumn, isParentColumn, ITableAction, ITableColumn, ResponsiveTableProps } from "./ResponsiveTable";
 import { useCallback, useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
 import { Tooltip } from "../ui/tooltip/Tooltip";
@@ -23,247 +23,263 @@ export const DesktopTable = <T,>(props: ResponsiveTableProps<T>) => {
             }
         }
         return false;
-    }, [props.data, props.hasInnerRows]) ;
+    }, [props.data, props.hasInnerRows])
 
     const isClickableRow = (row: T) => props.onRowClick != undefined || props.hasInnerRows?.(row) == true;
 
-    return <>
-    {
-        hasInnerRows() == true
-        ?
-        <Table>
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+    const {
+        flattenedColumns,
+        topColumns,
+    } = useMemo(() => {
+        if(props.columns == undefined) {
+            return {
+                flattenedColumns: undefined,
+                topColumns: undefined,
+            };
+        }
+
+        const topColumns = [] as IParentTableColumn<T>[];
+        const flattenedColumns = [] as ITableColumn<T>[];
+        for(const col of props.columns) {
+            if(isParentColumn(col) == false) {
+                flattenedColumns.push(col);
+                continue;
+            }
+
+            topColumns.push(col);
+            for(const c of col.children) {
+                flattenedColumns.push(c);
+            }
+        }
+        return {
+            flattenedColumns,
+            topColumns: topColumns.length == 0 ? undefined : topColumns,
+        };
+    }, [props.columns])
+
+    const renderHeader = () => (
+        <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+            {
+                topColumns != undefined &&
                 <TableRow>
                     {
                         props.name != undefined &&
                         <TableCell
                             isHeader
                             className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
-                            {props.name.label}
-                        </TableCell>
+                        />
                     }
                     {
-                        props.columns?.map(header => (
-                            <TableCell
-                                key={header.key}
+                        props.columns?.map(c => {
+                            if(isParentColumn(c) == false) {
+                                return <TableCell
+                                    isHeader
+                                    className="px-5 py-2 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
+                                />
+                            }
+                            return <TableCell
+                                key={c.key}
                                 isHeader
-                                className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                                className="px-5 py-2 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400 border-b border-gray-100 dark:border-white/[0.05]"
+                                cellSpan={c.children.length}
                             >
-                                {header.label}
+                                {c.label}
                             </TableCell>
-                        ))
+                        })
                     }
                     {
                         props.actions != undefined &&
                         <TableCell
                             isHeader
                             className="px-5 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
-                            &nbsp;
-                        </TableCell>
+                        />
                     }
                 </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+            }
+            <TableRow>
                 {
-                    props.isLoading != true && props.data.length == 0 
-                    ?
-                    <TableRow>
-                        <TableCell cellSpan={(props.name != undefined ? 1 : 0) + (props.columns?.length ?? 0) + (props.actions != undefined ? 1 : 0)}>
-                            <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
-                                {t("common.noDataAvailable")}
-                            </p>
-                        </TableCell>
-                    </TableRow>
-                    :
-                    (
-                        props.isLoading == true
-                        ?
-                        range(props.loadingItemsCount ?? 5).map(i => (
-                            <TableRow key={i}>
-                                {
-                                    props.name != undefined &&
-                                    <TableCell
-                                        className="px-2 py-2 text-start"
-                                    >
-                                        <Skeleton className="w-full" />
-                                    </TableCell>
-                                }
-                                {
-                                    props.columns?.map(column => 
-                                        <TableCell
-                                            key={column.key}
-                                            className="px-2 py-2 text-start"
-                                        >
-                                            <Skeleton className="w-full" />
-                                        </TableCell>
-                                    )
-                                }
-                                {
-                                    props.actions != undefined &&
-                                    <TableCell
-                                        className="px-2 py-2 text-start"
-                                    >
-                                        <Skeleton className="w-full" />
-                                    </TableCell>
-                                }
-                            </TableRow>
-                        ))
-                        :
-                        props.data.map(d => (
-                            <CollapsibleRow key={props.getKey(d)}
-                                            getKey={props.getKey}
-                                            getChildren={props.getChildren}
-                                            columns={props.columns}
-                                            actions={props.actions}
-                                            name={props.name}
-                                            data={d}
-                                            onRowClick={props.onRowClick} 
-                            />
-                        ))
-                    )
+                    props.name != undefined &&
+                    <TableCell
+                        isHeader
+                        className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                    >
+                        {props.name.label}
+                    </TableCell>
                 }
-            </TableBody>
-        </Table>
-        :
-        <Table>
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-                <TableRow>
-                    {
-                        props.name != undefined &&
+                {
+                    flattenedColumns?.map(header => (
                         <TableCell
+                            key={header.key}
                             isHeader
                             className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                            {props.name.label}
+                            {header.label}
                         </TableCell>
+                    ))
+                }
+                {
+                    props.actions != undefined &&
+                    <TableCell
+                        isHeader
+                        className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                    >
+                        &nbsp;
+                    </TableCell>
+                }
+            </TableRow>
+        </TableHeader>
+    )
+
+    const renderLoadingData = () => range(props.loadingItemsCount ?? 5).map(i => (
+        <TableRow key={i}>
+            {
+                props.name != undefined &&
+                <TableCell
+                    className="px-2 py-2 text-start"
+                >
+                    <Skeleton className="w-full" />
+                </TableCell>
+            }
+            {
+                flattenedColumns?.map(column => 
+                    <TableCell
+                        key={column.key}
+                        className="px-2 py-2 text-start"
+                    >
+                        <Skeleton className="w-full" />
+                    </TableCell>
+                )
+            }
+            {
+                props.actions != undefined &&
+                <TableCell
+                    className="px-2 py-2 text-start"
+                >
+                    <Skeleton className="w-full" />
+                </TableCell>
+            }
+        </TableRow>
+    ))
+
+    const renderTableBody = (renderAction: (d: T) => React.ReactNode) => (
+        <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+            {
+                props.isLoading != true && props.data.length == 0 
+                ?
+                <TableRow>
+                    <TableCell cellSpan={(props.name != undefined ? 1 : 0) + (flattenedColumns?.length ?? 0) + (props.actions != undefined ? 1 : 0)}>
+                        <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
+                            {t("common.noDataAvailable")}
+                        </p>
+                    </TableCell>
+                </TableRow>
+                :
+                (
+                    props.isLoading == true
+                    ?
+                    renderLoadingData()
+                    :
+                    props.data.map(renderAction)
+                )
+            }
+        </TableBody>
+    )
+
+    return (
+        <Table>
+            {
+                topColumns != undefined &&
+                <colgroup>
+                    {
+                        props.name != undefined &&
+                        <col/>
                     }
                     {
-                        props.columns?.map(header => (
-                            <TableCell
-                                key={header.key}
-                                isHeader
-                                className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                            >
-                                {header.label}
-                            </TableCell>
-                        ))
+                        props.columns?.map(c => {
+                            if(isParentColumn(c) == false) {
+                                return <col />
+                            }
+                            
+                            return c.children.map((cc, i) => <col 
+                                key={cc.key}
+                                className={i == 0 ? "border-l border-gray-100 dark:border-white/[0.05]" : (i == c.children.length - 1 ? "border-r border-gray-100 dark:border-white/[0.05]" : undefined)}
+                            />)
+                        })
                     }
                     {
                         props.actions != undefined &&
-                        <TableCell
-                            isHeader
-                            className="px-2 py-2 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
-                            &nbsp;
-                        </TableCell>
+                        <col/>
                     }
-                </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {
-                    props.isLoading != true && props.data.length == 0 
+                </colgroup>
+            }
+            {renderHeader()}
+            {
+                renderTableBody(d => (
+                    hasInnerRows() == true
                     ?
-                    <TableRow>
-                        <TableCell cellSpan={(props.name != undefined ? 1 : 0) + (props.columns?.length ?? 0) + (props.actions != undefined ? 1 : 0)}>
-                            <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
-                                {t("common.noDataAvailable")}
-                            </p>
-                        </TableCell>
-                    </TableRow>
+                    <CollapsibleRow key={props.getKey(d)}
+                                    getKey={props.getKey}
+                                    getChildren={props.getChildren}
+                                    columns={flattenedColumns}
+                                    actions={props.actions}
+                                    name={props.name}
+                                    data={d}
+                                    onRowClick={props.onRowClick} 
+                    />
                     :
-                    (
-                        props.isLoading == true
-                        ?
-                        range(props.loadingItemsCount ?? 5).map(i => (
-                            <TableRow key={i}>
-                                {
-                                    props.name != undefined &&
-                                    <TableCell
-                                        className="px-2 py-2 text-start"
-                                    >
-                                        <Skeleton className="w-full" />
-                                    </TableCell>
-                                }
-                                {
-                                    props.columns?.map(column => 
-                                        <TableCell
-                                            key={column.key}
-                                            className="px-2 py-2 text-start"
-                                        >
-                                            <Skeleton className="w-full" />
-                                        </TableCell>
-                                    )
-                                }
-                                {
-                                    props.actions != undefined &&
-                                    <TableCell
-                                        className="px-2 py-2 text-start"
-                                    >
-                                        <Skeleton className="w-full" />
-                                    </TableCell>
-                                }
-                            </TableRow>
-                        ))
-                        :
-                        props.data.map(d => (
-                            <TableRow key={props.getKey(d)} 
-                                className={`justify-content-start animated fadeInDown ${props.rowClasses?.(d) ?? ""}`}
-                                style={{cursor: isClickableRow(d) ? "pointer" : "unset"}}
-                                onClick={() => props.onRowClick?.(d)}
+                    <TableRow key={props.getKey(d)} 
+                        className={`justify-content-start animated fadeInDown ${props.rowClasses?.(d) ?? ""}`}
+                        style={{cursor: isClickableRow(d) ? "pointer" : "unset"}}
+                        onClick={() => props.onRowClick?.(d)}
+                    >
+                        {
+                            props.name != undefined &&
+                            <TableCell
+                                className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
                             >
-                                {
-                                    props.name != undefined &&
-                                    <TableCell
-                                        className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
-                                    >
-                                        {props.name.render(d)}
-                                    </TableCell>
-                                }
-                                {
-                                    props.columns?.map(column => 
-                                        <React.Fragment key={`row_${column.key}`}>
-                                            {
-                                                <TableCell
-                                                    className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
-                                                >
-                                                    {column.render(d)}
-                                                </TableCell>
-                                            }
-                                        </React.Fragment>
-                                    )
-                                }
-                                {
-                                    props.actions != undefined &&
-                                    <TableCell
-                                        className="px-2 sm:pr-5 py-2 flex items-center gap-1 justify-end"
-                                    >
+                                {props.name.render(d)}
+                            </TableCell>
+                        }
+                        {
+                            flattenedColumns?.map(column => 
+                                <React.Fragment key={`row_${column.key}`}>
                                     {
-                                        props.actions.map(a => (
-                                            <Tooltip 
-                                                message={a.label}
-                                                key={a.key}
-                                            >
-                                                <IconButton
-                                                    onClick={e => rowAction(e, () => a.onClick?.(d))}
-                                                    className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
-                                                >
-                                                    {a.render(d)}
-                                                </IconButton>
-                                            </Tooltip>
-                                        ))
+                                        <TableCell
+                                            className="px-2 py-2 text-gray-500 text-theme-sm dark:text-gray-400"
+                                        >
+                                            {column.render(d)}
+                                        </TableCell>
                                     }
-                                    </TableCell>
-                                }
-                            </TableRow>
-                        ))
-                    )
-                }
-            </TableBody>
+                                </React.Fragment>
+                            )
+                        }
+                        {
+                            props.actions != undefined &&
+                            <TableCell
+                                className="px-2 sm:pr-5 py-2 flex items-center gap-1 justify-end"
+                            >
+                            {
+                                props.actions.map(a => (
+                                    <Tooltip 
+                                        message={a.label}
+                                        key={a.key}
+                                    >
+                                        <IconButton
+                                            onClick={e => rowAction(e, () => a.onClick?.(d))}
+                                            className="!text-gray-700 hover:!text-error-500 dark:!text-gray-400 dark:!hover:text-error-500"
+                                        >
+                                            {a.render(d)}
+                                        </IconButton>
+                                    </Tooltip>
+                                ))
+                            }
+                            </TableCell>
+                        }
+                    </TableRow>
+                ))
+            }
         </Table>
-    }
-    </>
+    )
 }
 
 interface CollapsibleRowProps<T> {
