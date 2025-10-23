@@ -1,5 +1,4 @@
-﻿using FacturaLusa.v2;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -38,16 +37,17 @@ using Quivi.Infrastructure.Configurations;
 using Quivi.Infrastructure.Converters;
 using Quivi.Infrastructure.Cqrs;
 using Quivi.Infrastructure.Events.RabbitMQ;
+using Quivi.Infrastructure.Extensions;
 using Quivi.Infrastructure.Images.SixLabors.ImageSharp;
 using Quivi.Infrastructure.Jobs.Hangfire.Extensions;
 using Quivi.Infrastructure.Mailing.EmailEngine.Mjml;
 using Quivi.Infrastructure.Mailing.SendGrid;
 using Quivi.Infrastructure.Mailing.Smtp;
 using Quivi.Infrastructure.Mapping;
+using Quivi.Infrastructure.Payouts.ComplyPay.Extensions;
 using Quivi.Infrastructure.Pos.ESCPOS_NET;
 using Quivi.Infrastructure.Pos.FacturaLusa.v2;
-using Quivi.Infrastructure.Pos.FacturaLusa.v2.Abstractions;
-using Quivi.Infrastructure.Pos.FacturaLusa.v2.Configurations;
+using Quivi.Infrastructure.Pos.FacturaLusa.v2.Extensions;
 using Quivi.Infrastructure.Repositories;
 using Quivi.Infrastructure.Services;
 using Quivi.Infrastructure.Services.DataExporter;
@@ -164,21 +164,21 @@ namespace Quivi.Application.Extensions
             serviceCollection.RegisterSingleton<ILogger, ConsoleLogger>();
 
             serviceCollection.RegisterPosSyncStrategies();
-            serviceCollection.RegisterFacturalusa(configuration);
+
+            serviceCollection.RegisterScoped<IInvoiceGatewayFactory, InvoiceGatewayFactory>();
+
+            serviceCollection.RegisterSingleton(p => configuration.GetSection("Facturalusa").Get<FacturaLusaSettings>()!);
+            serviceCollection.RegisterFacturalusa<FacturaLusaSettings>();
+
+            serviceCollection.RegisterSingleton(p => configuration.GetSection("ComplyPay").Get<ComplyPaySettings>()!);
+            serviceCollection.RegisterComplyPay<ComplyPaySettings>();
 
             //Register Default Invoicing
             serviceCollection.RegisterScoped<IInvoiceGateway>(p =>
             {
                 var settings = configuration.GetSection("Invoicing").Get<InvoicingSettings>();
                 if (settings?.Provider?.Equals("FacturaLusa", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    var facturalusaSettings = p.GetService<IFacturaLusaSettings>()!;
-                    return new FacturaLusaInvoiceGateway(p.GetService<IFacturaLusaServiceFactory>()!, facturalusaSettings.AccessToken, "Default")
-                    {
-                        CommandProcessor = p.GetService<ICommandProcessor>()!,
-                        QueryProcessor = p.GetService<IQueryProcessor>()!
-                    };
-                }
+                    return p.GetService<FacturaLusaInvoiceGateway>()!;
 
                 throw new NotImplementedException();
             });
@@ -205,21 +205,6 @@ namespace Quivi.Application.Extensions
                 var settings = p.GetService<IPaybyrdSettings>()!;
                 return new PaybyrdApi(settings.Host, settings.WebHooksHost);
             });
-            return serviceCollection;
-        }
-
-        private static IServiceCollection RegisterFacturalusa(this IServiceCollection serviceCollection, IConfiguration configuration)
-        {
-            serviceCollection.RegisterSingleton<IFacturaLusaSettings>((p) => configuration.GetSection("Facturalusa").Get<FacturaLusaSettings>()!);
-            serviceCollection.RegisterSingleton<ICacheProvider, MemoryCacheProvider>();
-            serviceCollection.RegisterScoped<IInvoiceGatewayFactory, InvoiceGatewayFactory>();
-            serviceCollection.RegisterSingleton<IFacturaLusaApi>(p =>
-            {
-                var settings = p.GetService<IFacturaLusaSettings>()!;
-                return new FacturaLusaApi(settings.Host);
-            });
-            serviceCollection.RegisterSingleton<IFacturaLusaServiceFactory, FacturaLusaServiceFactory>();
-            serviceCollection.RegisterSingleton<IFacturaLusaCacheProvider, FacturaLusaCacheProvider>();
             return serviceCollection;
         }
 
@@ -414,58 +399,6 @@ namespace Quivi.Application.Extensions
             ]);
             return serviceCollection;
         }
-
-        #region Registrations
-        public static void RegisterSingleton<TService>(this IServiceCollection services) where TService : class
-        {
-            services.AddSingleton<TService>();
-        }
-
-        public static void RegisterSingleton<TService>(this IServiceCollection services, Func<IServiceProvider, TService> factory) where TService : class
-        {
-            services.AddSingleton(factory);
-        }
-
-        public static void RegisterSingleton<TService, TImplementation>(this IServiceCollection services) where TService : class
-                                                                                                            where TImplementation : class, TService
-        {
-            services.AddSingleton<TService, TImplementation>();
-            services.AddSingleton<TImplementation>();
-        }
-
-        public static void RegisterScoped<TService>(this IServiceCollection services) where TService : class
-        {
-            services.AddScoped<TService>();
-        }
-
-        public static void RegisterScoped<TService>(this IServiceCollection services, Func<IServiceProvider, TService> factory) where TService : class
-        {
-            services.AddScoped(factory);
-        }
-
-        public static void RegisterScoped<TService, TImplementation>(this IServiceCollection services) where TService : class
-                                                                                                            where TImplementation : class, TService
-        {
-            services.AddScoped<TService, TImplementation>();
-            services.AddScoped<TImplementation>();
-        }
-
-        public static void RegisterScoped(this IServiceCollection services, Type serviceType)
-        {
-            services.AddScoped(serviceType);
-        }
-
-        public static void RegisterScoped(this IServiceCollection services, Type serviceType, Type implementationType)
-        {
-            services.AddScoped(serviceType, implementationType);
-            services.AddScoped(implementationType);
-        }
-
-        public static void RegisterScoped(this IServiceCollection services, Type serviceType, Func<IServiceProvider, object> factory)
-        {
-            services.AddScoped(serviceType, factory);
-        }
-        #endregion
 
         #region Auxiliar Methods
         private static void LoadAllAssemblies()

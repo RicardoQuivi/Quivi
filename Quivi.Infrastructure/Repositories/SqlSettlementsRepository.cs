@@ -25,6 +25,9 @@ namespace Quivi.Infrastructure.Repositories
             if (criteria.IncludeSettlementServiceDetails)
                 query = query.Include(q => q.SettlementServiceDetails);
 
+            if (criteria.Ids != null)
+                query = query.Where(q => criteria.Ids.Contains(q.Id));
+
             if (criteria.States != null)
                 query = query.Where(q => criteria.States.Contains(q.State));
 

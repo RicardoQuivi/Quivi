@@ -1,6 +1,6 @@
 ﻿using Hangfire.Dashboard.Management.v2.Support;
-using Quivi.Application.Extensions;
 using Quivi.Hangfire.Hangfire;
+using Quivi.Infrastructure.Extensions;
 using System.Reflection;
 
 namespace Quivi.Hangfire.Extensions

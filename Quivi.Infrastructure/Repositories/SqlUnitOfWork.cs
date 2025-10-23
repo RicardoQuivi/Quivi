@@ -54,6 +54,8 @@ namespace Quivi.Infrastructure.Repositories
         public IReportsRepository Reports => new SqlReportsRepository(quiviContext);
         public ISettlementsRepository Settlements => new SqlSettlementsRepository(quiviContext);
         public IMerchantServicesRepository MerchantServices => new SqlMerchantServicesRepository(quiviContext);
+        public ISettlementDetailsRepository SettlementDetails => new SqlSettlementDetailsRepository(quiviContext);
+        public ISettlementServiceDetailsRepository SettlementServiceDetails => new SqlSettlementServiceDetailsRepository(quiviContext);
 
         public Task SaveChangesAsync() => quiviContext.SaveChangesAsync();
         public void Dispose() => quiviContext.Dispose();

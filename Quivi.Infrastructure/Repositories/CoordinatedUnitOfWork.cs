@@ -57,6 +57,8 @@ namespace Quivi.Infrastructure.Repositories
         public IReportsRepository Reports => unitOfWork.Reports;
         public ISettlementsRepository Settlements => unitOfWork.Settlements;
         public IMerchantServicesRepository MerchantServices => unitOfWork.MerchantServices;
+        public ISettlementDetailsRepository SettlementDetails => unitOfWork.SettlementDetails;
+        public ISettlementServiceDetailsRepository SettlementServiceDetails => unitOfWork.SettlementServiceDetails;
 
         public CoordinatedUnitOfWork(IUnitOfWork unitOfWork, IEventService eventService)
         {

@@ -1,6 +1,6 @@
 ﻿using Quivi.Infrastructure.Pos.FacturaLusa.v2.Abstractions;
 
-namespace Quivi.Infrastructure.Pos.FacturaLusa.v2.Configurations
+namespace Quivi.Application.Configurations
 {
     public class FacturaLusaSettings : IFacturaLusaSettings
     {

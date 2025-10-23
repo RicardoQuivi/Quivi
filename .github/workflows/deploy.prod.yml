@@ -96,6 +96,13 @@ env:
   Paybyrd__WebHooksHost: ${{ vars.PAYBYRD__WEBHOOKSHOST }}
   Paybyrd__ApiKey: ${{ secrets.PAYBYRD__APIKEY }}
 
+  # Comply Pay
+  ComplyPay__SkipPayouts: ${{ vars.COMPLYPAY__SKIPPAYOUTS }}
+  ComplyPay__TreasuryId: ${{ vars.COMPLYPAY__TREASURYID }}
+  ComplyPay__Host: ${{ vars.COMPLYPAY__HOST }}
+  ComplyPay__Email: ${{ vars.COMPLYPAY__EMAIL }}
+  ComplyPay__Password: ${{ secrets.COMPLYPAY__PASSWORD }}
+
 jobs:
   quivi-migrator:
     runs-on: ubuntu-latest

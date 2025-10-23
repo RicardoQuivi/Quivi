@@ -2,6 +2,7 @@
 using Hangfire.Dashboard.Management.v2.Metadata;
 using Hangfire.Dashboard.Management.v2.Support;
 using Hangfire.Server;
+using Quivi.Application.Commands.Payouts;
 using Quivi.Application.Commands.Settlements;
 using Quivi.Application.Queries.PosCharges;
 using Quivi.Infrastructure;
@@ -50,6 +51,16 @@ namespace Quivi.Hangfire.ManagementPages
                     Date = DateOnly.FromDateTime(date),
                 });
             }
+        }
+
+        [DisplayName("Generate Payouts")]
+        [Description("Safely generate unprocessed payouts")]
+        public Task ProcessPayouts(PerformContext context, IJobCancellationToken token, [DisplayData("Settlement Id")] int settlementId)
+        {
+            return commandProcessor.Execute(new ProcessPayoutsAsyncCommand
+            {
+                SettlementId = settlementId,
+            });
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Quivi.Application.Queries.Settlements
 {
     public class GetSettlementsAsyncQuery : APagedAsyncQuery<Settlement>
     {
+        public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<DateOnly>? Dates { get; init; }
         public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }
@@ -30,6 +31,7 @@ namespace Quivi.Application.Queries.Settlements
         {
             return settlementsRepository.GetAsync(new GetSettlementsCriteria
             {
+                Ids = query.Ids,
                 Dates = query.Dates,
                 ParentMerchantIds = query.ParentMerchantIds,
                 MerchantIds = query.MerchantIds,

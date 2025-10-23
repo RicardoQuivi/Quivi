@@ -5,6 +5,7 @@ using Quivi.Hangfire.Hangfire;
 using Quivi.Hangfire.Printing;
 using Quivi.Hangfire.Settings;
 using Quivi.Infrastructure.Abstractions.Services.Printing;
+using Quivi.Infrastructure.Extensions;
 using Quivi.Printer.MassTransit.Extensions;
 
 namespace Quivi.Hangfire

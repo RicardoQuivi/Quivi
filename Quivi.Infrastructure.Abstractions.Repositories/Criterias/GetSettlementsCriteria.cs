@@ -4,6 +4,7 @@ namespace Quivi.Infrastructure.Abstractions.Repositories.Criterias
 {
     public record GetSettlementsCriteria : IPagedCriteria
     {
+        public IEnumerable<int>? Ids { get; init; }
         public IEnumerable<DateOnly>? Dates { get; init; }
         public IEnumerable<int>? ParentMerchantIds { get; init; }
         public IEnumerable<int>? MerchantIds { get; init; }

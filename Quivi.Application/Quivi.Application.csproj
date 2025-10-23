@@ -42,6 +42,7 @@
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.EmailEngine.Mjml\Quivi.Infrastructure.Mailing.EmailEngine.Mjml.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.SendGrid\Quivi.Infrastructure.Mailing.SendGrid.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Mailing.Smtp\Quivi.Infrastructure.Mailing.Smtp.csproj" />
+    <ProjectReference Include="..\Quivi.Infrastructure.Payouts.ComplyPay\Quivi.Infrastructure.Payouts.ComplyPay.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.ESCPOS_NET\Quivi.Infrastructure.Pos.ESCPOS_NET.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Pos.FacturaLusa.v2\Quivi.Infrastructure.Pos.FacturaLusa.v2.csproj" />
     <ProjectReference Include="..\Quivi.Infrastructure.Services.DataExporter\Quivi.Infrastructure.Services.DataExporter.csproj" />

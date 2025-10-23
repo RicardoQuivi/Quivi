@@ -42,6 +42,8 @@
         IWeeklyAvailabilitiesRepository WeeklyAvailabilities { get; }
         IReportsRepository Reports { get; }
         ISettlementsRepository Settlements { get; }
+        ISettlementDetailsRepository SettlementDetails { get; }
+        ISettlementServiceDetailsRepository SettlementServiceDetails { get; }
         IMerchantServicesRepository MerchantServices { get; }
 
         Task<ITransaction> StartTransactionAsync();
