@@ -9,13 +9,14 @@ namespace Quivi.Printer.MassTransit.Extensions
     {
         public static void ConfigurePrinterConnector<T>(this IServiceCollection serviceCollection) where T : IPrinterRabbitMqSettings
         {
+            serviceCollection.AddSingleton<IPrinterRabbitMqSettings>(p => p.GetService<T>()!);
             serviceCollection.AddSingleton<MessageService>();
             serviceCollection.AddScoped<PrinterMessageConnector>();
             serviceCollection.AddScoped<IPrinterMessageConnector>(p => p.GetService<PrinterMessageConnector>()!);
 
             serviceCollection.AddSingleton<IBusControl>((p) =>
             {
-                var settings = p.GetService<T>()!;
+                var settings = p.GetService<IPrinterRabbitMqSettings>()!;
                 return Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
                     cfg.Host(settings.Host, (ushort)settings.Port, "/", h =>

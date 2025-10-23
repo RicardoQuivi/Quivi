@@ -12,17 +12,18 @@ namespace Quivi.Infrastructure.Pos.FacturaLusa.v2.Extensions
     {
         public static IServiceCollection RegisterFacturalusa<T>(this IServiceCollection serviceCollection) where T : IFacturaLusaSettings
         {
+            serviceCollection.RegisterSingleton<IFacturaLusaSettings>(p => p.GetService<T>()!);
             serviceCollection.RegisterSingleton<ICacheProvider, MemoryCacheProvider>();
             serviceCollection.RegisterSingleton<IFacturaLusaApi>(p =>
             {
-                var settings = p.GetService<T>()!;
+                var settings = p.GetService<IFacturaLusaSettings>()!;
                 return new FacturaLusaApi(settings.Host);
             });
             serviceCollection.RegisterSingleton<IFacturaLusaServiceFactory, FacturaLusaServiceFactory>();
             serviceCollection.RegisterSingleton<IFacturaLusaCacheProvider, FacturaLusaCacheProvider>();
             serviceCollection.RegisterScoped(p =>
             {
-                var facturalusaSettings = p.GetService<T>()!;
+                var facturalusaSettings = p.GetService<IFacturaLusaSettings>()!;
                 return new FacturaLusaInvoiceGateway(p.GetService<IFacturaLusaServiceFactory>()!, facturalusaSettings.AccessToken, "Default")
                 {
                     CommandProcessor = p.GetService<ICommandProcessor>()!,

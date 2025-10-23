@@ -10,14 +10,15 @@ namespace Quivi.Infrastructure.Payouts.ComplyPay.Extensions
     {
         public static IServiceCollection RegisterComplyPay<T>(this IServiceCollection serviceCollection) where T : IComplyPaySettings
         {
+            serviceCollection.RegisterScoped<IComplyPaySettings>(p => p.GetService<T>()!);
             serviceCollection.RegisterScoped<IComplyPayApi>((p) =>
             {
-                var settings = p.GetService<T>()!;
+                var settings = p.GetService<IComplyPaySettings>()!;
                 return new ComplyPayApi(settings.Host);
             });
             serviceCollection.RegisterScoped<IComplyPayService>((p) =>
             {
-                var settings = p.GetService<T>()!;
+                var settings = p.GetService<IComplyPaySettings>()!;
                 var api = p.GetService<IComplyPayApi>()!;
                 return new ComplyPayService(api, settings.Email, settings.Password);
             });
