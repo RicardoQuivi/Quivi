@@ -108,7 +108,16 @@ export const PaymentResume = ({
                     <div className="purchase-summary__row">
                         <p style={{whiteSpace: "nowrap"}}>{t(`paymentMethods.methods.${ChargeMethod[transaction.method].toLowerCase()}`)}</p>
                         <div className="purchase-info">
-                            <ChargeMethodIcon chargeMethod={transaction.method} color={theme.primaryColor.hex} style={{height: "24px", width: "auto"}} />
+                            <ChargeMethodIcon
+                                chargeMethod={transaction.method}
+                                color={theme.primaryColor.hex}
+                                style={{
+                                    height: "24px",
+                                    width: "auto",
+                                }}
+                                height="auto"
+                                width="auto"
+                            />
                         </div>
                     </div>
                     {

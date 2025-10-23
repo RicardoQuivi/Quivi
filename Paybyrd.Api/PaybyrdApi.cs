@@ -1,6 +1,7 @@
 ﻿using Paybyrd.Api.Converters;
 using Paybyrd.Api.Requests;
 using Paybyrd.Api.Responses;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,6 +10,8 @@ namespace Paybyrd.Api
 {
     public class PaybyrdApi : IPaybyrdApi, IPaybyrdWebhooksApi
     {
+        private static readonly HttpStatusCode[] SuccessCodes = [HttpStatusCode.OK, HttpStatusCode.Created];
+
         private readonly Uri apiAdress;
         private readonly Uri webHooksAddress;
         private readonly JsonSerializerOptions jsonSerializerOptions;
@@ -36,7 +39,6 @@ namespace Paybyrd.Api
             httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
 
             var response = await httpClient.DeleteAsync(endpoint);
-            return;
         }
 
 
@@ -65,7 +67,7 @@ namespace Paybyrd.Api
             httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
 
             var response = await httpClient.PostAsync(endpoint, content);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (SuccessCodes.Contains(response.StatusCode) == false)
                 throw new Exception("Paybyrd is not available");
 
             var rawResponse = await response.Content.ReadAsStringAsync();

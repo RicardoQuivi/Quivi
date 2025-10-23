@@ -38,6 +38,8 @@ const TerminalPaymentPage : React.FC<Props> = ({
                         maxHeight: "5vh",
                         marginBottom: "0.75rem",
                     }}
+                    width="auto"
+                    height="auto"
                 />
                 <h2>{t("paymentMethods.paymentTerminal.title")}</h2>
                 <p>{t("paymentMethods.paymentTerminal.description")}</p>

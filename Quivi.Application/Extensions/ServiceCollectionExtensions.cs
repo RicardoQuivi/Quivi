@@ -432,12 +432,8 @@ namespace Quivi.Application.Extensions
                 .Where(t => t.FilterTypeInterfaces(referenceInterfaceType).Any());
 
             foreach (var classType in classesTypes)
-            {
                 foreach (var interfaceType in classType.FilterTypeInterfaces(referenceInterfaceType))
-                {
                     yield return (interfaceType, classType);
-                }
-            }
         }
 
         private static IEnumerable<Type> FilterTypeInterfaces(this Type type, Type interfaceType)

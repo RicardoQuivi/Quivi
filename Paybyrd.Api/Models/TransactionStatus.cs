@@ -9,5 +9,6 @@
         Success,
         Canceled,
         Error,
+        PendingMerchantAction,
     }
 }
