@@ -16,37 +16,37 @@ namespace Quivi.Application.OAuth2.Extensions
 
         public static string? SubjectToken(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("subject_token");
+            var parameter = request.GetParameter(RequestParameters.SubjectToken);
             return parameter?.Value?.ToString();
         }
 
         public static string? SubjectType(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("subject_token_type");
+            var parameter = request.GetParameter(RequestParameters.SubjectTokenType);
             return parameter?.Value?.ToString();
         }
 
         public static string? Username(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("username");
+            var parameter = request.GetParameter(RequestParameters.Username);
             return parameter?.Value?.ToString();
         }
 
         public static string? Password(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("password");
+            var parameter = request.GetParameter(RequestParameters.Password);
             return parameter?.Value?.ToString();
         }
 
         public static string? RefreshToken(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("refresh_token");
+            var parameter = request.GetParameter(RequestParameters.RefreshToken);
             return parameter?.Value?.ToString();
         }
 
         public static string? MerchantId(this OpenIddictRequest request)
         {
-            var parameter = request.GetParameter("merchant_id");
+            var parameter = request.GetParameter(RequestParameters.MerchantId);
             return parameter?.Value?.ToString();
         }
     }

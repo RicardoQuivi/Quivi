@@ -117,72 +117,85 @@ namespace Quivi.Migrator
             await using var scope = serviceProvider.CreateAsyncScope();
             var appManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-            var backofficeApp = await appManager.FindByClientIdAsync("backoffice");
-            if (backofficeApp is null)
+            await UpsertClient(appManager, "backoffice", [
+                Permissions.Endpoints.Introspection,
+                Permissions.Endpoints.Token,
+
+                // Enable these based on your grant type
+                Permissions.GrantTypes.Password,
+                Permissions.GrantTypes.RefreshToken,
+
+                // Allow requesting scopes
+                Permissions.Prefixes.Scope + "api",
+            ]);
+
+            await UpsertClient(appManager, "pos", [
+                Permissions.Endpoints.Introspection,
+                Permissions.Endpoints.Token,
+
+                // Enable these based on your grant type
+                Permissions.Prefixes.GrantType + CustomGrantTypes.TokenExchange,
+                Permissions.Prefixes.GrantType + CustomGrantTypes.Employee,
+                Permissions.GrantTypes.RefreshToken,
+
+                // Allow requesting scopes
+                Permissions.Prefixes.Scope + "api",
+            ]);
+
+            await UpsertClient(appManager, "guests", [
+                Permissions.Endpoints.Introspection,
+                Permissions.Endpoints.Token,
+
+                // Enable these based on your grant type
+                Permissions.GrantTypes.Password,
+                Permissions.GrantTypes.RefreshToken,
+
+                // Allow requesting scopes
+                Permissions.Prefixes.Scope + "api",
+            ]);
+        }
+
+        private static async Task UpsertClient(IOpenIddictApplicationManager appManager, string clientId, IEnumerable<string> permissions)
+        {
+            var descriptor = new OpenIddictApplicationDescriptor();
+
+            var client = await appManager.FindByClientIdAsync(clientId);
+            if (client is null)
             {
-                await appManager.CreateAsync(new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "backoffice",
-                    Permissions =
-                    {
-                        Permissions.Endpoints.Introspection,
+                descriptor.ClientId = clientId;
+                foreach (var p in permissions)
+                    descriptor.Permissions.Add(p);
 
-                        Permissions.Endpoints.Token,
-
-                        // Enable these based on your grant type
-                        Permissions.GrantTypes.Password,
-                        Permissions.GrantTypes.RefreshToken,
-
-                        // Allow requesting scopes (optional)
-                        Permissions.Prefixes.Scope + "api",
-                    },
-                });
+                await appManager.CreateAsync(descriptor);
+                return;
             }
 
-            var posApp = await appManager.FindByClientIdAsync("pos");
-            if (posApp is null)
+            await appManager.PopulateAsync(descriptor, client);
+
+            bool changed = false;
+
+            // Sync permissions
+            var existingPermissions = descriptor.Permissions.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var desiredPermissions = permissions.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Add new permissions
+            foreach (var p in desiredPermissions.Except(existingPermissions))
             {
-                await appManager.CreateAsync(new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "pos",
-                    Permissions =
-                    {
-                        Permissions.Endpoints.Introspection,
-
-                        Permissions.Endpoints.Token,
-
-                        // Enable these based on your grant type
-                        Permissions.Prefixes.GrantType + CustomGrantTypes.TokenExchange,
-                        Permissions.Prefixes.GrantType + CustomGrantTypes.Employee,
-                        Permissions.GrantTypes.RefreshToken,
-
-                        // Allow requesting scopes (optional)
-                        Permissions.Prefixes.Scope + "api",
-                    }
-                });
+                descriptor.Permissions.Add(p);
+                changed = true;
             }
 
-            var guestsApp = await appManager.FindByClientIdAsync("guests");
-            if (guestsApp is null)
+            // Remove obsolete permissions
+            foreach (var p in existingPermissions.Except(desiredPermissions))
             {
-                await appManager.CreateAsync(new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "guests",
-                    Permissions =
-                    {
-                        Permissions.Endpoints.Introspection,
-
-                        Permissions.Endpoints.Token,
-
-                        // Enable these based on your grant type
-                        Permissions.GrantTypes.Password,
-                        Permissions.GrantTypes.RefreshToken,
-
-                        // Allow requesting scopes (optional)
-                        Permissions.Prefixes.Scope + "api",
-                    }
-                });
+                descriptor.Permissions.Remove(p);
+                changed = true;
             }
+
+            if (changed == false)
+                return;
+
+            await appManager.UpdateAsync(client, descriptor);
         }
     }
 }

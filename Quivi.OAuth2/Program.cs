@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quivi.Application.Extensions;
 using Quivi.Application.OAuth2.Extensions;
+using Quivi.OAuth2.Handlers;
 
 namespace Quivi.OAuth2
 {
@@ -11,7 +12,13 @@ namespace Quivi.OAuth2
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.RegisterAll(builder.Configuration);
-            builder.Services.RegisterOAuth2(builder.Configuration);
+            builder.Services.RegisterOAuth2(builder.Configuration, scope =>
+            {
+                scope.AddHandler<PasswordGrantTypeHandler>();
+                scope.AddHandler<RefreshTokenGrantTypeHandler>();
+                scope.AddHandler<TokenExchangeGrantTypeHandler>();
+                scope.AddHandler<EmployeeGrantTypeHandler>();
+            });
 
             builder.Services.AddCors(options =>
             {

@@ -1,17 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenIddict.Server;
 using Quivi.Application.OAuth2.Database;
-using Quivi.Application.OAuth2.OpenIddict.Handlers;
 using Quivi.Infrastructure.Abstractions.Configurations;
 using Quivi.Infrastructure.Configurations;
 using static OpenIddict.Server.OpenIddictServerEvents;
 
 namespace Quivi.Application.OAuth2.Extensions
 {
+    public interface IScopeHandler
+    {
+        void AddHandler<T>() where T : IOpenIddictServerHandler<HandleTokenRequestContext>;
+    }
+
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterOAuth2(this IServiceCollection serviceCollection, IConfiguration configuration)
+        private class ScopeHandler : IScopeHandler
+        {
+            private int order = 900_000;
+
+            private readonly OpenIddictServerBuilder serverBuilder;
+
+            public ScopeHandler(OpenIddictServerBuilder serverBuilder)
+            {
+                this.serverBuilder = serverBuilder;
+            }
+
+            public void AddHandler<T>() where T : IOpenIddictServerHandler<HandleTokenRequestContext>
+            {
+                serverBuilder.AddEventHandler<HandleTokenRequestContext>(builder =>
+                {
+                    builder.UseScopedHandler<T>().SetOrder(order++);
+                });
+            }
+        }
+
+        public static IServiceCollection RegisterOAuth2(this IServiceCollection serviceCollection, IConfiguration configuration, Action<IScopeHandler>? action = null)
         {
             serviceCollection.AddDbContext<OAuthDbContext>(options =>
             {
@@ -48,17 +73,18 @@ namespace Quivi.Application.OAuth2.Extensions
                                     options.AllowPasswordFlow();
                                     options.AllowRefreshTokenFlow();
 
-                                    options.AddEventHandler<HandleTokenRequestContext>(builder =>
+                                    if (action != null)
                                     {
-                                        builder.UseScopedHandler<EmployeeGrantTypeHandler>()
-                                                .SetOrder(900_000);
-                                    });
+                                        var handler = new ScopeHandler(options);
+                                        action(handler);
+                                    }
 
                                     options.AddSigningCertificate(jwtSettings.SigningCertificate);
                                     options.AddEncryptionCertificate(jwtSettings.EncryptionCertificate);
 
                                     options.UseAspNetCore()
-                                           .EnableTokenEndpointPassthrough()
+                                           //.EnableTokenEndpointPassthrough()
+                                           .EnableAuthorizationEndpointPassthrough()
                                            .DisableTransportSecurityRequirement();
                                 });
 
